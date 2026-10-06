@@ -1,0 +1,198 @@
+﻿{
+    "facts":  {
+                  "phase":  "main",
+                  "windows":  "Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100",
+                  "computer":  "runnervmfi6oq",
+                  "package":  "OnlineBackup-Server-0.1.5.zip",
+                  "commit":  "8e9f3b9ab4df3d4c1630d529b8d2a645e004e2db",
+                  "run":  "37487240381",
+                  "started":  "2026-10-06T15:28:31.5342412+00:00",
+                  "resolution":  "1024x768",
+                  "dpi":  100,
+                  "powershell":  "5.1.26100.33438",
+                  "interactive":  true,
+                  "user":  "runnervmfi6oq\\runneradmin"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W01",
+                         "title":  "Server: install from the real package (Windows service) and sign in",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W02",
+                         "title":  "Installer failure: a damaged Setup.exe installs nothing and says so",
+                         "functional":  "FAIL",
+                         "reason":  "The damaged file says it is damaged:  OK | Unzip the whole package to a folder first, then run Setup.exe from there. || Nothing was installed (Windows service manager, installed programs): ",
+                         "visual":  "PASS",
+                         "ux":  "FAIL",
+                         "visualFindings":  0,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W03",
+                         "title":  "Client installation through the installer window, proven by Windows",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: no button \u0027Next\u0027 (on screen: Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel) @ line 209",
+                         "visual":  "PASS",
+                         "ux":  "PASS",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W04",
+                         "title":  "First run: sign in through the window, the agent connects to the server",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W05",
+                         "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W06",
+                         "title":  "Service restart: Windows restarts the backup service, then backup and restore again",
+                         "functional":  "FAIL",
+                         "reason":  "Restart the service (Windows service manager): ERROR: Cannot find any service with service name \u0027OnlineBackupAgent\u0027. @ line 194 || the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W07",
+                         "title":  "Agent crash mid-backup: the process is killed; Windows brings it back; no ghost run; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W08",
+                         "title":  "Service stopped mid-backup: the run ends cleanly; start; backup and restore identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W09",
+                         "title":  "Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W10",
+                         "title":  "VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W11",
+                         "title":  "VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W12",
+                         "title":  "Permission denied: a folder the service may not read is an error, not a deletion; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: The file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 cannot be read: The process cannot access the file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 because it is being used by another process. @ line 98",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W13",
+                         "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: The file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 cannot be read: The process cannot access the file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 because it is being used by another process. @ line 98",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W14",
+                         "title":  "Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 309",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W15",
+                         "title":  "Uninstall through the installer window, reinstall, sign in again, backup and restore",
+                         "functional":  "FAIL",
+                         "reason":  "Maintenance - Setup sees the installation (remove): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || Removed: no service, no entry in the installed programs, no program files: ERROR: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 340 || Removed: the backups are still on the server: ERROR: Could not compare \"0\" to \"0 0 runs\". Error: \"Cannot convert the \"System.Object[]\" value of type \"System.Object[]\" to type \"System.Int32\".\" @ line 341 || the journey stopped: no button \u0027Next\u0027 (on screen: Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel) @ line 209",
+                         "visual":  "PASS",
+                         "ux":  "PASS",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W16",
+                         "title":  "Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W17",
+                         "title":  "System State backup (Windows Server Backup)",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W18",
+                         "title":  "Reboot",
+                         "functional":  "NOT TESTED",
+                         "reason":  "a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

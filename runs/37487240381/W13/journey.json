@@ -1,0 +1,20 @@
+﻿{
+    "id":  "W13",
+    "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W13",
+    "started":  "2026-10-06T15:29:44.4138615+00:00",
+    "result":  "FAIL",
+    "reason":  "the journey stopped: The file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 cannot be read: The process cannot access the file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 because it is being used by another process. @ line 98",
+    "steps":  [
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "The file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 cannot be read: The process cannot access the file \u0027C:\\OnlineBackup-QA\\Data\\Documents\\locked.pst\u0027 because it is being used by another process. @ line 98",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-stopped.png",
+                      "at":  "15:29:45"
+                  }
+              ],
+    "ended":  "2026-10-06T15:29:45.8079139+00:00"
+}

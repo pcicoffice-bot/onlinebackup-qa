@@ -1,0 +1,20 @@
+﻿{
+    "id":  "W09",
+    "title":  "Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W09",
+    "started":  "2026-10-06T15:29:29.3106985+00:00",
+    "result":  "FAIL",
+    "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+    "steps":  [
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "Cannot bind argument to parameter \u0027Path\u0027 because it is an empty string. @ line 104",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-stopped.png",
+                      "at":  "15:29:32"
+                  }
+              ],
+    "ended":  "2026-10-06T15:29:32.9818242+00:00"
+}

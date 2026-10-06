@@ -1,0 +1,77 @@
+﻿{
+    "id":  "W15",
+    "title":  "Uninstall through the installer window, reinstall, sign in again, backup and restore",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W15",
+    "started":  "2026-10-06T15:29:46.3159470+00:00",
+    "result":  "FAIL",
+    "reason":  "Maintenance - Setup sees the installation (remove): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || Removed: no service, no entry in the installed programs, no program files: ERROR: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 340 || Removed: the backups are still on the server: ERROR: Could not compare \"0\" to \"0 0 runs\". Error: \"Cannot convert the \"System.Object[]\" value of type \"System.Object[]\" to type \"System.Int32\".\" @ line 341 || the journey stopped: no button \u0027Next\u0027 (on screen: Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel) @ line 209",
+    "steps":  [
+                  {
+                      "step":  "Maintenance - Setup sees the installation (remove)",
+                      "expected":  "\"already installed\" with the choices",
+                      "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-Maintenance---Setup-sees-the-installation--remove-.png",
+                      "at":  "15:29:46"
+                  },
+                  {
+                      "step":  "Removed: no service, no entry in the installed programs, no program files",
+                      "expected":  "all gone",
+                      "actual":  "ERROR: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 340",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "15:29:46"
+                  },
+                  {
+                      "step":  "Removed: the backups are still on the server",
+                      "expected":  "the set and its runs are on the server",
+                      "actual":  "ERROR: Could not compare \"0\" to \"0 0 runs\". Error: \"Cannot convert the \"System.Object[]\" value of type \"System.Object[]\" to type \"System.Int32\".\" @ line 341",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "15:29:46"
+                  },
+                  {
+                      "step":  "Setup.exe opens its window",
+                      "expected":  "the setup window within 120 s",
+                      "actual":  "ITSguard Server Online",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "15:29:46"
+                  },
+                  {
+                      "step":  "Installer 01 - Welcome",
+                      "expected":  "Welcome, the product, Next and Cancel",
+                      "actual":  null,
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "02-Installer-01---Welcome.png",
+                      "at":  "15:29:47"
+                  },
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "no button \u0027Next\u0027 (on screen: Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel) @ line 209",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "03-stopped.png",
+                      "at":  "15:29:47"
+                  }
+              ],
+    "ux":  [
+               {
+                   "step":  "UX: Installer: the first page says what will be installed",
+                   "expected":  "the product name and what it does",
+                   "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "15:29:47",
+                   "layer":  "UX"
+               }
+           ],
+    "ended":  "2026-10-06T15:29:48.4605873+00:00"
+}
