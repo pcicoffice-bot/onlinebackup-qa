@@ -62,6 +62,21 @@ function Golden([string]$root) {
   for ($i = 0; $i -lt 100; $i++) { & $w ("Many\file-{0:D3}.csv" -f $i) "row,$i`n" }
   New-Item -ItemType Directory -Force -Path (Join-Path $root 'Empty folder') | Out-Null
 }
+# A Windows service needs some seconds to start or stop: wait for the state (never a fixed sleep), return the state seen.
+function WaitService([string]$name, [string]$state, [int]$seconds = 90) {
+  $until = (Get-Date).AddSeconds($seconds)
+  do { $s = Get-Service $name -ErrorAction SilentlyContinue; if ($s -and [string]$s.Status -eq $state) { return [string]$s.Status }; Start-Sleep -Milliseconds 500 } while ((Get-Date) -lt $until)
+  if ($s) { return [string]$s.Status } else { return 'no service' }
+}
+# Evidence is written even when the run stops on an error
+function WriteEvidence {
+  $steps | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $Out 'win-e2e.json') -Encoding UTF8
+  Get-WinEvent -FilterHashtable @{ LogName = 'Application'; StartTime = (Get-Date).AddHours(-2) } -ErrorAction SilentlyContinue | Where-Object { $_.ProviderName -match 'OnlineBackup|\.NET Runtime|Application Error' } |
+    Select-Object -First 50 TimeCreated, ProviderName, Id, Message | Format-List | Out-File (Join-Path $Out 'event-log.txt') -Encoding UTF8
+  foreach ($d in @("$Q\sys\logs")) { if (Test-Path $d) { Copy-Item $d (Join-Path $Out 'server-logs') -Recurse -Force -ErrorAction SilentlyContinue } }
+}
+trap { [void]$steps.Add([ordered]@{ step = 'run stopped'; result = 'FAIL'; actual = $_.Exception.Message + ' @ ' + $_.InvocationInfo.ScriptLineNumber }); WriteEvidence
+  [ordered]@{ install = 'FAIL'; recovery = 'NOT TESTED'; update = 'NOT TESTED'; reboot = 'NOT TESTED' } | ConvertTo-Json | Set-Content (Join-Path $Out 'windows.json') -Encoding UTF8; exit 1 }
 function AgentCli { param([Parameter(ValueFromRemainingArguments = $true)]$a) $o = & $script:AgentExe @a 2>&1 | Out-String; return @($LASTEXITCODE, $o) }
 function WaitRun([string]$login, [string]$status, [int]$minutes = 6) {
   $until = (Get-Date).AddMinutes($minutes)
@@ -79,18 +94,20 @@ function WaitRun([string]$login, [string]$status, [int]$minutes = 6) {
 $pkg = Join-Path $Q 'pkg'; Expand-Archive -Path $Package -DestinationPath $pkg -Force
 $serverOk = Step 'Server: install-server.ps1 (real package, Windows service)' {
   & (Join-Path $pkg 'install-server.ps1') -HostName localhost -Port 8443 -SystemHome "$Q\sys" -UserHome "$Q\users" -AdminPassword $AdminPass | Out-Host
-  $s = Get-Service OnlineBackupServer -ErrorAction SilentlyContinue; @(($s -and $s.Status -eq 'Running'), $(if ($s) { "$($s.Status) $($s.StartType)" } else { 'no service' }))
+  $st = WaitService OnlineBackupServer 'Running' 90; @(($st -eq 'Running'), "$st after up to 90 s")
 }
 # FIXTURES: the administrator's authenticator secret and a licence from a throw-away key of this run
 $srvExe = Join-Path $env:ProgramFiles 'OnlineBackup Server\OnlineBackup.Server.exe'
-Stop-Service OnlineBackupServer
+Stop-Service OnlineBackupServer -ErrorAction SilentlyContinue
+Step 'Server service stops when asked' { $st = WaitService OnlineBackupServer 'Stopped' 60; @(($st -eq 'Stopped'), $st) } | Out-Null
 $sx = "$Q\sys\conf\system.xml"; (Get-Content $sx -Raw -Encoding UTF8) -replace '(<ADMIN [^>]*?)TOTP_SECRET="[^"]*"', "`$1TOTP_SECRET=`"$Secret`"" | Set-Content $sx -Encoding UTF8 -NoNewline
 $pub = (& $srvExe license-keygen --out "$Q\lic.key" | Select-Object -Last 1).Trim()
 [Environment]::SetEnvironmentVariable('OB_LICENSE_PUBKEY', $pub, 'Machine'); $env:OB_LICENSE_PUBKEY = $pub
 $sid = (& $srvExe server-id --system-home "$Q\sys" | Select-Object -Last 1).Trim()
 $lic = (& $srvExe license-issue --key "$Q\lic.key" --server-id $sid --company 'QA IT' --users 100 --storage-gb 1000 --days 30 | Select-Object -Last 1).Trim()
 (Get-Content $sx -Raw -Encoding UTF8) -replace '<LICENSE KEY="" />', "<LICENSE KEY=`"$lic`" />" | Set-Content $sx -Encoding UTF8 -NoNewline
-Start-Service OnlineBackupServer; Start-Sleep -Seconds 5
+Start-Service OnlineBackupServer -ErrorAction SilentlyContinue
+Step 'Server service starts again (with the licence)' { $st = WaitService OnlineBackupServer 'Running' 90; @(($st -eq 'Running'), $st) } | Out-Null
 
 Step 'Admin sign-in over HTTPS (password + authenticator)' {
   $r = Invoke-WebRequest -Uri "$Url/api/admin/login" -Method POST -Body (Msg @{ login = 'admin'; password = $AdminPass; otp = (Totp $Secret) }) -ContentType 'application/xml' -SkipCertificateCheck -SkipHttpErrorCheck
@@ -130,14 +147,14 @@ $restoreOk = Step 'ORACLE: restore to an empty folder → SHA-256 of every file 
 }
 
 # ---- 4. the service: restart; killed in the middle of a backup
-Step 'Restart the backup service → Running' { Restart-Service OnlineBackupAgent; Start-Sleep 3; $s = Get-Service OnlineBackupAgent; @($s.Status -eq 'Running', "$($s.Status)") } | Out-Null
+Step 'Restart the backup service → Running' { Restart-Service OnlineBackupAgent; $st = WaitService OnlineBackupAgent 'Running' 90; @(($st -eq 'Running'), $st) } | Out-Null
 $killOk = Step 'Kill the service process mid-backup → service back → next backup Succeeded → restore identical' {
   Add-Content -Path (Join-Path $data 'Binary\grow.bin') -Value ('x' * 50MB) -NoNewline
   $before2 = Manifest $data
   Api 'POST' "users/qa-win/sets/$setId/run" | Out-Null
   $until = (Get-Date).AddMinutes(3); do { Start-Sleep 2; $live = Api 'GET' 'live' } while ($live -notmatch $setId -and (Get-Date) -lt $until)
   $pidSvc = (Get-CimInstance Win32_Service -Filter "Name='OnlineBackupAgent'").ProcessId; Stop-Process -Id $pidSvc -Force
-  Start-Sleep 5; if ((Get-Service OnlineBackupAgent).Status -ne 'Running') { Start-Service OnlineBackupAgent }
+  Start-Sleep 5; if ((Get-Service OnlineBackupAgent).Status -ne 'Running') { Start-Service OnlineBackupAgent -ErrorAction SilentlyContinue }; [void](WaitService OnlineBackupAgent 'Running' 90)
   $until = (Get-Date).AddMinutes(4); do { Start-Sleep 5; $live = Api 'GET' 'live' } while ($live -match $setId -and (Get-Date) -lt $until)
   $ghost = $live -match $setId
   Api 'POST' "users/qa-win/sets/$setId/run" | Out-Null
@@ -161,7 +178,7 @@ $reOk = Step 'Install again → the computer keeps its backups → restore ident
   @(($r[0] -eq 0) -and ($d.Count -eq 0), "register exit $($reg[0]); restore exit $($r[0]); differences $($d.Count)")
 }
 
-$steps | ConvertTo-Json -Depth 4 | Set-Content (Join-Path $Out 'win-e2e.json') -Encoding UTF8
+WriteEvidence
 $st = { param($b) if ($b) { 'PASS' } else { 'FAIL' } }
 [ordered]@{ install = (& $st ($serverOk -and $installOk -and $backupOk -and $restoreOk -and $removeOk -and $reOk)); recovery = (& $st $killOk); update = 'NOT TESTED'; reboot = 'NOT TESTED' } | ConvertTo-Json | Set-Content (Join-Path $Out 'windows.json') -Encoding UTF8
 Write-Host ("{0} steps, {1} failed" -f $steps.Count, $fail)

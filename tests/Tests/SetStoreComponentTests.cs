@@ -128,5 +128,43 @@ namespace OnlineBackup.Tests
             st.Commit(j, new Msg());
             Assert.NotNull(new SetStore(userDir, SetId).BeginJob(DateTime.UtcNow.AddSeconds(10)));
         }
-    }
+    
+        /// <summary>
+        /// Verify and rebuild alone — component contract (specs.py ST-04): a stored object whose bytes changed on the disk
+        /// is found, moved to quarantine, taken out of the index and asked again from the computer; the healthy objects stay;
+        /// a lost index is rebuilt from the objects with every point and file back.
+        /// </summary>
+        [Fact]
+        public void ADamagedObject_IsQuarantinedAndAskedAgain_ALostIndexIsRebuilt()
+        {
+            var st = new SetStore(userDir, SetId);
+            var t0 = DateTime.UtcNow;
+            var j1 = st.BeginJob(t0);
+            foreach (var n in new[] { "a", "b", "c" }) Put(st, j1, N("C/" + n + ".txt"), 0, Obj(n + " content"), 10);
+            st.Commit(j1, new Msg());
+            var j2 = st.BeginJob(t0.AddMinutes(1)); Put(st, j2, N("C/a.txt"), 0, Obj("a v2"), 20); st.Commit(j2, new Msg());
+            var before = Rels(st.FilesAt(null));
+            var points = st.Points();
+
+            // a lost index: rebuilt from the objects on the disk
+            Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
+            foreach (var f in Directory.GetFiles(Path.Combine(userDir, "files", SetId), "index.db*")) File.Delete(f);
+            var rebuilt = new SetStore(userDir, SetId).Rebuild(true);
+            Assert.Equal(0, rebuilt.Int("bad"));
+            st = new SetStore(userDir, SetId);
+            Assert.Equal(points, st.Points());
+            Assert.Equal(before, Rels(st.FilesAt(null)));
+
+            // damage on the disk
+            var b = st.FilesAt(null).List("files").Single(f => f["rel"] == N("C/b.txt")).List("objects")[0]["loc"];
+            var path = st.ObjectPath(b); var bytes = File.ReadAllBytes(path); bytes[bytes.Length / 2] ^= 0x01; File.WriteAllBytes(path, bytes);
+            var v = st.VerifyAll();
+            Assert.Equal(1, v.Int("bad")); Assert.Equal(v.Int("checked") - 1, v.Int("ok"));
+            Assert.False(File.Exists(path));
+            Assert.NotEmpty(Directory.GetFiles(Path.Combine(userDir, "files", SetId, "Quarantine"), "*", SearchOption.AllDirectories));
+            Assert.Contains(N("C/b.txt"), st.Resend());
+            Assert.DoesNotContain(st.FilesAt(null).List("files"), f => f["rel"] == N("C/b.txt"));
+            Assert.Equal(0, st.VerifyAll().Int("bad"));                                       // the rest is sound
+        }
+}
 }

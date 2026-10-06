@@ -625,7 +625,7 @@ namespace OnlineBackup.Server
         /// Verification (class "default-success"): the result of a run as the server will use it everywhere. A run reported
         /// without a result is never a success: it is taken from the log's end line, and without one the run failed.
         /// </summary>
-        static void NormalizeResult(Msg body)
+        public static void NormalizeResult(Msg body)
         {
             if (!string.IsNullOrEmpty(body["result"])) return;
             var end = body.List("log").Select(l => AhsayLog.Fields(l["l"] ?? "")).LastOrDefault(f => f.Length > 4 && f[1] == "end");
@@ -635,7 +635,7 @@ namespace OnlineBackup.Server
         }
 
         /// <summary>Verification: a restore report without a result is not "OK" — from its end line, else counted as failed.</summary>
-        static void NormalizeRestoreResult(Msg body)
+        public static void NormalizeRestoreResult(Msg body)
         {
             if (!string.IsNullOrEmpty(body["result"])) return;
             var end = body.List("log").Select(l => AhsayLog.Fields(l["l"] ?? "")).LastOrDefault(f => f.Length > 4 && f[1] == "end");
@@ -769,7 +769,7 @@ namespace OnlineBackup.Server
 
         /// <summary>Statistics into Profile.xml (the same attributes Ahsay writes; ITSguard reads them).</summary>
         /// <summary>A run that backed up (possibly with warnings or some files in error), as opposed to one that failed or was stopped.</summary>
-        static bool Completed(string result) { return (result ?? "BS_STOP_BY_SYSTEM_ERROR").StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal); }
+        public static bool Completed(string result) { return (result ?? "BS_STOP_BY_SYSTEM_ERROR").StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal); }
 
         /// <summary>R1: the last result of a set whose run ended without statistics (aborted, interrupted).</summary>
         void SetLastResult(string login, string setId, string result)
