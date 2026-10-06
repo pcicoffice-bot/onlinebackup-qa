@@ -1,0 +1,29 @@
+﻿{
+    "id":  "W05",
+    "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W05",
+    "started":  "2026-10-06T21:11:45.9031722+00:00",
+    "result":  "FAIL",
+    "reason":  "the journey stopped: no menu item \u0027New backup\u0027 (on screen: English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.) @ line 124",
+    "steps":  [
+                  {
+                      "step":  "The golden dataset",
+                      "expected":  "",
+                      "actual":  "112 files: text, Hebrew and Japanese names, spaces, an empty file, 20 MB + 3 MB random, duplicates, 100 small files, a long path, read-only and hidden files",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "21:11:47"
+                  },
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "no menu item \u0027New backup\u0027 (on screen: English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.) @ line 124",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-stopped.png",
+                      "at":  "21:11:47"
+                  }
+              ],
+    "ended":  "2026-10-06T21:11:48.0623637+00:00"
+}

@@ -1,0 +1,29 @@
+﻿{
+    "id":  "W06",
+    "title":  "Service restart: Windows restarts the backup service, then backup and restore again",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W06",
+    "started":  "2026-10-06T21:11:48.0701791+00:00",
+    "result":  "FAIL",
+    "reason":  "the journey stopped: no menu item \u0027Backup status\u0027 (on screen: English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.) @ line 124",
+    "steps":  [
+                  {
+                      "step":  "Restart the service (Windows service manager)",
+                      "expected":  "Running again",
+                      "actual":  "Running",
+                      "result":  "PASS",
+                      "seconds":  1,
+                      "screenshot":  "",
+                      "at":  "21:11:48"
+                  },
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "no menu item \u0027Backup status\u0027 (on screen: English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.) @ line 124",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-stopped.png",
+                      "at":  "21:11:49"
+                  }
+              ],
+    "ended":  "2026-10-06T21:11:49.5468568+00:00"
+}

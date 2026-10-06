@@ -1,0 +1,37 @@
+﻿
+
+TimeCreated : 10/6/2026 9:12:33 PM
+Id          : 7045
+Message     : A service was installed in the system.
+              
+              Service Name:  ITSguard Server Online
+              Service File Name:  "C:\Program Files\ITSguard Server Online\OnlineBackup.Agent.exe" service --home 
+              "C:\ProgramData\ITSguard Server Online"
+              Service Type:  user mode service
+              Service Start Type:  auto start
+              Service Account:  LocalSystem
+
+TimeCreated : 10/6/2026 9:11:32 PM
+Id          : 7045
+Message     : A service was installed in the system.
+              
+              Service Name:  ITSguard Server Online
+              Service File Name:  "C:\Program Files\ITSguard Server Online\OnlineBackup.Agent.exe" service --home 
+              "C:\ProgramData\ITSguard Server Online"
+              Service Type:  user mode service
+              Service Start Type:  auto start
+              Service Account:  LocalSystem
+
+TimeCreated : 10/6/2026 9:11:07 PM
+Id          : 7045
+Message     : A service was installed in the system.
+              
+              Service Name:  ITSguard Server Online
+              Service File Name:  "C:\Program Files\OnlineBackup Server\OnlineBackup.Server.exe" run --system-home 
+              "C:\obqa\sys" --prefix https://+:8443/
+              Service Type:  user mode service
+              Service Start Type:  auto start
+              Service Account:  LocalSystem
+
+
+
