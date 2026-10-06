@@ -1,0 +1,22 @@
+﻿Files in C:\Program Files\OnlineBackup Server
+initialised C:\obqa\sys
+Self-signed certificate created for localhost
+[SC] CreateService SUCCESS
+[SC] ChangeServiceConfig2 SUCCESS
+
+SERVICE_NAME: OnlineBackupServer 
+        TYPE               : 10  WIN32_OWN_PROCESS  
+        STATE              : 2  START_PENDING 
+                                (NOT_STOPPABLE, NOT_PAUSABLE, IGNORES_SHUTDOWN)
+        WIN32_EXIT_CODE    : 0  (0x0)
+        SERVICE_EXIT_CODE  : 0  (0x0)
+        CHECKPOINT         : 0x0
+        WAIT_HINT          : 0x7d0
+        PID                : 4120
+        FLAGS              : 
+
+
+Installed. Management site: https://localhost:8443/admin
+Certificate pin (already set for the client software): 4ded567f5728785db9c07e054fcf927d9d2e45610196f8e2c37cdfb8bd0fe9d4
+Next: sign in, open "החברה והמוצר", fill in your company and product, then "צור תוכנת לקוח".
+

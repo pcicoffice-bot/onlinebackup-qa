@@ -1,0 +1,47 @@
+﻿{
+    "agent":  {
+                  "exists":  true,
+                  "state":  "Running",
+                  "start":  "Auto",
+                  "account":  "LocalSystem",
+                  "path":  "\"C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe\" service --home \"C:\\ProgramData\\ITSguard Server Online\"",
+                  "pid":  4760,
+                  "process":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe"
+              },
+    "server":  {
+                   "exists":  true,
+                   "state":  "Running",
+                   "start":  "Auto",
+                   "account":  "LocalSystem",
+                   "path":  "\"C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe\" run --system-home \"C:\\obqa\\sys\" --prefix https://+:8443/",
+                   "pid":  3976,
+                   "process":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe"
+               },
+    "shadows":  0,
+    "processes":  [
+                      {
+                          "name":  "OnlineBackup.Agent",
+                          "pid":  4760,
+                          "path":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe",
+                          "started":  "\/Date(1791313393023)\/"
+                      },
+                      {
+                          "name":  "OnlineBackup.Client",
+                          "pid":  1496,
+                          "path":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Client.exe",
+                          "started":  "\/Date(1791313462718)\/"
+                      },
+                      {
+                          "name":  "OnlineBackup.Client",
+                          "pid":  5680,
+                          "path":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Client.exe",
+                          "started":  "\/Date(1791313395149)\/"
+                      },
+                      {
+                          "name":  "OnlineBackup.Server",
+                          "pid":  3976,
+                          "path":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe",
+                          "started":  "\/Date(1791313366154)\/"
+                      }
+                  ]
+}
