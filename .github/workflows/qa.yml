@@ -15,6 +15,8 @@ concurrency:
   cancel-in-progress: true
 jobs:
   journeys:
+    # in the private repository the same suite runs inside the quality gate (online-backup.yml, job "qa")
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
@@ -26,7 +28,11 @@ jobs:
       - name: QA tools (Playwright 1.63 + Chromium)
         working-directory: tests/QA
         run: npm ci && npx playwright install --with-deps chromium
-      - name: Journeys J1–J5 and failure/recovery F1–F5
+      - name: restic
+        run: |
+          curl -sSL -o restic.bz2 https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_amd64.bz2
+          bunzip2 -c restic.bz2 > restic && chmod 755 restic && echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
+      - name: Every journey and failure / recovery scenario
         working-directory: tests/QA
         run: npx playwright test
       - uses: actions/upload-artifact@v4

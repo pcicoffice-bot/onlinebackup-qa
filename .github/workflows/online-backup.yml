@@ -143,9 +143,45 @@ jobs:
           name: website-check-report
           path: site-report
           retention-days: 30
+  qa:
+    # 3b. the product used as a customer and a technician use it: the real server and agent programs as separate
+    #     processes, the admin site in a real browser, every backup restored and checked by SHA-256, faults injected
+    #     (server killed, line cut, disk full, agent killed, restore cut, schedule, retention, restic)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: restic (checked against its published SHA-256)
+        run: |
+          curl -sSL -o restic.bz2 "$RESTIC_URL" && echo "$RESTIC_SHA  restic.bz2" | sha256sum -c -
+          bunzip2 -c restic.bz2 > restic && chmod 755 restic && rm restic.bz2
+          echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
+      - name: QA tools (Playwright 1.63 + Chromium)
+        working-directory: tests/QA
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Every journey and failure / recovery scenario, in the browser — none may be skipped
+        working-directory: tests/QA
+        run: |
+          npx playwright test
+          node -e "const r=require('./reports/last-run.json'); const s=r.stats; console.log(JSON.stringify(s)); if (s.unexpected||s.skipped||s.flaky) process.exit(1)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-evidence
+          path: |
+            tests/QA/reports/
+            tests/QA/artifacts/
+          retention-days: 30
+
   package:
-    # 4. only after 1–3 passed
-    needs: [tests, screens, website]
+    # 4. only after 1–3 passed — including the browser QA: a version that fails any of them never becomes a package
+    needs: [tests, screens, website, qa]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
