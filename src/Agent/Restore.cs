@@ -135,13 +135,15 @@ namespace OnlineBackup.Agent
                         header = h;
                     }
                     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(dest)));
-                    var tmp = dest + ".restoring";
+                    // Bug 74 (RS-02, Agent B note): "<name>.restoring" with FileMode.Create overwrote, then moved away, a customer's
+                    // own file of exactly that name. A name that cannot exist yet, created new (never over a file)
+                    var tmp = dest + "." + Guid.NewGuid().ToString("N").Substring(0, 8) + ".ob-restoring";
                     long total = 0;
                     // Bug 30: a chunk that failed its check (or a full disk) in the middle left "<name>.restoring" in the
                     // customer's folder — any failure while writing removes the half file
                     try
                     {
-                        using (var outp = new FileStream(tmp, FileMode.Create, FileAccess.Write))
+                        using (var outp = new FileStream(tmp, FileMode.CreateNew, FileAccess.Write))
                             foreach (var r in header.List("recipe"))
                             {
                                 KeyValuePair<int, long> loc;

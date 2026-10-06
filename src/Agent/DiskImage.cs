@@ -72,6 +72,7 @@ namespace OnlineBackup.Agent
             if (target.Length == 1) target += ":";
             var args = "start backup -backupTarget:" + Quote(target) + " -allCritical" + (extra.Count > 0 ? " -include:" + string.Join(",", extra.ToArray()) : "") + " -quiet";
             info("[Bare Metal Backup] wbadmin " + args);
+            var started = DateTime.UtcNow;
             Exec(tool, args);
             var root = Path.Combine(staging, Images);
             if (!Directory.Exists(root)) throw new IOException("wbadmin finished but " + root + " was not created");
@@ -81,6 +82,12 @@ namespace OnlineBackup.Agent
             if (pc == null) throw new IOException("no computer folder in " + root);
             var latest = pc.GetDirectories("Backup *").OrderByDescending(d => d.Name, StringComparer.Ordinal).FirstOrDefault();
             if (latest == null) throw new IOException("no image in " + pc.FullName);
+            // Bug 75 (AP-02, Agent B note): the newest image must be this run's — a wbadmin that ended with 0 and wrote
+            // nothing made an earlier run's image this run's, as a success
+            latest.Refresh();
+            var written = new[] { latest.LastWriteTimeUtc }.Concat(latest.GetFiles("*", SearchOption.AllDirectories).Select(f => f.LastWriteTimeUtc)).Max();
+            if (written < started.AddSeconds(-2))
+                throw new IOException("wbadmin ended without writing a new image: the newest one (" + latest.Name + ") is from an earlier run");
             manifest.Add(new XAttribute("TOOL", "wbadmin"), new XAttribute("IMAGE_COMPUTER", pc.Name), new XAttribute("BACKUP_FOLDER", latest.Name));
             foreach (var f in pc.GetFiles("*", SearchOption.AllDirectories))
             {

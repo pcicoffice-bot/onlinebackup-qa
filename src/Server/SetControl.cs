@@ -63,7 +63,9 @@ namespace OnlineBackup.Server
         /// the hash of what the editor can change.</summary>
         public static string Version(XElement e)
         {
-            var settings = BackupSetInfo.FromXml(e).ToXml().ToString(SaveOptions.DisableFormatting);
+            var x = BackupSetInfo.FromXml(e).ToXml();
+            foreach (var d in x.Descendants()) d.SetAttributeValue("ID", null);   // ToXml stamps its schedules' ids with the time of the call
+            var settings = x.ToString(SaveOptions.DisableFormatting);
             return Bytes.Hex(Bytes.Sha256(System.Text.Encoding.UTF8.GetBytes(settings))).Substring(0, 16);
         }
 
