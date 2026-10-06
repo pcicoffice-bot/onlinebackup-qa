@@ -1,0 +1,15 @@
+bin/
+obj/
+*.user
+TestResults/
+out/
+ui-report/
+node_modules/
+site/dist/
+site-report/
+tests/QA/node_modules/
+tests/QA/artifacts/
+tests/QA/reports/html/
+tests/QA/reports/last-run.json
+.playwright-mcp/
+__pycache__/

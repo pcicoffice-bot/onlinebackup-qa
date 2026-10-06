@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup</title>
+<link rel="stylesheet" href="/i18n/theme.css">
+<style>
+/* SETUP-C10: the client software's installation wizard (colours, fonts and the top bar: /i18n/theme.css) */
+* { box-sizing: border-box; }
+body { font-size: 15px; line-height: 1.55; margin: 0; }
+h1, h2, h3, p, label, li, div { overflow-wrap: break-word; }
+header { padding: 16px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+header img { max-height: 40px; background: #fff; border-radius: 9px; padding: 3px; }
+header h1 { font-size: 18px; margin: 0; flex: 1; min-width: 0; font-weight: 800; }
+header h1 small { display: block; font-size: 12px; font-weight: 450; opacity: .75; }
+header select { width: auto; font-size: 13px; }
+main { max-width: 720px; margin: 24px auto; padding: 0 16px; }
+.steps { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.steps span { font-size: 12px; padding: 5px 12px; border-radius: 999px; background: #E2E8F0; color: var(--muted); font-weight: 600; }
+.steps span.on { background: var(--ink2); color: #fff; }
+.steps span.done { background: #D1FAE5; color: var(--ok); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 28px; box-shadow: var(--shadow-lg); }
+h2 { margin: 0 0 6px; font-size: 20px; }
+p.lead { color: var(--muted); margin: 0 0 16px; }
+label { display: block; font-weight: 600; margin: 14px 0 4px; }
+label.opt { font-weight: normal; display: flex; gap: 10px; align-items: flex-start; margin-top: 12px; }
+label.opt input { width: auto; margin-top: 4px; flex: none; }
+.hint { color: var(--muted); font-size: 13px; margin-top: 3px; }
+input, select { font: inherit; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 9px; width: 100%; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+@media (max-width: 560px) { .row2 { grid-template-columns: 1fr; } }
+.ltr { direction: ltr; text-align: left; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+@media (max-width: 560px) { .choice { grid-template-columns: 1fr; } }
+.choice button { text-align: start; padding: 14px; border: 2px solid var(--line); border-radius: 12px; background: #fff; cursor: pointer; font: inherit; }
+.choice button b { display: block; } .choice button span { color: var(--muted); font-size: 13px; }
+.choice button.on { border-color: var(--brand); background: var(--soft); }
+.contract { max-height: 280px; overflow: auto; white-space: pre-wrap; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; background: #F8FAFC; font-size: 14px; }
+.ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); }
+.check { margin-top: 12px; padding: 10px 14px; border-radius: 10px; background: #ECFDF5; color: var(--ok); }
+.fp { font-family: ui-monospace, Consolas, monospace; font-size: 12px; word-break: break-all; direction: ltr; }
+.log { margin-top: 10px; font-size: 14px; } .log div { padding: 3px 0; } .log div::before { content: '✓  '; color: var(--ok); } .log div.cur::before { content: '…  '; color: var(--muted); }
+.errors { background: #fdecea; color: var(--bad); border-radius: 8px; padding: 10px 14px; margin-top: 16px; }
+.nav { display: flex; gap: 10px; margin-top: 22px; align-items: center; flex-wrap: wrap; }
+.nav .space { flex: 1; }
+button { font: inherit; padding: 10px 20px; border-radius: 9px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 600; color: var(--text); }
+button.primary { background: var(--accent, var(--brand)); border-color: transparent; color: #fff; }
+button[disabled] { opacity: .55; cursor: default; }
+button.link { border: none; background: none; color: var(--muted); text-decoration: underline; padding: 0; }
+</style>
+</head>
+<body>
+<header><img id="logo" alt="" hidden><h1 id="title">Setup<small id="slogan"></small></h1><select id="lang" aria-label="Language"></select></header>
+<main><div class="steps" id="steps"></div><div class="card" id="card">…</div></main>
+<script src="/i18n/i18n.js"></script>
+<script>
+(function () {
+  'use strict';
+  const KEY = location.hash.slice(1);
+  const t = (s, ...a) => I18N.t(s, ...a);
+  let INFO = {}, step = 0, error = '', busy = false, checked = null, progress = null;
+  const A = { server: '', mode: '', company: '', email: '', phone: '', login: '', password: '', password2: '', otp: '', accept: false, trust: false };
+
+  function h(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+      else if (k === 'class') e.className = v;
+      else if (v !== null && v !== undefined && v !== false) e.setAttribute(k, v === true ? '' : v);
+    }
+    for (const k of kids.flat(Infinity)) if (k !== null && k !== undefined && k !== false) e.append(k instanceof Node ? k : String(k));
+    return e;
+  }
+  async function call(path, body) {
+    const r = await fetch('/api/' + path, { method: body ? 'POST' : 'GET', headers: { 'X-Key': KEY, 'Content-Type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(I18N.tr(j.message || ('Error ' + r.status)));
+    return j;
+  }
+  const field = (key, label, attrs, hint) => {
+    const i = h('input', Object.assign({ id: key, value: A[key] || '', oninput: () => { A[key] = i.value; } }, attrs || {}));
+    return [h('label', { for: key }, label), i, hint ? h('div', { class: 'hint' }, hint) : null];
+  };
+  const errBox = () => error ? h('div', { class: 'errors', role: 'alert' }, error) : null;
+  const nav = (...right) => h('div', { class: 'nav' }, step > 0 && !progress ? h('button', { onclick: () => { error = ''; step--; render(); } }, t('Back')) : null, h('span', { class: 'space' }), ...right);
+  const STEPS = () => ['Welcome', 'Backup server', ...(checked && checked.contract ? ['Agreement'] : []), 'Your account', 'Installation'];
+
+  function welcome() {
+    return [h('h2', {}, t('Install {0} on this computer', INFO.product)),
+      h('p', { class: 'lead' }, t('The software backs up this computer to your provider\'s backup server, encrypted on this computer before it leaves.')),
+      h('p', {}, t('Computer: {0}', INFO.computer)), INFO.existing ? h('p', { class: 'hint' }, t('The software is already installed here — this updates it; the backups and settings are kept.')) : null,
+      nav(h('button', { class: 'primary', onclick: () => { step++; render(); } }, t('Next')))];
+  }
+  function server() {
+    // "Next" checks the address by itself (owner: the person clicked Next and nothing happened)
+    const go = async (thenNext) => {
+      error = ''; busy = true; render();
+      try { checked = await call('check', { server: A.server, lang: I18N.lang }); A.server = checked.server; A.trust = !checked.confirm; if (checked.signup === false) A.mode = 'existing'; }
+      catch (e) { checked = null; error = e.message; }
+      busy = false;
+      if (thenNext === true && checked && A.trust) step++;
+      render();
+    };
+    return [h('h2', {}, t('Backup server')), h('p', { class: 'lead' }, t('The address of your provider\'s backup server. It is filled in already — change it only if your provider told you so.')),
+      field('server', t('Server address'), { class: 'ltr', placeholder: 'https://backup.company.com:8443', oninput: (e) => { A.server = e.target.value; checked = null; } }, t('Inside the office, the server\'s internal address may be needed, e.g. https://192.168.1.10:8443')),
+      checked ? h('div', { class: 'check' }, '✓ ', t('Connected to the backup server'), checked.inside ? h('div', { class: 'hint' }, t('Inside the office the server answers at {0} — this address is used.', checked.server)) : null) : null,
+      checked && checked.confirm ? [h('p', { class: 'hint' }, t('The server uses its own certificate. Make sure this fingerprint is the one your provider gave you:')), h('div', { class: 'fp' }, checked.fingerprint),
+        h('label', { class: 'opt' }, h('input', { type: 'checkbox', checked: A.trust, onchange: (e) => { A.trust = e.target.checked; render(); } }), t('I trust this server'))] : null,
+      errBox(),
+      nav(checked ? null : h('button', { id: 'check', onclick: () => go(false), disabled: busy }, busy ? t('Checking…') : t('Check connection')),
+        h('button', { class: 'primary', disabled: busy || (checked && !A.trust), onclick: () => { if (!checked) { go(true); return; } error = ''; step++; render(); } }, busy ? t('Checking…') : t('Next')))];
+  }
+  function contract() {
+    return [h('h2', {}, t('Agreement')), h('p', { class: 'lead' }, t('The terms of your provider. Please read them before you go on.')),
+      h('div', { class: 'contract' }, checked.contract),
+      h('label', { class: 'opt' }, h('input', { type: 'checkbox', checked: A.accept, onchange: (e) => { A.accept = e.target.checked; render(); } }), t('I have read and accept the agreement')),
+      nav(h('button', { class: 'primary', disabled: !A.accept, onclick: () => { step++; render(); } }, t('Next')))];
+  }
+  function account() {
+    const pick = (mode, title, sub) => h('button', { class: A.mode === mode ? 'on' : '', onclick: () => { A.mode = mode; error = ''; render(); } }, h('b', {}, title), h('span', {}, sub));
+    const install = async () => {
+      error = '';
+      if (A.mode === 'new') {
+        if (!A.company.trim() || !A.email.trim() || !A.login.trim()) error = t('Fill in the company, the e-mail and a user name.');
+        else if (A.password.length < 8 || !/\p{L}/u.test(A.password)) error = t('Password: at least 8 characters, with at least one letter.');
+        else if (A.password !== A.password2) error = t('The two passwords are not the same.');
+      } else if (!A.login.trim() || !A.password) error = t('Write the user name and the password you received.');
+      if (error) { render(); return; }
+      await call('install', { server: A.server, pin: checked.pin, mode: A.mode, company: A.company, email: A.email, phone: A.phone, login: A.login, password: A.password, otp: A.otp, accept: A.accept ? '1' : '0', lang: I18N.lang });
+      progress = { lines: [], done: false }; step++; render();
+      while (!progress.done) { await new Promise((r) => setTimeout(r, 600)); try { progress = await call('progress'); } catch (e) { } render(); }
+    };
+    return [h('h2', {}, t('Your account')), h('p', { class: 'lead' }, t('This computer is added to your account at the backup service.')),
+      h('div', { class: 'choice' }, checked.signup !== false ? pick('new', t('I am a new customer'), t('Open an account now')) : null, pick('existing', t('I already have an account'), t('The user name and password you received'))),
+      A.mode === 'new' ? [h('div', { class: 'row2' }, h('div', {}, field('company', t('Company name'))), h('div', {}, field('phone', t('Phone (optional)'), { class: 'ltr', type: 'tel' }))),
+        field('email', t('E-mail'), { class: 'ltr', type: 'email' }, t('Reports and alerts are sent here.')),
+        field('login', t('Choose a user name'), { class: 'ltr', autocomplete: 'username' }),
+        h('div', { class: 'row2' }, h('div', {}, field('password', t('Choose a password'), { type: 'password', autocomplete: 'new-password' })), h('div', {}, field('password2', t('The password again'), { type: 'password', autocomplete: 'new-password' }))),
+        h('div', { class: 'hint' }, t('At least 8 characters, with at least one letter. Keep it: it is needed to restore files.'))] : null,
+      A.mode === 'existing' ? [field('login', t('User name'), { class: 'ltr', autocomplete: 'username' }), field('password', t('Password'), { type: 'password', autocomplete: 'current-password' }),
+        field('otp', t('Code from the authenticator app (only if it is on)'), { class: 'ltr', inputmode: 'numeric', autocomplete: 'one-time-code' })] : null,
+      errBox(), nav(A.mode ? h('button', { class: 'primary', onclick: install }, t('Install')) : null)];
+  }
+  function installing() {
+    const p = progress || { lines: [] };
+    const lines = (p.lines || []).map((l, i, all) => h('div', { class: !p.done && i === all.length - 1 ? 'cur' : '' }, I18N.tr(l)));
+    if (!p.done) return [h('h2', {}, t('Installing…')), h('div', { class: 'log', 'aria-live': 'polite' }, lines)];
+    if (p.error) return [h('h2', { class: 'bad' }, t('The installation did not finish')), h('div', { class: 'errors', role: 'alert' }, I18N.tr(p.error)), h('div', { class: 'log' }, lines),
+      h('div', { class: 'nav' }, h('button', { onclick: () => { progress = null; step = STEPS().indexOf('Your account'); render(); } }, t('Back')), h('span', { class: 'space' }))];
+    return [h('h2', { class: 'ok' }, t('{0} is installed', INFO.product)), h('p', { class: 'lead' }, t('It runs in the background and starts with Windows. Open it to choose what to back up.')),
+      h('div', { class: 'log' }, lines),
+      h('div', { class: 'nav' }, h('span', { class: 'space' }), h('button', { onclick: () => finish(false) }, t('Close')), h('button', { class: 'primary', onclick: () => finish(true) }, t('Open {0}', INFO.product)))];
+  }
+  async function finish(open) {
+    try { await Promise.race([call('finish', { open: open ? '1' : '0' }), new Promise((r) => setTimeout(r, 1500))]); } catch (e) { }
+    document.getElementById('card').replaceChildren(h('p', {}, t('You can close this window.')));
+  }
+
+  function render() {
+    const steps = STEPS(), names = steps.map((s) => s);
+    const view = { 'Welcome': welcome, 'Backup server': server, 'Agreement': contract, 'Your account': account, 'Installation': installing }[names[Math.min(step, names.length - 1)]];
+    document.getElementById('steps').replaceChildren(...steps.map((s, i) => h('span', { class: i === step ? 'on' : i < step ? 'done' : '' }, t(s))));
+    document.getElementById('card').replaceChildren(...[view()].flat(Infinity).filter(Boolean));
+    const f = document.querySelector('#card input:not([type=checkbox])'); if (f && !f.value && document.activeElement === document.body) f.focus();
+  }
+
+  call('info').then(async (i) => {
+    INFO = i; A.server = i.server || '';
+    if (i.color) document.documentElement.style.setProperty('--brand', i.color);
+    if (i.accent) document.documentElement.style.setProperty('--accent', i.accent);
+    if (i.logo) { const l = document.getElementById('logo'); l.src = '/logo'; l.hidden = false; }
+    document.title = i.product;
+    let saved = null; try { saved = localStorage.getItem('obLang'); } catch (e) { }
+    await I18N.load(saved || i.language || 'en');
+    const sel = document.getElementById('lang');
+    for (const [k, v] of Object.entries(I18N.names)) sel.append(h('option', { value: k, selected: k === I18N.lang }, v));
+    sel.onchange = async () => { try { localStorage.setItem('obLang', sel.value); } catch (e) { } await I18N.load(sel.value); paint(); };
+    paint();
+  }).catch((e) => { document.getElementById('card').textContent = e.message; });
+  function paint() {
+    document.getElementById('title').firstChild.textContent = t('{0} — setup', INFO.product);
+    document.getElementById('slogan').textContent = INFO.slogan || INFO.company || '';
+    render();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en" dir="ltr" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backup</title>
+<link rel="stylesheet" href="/i18n/theme.css">
+<style>
+.qrbox { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; margin: 8px 0 12px; } img.qr { background: #fff; border: 1px solid var(--line); border-radius: 8px; }
+.codes { display: grid; grid-template-columns: repeat(5, max-content); gap: 6px 14px; margin: 8px 0 12px; } .codes code { font-size: 15px; }
+h1, h2, h3, p, label, li, td, th, .muted { overflow-wrap: break-word; }
+/* colours, fonts, the top bar and the AI signature: /i18n/theme.css (DESIGN-040) */
+* { box-sizing: border-box; }
+body { font-size: 15px; line-height: 1.55; }
+header { display: flex; align-items: center; gap: 12px; padding: 14px 22px; }
+header img { height: 36px; background: #fff; border-radius: 8px; padding: 3px; }
+header .p { font-size: 20px; font-weight: 700; letter-spacing: .2px; }
+header .p small { display: block; font-size: 12px; font-weight: 400; opacity: .8; }
+header .c { margin-inline-start: auto; font-size: 13px; opacity: .85; text-align: end; }
+select.lang { width: auto; font-size: 13px; }
+nav { display: flex; gap: 4px; padding: 6px; margin: 18px 22px 0; flex-wrap: wrap; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); width: fit-content; max-width: calc(100% - 44px); }
+nav button { border: none; background: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; color: var(--muted); }
+nav button:hover { color: var(--text); background: var(--bg); }
+nav button.on { color: #fff; background: var(--ink2); box-shadow: 0 4px 12px rgba(11,16,32,.18); }
+main { background: #fff; margin: 14px 22px 22px; border: 1px solid var(--line); border-radius: 20px; padding: 22px; min-height: 360px; box-shadow: var(--shadow); }
+.hero { position: relative; overflow: hidden; display: flex; gap: 18px; align-items: center; border-radius: 18px; padding: 22px 24px; margin-bottom: 18px; color: #fff; background: #047857; background: radial-gradient(400px 160px at 90% 0%, rgba(255,255,255,.22), transparent 70%), linear-gradient(120deg, #065F46, #10B981); box-shadow: 0 14px 34px rgba(5,150,105,.28); }
+.hero .ai-watch { margin-inline-start: auto; font-size: 13px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 12px; white-space: nowrap; }
+.hero.h-attn, .hero.h-bad { box-shadow: none; }
+.hero.h-attn { background: var(--warn); background: linear-gradient(120deg, #B45309, #F59E0B); }
+.hero.h-bad { background: var(--bad); background: linear-gradient(120deg, #B91C1C, #EF4444); }
+.hero .ico { flex: none; width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+.hero b { font-size: 20px; display: block; } .hero span { opacity: .9; font-size: 14px; }
+.card { border: 1px solid var(--line); border-inline-start: 4px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: #fff; }
+.card.st-ok { border-inline-start-color: var(--ok); } .card.st-warn { border-inline-start-color: var(--warn); } .card.st-bad { border-inline-start-color: var(--bad); }
+.card .n { font-weight: 700; font-size: 16px; }
+.card .s { color: var(--muted); font-size: 13px; }
+.grow { flex: 1; min-width: 200px; }
+button.primary { padding: 9px 18px; font: inherit; font-weight: 650; cursor: pointer; }
+button.sec { background: #fff; border: 1px solid var(--line); border-radius: 9px; padding: 9px 18px; font: inherit; font-weight: 600; cursor: pointer; color: var(--text); }
+button.sec:hover { border-color: #CBD5E1; }
+button:disabled { opacity: .5; cursor: default; }
+.ok { color: var(--ok); font-weight: 600; } .bad { color: var(--bad); font-weight: 600; } .warn { color: var(--warn); font-weight: 600; } .muted { color: var(--muted); }
+label { display: block; margin: 12px 0 5px; font-weight: 600; font-size: 14px; }
+input, select, textarea { font: inherit; padding: 8px 11px; border: 1px solid #CBD5E1; border-radius: 9px; width: 100%; max-width: 540px; background: #fff; color: var(--text); }
+input[type=checkbox] { accent-color: var(--brand); }
+textarea { min-height: 90px; }
+.ltr { direction: ltr; unicode-bidi: isolate; text-align: left; }   /* ltr-ok: Latin addresses and paths */
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border-bottom: 1px solid var(--line); padding: 8px 10px; text-align: start; }
+th { background: #F8FAFC; color: var(--muted); font-size: 12.5px; font-weight: 600; text-transform: uppercase; letter-spacing: .3px; position: sticky; top: 0; }
+.files { max-height: 380px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; }
+.bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 14px 0; }
+dialog { border: none; border-radius: 16px; padding: 22px; min-width: 320px; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+dialog::backdrop { background: rgba(11,26,51,.45); }
+#toast { position: fixed; bottom: 18px; inset-inline-start: 18px; background: var(--ink); color: #fff; padding: 12px 16px; border-radius: 10px; max-width: 70vw; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+#toast.err { background: var(--bad); }
+.lbrand { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+.lbrand img { max-height: 42px; max-width: 120px; border-radius: 10px; } .lbrand .mark { width: 42px; height: 42px; border-radius: 12px; background: var(--ai); color: #fff; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.lbrand b { display: block; font-size: 17px; font-weight: 800; } .lbrand small { color: var(--muted); font-size: 13px; }
+.time { display: inline-flex; gap: 6px; align-items: center; } .time select { width: auto; min-width: 74px; font-variant-numeric: tabular-nums; }   /* HH : MM, chosen — never typed */
+footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18px 16px; }
+/* SRC-030: the folder tree — ✓ back up with everything inside, ✕ skip a folder inside a chosen one */
+.pick2 { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 14px; align-items: start; max-width: 900px; }
+@media (max-width: 760px) { .pick2 { grid-template-columns: minmax(0, 1fr); } }
+.ftree { border: 1px solid var(--line); border-radius: 10px; padding: 6px; max-height: 380px; overflow: auto; }
+.tkids { padding-inline-start: 20px; }
+.trow, .srow { display: flex; align-items: center; gap: 6px; min-height: 30px; }
+.ttw { border: 0; background: none; cursor: pointer; width: 22px; color: var(--muted); font-size: 12px; padding: 0; }
+.tcb { width: 22px; height: 22px; flex: 0 0 22px; border: 1.5px solid #CBD5E1; border-radius: 5px; background: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; cursor: pointer; padding: 0; color: #fff; }
+.tcb.on, .tcb.onpart { background: var(--ok); border-color: var(--ok); } .tcb.part { color: var(--ok); border-color: var(--ok); } .tcb.exc { background: var(--bad); border-color: var(--bad); }
+.tname { overflow-wrap: break-word; min-width: 0; } .tname.exc { text-decoration: line-through; color: var(--muted); } .tname.on, .tname.onpart { font-weight: 600; }
+.sgroup { border: 1px solid var(--line); border-radius: 10px; padding: 6px 8px; margin-bottom: 6px; }
+.srow.sub { padding-inline-start: 22px; color: var(--muted); } .srow .grow { flex: 1; min-width: 0; overflow-wrap: break-word; }
+.srow button, .pickadd button { padding: 4px 10px; }
+.pickadd { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .pickadd input { flex: 1; min-width: 160px; }
+@media (max-width: 600px) { main { margin: 10px 6px; padding: 12px; } nav { margin: 10px 6px 0; max-width: calc(100% - 12px); } .hero { flex-wrap: wrap; } .hero .ai-watch { margin-inline-start: 0; white-space: normal; } header .c { display: none; } .hero { padding: 14px; } .hero b { font-size: 17px; } }
+</style>
+</head>
+<body>
+<header><img id="logo" alt="" hidden><span class="p"><span id="product">Backup</span><small id="slogan"></small></span><span class="c" id="contact"></span><span id="langbox"></span></header>
+<nav id="nav"></nav>
+<main id="main"><p class="muted">…</p></main>
+<footer id="foot"></footer>
+<div id="toast" hidden></div>
+<script src="/i18n/i18n.js"></script>
+<script src="/i18n/qrcode.js"></script>
+<script>
+(async function () {
+  'use strict';
+  await I18N.load(I18N.pick(document.documentElement.getAttribute('data-lang')));   // I18N-010
+  document.getElementById('langbox').append(I18N.selector());
+  let KEY = location.hash.slice(1); try { if (KEY) sessionStorage.setItem('k', KEY); else KEY = sessionStorage.getItem('k') || ''; } catch (e) { } history.replaceState(null, '', '/');
+  const $ = (s) => document.querySelector(s);
+  function h(tag, attrs, ...kids) {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v === null || v === undefined || v === false) continue;
+      if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (k === 'class') e.className = v; else e.setAttribute(k, v === true ? '' : v);
+    }
+    for (const k of kids.flat()) if (k !== null && k !== undefined && k !== false) e.append(k.nodeType ? k : String(k));
+    return e;
+  }
+  function toXml(obj) {
+    const doc = document.implementation.createDocument(null, 'm', null);
+    const build = (o, el) => { for (const [k, v] of Object.entries(o)) {
+      if (Array.isArray(v)) { const l = doc.createElement('l'); l.setAttribute('n', k); for (const it of v) { const i = doc.createElement('i'); build(it, i); l.append(i); } el.append(l); }
+      else if (v !== undefined && v !== null) { const f = doc.createElement('f'); f.setAttribute('n', k); f.textContent = String(v); el.append(f); } } };
+    build(obj, doc.documentElement); return new XMLSerializer().serializeToString(doc);
+  }
+  function fromXml(el) { const o = {}; for (const c of el.children) { if (c.tagName === 'f') o[c.getAttribute('n')] = c.textContent; else if (c.tagName === 'l') o[c.getAttribute('n')] = Array.from(c.children).map(fromXml); } return o; }
+  const list = (v) => Array.isArray(v) ? v : [];
+  const put = (el, ...kids) => el.replaceChildren(...kids.flat(Infinity).filter((k) => k !== null && k !== undefined && k !== false));
+  async function api(op, body, query) {
+    const r = await fetch('/api/' + op + (query ? '?' + new URLSearchParams(query) : ''), { method: body ? 'POST' : 'GET', headers: { 'X-Key': KEY, 'Content-Type': 'application/xml' }, body: body ? toXml(body) : undefined });
+    const t = await r.text(); const m = t ? fromXml(new DOMParser().parseFromString(t, 'application/xml').documentElement) : {};
+    if (r.status === 401) { const ok = await loginDialog(); if (ok) return api(op, body, query); throw new Error(t('Sign-in required')); }
+    if (!r.ok) throw new Error(tr(m.message) || t('Error {0}', r.status));
+    return m;
+  }
+  function toast(msg, err) { const t = $('#toast'); t.textContent = msg; t.className = err ? 'err' : ''; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, err ? 7000 : 3500); }
+  const wrap = (fn) => async (e) => { try { await fn(e); } catch (x) { toast(x.message, true); } };
+  const size = (b) => { b = Number(b || 0); const u = ['B', 'KB', 'MB', 'GB', 'TB']; let i = 0; while (b >= 1024 && i < 4) { b /= 1024; i++; } return (i ? b.toFixed(1) : b) + ' ' + u[i]; };
+  function when(v) {
+    if (!v) return t('Not yet');
+    let d = /^\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d$/.test(v) ? new Date(v.replace(/^(\d{4}-\d\d-\d\d)-(\d\d)-(\d\d)-(\d\d)$/, '$1T$2:$3:$4Z')) : new Date(v);
+    return isNaN(d) ? v : d.toLocaleString(I18N.lang, { dateStyle: 'short', timeStyle: 'short' });
+  }
+  const RESULT = { BS_STOP_SUCCESS: [t('Completed successfully'), 'ok'], BS_STOP_SUCCESS_WITH_WARNING: [t('Completed with warnings'), 'warn'], BS_STOP_SUCCESS_WITH_ERROR: [t('Completed with errors'), 'warn'], BS_STOP_QUOTA_EXCEEDED: [t('The quota is full'), 'bad'] };
+  const result = (r) => { const x = RESULT[r] || [r ? t('Failed') : '—', r ? 'bad' : 'muted']; return h('span', { class: x[1] }, x[0]); };
+
+  function loginDialog() {
+    return new Promise((done) => {
+      const pw = h('input', { type: 'password', autocomplete: 'current-password' }), otp = h('input', { inputmode: 'numeric', autocomplete: 'one-time-code' });
+      const d = h('dialog', {}, h('div', { class: 'lbrand' }, ST && ST.logo === '1' ? h('img', { src: '/logo', alt: '' }) : h('span', { class: 'mark' }, '✦'), h('div', {}, h('b', {}, (ST && ST.product) || ''), ST && ST.slogan ? h('small', {}, ST.slogan) : null)), h('h3', {}, t('Sign in')), h('p', { class: 'muted' }, t('Restoring and adding backups require your password.')),
+        h('label', {}, t('Password')), pw, h('label', {}, t('Verification code (if enabled)')), otp,
+        h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
+          const r = await fetch('/api/login', { method: 'POST', headers: { 'X-Key': KEY }, body: toXml({ password: pw.value, otp: otp.value }) });
+          if (!r.ok) { const m = fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement); throw new Error(tr(m.message) || t('Sign-in failed')); }
+          d.close(); d.remove(); done(true); }) }, t('Sign in')),
+        h('button', { class: 'sec', onclick: () => { d.close(); d.remove(); done(false); } }, t('Cancel'))));
+      document.body.append(d); d.showModal(); pw.focus();
+    });
+  }
+
+  let ST = null, PAGE = 'home';
+  const PAGES = [['home', t('Backup status')], ['restore', t('Restore')], ['add', t('New backup')], ['security', t('Security')], ['help', t('Help')]];
+  async function load() {
+    ST = await api('state');
+    document.title = ST.product; $('#product').textContent = ST.product; $('#slogan').textContent = ST.slogan || '';
+    if (/^#[0-9a-fA-F]{3,8}$/.test(ST.color)) document.documentElement.style.setProperty('--brand', ST.color);
+    if (/^#[0-9a-fA-F]{3,8}$/.test(ST.accent)) document.documentElement.style.setProperty('--accent', ST.accent);
+    if (ST.logo === '1') { $('#logo').src = '/logo'; $('#logo').hidden = false; }
+    put($('#contact'), ...[ST.company, ST.phone && h('span', { class: 'ltr' }, ST.phone), ST.email && h('span', { class: 'ltr' }, ST.email)].filter(Boolean).map((x, i) => h('div', {}, x)));
+    $('#foot').textContent = [ST.company, ST.website, ST.powered && t('Powered by {0}', ST.powered)].filter(Boolean).join(' · ');
+    show(PAGE);
+  }
+  function show(p) {
+    PAGE = p;
+    put($('#nav'), ...PAGES.map(([k, t]) => h('button', { class: k === p ? 'on' : '', onclick: () => show(k) }, t)));
+    const m = $('#main'); put(m, h('p', { class: 'muted' }, t('Loading…')));
+    ({ home, restore, add, security, edit, help })[p](m).catch((x) => put(m, h('p', { class: 'bad' }, x.message)));
+  }
+
+  // ---- status / backup now ----
+  async function home(m) {
+    if (ST.registered !== '1') { put(m, h('p', { class: 'bad' }, t('This computer is not connected to the backup server yet. Contact {0}.', (ST.company || t('support')) + (ST.phone ? ' ' + ST.phone : '')))); return; }
+    const jobs = list((await api('jobs')).jobs);
+    const cards = list(ST.sets).filter((s) => s.mine !== '0').map((s) => {
+      const run = jobs.find((j) => j.set === s.id && j.state === 'running');
+      return h('div', { class: 'card st-' + ((RESULT[s.result] || [0, s.result ? 'bad' : 'none'])[1]) },
+        h('div', { class: 'grow' }, h('div', { class: 'n' }, s.name), h('div', { class: 's ltr' }, s.sources),
+          h('div', { class: 's' }, t('Automatic backup every day at {0}', s.hour) + ' · ' + t('last backup: {0}', when(s.last)) + ' · ', result(s.result))),
+        run ? h('span', { class: 'warn' }, '⏳ ' + (run.kind === 'backup' ? t('Backing up now…') : t('Restoring…')))
+            : h('button', { class: 'primary', onclick: wrap(async () => { await api('backup', { set: s.id }); toast(t('The backup has started')); setTimeout(refresh, 800); }) }, t('Back up now')),
+        (ST.canSources !== '0' && s.type === 'FILE') || ST.canSchedule !== '0' ? h('button', { class: 'sec', onclick: () => { EDIT = s; show('edit'); } }, t('Change')) : null);
+    });
+    const recent = jobs.slice(0, 6).map((j) => h('tr', {}, h('td', {}, j.kind === 'backup' ? t('Backup') : t('Restore')), h('td', {}, (list(ST.sets).find((s) => s.id === j.set) || {}).name || j.set),
+      h('td', {}, when(new Date(Number(j.started)).toISOString())), h('td', {}, j.state === 'running' ? h('span', { class: 'warn' }, t('Running…')) : j.state === 'ok' ? h('span', { class: 'ok' }, t('Succeeded')) : h('span', { class: 'bad' }, t('Failed'))), h('td', {}, tr(j.detail))));
+    // DESIGN-030: one glance — is this computer protected?
+    const sets = list(ST.sets).filter((s) => s.mine !== '0'), states = sets.map((s) => (RESULT[s.result] || [0, s.result ? 'bad' : 'muted'])[1]);
+    const lastOk = sets.map((s) => s.last).filter(Boolean).sort().pop();
+    const hero = !sets.length ? null : states.includes('bad') || ST.offline ? h('div', { class: 'hero h-bad' }, h('div', { class: 'ico' }, '!'), h('div', {}, h('b', {}, t('Attention needed')), h('span', {}, t('A backup did not finish. Click "Back up now" or contact {0}.', ST.company || t('support')))))
+      : states.includes('warn') || states.includes('muted') ? h('div', { class: 'hero h-attn' }, h('div', { class: 'ico' }, '⚠'), h('div', {}, h('b', {}, t('Partly protected')), h('span', {}, t('Some backups finished with warnings or have not run yet.'))))
+      : h('div', { class: 'hero' }, h('div', { class: 'ico' }, '✓'), h('div', {}, h('b', {}, t('This computer is protected')), h('span', {}, t('last backup: {0}', when(lastOk)))),
+          h('span', { class: 'ai-watch' }, h('span', { class: 'live' }), t('AI is watching every backup for ransomware')));
+    put(m, hero,
+      ST.offline ? h('p', { class: 'bad' }, t('No connection to the backup server right now: {0}', tr(ST.offline))) : null,
+      cards.length ? cards : h('p', { class: 'muted' }, t('No backups are set up yet. Add one in the "New backup" tab.')),
+      recent.length ? [h('h3', {}, t('Recent activity')), h('table', {}, h('thead', {}, h('tr', {}, [t('Action'), t('Backup'), t('Time'), t('Status'), t('Details')].map((t) => h('th', {}, t)))), h('tbody', {}, recent))] : null);
+    if (jobs.some((j) => j.state === 'running')) setTimeout(refresh, 3000);
+  }
+  async function refresh() { if (PAGE !== 'home') return; ST = await api('state'); show('home'); }
+
+  // ---- restore ----
+  async function restore(m) {
+    ST = await api('state');
+    const sets = list(ST.sets).slice().sort((a, b) => (b.last || '').localeCompare(a.last || ''));   // backed-up sets first
+    if (!sets.length) { put(m, h('p', { class: 'muted' }, t('There are no backups to restore.'))); return; }
+    const setSel = h('select', {}, sets.map((s) => h('option', { value: s.id }, s.name + (s.mine === '0' && s.computer ? ' — ' + s.computer : ''))));
+    const pointSel = h('select', {}), filter = h('input', { placeholder: t('Filter by file or folder name') });
+    const target = h('input', { class: 'ltr', placeholder: 'C:\\Restore' }), overwrite = h('input', { type: 'checkbox', style: 'width:auto' });
+    const toM365 = h('input', { type: 'checkbox', style: 'width:auto' }), m365Row = h('label', {}, h('span', {}, toM365, t(' Return directly to the cloud (Microsoft 365 / Google) — into the user\'s "Restored" folder')));
+    const syncM365 = () => { const s = sets.find((x) => x.id === setSel.value); m365Row.hidden = !(s && (s.type === 'M365' || s.type === 'GWS')); };
+    const box = h('div', { class: 'files' }); let files = [];
+    const loadPoints = wrap(async () => {
+      const r = await api('points', null, { set: setSel.value });
+      put(pointSel, list(r.points).map((p, i) => h('option', { value: p.id }, (i === 0 ? t('Latest — {0}', when(p.time)) : when(p.time)))));
+      if (!list(r.points).length) { files = []; put(box, h('p', { class: 'muted' }, t('This backup has no restore points yet — it runs at the scheduled time, or click "Back up now".'))); return; }
+      await loadFiles();
+    });
+    const loadFiles = wrap(async () => {
+      put(box, h('p', { class: 'muted' }, t('Loading files…')));
+      files = list((await api('files', null, { set: setSel.value, point: pointSel.value })).files);
+      draw();
+    });
+    function draw() {
+      const q = filter.value.trim().toLowerCase();
+      const shown = files.filter((f) => !q || f.path.toLowerCase().includes(q)).slice(0, 2000);
+      put(box, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, t('File')), h('th', {}, t('Size')), h('th', {}, t('Modified')))),
+        h('tbody', {}, shown.map((f) => h('tr', {}, h('td', {}, h('input', { type: 'checkbox', style: 'width:auto', 'data-p': f.path })), h('td', { class: 'ltr' }, f.path), h('td', {}, size(f.size)), h('td', {}, when(isNaN(Number(f.mtime)) ? f.mtime : new Date(Number(f.mtime)).toISOString())))))),
+        shown.length < files.filter((f) => !q || f.path.toLowerCase().includes(q)).length ? h('p', { class: 'muted' }, t('Showing the first 2,000 — narrow down with the filter')) : null);
+    }
+    setSel.onchange = () => { syncM365(); loadPoints(); }; syncM365(); pointSel.onchange = loadFiles; filter.oninput = draw;
+    put(m, h('label', {}, t('Backup')), setSel, h('label', {}, t('Restore point (date)')), pointSel, h('label', {}, t('Files (none selected = everything)')), filter, h('div', { style: 'height:8px' }), box,
+      h('label', {}, t('Restore to folder')), target, h('label', {}, h('span', {}, overwrite, t(' Replace existing files'))), m365Row,
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
+        const paths = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map((c) => ({ p: c.getAttribute('data-p') }));
+        await api('restore', { set: setSel.value, point: pointSel.value, target: target.value, overwrite: overwrite.checked ? '1' : '0', toM365: toM365.checked && !m365Row.hidden ? '1' : '0', paths });
+        toast(t('The restore has started — follow it in the "Backup status" tab')); show('home'); }) }, t('Restore'))));
+    await loadPoints();
+  }
+
+  // ---- new backup set ----
+  // ---- SEC-010: two-step verification (authenticator app) ----
+  function qr(text) {
+    const q = qrcode(0, 'M'); q.addData(text); q.make();
+    const img = h('img', { alt: '', class: 'qr' }); img.src = q.createDataURL(5, 8); return img;
+  }
+  async function security(m) {
+    const s = await api('security');
+    if (s.totp === '1') {
+      put(m, h('h3', {}, t('Two-step verification')), h('p', { class: 'ok' }, '✓ ' + t('On — signing in needs your password and a code from the authenticator app.')),
+        s.required === '1' ? h('p', { class: 'muted' }, t('Your provider requires two-step verification.'))
+          : h('div', { class: 'bar' }, h('button', { class: 'sec', onclick: wrap(async () => { if (!confirm(t('Switch two-step verification off?'))) return; await api('totp-disable', {}); toast(t('Two-step verification is off')); show('security'); }) }, t('Switch off'))));
+      return;
+    }
+    put(m, h('h3', {}, t('Two-step verification')),
+      h('p', {}, t('Protect restores and changes with a code from an authenticator app on your phone (Google Authenticator, Microsoft Authenticator, Authy…).')),
+      s.required === '1' ? h('p', { class: 'warn' }, t('Your provider requires two-step verification.')) : null,
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
+        const r = await api('totp-enable', {});
+        const code = h('input', { inputmode: 'numeric', autocomplete: 'one-time-code', class: 'ltr', style: 'max-width:180px' });
+        put(m, h('h3', {}, t('Two-step verification')),
+          h('ol', {}, h('li', {}, t('Open the authenticator app and scan this code:')), h('div', { class: 'qrbox' }, qr(r.uri), h('div', { class: 'muted ltr' }, t('Or type the key:'), ' ', h('b', {}, r.secret))),
+            h('li', {}, t('Keep these one-time backup codes in a safe place (each works once if the phone is lost):'), h('div', { class: 'codes ltr' }, list(r.codes).map((c) => h('code', {}, c.code)))),
+            h('li', {}, t('Type the code the app shows now:'), ' ', code)),
+          h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('totp-confirm', { code: code.value }); toast(t('Two-step verification is on')); show('security'); }) }, t('Turn on')),
+            h('button', { class: 'sec', onclick: () => show('security') }, t('Cancel'))));
+        code.focus();
+      }) }, t('Set up two-step verification'))));
+  }
+
+  /**
+   * SRC-030: the folders of this computer as a tree, read live; ✓ backs up a folder with everything in it, ✕ skips a
+   * folder inside a chosen one. inc / exc are changed in place.
+   */
+  function dirPicker(inc, exc) {
+    let sep = '\\';
+    const kids = new Map(), opened = new Set();
+    const win = () => sep !== '/';
+    const key = (p) => (win() ? p.toLowerCase() : p);
+    const cmp = (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base', numeric: true });
+    const trim = (p) => (p.length > 1 && /[\\/]$/.test(p) && !/^[A-Za-z]:\\$/.test(p) && p !== '/' ? p.slice(0, -1) : p);
+    const under = (p, root) => { p = key(trim(p)); root = key(trim(root)); if (p === root) return true; return p.startsWith(/[\\/]$/.test(root) ? root : root + sep); };
+    const below = (p, root) => under(p, root) && key(trim(p)) !== key(trim(root));
+    const nearest = (p) => { let best = '', kind = null; inc.forEach((x) => { if (under(p, x) && x.length > best.length) { best = x; kind = 'inc'; } }); exc.forEach((x) => { if (under(p, x) && x.length >= best.length) { best = x; kind = 'exc'; } }); return kind; };
+    const stateOf = (p) => { const k = nearest(p); if (k === 'inc') return exc.some((x) => below(x, p)) ? 'onpart' : 'on'; if (inc.some((x) => below(x, p))) return 'part'; return k === 'exc' ? 'exc' : 'off'; };
+    const toggle = (p) => {
+      const was = nearest(p) === 'inc';
+      for (const arr of [inc, exc]) for (let i = arr.length - 1; i >= 0; i--) if (under(arr[i], p)) arr.splice(i, 1);
+      const now = nearest(p) === 'inc';
+      if (was && now) exc.push(p); else if (!was && !now) inc.push(p);
+      paint();
+    };
+    const nameOf = (p) => trim(p).split(/[\\/]/).filter(Boolean).pop() || p;
+    const pathText = (p) => p.split(/(?<=[\\/])/).flatMap((x, i) => (i ? [h('wbr', {}), x] : [x]));
+    const load = async (p) => { const r = await api('dirs', null, p ? { path: p } : {}); sep = r.sep || sep; kids.set(key(p || ''), r.denied === '1' ? 'denied' : list(r.dirs).map((d) => d.path)); };
+    const ICON = { on: '✓', onpart: '✓', part: '–', exc: '✕', off: '' };
+    const cb = (p) => { const st = stateOf(p); return h('button', { type: 'button', class: 'tcb ' + st, role: 'checkbox', 'aria-checked': st === 'on' || st === 'onpart' ? 'true' : st === 'part' ? 'mixed' : 'false', 'aria-label': p, onclick: () => toggle(p) }, ICON[st]); };
+    const nodeEl = (p) => {
+      const k = key(p), open = opened.has(k), sub = kids.get(k);
+      const el = h('div', {}, h('div', { class: 'trow' },
+        h('button', { type: 'button', class: 'ttw', 'aria-expanded': String(open), 'aria-label': t('Open'), onclick: wrap(async () => { if (open) opened.delete(k); else { if (!kids.has(k)) await load(p); opened.add(k); } paint(); }) }, open ? '▾' : '▸'),
+        cb(p), h('span', { class: 'tname ltr ' + stateOf(p) }, nameOf(p))));
+      if (open) el.append(h('div', { class: 'tkids' }, sub === 'denied' ? h('div', { class: 'trow muted' }, t('No access to this folder.')) : sub && sub.length ? sub.map(nodeEl) : h('div', { class: 'trow muted' }, t('No folders inside.'))));
+      return el;
+    };
+    const treeBox = h('div', { class: 'ftree', role: 'tree' }), selBox = h('div', {});
+    const typed = h('input', { class: 'ltr', placeholder: 'D:\\Data' });
+    const addTyped = (want) => { const v = trim(typed.value.trim()); if (!v) return; const on = nearest(v) === 'inc'; if (want !== on) toggle(v); typed.value = ''; paint(); };
+    const paint = () => {
+      put(treeBox, (list(kids.get('')).length ? list(kids.get('')) : []).map(nodeEl));
+      const chosen = inc.slice().sort(cmp);
+      put(selBox, chosen.length ? chosen.map((p) => h('div', { class: 'sgroup' },
+        h('div', { class: 'srow' }, h('span', { class: 'tcb on' }, '✓'), h('span', { class: 'ltr grow' }, pathText(p)), h('button', { class: 'sec', type: 'button', 'aria-label': t('Remove'), title: t('Remove'), onclick: () => { for (const arr of [inc, exc]) for (let i = arr.length - 1; i >= 0; i--) if (under(arr[i], p)) arr.splice(i, 1); paint(); } }, '✕')),
+        exc.filter((x) => below(x, p)).sort(cmp).map((x) => h('div', { class: 'srow sub' }, h('span', { class: 'tcb exc' }, '✕'), h('span', { class: 'ltr grow' }, pathText(x)), h('button', { class: 'sec', type: 'button', title: t('Back up again'), 'aria-label': t('Back up again'), onclick: () => { exc.splice(exc.indexOf(x), 1); paint(); } }, '↺'))))) : h('p', { class: 'muted' }, t('Nothing chosen yet.')));
+    };
+    const box = h('div', {}, h('p', { class: 'muted' }, t('✓ backs up the folder and everything in it. Inside a chosen folder, ✕ skips a folder.')),
+      h('div', { class: 'pick2' }, treeBox, h('div', {}, h('b', {}, t('Chosen')), selBox,
+        h('div', { class: 'pickadd' }, typed, h('button', { class: 'sec', type: 'button', onclick: () => addTyped(true) }, '✓ ' + t('Back up')), h('button', { class: 'sec', type: 'button', onclick: () => addTyped(false) }, '✕ ' + t('Skip'))))));
+    paint();
+    (async () => {
+      await load('');
+      for (const r of list(kids.get(''))) { try { await load(r); opened.add(key(r)); } catch (e) { } }   // the drives open
+      // open the way to every chosen folder
+      for (const p of inc) { const parts = []; let cur = trim(p); while (true) { const i = Math.max(cur.lastIndexOf('\\'), cur.lastIndexOf('/')); if (i <= 0) break; cur = cur.slice(0, i); parts.unshift(/^[A-Za-z]:$/.test(cur) ? cur + '\\' : cur); } for (const a of parts) { if (!kids.has(key(a))) try { await load(a); } catch (e) { } opened.add(key(a)); } }
+      paint();
+    })().catch(() => {});
+    box.get = () => ({ sources: inc.join('\n'), exclude: exc.join('\n') });
+    return box;
+  }
+
+  // ---- TICKETS-030: help — a service call to the IT company, and the calls already opened
+  const CALL_STATUS = { New: 'New', InProgress: 'In progress', Waiting: 'Waiting', Deferred: 'Moved to a date', Resolved: 'Resolved', ToBill: 'Resolved', Closed: 'Closed' };
+  async function help(m) {
+    const r = await api('help');
+    const contact = [ST.company, ST.phone, ST.email].filter(Boolean).join(' · ');
+    if (r.off === '1') { put(m, h('h3', {}, t('Help')), h('p', {}, t('Contact {0}.', contact || t('support')))); return; }
+    const subject = h('input', { maxlength: '200' }), desc = h('textarea', { rows: 5 });
+    const setSel = h('select', {}, h('option', { value: '' }, t('General')), list(ST.sets).filter((s) => s.mine !== '0').map((s) => h('option', { value: s.id }, s.name)));
+    const calls = list(r.tickets);
+    put(m, h('h3', {}, t('Help')), contact ? h('p', { class: 'muted' }, contact) : null,
+      h('label', {}, t('Subject')), subject, h('label', {}, t('Backup')), setSel, h('label', {}, t('Description')), desc,
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { if (!subject.value.trim()) { subject.focus(); throw new Error(t('Write a subject.')); } await api('help', { subject: subject.value, description: desc.value, set: setSel.value }); toast(t('The call was sent to {0}', ST.company || t('support'))); show('help'); }) }, t('Send'))),
+      h('h3', {}, t('My calls')),
+      calls.length ? h('table', {}, h('thead', {}, h('tr', {}, [t('Call'), t('Subject'), t('Status'), t('Opened')].map((x) => h('th', {}, x)))),
+        h('tbody', {}, calls.map((c) => h('tr', {}, h('td', { class: 'ltr' }, '#' + c.id), h('td', {}, c.subject), h('td', {}, t(CALL_STATUS[c.status] || c.status)), h('td', {}, when(c.opened ? new Date(Number(c.opened)).toISOString() : '')))))) : h('p', { class: 'muted' }, t('No calls yet.')));
+  }
+
+  // ---- SET-040: change a backup of this computer — the folders and the time, when the IT company allows it
+  let EDIT = null;
+  async function edit(m) {
+    const s = EDIT; if (!s) { show('home'); return; }
+    const inc = (s.src || '').split('\n').filter(Boolean), exc = (s.skip || '').split('\n').filter(Boolean);
+    const canSrc = ST.canSources !== '0' && s.type === 'FILE', canTime = ST.canSchedule !== '0';
+    const picker = canSrc ? dirPicker(inc, exc) : null;
+    const hour = h('select', { 'aria-label': t('Hour') }, Array.from({ length: 24 }, (_, i) => h('option', { value: String(i), selected: i === Number(s.hh) }, String(i).padStart(2, '0'))));
+    const minute = h('select', { 'aria-label': t('Minutes') }, Array.from({ length: 12 }, (_, i) => h('option', { value: String(i * 5), selected: i * 5 === Number(s.mm) }, String(i * 5).padStart(2, '0'))));
+    if (!canTime) { hour.disabled = true; minute.disabled = true; }
+    put(m, h('h3', {}, t('Change the backup'), ': ', s.name),
+      h('label', {}, t('Folders to back up')), picker || h('div', {}, h('p', { class: 'ltr' }, s.sources || '—'), h('p', { class: 'muted' }, t('Your IT provider manages the folders of this backup.'))),
+      h('label', {}, t('Daily backup time')), h('div', { class: 'time ltr' }, hour, h('b', {}, ':'), minute), canTime ? null : h('p', { class: 'muted' }, t('Your IT provider manages the time of this backup.')),
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('editset', Object.assign({ set: s.id, hour: hour.value, minute: minute.value }, picker ? picker.get() : {})); toast(t('The backup was changed')); ST = await api('state'); show('home'); }) }, t('Save and exit')),
+        h('button', { class: 'sec', onclick: () => show('home') }, t('Exit without saving'))));
+  }
+
+  async function add(m) {
+    const name = h('input', { value: t('Documents') }), src = h('textarea', { class: 'ltr', placeholder: 'C:\\Users\\Public\\Documents\nD:\\Data' }), hour = h('select', { 'aria-label': t('Hour') }, Array.from({ length: 24 }, (_, i) => h('option', { value: String(i), selected: i === 22 }, String(i).padStart(2, '0')))),
+      minute = h('select', { 'aria-label': t('Minutes') }, Array.from({ length: 12 }, (_, i) => h('option', { value: String(i * 5) }, String(i * 5).padStart(2, '0')))),
+      at = h('div', { class: 'time ltr' }, hour, h('b', {}, ':'), minute);
+    const kind = h('select', {}, h('option', { value: 'FILE' }, t('Files and folders')), h('option', { value: 'M365' }, t('Microsoft 365 (e-mail and OneDrive)')), h('option', { value: 'GWS' }, t('Google Workspace (Gmail and Drive)')),
+      h('option', { value: 'MSSQL' }, 'Microsoft SQL Server'), h('option', { value: 'MYSQL' }, 'MySQL / MariaDB'), h('option', { value: 'POSTGRESQL' }, 'PostgreSQL'), h('option', { value: 'HYPERV' }, t('Hyper-V virtual machines')),
+      h('option', { value: 'VMWARE' }, t('VMware virtual machines (ESXi / vCenter)')), h('option', { value: 'ORACLE' }, 'Oracle (RMAN)'), h('option', { value: 'DOMINO' }, 'HCL Domino (Lotus Notes)'),
+      h('option', { value: 'SYSTEMSTATE' }, t('Windows System State')), h('option', { value: 'BAREMETAL' }, t('Whole computer (bare-metal image)')));
+    const vmDc = h('input', { class: 'ltr', placeholder: t('Empty = automatic') }), vmThumb = h('input', { class: 'ltr', placeholder: t('SHA-256 of the server certificate (for a self-signed certificate)') });
+    const vmExtra = h('div', { hidden: true }, h('label', {}, 'Datacenter'), vmDc, h('label', {}, t('Certificate fingerprint')), vmThumb,
+      h('p', { class: 'muted' }, t('A licensed ESXi (the free ESXi API is read-only). Each run reads the disks in full; only changed parts are sent.')));
+    const dbHost = h('input', { class: 'ltr', placeholder: '127.0.0.1' }), dbPort = h('input', { class: 'ltr', placeholder: '3306 / 5432' }), dbUser = h('input', { class: 'ltr' }), dbPass = h('input', { type: 'password', class: 'ltr' });
+    const db = h('div', { hidden: true }, h('label', {}, t('Database server')), dbHost, h('label', {}, t('Port')), dbPort, h('label', {}, t('Backup user')), dbUser, h('label', {}, t('Password (kept only on this computer)')), dbPass);
+    const tenant = h('input', { class: 'ltr', placeholder: 'contoso.onmicrosoft.com' }), clientId = h('input', { class: 'ltr', placeholder: 'Application (client) ID' }), secret = h('input', { type: 'password', class: 'ltr' }), users = h('input', { class: 'ltr', placeholder: t('Empty = all users and all sites') });
+    const m365 = h('div', { hidden: true }, h('label', {}, t('Tenant')), tenant, h('label', {}, t('Application ID')), clientId, h('label', {}, t('Application secret (kept only on this computer)')), secret, h('label', {}, t('Users and SharePoint / Teams sites (comma-separated; an address with @ = a user, otherwise a site name or address)')), users,
+      h('p', { class: 'muted' }, t('Backed up: mail, OneDrive, contacts, calendar, SharePoint sites (including Teams files) and Teams messages (chats and channels — restored as readable files). Graph application permissions (with admin consent): User.Read.All, Mail.Read, Files.Read.All, Contacts.Read, Calendars.Read, Sites.Read.All, Chat.Read.All, ChannelMessage.Read.All, Team.ReadBasic.All, Channel.ReadBasic.All — and to restore back into 365 also Mail.ReadWrite, Files.ReadWrite.All, Contacts.ReadWrite, Calendars.ReadWrite, Sites.ReadWrite.All.')));
+    const gwsKey = h('textarea', { class: 'ltr', rows: 4, placeholder: '{ "type": "service_account", ... }' }), gwsAdmin = h('input', { class: 'ltr', placeholder: 'admin@company.com' }), gwsUsers = h('input', { class: 'ltr', placeholder: t('Empty = all users and all sites') });
+    const gws = h('div', { hidden: true }, h('label', {}, t('Service Account key (JSON — kept only on this computer)')), gwsKey, h('label', {}, t('Domain administrator (to list the users)')), gwsAdmin, h('label', {}, t('Users (comma-separated)')), gwsUsers,
+      h('p', { class: 'muted' }, t('In Google Admin: Security → API controls → Domain-wide delegation — the Service Account\'s client ID with the scopes gmail.readonly, drive.readonly, admin.directory.user.readonly (and to restore: gmail.insert, gmail.labels, drive.file).')));
+    // BKP-040: incremental / differential
+    const deltaType = h('select', {}, h('option', { value: 'I' }, t('Incremental — only what changed since the last backup (smallest)')), h('option', { value: 'D' }, t('Differential — what changed since the last full copy (faster restore)')));
+    const deltaBox = h('div', { hidden: ST.restic === '1' }, h('label', {}, t('Changes inside large files')), deltaType);
+    const days = [t('Sunday'), t('Monday'), t('Tuesday'), t('Wednesday'), t('Thursday'), t('Friday'), t('Saturday')];
+    const sqlFull = h('select', {}, h('option', { value: '-1' }, t('Full backup every time')), days.map((d, i) => h('option', { value: String(i), selected: i === 6 }, t('Full on {0}, differential on the other days', d))));
+    const sqlBox = h('div', { hidden: true }, h('label', {}, t('Backup method')), sqlFull);
+    const srcLabel = h('label', {}, t('Folders to back up'));
+    const LABEL = { GWS: t('Local folder for the domain\'s copy (free space needed)'), FILE: t('Folders to back up'), M365: t('Local folder for the tenant\'s copy (free space needed)'), MYSQL: t('Databases (one per line; empty = all)'), POSTGRESQL: t('Databases (one per line; empty = all)'), HYPERV: t('Virtual machines (one per line; empty = all)'), VMWARE: t('Virtual machines (one per line; empty = all)'), ORACLE: t('Oracle instances — ORACLE_SID (one per line)'), MSSQL: t('Databases (one per line; empty = all)'), SYSTEMSTATE: t('Nothing to choose — the whole System State is backed up'), BAREMETAL: t('Where to keep the image before sending: a second disk or a network folder, e.g. E:\\ or \\\\nas\\backup'), DOMINO: t('Folders (empty = the data folder, the transaction logs and notes.ini — found automatically)') };
+    const NAME = { MSSQL: 'SQL Server', SYSTEMSTATE: 'System State', BAREMETAL: 'Bare-metal', GWS: 'Google Workspace', M365: 'Microsoft 365', MYSQL: 'MySQL', POSTGRESQL: 'PostgreSQL', HYPERV: 'Hyper-V', VMWARE: 'VMware', ORACLE: 'Oracle', DOMINO: 'Domino' };
+    if (ST.canAdd === '0') { put(m, h('p', { class: 'muted' }, t('Your IT provider adds new backups — contact {0}.', ST.company || t('support')))); return; }
+    const inc = [], exc = []; const picker = dirPicker(inc, exc);
+    kind.onchange = () => { const k = kind.value; picker.hidden = k !== 'FILE'; src.hidden = k === 'FILE' || k === 'SYSTEMSTATE'; m365.hidden = k !== 'M365'; gws.hidden = k !== 'GWS'; db.hidden = !['MSSQL', 'MYSQL', 'POSTGRESQL', 'ORACLE', 'VMWARE'].includes(k); sqlBox.hidden = k !== 'MSSQL'; deltaBox.hidden = ST.restic === '1' || k !== 'FILE'; vmExtra.hidden = k !== 'VMWARE'; dbHost.placeholder = k === 'VMWARE' ? 'esxi.company.local' : k === 'ORACLE' ? t('Empty = on this computer (operating-system authentication)') : k === 'MSSQL' ? t('Empty = this computer (e.g. .\\SQLEXPRESS for a named instance)') : '127.0.0.1'; dbUser.placeholder = k === 'MSSQL' ? t('Empty = Windows authentication') : ''; srcLabel.textContent = LABEL[k]; if (NAME[k] && (name.value === t('Documents') || Object.values(NAME).includes(name.value))) name.value = NAME[k]; };
+    src.hidden = true;
+    put(m, h('label', {}, t('Backup type')), kind, h('label', {}, t('Backup name')), name, srcLabel, src, picker, m365, gws, db, sqlBox, vmExtra, deltaBox, h('label', {}, t('Daily backup time')), at,
+      h('p', { class: 'muted' }, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.')),
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('addset', { type: kind.value, name: name.value, sources: kind.value === 'FILE' ? inc.join('\n') : src.value, exclude: kind.value === 'FILE' ? exc.join('\n') : '', hour: hour.value, minute: minute.value, tenant: tenant.value, clientId: clientId.value, secret: secret.value, users: users.value, dbHost: dbHost.value, dbPort: dbPort.value, dbUser: dbUser.value, dbPassword: dbPass.value, gwsKey: gwsKey.value, gwsAdmin: gwsAdmin.value, vmDatacenter: vmDc.value, vmThumbprint: vmThumb.value, deltaType: deltaType.value, sqlFullDay: sqlFull.value, ...(kind.value === 'GWS' ? { users: gwsUsers.value } : {}) }); toast(t('The backup was added')); ST = await api('state'); show('home'); }) }, t('Save and exit')),
+        h('button', { class: 'sec', onclick: () => show('home') }, t('Exit without saving'))));
+  }
+
+  if (!KEY) { put($('#main'), h('p', { class: 'bad' }, t('Open this screen from the desktop shortcut.'))); return; }
+  load().catch((x) => put($('#main'), h('p', { class: 'bad' }, x.message)));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+# OnlineBackup QA — the black-box QA system (tests/QA): the product used from outside, proven by SHA-256.
+#   every push:  the journeys and the failure/recovery suite on Linux (real server, real agent, real browser)
+#   real Windows (public mirror only — free there): install the real package, the installer robot, backup, restore,
+#                kill the service, uninstall, reinstall; screenshots of every step
+#   nightly:     the same + the long run
+name: OnlineBackup QA
+on:
+  push:
+    branches: [online-backup, main]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 1 * * *'
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  journeys:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: QA tools (Playwright 1.63 + Chromium)
+        working-directory: tests/QA
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Journeys J1–J5 and failure/recovery F1–F5
+        working-directory: tests/QA
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: qa-journeys-evidence
+          path: |
+            tests/QA/reports/
+            tests/QA/artifacts/
+          retention-days: 30
+
+  package:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - run: VERSION=0.1.${{ github.run_number }} OUT=out bash build-package.sh
+      - uses: actions/upload-artifact@v4
+        with: { name: qa-package, path: out/OnlineBackup-Server-*.zip, retention-days: 7 }
+
+  windows:
+    # real Windows: the installation package as a customer gets it
+    needs: package
+    if: ${{ !github.event.repository.private }}
+    runs-on: windows-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: qa-package, path: pkg }
+      - name: Real Windows E2E — server, installer robot, backup, restore (SHA-256), service killed, uninstall, reinstall
+        shell: pwsh
+        run: |
+          $zip = (Get-ChildItem pkg\OnlineBackup-Server-*.zip | Select-Object -First 1).FullName
+          ./tests/QA/windows/win-e2e.ps1 -Package $zip -Out "$PWD\win-out"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: qa-windows-evidence, path: win-out/, retention-days: 30 }

@@ -1,0 +1,1300 @@
+{
+ "b9d024fd10": {
+  "verdict": "OK",
+  "why": "ProcessRunner itself: the one place that starts a waited program (limit, both streams, tree kill)."
+ },
+ "db21b9ea21": {
+  "verdict": "OK",
+  "why": "taskkill inside KillTree (net40), waited 30 s."
+ },
+ "bf6da91dde": {
+  "verdict": "OK",
+  "why": "Opens the admin site in the browser (fire and forget; nothing waits for it)."
+ },
+ "917325eb64": {
+  "verdict": "OK",
+  "why": "Starts the detached server updater that replaces this program; it must outlive this process (not waited by design). Its result is in update.log."
+ },
+ "198134ddb9": {
+  "verdict": "OK",
+  "why": "Starts the detached apply-update that replaces the agent; result in update-result.txt (UpdateInstallTests)."
+ },
+ "997da07b98": {
+  "verdict": "OK",
+  "why": "Restarts the agent elevated (UAC): a new independent process, not waited."
+ },
+ "8b2321e223": {
+  "verdict": "OK",
+  "why": "Opens the client UI after setup (fire and forget)."
+ },
+ "bd269e55bc": {
+  "verdict": "OK",
+  "why": "Self-delete after uninstall: must run after this process ends (not waited by design)."
+ },
+ "468c63d8a6": {
+  "verdict": "OK",
+  "why": "Opens a URL in the browser (fire and forget)."
+ },
+ "29267c342a": {
+  "verdict": "OK",
+  "why": "Opens a URL in the browser (fire and forget)."
+ },
+ "c39a935d26": {
+  "verdict": "OK",
+  "why": "Opens the client UI after setup (fire and forget)."
+ },
+ "c555bfd89f": {
+  "verdict": "OK",
+  "why": "Opens the client UI after setup (fire and forget)."
+ },
+ "741a215b0d": {
+  "verdict": "OK",
+  "why": "Self-delete of the temp folder after Setup.exe ends (not waited by design)."
+ },
+ "fixed-17-restic": {
+  "verdict": "FIXED",
+  "cls": "raw-process",
+  "where": "src/Agent/ResticRunner.cs Run, src/Server/WebRestore.cs Run",
+  "why": "Bug 17: restic without a limit. ProcessTests.HungRestic_*, HungWebRestore_*"
+ },
+ "fixed-18-install": {
+  "verdict": "FIXED",
+  "cls": "raw-process",
+  "where": "src/Agent/Setup.cs Exec; src/Server/Installer.cs Exec + netsh; ServerService.Sc/Run; Program.RunSc; TimeSettings.ApplyNtp",
+  "why": "Bug 18: stderr never read / read after stdout, no limit. ProcessTests.InstallStep_*"
+ },
+ "fixed-14-default-success": {
+  "verdict": "FIXED",
+  "cls": "default-success",
+  "where": "6 places in src/Server (Api, Notify, RunLog)",
+  "why": "Bug 14: ResultTests.CommitWithoutAResult_*"
+ },
+ "cc4e8f5d02": {
+  "verdict": "OK",
+  "why": "Not SQL: a signature string (OBUPDATE|version|sha)."
+ },
+ "edb47e49ea": {
+  "verdict": "OK",
+  "why": "Not SQL: a signature string (OBUPDATE|version|sha)."
+ },
+ "b267008bda": {
+  "verdict": "OK",
+  "why": "sqlcmd query: the database name comes from sys.databases of the same server and is quoted (' doubled); never from a request."
+ },
+ "427e5e2027": {
+  "verdict": "OK",
+  "why": "Same as above (SQL 2000 branch)."
+ },
+ "0fbe607ac1": {
+  "verdict": "OK",
+  "why": "Same: database name quoted with ' doubled, from the server's own list."
+ },
+ "9b804d54c3": {
+  "verdict": "OK",
+  "why": "Checked: set from the signed-in user's profile, cat in {Backup, Restore}, file without / \\ .. — the path cannot leave the logs folder."
+ },
+ "b4f2139437": {
+  "verdict": "OK",
+  "why": "Admin-only; users.UserDir checks the login against the login pattern and the index (404 otherwise)."
+ },
+ "2b5bfff67f": {
+  "verdict": "OK",
+  "why": "Not a task: .Result is a field of a job."
+ },
+ "5cf86fe08b": {
+  "verdict": "OK",
+  "why": "Not a task: run.Result is a string."
+ },
+ "9843a025a9": {
+  "verdict": "OK",
+  "why": "Not a task: r.Result is a string."
+ },
+ "0f82975b87": {
+  "verdict": "OK",
+  "why": "Not a task: r.Result is a string."
+ },
+ "3e266b82f8": {
+  "verdict": "OK",
+  "why": "Disposed in Api.Dispose; callback catches and logs; once a day (no overlap)."
+ },
+ "de105033af": {
+  "verdict": "OK",
+  "why": "Disposed in Api.Dispose; once a day."
+ },
+ "562a182204": {
+  "verdict": "OK",
+  "why": "Disposed in Api.Dispose; hourly, Updater.Auto is quick unless it installs at night."
+ },
+ "0b235214f6": {
+  "verdict": "OK",
+  "why": "Disposed in Replication.Stop."
+ },
+ "52864fb6d8": {
+  "verdict": "FIXED",
+  "why": "Bug 19: the minute sweep ran beside the agent's report and Begin; one interrupted run was recorded up to 7 times. InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce"
+ },
+ "ab6004765c": {
+  "verdict": "FIXED",
+  "why": "Bug 26: a heartbeat in flight at the end of a run re-added the set to Running now. InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack"
+ },
+ "1099a82e1f": {
+  "verdict": "OK",
+  "why": "The open-run note cannot be deleted: at the next start it is reported, and the server ignores a run that already has its log (bug 19/20 gate)."
+ },
+ "163c900d6d": {
+  "verdict": "OK",
+  "why": "Progress is best effort; the run itself reports its end."
+ },
+ "85762305fc": {
+  "verdict": "OK",
+  "why": "Offline: the run stopped by its pre-command cannot be told now; the server's missed-backup check covers it."
+ },
+ "50b6cece97": {
+  "verdict": "OK",
+  "why": "Abort not delivered (offline): endConfirmed stays false, the open-run note stays and the run is reported at the next start."
+ },
+ "1f0f4732ca": {
+  "verdict": "OK",
+  "why": "Local copy cleanup after a failed run; the next run starts the local copy again."
+ },
+ "880f68b66d": {
+  "verdict": "OK",
+  "why": "SQL dump folder: the next SQL backup deletes it first and fails clearly if it cannot (Sources.cs:143)."
+ },
+ "bbc8fe1b4f": {
+  "verdict": "OK",
+  "why": "Asking the server why an upload failed: on failure the run keeps the error it already has."
+ },
+ "7ce6a4ca13": {
+  "verdict": "OK",
+  "why": "Closing the local-copy stream before sending again."
+ },
+ "ffa3e8c7bb": {
+  "verdict": "OK",
+  "why": "Local copy not available: a warning in the run (the online backup goes on)."
+ },
+ "6d4e91c085": {
+  "verdict": "OK",
+  "why": "Local copy failure counts as a warning in the run."
+ },
+ "1775cdeb2e": {
+  "verdict": "OK",
+  "why": "Local copy write failure: a warning in the run."
+ },
+ "822197836a": {
+  "verdict": "OK",
+  "why": "A pre/post command that cannot start: a warning, and the command counts as failed."
+ },
+ "91dbbc61e8": {
+  "verdict": "OK",
+  "why": "Restore log not delivered (offline): the restore itself is unaffected; known gap — the server history lacks that restore (NOT-TESTED.md)."
+ },
+ "e55db74041": {
+  "verdict": "OK",
+  "why": "Temporary files of the restore."
+ },
+ "784709256f": {
+  "verdict": "OK",
+  "why": "A lease touch on a run folder that is gone: nothing to keep alive."
+ },
+ "e4cc75bbb1": {
+  "verdict": "OK",
+  "why": "Deletes the half object and rethrows (bug 13)."
+ },
+ "dad16b8a54": {
+  "verdict": "OK",
+  "why": "An object that cannot be read counts as damaged (actual = null ≠ sha)."
+ },
+ "afe3bded31": {
+  "verdict": "OK",
+  "why": "Lower priority is a request; restic runs either way."
+ },
+ "10c9b9bc9b": {
+  "verdict": "OK",
+  "why": "A progress consumer that throws must not stop restic."
+ },
+ "677e900db7": {
+  "verdict": "OK",
+  "why": "The run flag: if it stays, the next run unlocks the repository once more (harmless)."
+ },
+ "2db22e6d36": {
+  "verdict": "OK",
+  "why": "Unreadable last-job note: the id comes from the start time (bug 21: the server still tells two runs apart)."
+ },
+ "b28100386e": {
+  "verdict": "OK",
+  "why": "Asking the server about its disk: the line after it states the case either way."
+ },
+ "dcb1a2b22e": {
+  "verdict": "OK",
+  "why": "Temporary folder of an export."
+ },
+ "63d4f23a16": {
+  "verdict": "OK",
+  "why": "Process lookup of the previous run: not found = not alive."
+ },
+ "c9652643bf": {
+  "verdict": "OK",
+  "why": "The run flag after an unlock: if it stays, the next run unlocks once more (harmless)."
+ },
+ "5e32a27303": {
+  "verdict": "OK",
+  "why": "A kept answer that cannot be read: the repeat still gets ok + repeat (bug 20)."
+ },
+ "b02706db02": {
+  "verdict": "OK",
+  "why": "Stopping the listener at shutdown."
+ },
+ "495c933825": {
+  "verdict": "OK",
+  "why": "Last resort per request: one bad request must not end the server process; logged."
+ },
+ "5cbe421c28": {
+  "verdict": "OK",
+  "why": "The client address for the log; \"-\" if unknown."
+ },
+ "623c443b6f": {
+  "verdict": "OK",
+  "why": "Guard bookkeeping must not change the answer to the request."
+ },
+ "3aceb4821a": {
+  "verdict": "OK",
+  "why": "The client went away while the answer was written."
+ },
+ "857998f869": {
+  "verdict": "OK",
+  "why": "Dashboard totals: a profile that cannot be read is left out of the totals (its own pages show the error)."
+ },
+ "e41f18650f": {
+  "verdict": "OK",
+  "why": "Purging old rows of the run history (they are purged again tomorrow)."
+ },
+ "5b8b6a482f": {
+  "verdict": "OK",
+  "why": "Temporary ZIP of a download."
+ },
+ "cd3c6abc65": {
+  "verdict": "OK",
+  "why": "One interrupted run that cannot be recorded must not stop the sweep of the others; logged; retried next minute."
+ },
+ "fdd88a8d14": {
+  "verdict": "OK",
+  "why": "Same, per customer."
+ },
+ "2d1dc7ce95": {
+  "verdict": "OK",
+  "why": "The kept answer of a run is a convenience (bug 20): without it a repeat gets ok + repeat."
+ },
+ "32a14c0e96": {
+  "verdict": "OK",
+  "why": "The mail must not stop the recording of the run; logged (mail failures are in the Email log)."
+ },
+ "855431e050": {
+  "verdict": "OK",
+  "why": "Start-up recovery of one customer must not stop the others; logged (the next Begin recovers again)."
+ },
+ "1199101bab": {
+  "verdict": "OK",
+  "why": "Timer callback; logged."
+ },
+ "0d1d3eb232": {
+  "verdict": "OK",
+  "why": "Timer callback; maintenance errors themselves are now alerted (bug 28)."
+ },
+ "3c70d1b295": {
+  "verdict": "OK",
+  "why": "Timer callback; logged in the Update log."
+ },
+ "0b217f5a5a": {
+  "verdict": "OK",
+  "why": "Timer callback; logged."
+ },
+ "790c7cd31b": {
+  "verdict": "OK",
+  "why": "Any other error of a request: 500 with a clear text and the details in the system log."
+ },
+ "887b33f61b": {
+  "verdict": "OK",
+  "why": "Run statistics for insights only; the run itself is recorded."
+ },
+ "4336364e41": {
+  "verdict": "OK",
+  "why": "AI diagnosis is optional."
+ },
+ "3bee6dc88c": {
+  "verdict": "OK",
+  "why": "A service call must never stop a backup report; logged."
+ },
+ "cd78ee3277": {
+  "verdict": "OK",
+  "why": "The update log line itself."
+ },
+ "936ad10666": {
+  "verdict": "OK",
+  "why": "The result file: if it cannot be written the update.log has the same line."
+ },
+ "de7e743a79": {
+  "verdict": "OK",
+  "why": "Automatic update: errors in update.log and the result file."
+ },
+ "c2658719f2": {
+  "verdict": "OK",
+  "why": "restic REST: the client went away."
+ },
+ "53363c9c41": {
+  "verdict": "OK",
+  "why": "restic REST: error answer; logged before."
+ },
+ "6764b76703": {
+  "verdict": "OK",
+  "why": "Malformed Basic header = not signed in (401 follows)."
+ },
+ "54758534be": {
+  "verdict": "OK",
+  "why": "Free space of a storage home for the report: 0 if unknown."
+ },
+ "29fb55df7c": {
+  "verdict": "OK",
+  "why": "Keeping a sign-in across restarts is a convenience; the session itself works."
+ },
+ "8e66792431": {
+  "verdict": "OK",
+  "why": "Temporary folder of a web restore."
+ },
+ "1a2ccd9a40": {
+  "verdict": "OK",
+  "why": "Old .NET without TLS 1.2: the built-in TLS is used there (AG-07)."
+ },
+ "b28de211bc": {
+  "verdict": "BUG",
+  "why": "Bug 27: a file that cannot be put back is only logged; the result still says every file was put back."
+ },
+ "1d447a5545": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "53911b3a03": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "1d58ed7271": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "1c228a2991": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "1e3a599649": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "44e45ba2bd": {
+  "verdict": "BUG",
+  "why": "Bug 28: a failing maintenance task (retention, settings backup, set sizes, recycle bin, disk forecast) is only in the system log — nobody is told."
+ },
+ "cff9f259fa": {
+  "verdict": "OK",
+  "why": "Shared key not available now: the key check below fails and the run says the key is missing."
+ },
+ "d5965ae5a0": {
+  "verdict": "OK",
+  "why": "Process lookup of the open-run note: not found = not alive."
+ },
+ "fa39d22cd4": {
+  "verdict": "OK",
+  "why": "Offline: the dead run is reported at the next chance (the note stays)."
+ },
+ "083768ca11": {
+  "verdict": "OK",
+  "why": "The offline note (for missed runs) is best effort."
+ },
+ "4e2177c56b": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "b7d2d90d61": {
+  "verdict": "OK",
+  "why": "Asking whether a stop was requested: offline = no stop; asked again in 20 s."
+ },
+ "d0a4776e93": {
+  "verdict": "OK",
+  "why": "Temporary folder of the restore test."
+ },
+ "d17eaa1985": {
+  "verdict": "OK",
+  "why": "Offline at start-up: reported before the next backup (BackupLocked)."
+ },
+ "1a3040646d": {
+  "verdict": "OK",
+  "why": "Folder list for the admin site; logged."
+ },
+ "55fc13d136": {
+  "verdict": "OK",
+  "why": "Service loop: one bad turn must not end the service; logged; next turn in a minute."
+ },
+ "557d35cb11": {
+  "verdict": "OK",
+  "why": "Priority hook is a request."
+ },
+ "d30617670b": {
+  "verdict": "OK",
+  "why": "A line consumer that throws must not lose the output."
+ },
+ "3429801808": {
+  "verdict": "OK",
+  "why": "The program ended before reading its input: its exit code tells."
+ },
+ "010050a920": {
+  "verdict": "OK",
+  "why": "taskkill not available: p.Kill below."
+ },
+ "501cf2bd24": {
+  "verdict": "OK",
+  "why": "Already ended."
+ },
+ "20e59e5754": {
+  "verdict": "OK",
+  "why": "Already ended."
+ },
+ "9b612001c4": {
+  "verdict": "OK",
+  "why": "No readable earlier installation = a new installation."
+ },
+ "c0e4aad9dd": {
+  "verdict": "OK",
+  "why": "No preset branding: the defaults."
+ },
+ "334374da4c": {
+  "verdict": "OK",
+  "why": "Port check is a helper; netsh/IIS checks follow."
+ },
+ "ada5135130": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "b081ec0662": {
+  "verdict": "OK",
+  "why": "Licence step: said to the person, can be done later."
+ },
+ "a2ee9beb1c": {
+  "verdict": "OK",
+  "why": "The client window may already be closed."
+ },
+ "03fcccc545": {
+  "verdict": "OK",
+  "why": "The service may not exist yet (first installation)."
+ },
+ "c26442e83c": {
+  "verdict": "OK",
+  "why": "Only the sign-in screen's default server address; the registration holds the real one."
+ },
+ "ee27c0543d": {
+  "verdict": "OK",
+  "why": "Programs and Features details (version, size)."
+ },
+ "8221bd9a3a": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "846088dd3e": {
+  "verdict": "OK",
+  "why": "Same (uninstall entry)."
+ },
+ "1893f48e17": {
+  "verdict": "OK",
+  "why": "Removing shortcuts at uninstall."
+ },
+ "f2eefa1b6a": {
+  "verdict": "OK",
+  "why": "Removing the uninstall entry."
+ },
+ "a927f65e53": {
+  "verdict": "OK",
+  "why": "Said to the person."
+ },
+ "97e86dd592": {
+  "verdict": "OK",
+  "why": "Said to the person."
+ },
+ "ca20f922c9": {
+  "verdict": "OK",
+  "why": "Said to the person."
+ },
+ "e98f6d2f5c": {
+  "verdict": "OK",
+  "why": "Said to the person."
+ },
+ "11cd8a5b01": {
+  "verdict": "OK",
+  "why": "Said to the person."
+ },
+ "c64fe31369": {
+  "verdict": "OK",
+  "why": "Said to the person: removed at the next restart."
+ },
+ "fixed-27-rollback": {
+  "verdict": "FIXED",
+  "cls": "swallowed-exception",
+  "where": "src/Agent/ClientUpdate.cs Rollback",
+  "why": "Bug 27: a file that could not be put back was only logged; the result claimed a clean rollback. UpdateInstallTests.AFileThatCannotBePutBack_IsNamed_TheResultNeverClaimsACleanRollback"
+ },
+ "fixed-28-maintenance": {
+  "verdict": "FIXED",
+  "cls": "catch-all-continue",
+  "where": "src/Server/Api.cs Maintenance (6 tasks)",
+  "why": "Bug 28: failing maintenance tasks only in the system log. RetentionTests.AFailingMaintenanceTask_IsAlerted_AndTheOtherSetsAreStillMaintained"
+ },
+ "3479209ede": {
+  "verdict": "OK",
+  "why": "Command-line tool output (key generation), not state."
+ },
+ "8d05b0e22d": {
+  "verdict": "OK",
+  "why": "Empty lease file: only its time counts."
+ },
+ "231291448d": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "94b5017ff8": {
+  "verdict": "OK",
+  "why": "Begin key: a half key does not match → a new run (as before bug 20); written before the answer is sent."
+ },
+ "57165906eb": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "18768bb466": {
+  "verdict": "OK",
+  "why": "Temporary file of a replication copy."
+ },
+ "7af94e60b8": {
+  "verdict": "OK",
+  "why": "Position of the rotating integrity check: a half value only changes where the next check starts."
+ },
+ "1329806767": {
+  "verdict": "OK",
+  "why": "Stage list: apply-update starts right after; a crash before it means no update starts, the next check stages again."
+ },
+ "cb01a0a76c": {
+  "verdict": "OK",
+  "why": "Update result (also in update.log)."
+ },
+ "858ab294f9": {
+  "verdict": "OK",
+  "why": "Temporary SQL file for a test load."
+ },
+ "e019c5b8b7": {
+  "verdict": "OK",
+  "why": "README beside a restore."
+ },
+ "16551b99a7": {
+  "verdict": "OK",
+  "why": "Written at installation; running the installation again rewrites it."
+ },
+ "f8639df784": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "13131f7830": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "8b490612a0": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "928b20b913": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "09a2322b63": {
+  "verdict": "OK",
+  "why": "Input file of wbadmin for this run only."
+ },
+ "4d0cc84655": {
+  "verdict": "OK",
+  "why": "A restored item written into the restore folder (the run reports its result)."
+ },
+ "92dbbae77d": {
+  "verdict": "OK",
+  "why": "\"Repository exists\" note: a half note means the next run checks the repository again (cat config)."
+ },
+ "a8385ef6e0": {
+  "verdict": "OK",
+  "why": "Previous file count for the mass-change check: unreadable = no comparison this time."
+ },
+ "05ba46d163": {
+  "verdict": "OK",
+  "why": "Run flag: an unreadable pid counts as \"not alive\" (locks removed once more)."
+ },
+ "5c52151a2f": {
+  "verdict": "OK",
+  "why": "Info file beside a VM export of this run."
+ },
+ "3c43756c21": {
+  "verdict": "OK",
+  "why": "Language of the program window."
+ },
+ "0e50440b15": {
+  "verdict": "OK",
+  "why": "Contract acceptance note (also recorded on the server at sign-up)."
+ },
+ "f694d05398": {
+  "verdict": "OK",
+  "why": "Open-run note: unreadable at the next start = nothing to report (the server sweep closes the run after 5 minutes — ST-02)."
+ },
+ "1f3f5574ae": {
+  "verdict": "OK",
+  "why": "Last SQL full note: unreadable = the next run makes a full copy (safe)."
+ },
+ "e5660ec2b0": {
+  "verdict": "OK",
+  "why": "Last attempt: unreadable = no attempt known, the scheduler retries (SchedulerTests)."
+ },
+ "f37693ce4a": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "5900b0bdc8": {
+  "verdict": "OK",
+  "why": "Offline note: unreadable = no offline period known."
+ },
+ "b69010a7aa": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "5470a6cf2f": {
+  "verdict": "OK",
+  "why": "\"Back up now\" seen-id: unreadable = the request may run once more (a duplicate run, never a lost one)."
+ },
+ "dfafe2bba4": {
+  "verdict": "OK",
+  "why": "Restore-test time: unreadable = the test runs again."
+ },
+ "cd2a20b44d": {
+  "verdict": "OK",
+  "why": "Missed-run delay note: unreadable = the delay starts again."
+ },
+ "c995cb01b2": {
+  "verdict": "OK",
+  "why": "Folders opened in the admin site: unreadable = sent again."
+ },
+ "da4a56999e": {
+  "verdict": "OK",
+  "why": "Same."
+ },
+ "5cc9acd2c5": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "6cc37ea7f2": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "2bec0e8339": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "39d62ef894": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "9747e39488": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "fdeb24ee1b": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "028b8db808": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "c3e425e7cf": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "30fc87d81f": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "8b8afc58e2": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "35006042c4": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "bc898dbc43": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "b24f2915d2": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "8a815e0d80": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "3ea5deb78b": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "be669b42fd": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "0cfa9f8e52": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "9044d35325": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "49992a736b": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "da4b5683f1": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "e83b21ca2f": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "f64ecb0cda": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "fda62e657c": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "c739bbb077": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "1d44d907c4": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "27c7643b79": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "8aeb51c63f": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "4abe63d8ce": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "5b58278bb1": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "448f3cfbba": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "4c144b8564": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "4bce8d74f8": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "f6a54cad6b": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "858fa5ca9c": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "351248790e": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "f92d587a7f": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "93a5c4ab64": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "af776ef996": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "e91d51decb": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "685fee7753": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "cbf65c5e96": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "7aa52b909f": {
+  "verdict": "OK",
+  "why": "HttpWebRequest has default limits (100 s for the answer, 300 s per read)."
+ },
+ "bb62491c60": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "5dfed46a8f": {
+  "verdict": "OK",
+  "why": "Client.Create sets Timeout and ReadWriteTimeout = TimeoutMs (NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError)."
+ },
+ "23f4481bd1": {
+  "verdict": "OK",
+  "why": "Not shared state: a method that returns a new dictionary, or a read-only table."
+ },
+ "4e19aab446": {
+  "verdict": "OK",
+  "why": "Shared: every use is under its lock (checked)."
+ },
+ "66f1105246": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "dcd3722fd4": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "fe23736ec9": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "f027980633": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "e14c62cba6": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "b480e89318": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "338aa8966d": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "aaec379fd5": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "5fb010b7ca": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "266e421b05": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "9cb5c0e34f": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "ef5e3011ba": {
+  "verdict": "OK",
+  "why": "Package without the contract when the contract cannot be read (the server shows the contract at sign-up too)."
+ },
+ "9a439787ab": {
+  "verdict": "OK",
+  "why": "Recycle bin list: an unreadable entry is left out of the list (it is still on the disk)."
+ },
+ "5daab0cc41": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "81bedd3897": {
+  "verdict": "OK",
+  "why": "The maintenance alert itself: if the mail fails, the errors are still in the maintenance answer and the system log."
+ },
+ "9842f9cdc5": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "dea47c43bc": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "7b6de40e15": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "1269f3bddb": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "bc7e2aa4ba": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "e9ea9fa87f": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "ce65bbace5": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "e871849b05": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "71421a18f2": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "7c9b1a569b": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "e5ef556905": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "abe8ee48be": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "0a188ce615": {
+  "verdict": "OK",
+  "why": "Service-call journal line (audit text); the call itself is saved."
+ },
+ "4369e4cd56": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "833a7795fd": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "64f13875c2": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "b5d3af8f7a": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "a6ff482c58": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "12e9514206": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "bfad2ee839": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "01a2165c18": {
+  "verdict": "OK",
+  "why": "Server housekeeping (export copy, replication retry, listener shutdown, mail fallback to the next SMTP server, old-file cleanup): logged or retried."
+ },
+ "20bf811c12": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "7cfcc232b6": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "9a41033fa8": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "8170d46865": {
+  "verdict": "FIXED",
+  "why": "Bug 27 (the rollback failure is now named in the result)."
+ },
+ "9feb8a2a57": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "f92782b8a9": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "79ef71e77f": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "bb0443738a": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "dd23a0169b": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "3df725d603": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "eeedb23173": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "c8bcb17359": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "34c6eec2e2": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "967bc39dac": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "cd44d6d370": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "44783e23be": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "de1031a16f": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "6afbde70d0": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "b201a730b9": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "d6d6137a7d": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "fce8e42984": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "d9455edfa3": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "162d71403f": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "2cc429bfe2": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "43f5715aaa": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "060c689873": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "5d991dc3c3": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "b372699389": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "0bbd151f05": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "a7126d7258": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "5167dc7863": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "5031bccbde": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "9a65d01aa2": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "5828688eec": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "59b0b8d1e7": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "847f50c8d3": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "6f08d8b84f": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "fa6ce95d18": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "28b23c01f6": {
+  "verdict": "OK",
+  "why": "Removing the snapshot links (the shadow itself is deleted next)."
+ },
+ "adb496f70e": {
+  "verdict": "BUG",
+  "why": "Open (Windows only, not testable here): a shadow copy that cannot be deleted after the backup is not reported — orphan shadows can pile up in the shadow storage. Needs a Windows test (NOT-TESTED.md BK-06)."
+ },
+ "dc92d04af6": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "f869d326bc": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "0b07fec33d": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "5ad37e8a0a": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "047822e66c": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "9031b67126": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "e94c6bf67b": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "65b6e649f5": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "9cebcf899d": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "59a410da9a": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "54b24d1be2": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "da765cb69d": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "2b1c515b26": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "8e80ed3833": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "daa18d6389": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "98a2007d36": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "94792819ac": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "ce06a901bf": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "38305d850f": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "584cf50379": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "16e22def66": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "a84bb53c80": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "3b4ce378a8": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "b6e48d0271": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "3e9c049577": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "0166929f71": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "7bdccb1987": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "3ba2d31b83": {
+  "verdict": "OK",
+  "why": "Application source: either an error text that falls back to the HTTP status, a temporary folder, or a failure turned into a warning + an unreachable source (counted as an error of the run, bug 2)."
+ },
+ "9bcf42f74a": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "3b5c25c19d": {
+  "verdict": "OK",
+  "why": "User interface / start-up helper: a cosmetic fallback (colour, logo, language, browser) or a request handler that must not end the program."
+ },
+ "b0e6a8f981": {
+  "verdict": "FIXED",
+  "why": "Bug 30: deletes the half file and rethrows (the file is reported as failed). RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft"
+ }
+}

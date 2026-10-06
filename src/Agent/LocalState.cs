@@ -1,0 +1,172 @@
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Xml.Linq;
+using OnlineBackup.Core;
+
+namespace OnlineBackup.Agent
+{
+    /// <summary>
+    /// The agent's own folder (ProgramData\OnlineBackup on Windows): settings, the device token and the set keys —
+    /// protected with DPAPI (machine scope) on Windows — and the local index of every set.
+    /// </summary>
+    public sealed class AgentHome
+    {
+        public string Dir { get; private set; }
+        public AgentHome(string dir) { Dir = Path.GetFullPath(dir); Directory.CreateDirectory(Dir); }
+
+        string ConfigPath { get { return Path.Combine(Dir, "agent.xml"); } }
+
+        public XElement Config
+        {
+            get { return File.Exists(ConfigPath) ? XElement.Load(ConfigPath) : new XElement("AGENT"); }
+            set { Atomic.WriteText(ConfigPath, value.ToString()); }
+        }
+
+        public string Server { get { return (string)Config.Attribute("SERVER"); } }
+        public string Login { get { return (string)Config.Attribute("LOGIN"); } }
+        public string Computer { get { return (string)Config.Attribute("COMPUTER") ?? Environment.MachineName; } }
+        /// <summary>BUILTIN = the agent's own TLS 1.2 (automatic on Windows 2003 / XP); PIN = SHA-256 of the server certificate.</summary>
+        public string Tls { get { return (string)Config.Attribute("TLS"); } }
+        public string Pin { get { return (string)Config.Attribute("PIN"); } }
+
+        public string DeviceToken
+        {
+            get { var v = (string)Config.Attribute("DEVICE"); return string.IsNullOrEmpty(v) ? null : Encoding.UTF8.GetString(Unprotect(Convert.FromBase64String(v))); }
+        }
+
+        public void SaveRegistration(string server, string login, string computer, string device, string tls = null, string pin = null)
+        {
+            var c = Config;
+            if (tls != null) c.SetAttributeValue("TLS", tls);
+            if (pin != null) c.SetAttributeValue("PIN", pin);
+            c.SetAttributeValue("SERVER", server); c.SetAttributeValue("LOGIN", login); c.SetAttributeValue("COMPUTER", computer);
+            c.SetAttributeValue("DEVICE", Convert.ToBase64String(Protect(Encoding.UTF8.GetBytes(device))));
+            Config = c;
+        }
+
+        public void SaveKey(string setId, KeySet k) { Atomic.WriteBytes(Path.Combine(Dir, "keys", setId + ".bin"), Protect(k.ToRaw())); }
+        public KeySet LoadKey(string setId)
+        {
+            var p = Path.Combine(Dir, "keys", setId + ".bin");
+            return File.Exists(p) ? KeySet.FromRaw(Unprotect(File.ReadAllBytes(p))) : null;
+        }
+
+        /// <summary>A secret of this computer only (e.g. the SQL Server password of a set), protected like the keys.</summary>
+        public void SaveSecret(string name, string value) { Atomic.WriteBytes(Path.Combine(Dir, "secrets", name + ".bin"), Protect(Encoding.UTF8.GetBytes(value ?? ""))); }
+        public string LoadSecret(string name)
+        {
+            var p = Path.Combine(Dir, "secrets", name + ".bin");
+            return File.Exists(p) ? Encoding.UTF8.GetString(Unprotect(File.ReadAllBytes(p))) : null;
+        }
+
+        public string SetDir(string setId) { var d = Path.Combine(Dir, "sets", setId); Directory.CreateDirectory(d); return d; }
+
+        static bool IsWindows { get { return Environment.OSVersion.Platform == PlatformID.Win32NT; } }
+
+        static byte[] Protect(byte[] data)
+        {
+#if NET40
+            if (IsWindows) return ProtectedData.Protect(data, null, DataProtectionScope.LocalMachine);
+#endif
+            return data;   // non-Windows test runs only
+        }
+
+        static byte[] Unprotect(byte[] data)
+        {
+#if NET40
+            if (IsWindows) return ProtectedData.Unprotect(data, null, DataProtectionScope.LocalMachine);
+#endif
+            return data;
+        }
+    }
+
+    /// <summary>
+    /// Local index of one set: every file backed up (server path, size, time, attributes, delta chain) and, for large
+    /// files, the chunk list of the last version — so a delta is computed without downloading anything.
+    /// </summary>
+    public sealed class LocalState
+    {
+        public sealed class Entry
+        {
+            public string Rel, Path;
+            public long Size, Mtime;
+            public string Attrs;
+            public int Seq;            // last object number in the chain (0 = only the full copy)
+            public long DeltaBytes;    // bytes sent as deltas since the full copy
+        }
+
+        readonly string dir;
+        public Dictionary<string, Entry> Files = new Dictionary<string, Entry>(StringComparer.Ordinal);
+        public string LastSuccess = "";
+
+        public LocalState(string setDir)
+        {
+            dir = setDir;
+            var p = System.IO.Path.Combine(dir, "state.txt");
+            if (!File.Exists(p)) return;
+            foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+            {
+                if (line.StartsWith("#last\t")) { LastSuccess = line.Substring(6); continue; }
+                var f = line.Split('\t');
+                if (f.Length < 7) continue;
+                Files[f[0]] = new Entry
+                {
+                    Rel = f[0], Path = f[1], Size = long.Parse(f[2], CultureInfo.InvariantCulture), Mtime = long.Parse(f[3], CultureInfo.InvariantCulture),
+                    Attrs = f[4], Seq = int.Parse(f[5], CultureInfo.InvariantCulture), DeltaBytes = long.Parse(f[6], CultureInfo.InvariantCulture)
+                };
+            }
+        }
+
+        public bool Exists { get { return File.Exists(System.IO.Path.Combine(dir, "state.txt")); } }
+
+        public void Save()
+        {
+            var sb = new StringBuilder();
+            sb.Append("#last\t").Append(LastSuccess).Append('\n');
+            foreach (var e in Files.Values)
+                sb.Append(e.Rel).Append('\t').Append(e.Path).Append('\t').Append(e.Size.ToString(CultureInfo.InvariantCulture)).Append('\t')
+                  .Append(e.Mtime.ToString(CultureInfo.InvariantCulture)).Append('\t').Append(e.Attrs).Append('\t')
+                  .Append(e.Seq.ToString(CultureInfo.InvariantCulture)).Append('\t').Append(e.DeltaBytes.ToString(CultureInfo.InvariantCulture)).Append('\n');
+            Atomic.WriteText(System.IO.Path.Combine(dir, "state.txt"), sb.ToString());
+        }
+
+        string ChunkFile(string rel)
+        {
+            using (var sha = SHA256.Create())
+                return System.IO.Path.Combine(dir, "chunks", Bytes.Hex(sha.ComputeHash(Encoding.UTF8.GetBytes(rel)), 16) + ".txt");
+        }
+
+        /// <summary>Chunk list of the last version: "id length" per line, in file order.</summary>
+        public List<KeyValuePair<string, int>> LoadChunks(string rel)
+        {
+            var p = ChunkFile(rel);
+            if (!File.Exists(p)) return null;
+            return File.ReadAllLines(p).Where(l => l.Length > 0).Select(l => { var x = l.Split(' '); return new KeyValuePair<string, int>(x[0], int.Parse(x[1], CultureInfo.InvariantCulture)); }).ToList();
+        }
+
+        public void SaveChunks(string rel, List<KeyValuePair<string, int>> chunks)
+        {
+            Atomic.WriteText(ChunkFile(rel), string.Join("\n", chunks.Select(c => c.Key + " " + c.Value.ToString(CultureInfo.InvariantCulture)).ToArray()));
+        }
+
+        public void DropChunks(string rel) { var p = ChunkFile(rel); if (File.Exists(p)) File.Delete(p); var b = BaseFile(rel); if (File.Exists(b)) File.Delete(b); }
+
+        // differential: the chunk list of the last FULL copy (each delta is made against it)
+        string BaseFile(string rel) { return ChunkFile(rel).Replace(".txt", ".full.txt"); }
+        public List<KeyValuePair<string, int>> LoadBaseChunks(string rel)
+        {
+            var p = BaseFile(rel);
+            if (!File.Exists(p)) return null;
+            return File.ReadAllLines(p).Where(l => l.Length > 0).Select(l => { var x = l.Split(' '); return new KeyValuePair<string, int>(x[0], int.Parse(x[1], CultureInfo.InvariantCulture)); }).ToList();
+        }
+        public void SaveBaseChunks(string rel, List<KeyValuePair<string, int>> chunks)
+        {
+            Atomic.WriteText(BaseFile(rel), string.Join("\n", chunks.Select(c => c.Key + " " + c.Value.ToString(CultureInfo.InvariantCulture)).ToArray()));
+        }
+    }
+}

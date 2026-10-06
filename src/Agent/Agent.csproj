@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The backup agent. net40 is the shipped build (Windows Server 2003 SP2 / XP SP3 → Windows 11 / Server 2025);
+       net8.0 exists only so the automated tests can drive the same code in-process. -->
+  <PropertyGroup>
+    <TargetFrameworks>net40;net8.0</TargetFrameworks>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>OnlineBackup.Agent</AssemblyName>
+    <RootNamespace>OnlineBackup.Agent</RootNamespace>
+    <Nullable>disable</Nullable>
+    <LangVersion>10</LangVersion>
+    <NoWarn>SYSLIB0014;CA1416</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="client.html" LogicalName="OnlineBackup.Agent.client.html" />
+    <EmbeddedResource Include="setup-client.html" LogicalName="OnlineBackup.Agent.setup-client.html" />
+    <ProjectReference Include="..\Core\Core.csproj" />
+    <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net40'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="Microsoft.VisualBasic" />
+  </ItemGroup>
+</Project>

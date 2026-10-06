@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- SETUP-C40: Setup.exe of the client package — a real Windows installation program (asks for administrator rights
+       itself, no console window); the work is OnlineBackup.Agent's SetupForm beside it. -->
+  <PropertyGroup>
+    <TargetFramework>net40</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>Setup</AssemblyName>
+    <RootNamespace>OnlineBackup.Setup</RootNamespace>
+    <LangVersion>10</LangVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>setup.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" />
+    <ProjectReference Include="..\Agent\Agent.csproj" SetTargetFramework="TargetFramework=net40" />
+    <Reference Include="System.Windows.Forms" />
+  </ItemGroup>
+</Project>

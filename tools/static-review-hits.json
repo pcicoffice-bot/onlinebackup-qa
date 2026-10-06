@@ -1,0 +1,2277 @@
+[
+ {
+  "id": "5cc9acd2c5",
+  "cls": "static-dictionary",
+  "file": "src/Core/L.cs",
+  "line": 22,
+  "code": "static readonly Dictionary<string, Dictionary<string, string>> cache = new Dictionary<string, Dictionary<string, string>>();"
+ },
+ {
+  "id": "6cc37ea7f2",
+  "cls": "static-dictionary",
+  "file": "src/Core/L.cs",
+  "line": 23,
+  "code": "static readonly Dictionary<string, List<KeyValuePair<Regex, string>>> templates = new Dictionary<string, List<KeyValuePair<Regex, string>>>();"
+ },
+ {
+  "id": "2bec0e8339",
+  "cls": "static-dictionary",
+  "file": "src/Core/L.cs",
+  "line": 48,
+  "code": "static Dictionary<string, string> Dict(string lang)"
+ },
+ {
+  "id": "39d62ef894",
+  "cls": "static-dictionary",
+  "file": "src/Core/Json.cs",
+  "line": 16,
+  "code": "public static Dictionary<string, object> Obj(object o) { return o as Dictionary<string, object> ?? new Dictionary<string, object>(); }"
+ },
+ {
+  "id": "9747e39488",
+  "cls": "static-dictionary",
+  "file": "src/Core/Json.cs",
+  "line": 20,
+  "code": "public static Dictionary<string, object> Child(Dictionary<string, object> o, string k) { object v; return o != null && o.TryGetValue(k, out v) ? v as Dictionary<string, object> : null; }"
+ },
+ {
+  "id": "fdeb24ee1b",
+  "cls": "static-dictionary",
+  "file": "src/Core/BackupObject.cs",
+  "line": 154,
+  "code": "public static Dictionary<string, long> ChunkOffsets(Stream s, Msg header)"
+ },
+ {
+  "id": "557d35cb11",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 49,
+  "code": "if (started != null) try { started(p); } catch (Exception) { }"
+ },
+ {
+  "id": "d30617670b",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 65,
+  "code": "if (onLine != null) try { onLine(e.Data); } catch (Exception) { }"
+ },
+ {
+  "id": "3429801808",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 70,
+  "code": "if (stdin != null) try { p.StandardInput.Write(stdin); p.StandardInput.Close(); } catch (IOException) { }"
+ },
+ {
+  "id": "010050a920",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 117,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "501cf2bd24",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 118,
+  "code": "try { if (!p.HasExited) p.Kill(); } catch (Exception) { }"
+ },
+ {
+  "id": "20e59e5754",
+  "cls": "swallowed-exception",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 120,
+  "code": "try { p.Kill(true); } catch (Exception) { try { p.Kill(); } catch (Exception) { } }"
+ },
+ {
+  "id": "b9d024fd10",
+  "cls": "raw-process",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 47,
+  "code": "using (var p = Process.Start(psi))"
+ },
+ {
+  "id": "db21b9ea21",
+  "cls": "raw-process",
+  "file": "src/Core/ProcessRunner.cs",
+  "line": 114,
+  "code": "using (var k = Process.Start(new ProcessStartInfo(\"taskkill.exe\", \"/T /F /PID \" + p.Id) { UseShellExecute = false, CreateNoWindow = true }))"
+ },
+ {
+  "id": "66f1105246",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Notify.cs",
+  "line": 91,
+  "code": "catch (Exception e) { SysLog.Write(null, \"Email\", \"error via \" + host + \": \" + e.Message + \" (\" + subject + \")\"); }"
+ },
+ {
+  "id": "dcd3722fd4",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Notify.cs",
+  "line": 159,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: export profile \" + login + \": \" + e.Message); }"
+ },
+ {
+  "id": "fe23736ec9",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Notify.cs",
+  "line": 167,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: export log \" + login + \": \" + e.Message); }"
+ },
+ {
+  "id": "028b8db808",
+  "cls": "static-dictionary",
+  "file": "src/Server/ClientFiles.cs",
+  "line": 14,
+  "code": "static readonly Dictionary<string, Tuple<DateTime, long, string>> cache = new Dictionary<string, Tuple<DateTime, long, string>>(StringComparer.OrdinalIgnoreCase);"
+ },
+ {
+  "id": "f027980633",
+  "cls": "swallowed-exception",
+  "file": "src/Server/LicenseCenter.cs",
+  "line": 43,
+  "code": "public void Dispose() { try { http.Stop(); http.Close(); } catch { } }"
+ },
+ {
+  "id": "e14c62cba6",
+  "cls": "swallowed-exception",
+  "file": "src/Server/LicenseCenter.cs",
+  "line": 111,
+  "code": "catch (Exception e) { try { Reply(c, 500, Json.Write(new Dictionary<string, object> { { \"error\", e.Message } })); } catch { } }"
+ },
+ {
+  "id": "b480e89318",
+  "cls": "swallowed-exception",
+  "file": "src/Server/LicenseCenter.cs",
+  "line": 222,
+  "code": "try { using (var rd = new StreamReader(((HttpWebResponse)e.Response).GetResponseStream())) m = Json.Str(Json.Obj(Json.Parse(rd.ReadToEnd())), \"message\") ?? m; } catch (Exception) { }"
+ },
+ {
+  "id": "c3e425e7cf",
+  "cls": "web-no-timeout",
+  "file": "src/Server/LicenseCenter.cs",
+  "line": 159,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(lic.Center.TrimEnd('/') + \"/license/checkin\");"
+ },
+ {
+  "id": "30fc87d81f",
+  "cls": "web-no-timeout",
+  "file": "src/Server/LicenseCenter.cs",
+  "line": 213,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(source.TrimEnd('/') + \"/portal/api/latestlicense\");"
+ },
+ {
+  "id": "338aa8966d",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Program.cs",
+  "line": 55,
+  "code": "Action<string> say = m => { try { if (log != null) System.IO.File.AppendAllText(log, SystemClock.UtcNow.ToString(\"o\") + \" \" + m + Environment.NewLine); } catch (Exception) { } Console.WriteLine(m); };"
+ },
+ {
+  "id": "aaec379fd5",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Program.cs",
+  "line": 221,
+  "code": "try { ProcessRunner.Run(new System.Diagnostics.ProcessStartInfo(\"sc.exe\", args) { UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true }, Limits.Short); } catch (Exc"
+ },
+ {
+  "id": "bf6da91dde",
+  "cls": "raw-process",
+  "file": "src/Server/Program.cs",
+  "line": 44,
+  "code": "try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(w.Url) { UseShellExecute = true }); }"
+ },
+ {
+  "id": "3479209ede",
+  "cls": "non-atomic-state",
+  "file": "src/Server/Program.cs",
+  "line": 102,
+  "code": "System.IO.File.WriteAllText(one(\"out\") ?? \"license-private.key\", k[0]);"
+ },
+ {
+  "id": "8b8afc58e2",
+  "cls": "static-dictionary",
+  "file": "src/Server/Program.cs",
+  "line": 206,
+  "code": "static Dictionary<string, List<string>> Parse(string[] args)"
+ },
+ {
+  "id": "5fb010b7ca",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Portal.cs",
+  "line": 455,
+  "code": "finally { try { System.IO.File.Delete(tmp); } catch (Exception) { } }"
+ },
+ {
+  "id": "266e421b05",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Portal.cs",
+  "line": 478,
+  "code": "try { Reply(c, 500, new Dictionary<string, object> { { \"message\", \"Server error. Please try again later.\" } }); } catch (Exception) { }"
+ },
+ {
+  "id": "cc4e8f5d02",
+  "cls": "sql-concat",
+  "file": "src/Server/Portal.cs",
+  "line": 220,
+  "code": "using (var ec = ECDsa.Create()) { ec.ImportPkcs8PrivateKey(Convert.FromBase64String(privateKey), out _); sig = ec.SignData(Encoding.UTF8.GetBytes(\"OBUPDATE|\" + version + \"|\" + sha), HashAlgorithmName.SHA256); }"
+ },
+ {
+  "id": "35006042c4",
+  "cls": "static-dictionary",
+  "file": "src/Server/Portal.cs",
+  "line": 226,
+  "code": "static Dictionary<string, string> Brand(Dictionary<string, object> a)"
+ },
+ {
+  "id": "bc898dbc43",
+  "cls": "static-dictionary",
+  "file": "src/Server/Portal.cs",
+  "line": 279,
+  "code": "static Dictionary<string, object> Body(HttpListenerContext c)"
+ },
+ {
+  "id": "b24f2915d2",
+  "cls": "static-dictionary",
+  "file": "src/Server/Portal.cs",
+  "line": 304,
+  "code": "static Dictionary<string, object> Public(Dictionary<string, object> a, bool owner)"
+ },
+ {
+  "id": "9cb5c0e34f",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ClientPackage.cs",
+  "line": 55,
+  "code": "try { p.Connection.SetAttributeValue(\"INTERNAL\", string.Join(\",\", LicenseCheckin.InternalAddresses())); } catch (Exception) { }"
+ },
+ {
+  "id": "ef5e3011ba",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ClientPackage.cs",
+  "line": 63,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "8a815e0d80",
+  "cls": "static-dictionary",
+  "file": "src/Server/ClientPackage.cs",
+  "line": 267,
+  "code": "public static Dictionary<string, byte[]> ReadExe(byte[] exe)"
+ },
+ {
+  "id": "917325eb64",
+  "cls": "raw-process",
+  "file": "src/Server/Updater.cs",
+  "line": 32,
+  "code": "Process.Start(new ProcessStartInfo(exe, \"update --log \\\"\" + log + \"\\\"\") { UseShellExecute = false, CreateNoWindow = true, WorkingDirectory = Path.GetDirectoryName(exe) });"
+ },
+ {
+  "id": "edb47e49ea",
+  "cls": "sql-concat",
+  "file": "src/Server/Updater.cs",
+  "line": 168,
+  "code": "if (!gh && !License.VerifyCenter(Encoding.UTF8.GetBytes(\"OBUPDATE|\" + version + \"|\" + sha), Convert.FromBase64String(Json.Str(info, \"signature\") ?? \"\")))"
+ },
+ {
+  "id": "3ea5deb78b",
+  "cls": "static-dictionary",
+  "file": "src/Server/Updater.cs",
+  "line": 27,
+  "code": "static Dictionary<string, object> latest; static DateTime checkedAt;"
+ },
+ {
+  "id": "be669b42fd",
+  "cls": "static-dictionary",
+  "file": "src/Server/Updater.cs",
+  "line": 122,
+  "code": "public static Dictionary<string, object> Status(SystemConfig cfg, bool check)"
+ },
+ {
+  "id": "0cfa9f8e52",
+  "cls": "web-no-timeout",
+  "file": "src/Server/Updater.cs",
+  "line": 99,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(url);"
+ },
+ {
+  "id": "0cfa9f8e52",
+  "cls": "web-no-timeout",
+  "file": "src/Server/Updater.cs",
+  "line": 115,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(url);"
+ },
+ {
+  "id": "9a439787ab",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Recycle.cs",
+  "line": 154,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "5daab0cc41",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Recycle.cs",
+  "line": 227,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: recycle bin \" + bin + \": \" + e.Message); }"
+ },
+ {
+  "id": "5e32a27303",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 113,
+  "code": "try { var rp = ReplyFile(login, setId, job); if (File.Exists(rp)) return Msg.Parse(File.ReadAllBytes(rp)).Set(\"repeat\", 1); } catch (Exception) { }"
+ },
+ {
+  "id": "b02706db02",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 194,
+  "code": "try { listener.Stop(); listener.Close(); } catch { }"
+ },
+ {
+  "id": "495c933825",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 210,
+  "code": "try { HandleSafe(ctx); } catch (Exception e) { try { SysLog.Write(null, \"System\", \"error: request: \" + e.Message); } catch { } }"
+ },
+ {
+  "id": "5cbe421c28",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 216,
+  "code": "try { if (ctx.Request.RemoteEndPoint != null) ip = ctx.Request.RemoteEndPoint.Address.ToString(); } catch { }"
+ },
+ {
+  "id": "623c443b6f",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 255,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "3aceb4821a",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 276,
+  "code": "catch { }"
+ },
+ {
+  "id": "857998f869",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 954,
+  "code": "foreach (var l in logins) try { var p = users.LoadProfile(l); sets += p.SetElements.Count(); used += Usage(p); } catch (Exception) { }"
+ },
+ {
+  "id": "5b8b6a482f",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Api.cs",
+  "line": 1882,
+  "code": "finally { try { File.Delete(tmpZip); } catch (Exception) { } }"
+ },
+ {
+  "id": "cd3c6abc65",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 63,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: interrupted run \" + m[\"login\"] + \"/\" + m[\"set\"] + \": \" + e.Message); }"
+ },
+ {
+  "id": "fdd88a8d14",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 77,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: open runs \" + login + \": \" + e.Message); }"
+ },
+ {
+  "id": "2d1dc7ce95",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 102,
+  "code": "catch (Exception e) { SysLog.Write(ip, \"System\", \"error: run reply \" + e.Message); }"
+ },
+ {
+  "id": "32a14c0e96",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 141,
+  "code": "try { mailer.BackupReport(prof, set, job, b, set.Engine == \"RESTIC\" ? ResticStats(login, setId, prof.FindSet(setId), null) : new SetStore(users.UserDir(login), setId).Stats()); } catch (Exception e) { SysLog.Write(null, "
+ },
+ {
+  "id": "855431e050",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 174,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: recovery \" + login + \": \" + e.Message); }"
+ },
+ {
+  "id": "1199101bab",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 176,
+  "code": "licenseTimer = new Timer(_ => { try { LicenseCheckin.Run(cfg, users, mailer, cfg.Clock()); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: licence check-in \" + e.Message); } },"
+ },
+ {
+  "id": "0d1d3eb232",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 178,
+  "code": "maintenance = new Timer(_ => { try { Maintenance(SystemClock.UtcNow); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: maintenance \" + e.Message); } },"
+ },
+ {
+  "id": "3c70d1b295",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 181,
+  "code": "updateTimer = new Timer(_ => { try { Updater.Auto(cfg, DateTime.Now); } catch (Exception e) { SysLog.Write(null, \"Update\", \"automatic update: \" + e.Message); } }, null, TimeSpan.FromMinutes(10), TimeSpan.FromHours(1));"
+ },
+ {
+  "id": "0b217f5a5a",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 183,
+  "code": "sweepTimer = new Timer(_ => { try { SweepInterrupted(SystemClock.UtcNow); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: interrupted runs \" + e.Message); } }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMin"
+ },
+ {
+  "id": "790c7cd31b",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 258,
+  "code": "catch (Exception e)"
+ },
+ {
+  "id": "887b33f61b",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 711,
+  "code": "try { Insights.Record(userDir, set.Id, run); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: run statistics \" + login + \"/\" + set.Id + \" \" + e.Message); }"
+ },
+ {
+  "id": "4336364e41",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 749,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: AI diagnosis \" + login + \"/\" + job + \": \" + e.GetType().Name); }"
+ },
+ {
+  "id": "81bedd3897",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 1728,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: maintenance alert \" + e.Message); }"
+ },
+ {
+  "id": "3bee6dc88c",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Api.cs",
+  "line": 1935,
+  "code": "void TicketSafe(Action a) { try { a(); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: service call \" + e.GetType().Name + \" \" + e.Message); } }"
+ },
+ {
+  "id": "9b804d54c3",
+  "cls": "path-from-request",
+  "file": "src/Server/Api.cs",
+  "line": 1107,
+  "code": "var file = Path.Combine(users.UserDir(login), \"logs\", set.Id, b[\"cat\"], b[\"file\"]);"
+ },
+ {
+  "id": "b4f2139437",
+  "cls": "path-from-request",
+  "file": "src/Server/Api.cs",
+  "line": 1327,
+  "code": "Atomic.WriteText(Path.Combine(users.UserDir(b[\"login\"]), \"logs\", \"Rebuild\", RunId.From(SystemClock.UtcNow) + \".log\"), r.ToString());"
+ },
+ {
+  "id": "9044d35325",
+  "cls": "static-dictionary",
+  "file": "src/Server/Api.cs",
+  "line": 1801,
+  "code": "static readonly Dictionary<string, KeyValuePair<int, DateTime>> wrongKeys = new Dictionary<string, KeyValuePair<int, DateTime>>();"
+ },
+ {
+  "id": "3e266b82f8",
+  "cls": "timer-no-dispose",
+  "file": "src/Server/Api.cs",
+  "line": 176,
+  "code": "licenseTimer = new Timer(_ => { try { LicenseCheckin.Run(cfg, users, mailer, cfg.Clock()); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: licence check-in \" + e.Message); } },"
+ },
+ {
+  "id": "de105033af",
+  "cls": "timer-no-dispose",
+  "file": "src/Server/Api.cs",
+  "line": 178,
+  "code": "maintenance = new Timer(_ => { try { Maintenance(SystemClock.UtcNow); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: maintenance \" + e.Message); } },"
+ },
+ {
+  "id": "562a182204",
+  "cls": "timer-no-dispose",
+  "file": "src/Server/Api.cs",
+  "line": 181,
+  "code": "updateTimer = new Timer(_ => { try { Updater.Auto(cfg, DateTime.Now); } catch (Exception e) { SysLog.Write(null, \"Update\", \"automatic update: \" + e.Message); } }, null, TimeSpan.FromMinutes(10), TimeSpan.FromHours(1));"
+ },
+ {
+  "id": "52864fb6d8",
+  "cls": "timer-no-dispose",
+  "file": "src/Server/Api.cs",
+  "line": 183,
+  "code": "sweepTimer = new Timer(_ => { try { SweepInterrupted(SystemClock.UtcNow); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: interrupted runs \" + e.Message); } }, null, TimeSpan.FromMinutes(1), TimeSpan.FromMin"
+ },
+ {
+  "id": "9842f9cdc5",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Ai.cs",
+  "line": 110,
+  "code": "catch (Exception e)"
+ },
+ {
+  "id": "dea47c43bc",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Ai.cs",
+  "line": 202,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: AI ticket \" + login + \"/\" + job + \": \" + e.GetType().Name); return false; }"
+ },
+ {
+  "id": "784709256f",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetStore.cs",
+  "line": 153,
+  "code": "try { if (Directory.Exists(d)) File.SetLastWriteTimeUtc(TouchFile(d), SystemClock.UtcNow); } catch (IOException) { } catch (UnauthorizedAccessException) { }"
+ },
+ {
+  "id": "784709256f",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetStore.cs",
+  "line": 153,
+  "code": "try { if (Directory.Exists(d)) File.SetLastWriteTimeUtc(TouchFile(d), SystemClock.UtcNow); } catch (IOException) { } catch (UnauthorizedAccessException) { }"
+ },
+ {
+  "id": "e4cc75bbb1",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetStore.cs",
+  "line": 245,
+  "code": "catch (IOException) { try { File.Delete(tmp); } catch (IOException) { } throw; }   // a half object never stays on the disk"
+ },
+ {
+  "id": "dad16b8a54",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetStore.cs",
+  "line": 615,
+  "code": "try { using (var fs = File.OpenRead(p)) actual = Bytes.Sha256Hex(fs); } catch (IOException) { }"
+ },
+ {
+  "id": "8d05b0e22d",
+  "cls": "non-atomic-state",
+  "file": "src/Server/SetStore.cs",
+  "line": 126,
+  "code": "if (key != null && File.Exists(kf) && File.ReadAllText(kf).Trim() == key) { File.WriteAllText(Path.Combine(d, \"lease\"), \"\"); return Path.GetFileName(d); }"
+ },
+ {
+  "id": "231291448d",
+  "cls": "non-atomic-state",
+  "file": "src/Server/SetStore.cs",
+  "line": 134,
+  "code": "File.WriteAllText(Path.Combine(JobsDir, id, \"lease\"), \"\");"
+ },
+ {
+  "id": "94b5017ff8",
+  "cls": "non-atomic-state",
+  "file": "src/Server/SetStore.cs",
+  "line": 135,
+  "code": "if (key != null) File.WriteAllText(Path.Combine(JobsDir, id, \"key\"), key);"
+ },
+ {
+  "id": "57165906eb",
+  "cls": "non-atomic-state",
+  "file": "src/Server/SetStore.cs",
+  "line": 155,
+  "code": "static string TouchFile(string d) { var l = Path.Combine(d, \"lease\"); if (!File.Exists(l)) File.WriteAllText(l, \"\"); return l; }"
+ },
+ {
+  "id": "7b6de40e15",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Replication.cs",
+  "line": 142,
+  "code": "if (resp != null) using (var s = resp.GetResponseStream()) try { msg = Msg.Read(s)[\"message\"] ?? msg; } catch { }"
+ },
+ {
+  "id": "1269f3bddb",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Replication.cs",
+  "line": 34,
+  "code": "public void Start() { timer = new Timer(_ => { try { RunOnce(); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: replication \" + e.Message); } }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(60)); }"
+ },
+ {
+  "id": "bc7e2aa4ba",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Replication.cs",
+  "line": 57,
+  "code": "catch (Exception e)"
+ },
+ {
+  "id": "e9ea9fa87f",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Replication.cs",
+  "line": 183,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: replica delete \" + line + \": \" + e.Message); keep.Add(line); }"
+ },
+ {
+  "id": "18768bb466",
+  "cls": "non-atomic-state",
+  "file": "src/Server/Replication.cs",
+  "line": 86,
+  "code": "try { File.WriteAllBytes(tmp, KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(f))); PutFile(login, rel, tmp, true, true); }"
+ },
+ {
+  "id": "49992a736b",
+  "cls": "web-no-timeout",
+  "file": "src/Server/Replication.cs",
+  "line": 118,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(url.TrimEnd('/') + \"/api/replica/file?login=\" + Uri.EscapeDataString(login) + \"&path=\" + Uri.EscapeDataString(path) + (overwrite ? \"&overwrite=1\" : \"\") + (protect ? \"&protect=1\" "
+ },
+ {
+  "id": "da4b5683f1",
+  "cls": "web-no-timeout",
+  "file": "src/Server/Replication.cs",
+  "line": 127,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(url.TrimEnd('/') + path);"
+ },
+ {
+  "id": "0b235214f6",
+  "cls": "timer-no-dispose",
+  "file": "src/Server/Replication.cs",
+  "line": 34,
+  "code": "public void Start() { timer = new Timer(_ => { try { RunOnce(); } catch (Exception e) { SysLog.Write(null, \"System\", \"error: replication \" + e.Message); } }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(60)); }"
+ },
+ {
+  "id": "ce65bbace5",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Guard.cs",
+  "line": 100,
+  "code": "try { if (File.Exists(FilePath(cfg))) foreach (var e in XDocument.Load(FilePath(cfg)).Root.Elements(\"BLOCK\")) blocked[(string)e.Attribute(\"IP\")] = e; } catch (Exception) { }"
+ },
+ {
+  "id": "e871849b05",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Guard.cs",
+  "line": 106,
+  "code": "try { Atomic.WriteText(FilePath(cfg), new XElement(\"GUARD\", Blocked(cfg).Values.Select(e => new XElement(e))).ToString()); } catch (IOException) { }"
+ },
+ {
+  "id": "71421a18f2",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Guard.cs",
+  "line": 203,
+  "code": "try { Atomic.WriteText(SeenPath(cfg), doc.ToString()); } catch (IOException) { }"
+ },
+ {
+  "id": "7c9b1a569b",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Guard.cs",
+  "line": 211,
+  "code": "static XDocument SeenDoc(SystemConfig cfg) { try { if (File.Exists(SeenPath(cfg))) return XDocument.Load(SeenPath(cfg)); } catch (Exception) { } return new XDocument(new XElement(\"SEEN_LIST\")); }"
+ },
+ {
+  "id": "e5ef556905",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Guard.cs",
+  "line": 218,
+  "code": "System.Threading.ThreadPool.QueueUserWorkItem(_ => { try { m(cfg, subject, html); } catch (Exception) { } });"
+ },
+ {
+  "id": "e83b21ca2f",
+  "cls": "static-dictionary",
+  "file": "src/Server/Guard.cs",
+  "line": 30,
+  "code": "static readonly Dictionary<string, List<KeyValuePair<DateTime, string>>> fails = new Dictionary<string, List<KeyValuePair<DateTime, string>>>();"
+ },
+ {
+  "id": "f64ecb0cda",
+  "cls": "static-dictionary",
+  "file": "src/Server/Guard.cs",
+  "line": 31,
+  "code": "static readonly Dictionary<string, List<DateTime>> probes = new Dictionary<string, List<DateTime>>();"
+ },
+ {
+  "id": "fda62e657c",
+  "cls": "static-dictionary",
+  "file": "src/Server/Guard.cs",
+  "line": 32,
+  "code": "static readonly Dictionary<string, DateTime> alerted = new Dictionary<string, DateTime>();"
+ },
+ {
+  "id": "c739bbb077",
+  "cls": "static-dictionary",
+  "file": "src/Server/Guard.cs",
+  "line": 33,
+  "code": "static readonly Dictionary<string, Dictionary<string, XElement>> blockedBy = new Dictionary<string, Dictionary<string, XElement>>();   // per server (System Home), from guard.xml"
+ },
+ {
+  "id": "1d44d907c4",
+  "cls": "static-dictionary",
+  "file": "src/Server/Guard.cs",
+  "line": 95,
+  "code": "static Dictionary<string, XElement> Blocked(SystemConfig cfg)"
+ },
+ {
+  "id": "abe8ee48be",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Tickets.cs",
+  "line": 220,
+  "code": "if (assignedTo != null && Assigned != null) try { Assigned(t, user); } catch (Exception) { }"
+ },
+ {
+  "id": "0a188ce615",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Tickets.cs",
+  "line": 335,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "4369e4cd56",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetupWizard.cs",
+  "line": 42,
+  "code": "public void Dispose() { try { http.Stop(); http.Close(); } catch { } }"
+ },
+ {
+  "id": "833a7795fd",
+  "cls": "swallowed-exception",
+  "file": "src/Server/SetupWizard.cs",
+  "line": 102,
+  "code": "catch (Exception e) { try { Reply(c, 500, Json.Write(new Dictionary<string, object> { { \"error\", e.Message } })); } catch { } }"
+ },
+ {
+  "id": "27c7643b79",
+  "cls": "static-dictionary",
+  "file": "src/Server/Contract.cs",
+  "line": 110,
+  "code": "static readonly Dictionary<string, List<DateTime>> attempts = new Dictionary<string, List<DateTime>>();"
+ },
+ {
+  "id": "8e66792431",
+  "cls": "swallowed-exception",
+  "file": "src/Server/WebRestore.cs",
+  "line": 122,
+  "code": "finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }"
+ },
+ {
+  "id": "7af94e60b8",
+  "cls": "non-atomic-state",
+  "file": "src/Server/ResticStore.cs",
+  "line": 202,
+  "code": "File.WriteAllText(posFile, last);"
+ },
+ {
+  "id": "c2658719f2",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ApiRestic.cs",
+  "line": 112,
+  "code": "catch { try { res.Abort(); } catch { } }"
+ },
+ {
+  "id": "53363c9c41",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ApiRestic.cs",
+  "line": 117,
+  "code": "try { res.StatusCode = 500; res.ContentLength64 = 0; res.Close(); } catch { try { res.Abort(); } catch { } }"
+ },
+ {
+  "id": "6764b76703",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ApiRestic.cs",
+  "line": 163,
+  "code": "try { var s = Encoding.UTF8.GetString(Convert.FromBase64String(h.Substring(6).Trim())); int i = s.IndexOf(':'); if (i > 0) { user = s.Substring(0, i); pass = s.Substring(i + 1); } } catch (FormatException) { }"
+ },
+ {
+  "id": "64f13875c2",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ConfigBackup.cs",
+  "line": 75,
+  "code": "catch (IOException) { }   // a file being written right now: the next backup has it"
+ },
+ {
+  "id": "b5d3af8f7a",
+  "cls": "swallowed-exception",
+  "file": "src/Server/ConfigBackup.cs",
+  "line": 81,
+  "code": "foreach (var old in Directory.GetFiles(dir, \"config-*.zip\").OrderByDescending(x => x, StringComparer.Ordinal).Skip(Keep)) try { File.Delete(old); } catch (IOException) { }"
+ },
+ {
+  "id": "a6ff482c58",
+  "cls": "catch-all-continue",
+  "file": "src/Server/ConfigBackup.cs",
+  "line": 56,
+  "code": "catch (Exception e) { SysLog.Write(ip, \"System\", \"warn: settings backup copy to \" + copy + \" failed: \" + e.Message); }"
+ },
+ {
+  "id": "12e9514206",
+  "cls": "swallowed-exception",
+  "file": "src/Server/BackupChecks.cs",
+  "line": 48,
+  "code": "foreach (var old in Directory.GetFiles(Dir(cfg), \"sets-*.tsv\").OrderByDescending(x => x, StringComparer.Ordinal).Skip(400)) try { File.Delete(old); } catch (IOException) { }"
+ },
+ {
+  "id": "bfad2ee839",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Computers.cs",
+  "line": 46,
+  "code": "catch (IOException) { }   // a busy file: the next connection notes it"
+ },
+ {
+  "id": "54758534be",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Users.cs",
+  "line": 79,
+  "code": "try { free = new DriveInfo(Path.GetPathRoot(h.Path)).AvailableFreeSpace; } catch { }"
+ },
+ {
+  "id": "29fb55df7c",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Users.cs",
+  "line": 377,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "29fb55df7c",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Users.cs",
+  "line": 408,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "01a2165c18",
+  "cls": "catch-all-continue",
+  "file": "src/Server/RunLog.cs",
+  "line": 33,
+  "code": "catch (Exception e) { SysLog.Write(null, \"System\", \"error: run log \" + e.Message); }"
+ },
+ {
+  "id": "9b612001c4",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Installer.cs",
+  "line": 52,
+  "code": "try { if (File.Exists(InfoFile)) { var x = XElement.Load(InfoFile); if (File.Exists(Path.Combine((string)x.Attribute(\"SYSTEM_HOME\") ?? \"\", \"conf\", \"system.xml\"))) return x; } } catch (Exception) { }"
+ },
+ {
+  "id": "c0e4aad9dd",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Installer.cs",
+  "line": 81,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "334374da4c",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Installer.cs",
+  "line": 153,
+  "code": "try { if (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(e => e.Port == port)) return false; } catch (Exception) { }"
+ },
+ {
+  "id": "ada5135130",
+  "cls": "swallowed-exception",
+  "file": "src/Server/Installer.cs",
+  "line": 154,
+  "code": "try { var iis = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), \"inetsrv\", \"config\", \"applicationHost.config\"); if (File.Exists(iis) && IisBindsPort(File.ReadAllText(iis), port)) return false; }"
+ },
+ {
+  "id": "b081ec0662",
+  "cls": "catch-all-continue",
+  "file": "src/Server/Installer.cs",
+  "line": 373,
+  "code": "catch (Exception e) { say(\"STEP_LICENSE_LATER|\" + e.Message); }"
+ },
+ {
+  "id": "8aeb51c63f",
+  "cls": "static-dictionary",
+  "file": "src/Server/Installer.cs",
+  "line": 58,
+  "code": "public static Dictionary<string, object> Info(string packageServerDir = null)"
+ },
+ {
+  "id": "4abe63d8ce",
+  "cls": "web-no-timeout",
+  "file": "src/Server/Installer.cs",
+  "line": 199,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(\"https://api.ipify.org\"); r.Timeout = 4000;"
+ },
+ {
+  "id": "20bf811c12",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentService.cs",
+  "line": 22,
+  "code": "worker = new Thread(() => app.ServiceLoop(stop.Token, m => { try { EventLog.WriteEntry(Name, m); } catch (Exception) { } })) { IsBackground = true };"
+ },
+ {
+  "id": "7cfcc232b6",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentService.cs",
+  "line": 26,
+  "code": "try { ui = ClientUi.StartForService(app); } catch (Exception e) { try { EventLog.WriteEntry(Name, \"customer screen not started: \" + e.Message); } catch (Exception) { } }"
+ },
+ {
+  "id": "9a41033fa8",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/FolderScan.cs",
+  "line": 24,
+  "code": "try { if (d.DriveType == DriveType.Fixed && d.IsReady) l.Add(d.RootDirectory.FullName); } catch (Exception) { }"
+ },
+ {
+  "id": "cd78ee3277",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 104,
+  "code": "Action<string> say = m => { try { File.AppendAllText(log, DateTime.UtcNow.ToString(\"o\") + \" \" + m + Environment.NewLine); } catch (Exception) { } };"
+ },
+ {
+  "id": "936ad10666",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 105,
+  "code": "Action<string, string> result = (st, why) => { try { File.WriteAllText(ResultPath(to), st + \"\\t\" + NewVersion(from) + \"\\t\" + why + \"\\t\" + DateTime.UtcNow.ToString(\"o\")); } catch (Exception) { } say(st + \": \" + why); };"
+ },
+ {
+  "id": "de7e743a79",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 82,
+  "code": "try { Apply(app, say); } catch (Exception e) { say(\"update: \" + e.Message); }"
+ },
+ {
+  "id": "8170d46865",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 179,
+  "code": "catch (Exception e) { say(\"COULD NOT PUT BACK \" + name + \": \" + e.Message); failed.Add(name); }"
+ },
+ {
+  "id": "198134ddb9",
+  "cls": "raw-process",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 71,
+  "code": "Process.Start(psi);"
+ },
+ {
+  "id": "1329806767",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 68,
+  "code": "File.WriteAllLines(Path.Combine(stage, \"update-files.txt\"), names.ToArray());"
+ },
+ {
+  "id": "cb01a0a76c",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/ClientUpdate.cs",
+  "line": 105,
+  "code": "Action<string, string> result = (st, why) => { try { File.WriteAllText(ResultPath(to), st + \"\\t\" + NewVersion(from) + \"\\t\" + why + \"\\t\" + DateTime.UtcNow.ToString(\"o\")); } catch (Exception) { } say(st + \": \" + why); };"
+ },
+ {
+  "id": "9feb8a2a57",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 67,
+  "code": "ThreadPool.QueueUserWorkItem(_ => { try { Handle(ctx); } catch (Exception) { try { ctx.Response.Abort(); } catch { } } });"
+ },
+ {
+  "id": "f92782b8a9",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 71,
+  "code": "public void Dispose() { try { http.Stop(); http.Close(); } catch { } }"
+ },
+ {
+  "id": "79ef71e77f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 80,
+  "code": "try { if (File.Exists(p)) return XElement.Load(p); } catch (Exception) { }"
+ },
+ {
+  "id": "bb0443738a",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 92,
+  "code": "try { if (File.Exists(cache)) cached = XElement.Load(cache); } catch (Exception) { }"
+ },
+ {
+  "id": "dd23a0169b",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 104,
+  "code": "catch (Exception) { if (cached != null) try { File.SetLastWriteTimeUtc(cache, SystemClock.UtcNow); } catch (Exception) { } }   // offline: keep the last one, try again later"
+ },
+ {
+  "id": "3df725d603",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 232,
+  "code": "try { var c = app.Interactive(b[\"password\"], b[\"otp\"]); lock (gate) { session = c; sessionPassword = b[\"password\"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); } } catch (Exception) { }"
+ },
+ {
+  "id": "2b5bfff67f",
+  "cls": "sync-over-async",
+  "file": "src/Agent/ClientUi.cs",
+  "line": 191,
+  "code": "m.Add(\"jobs\", new Msg().Set(\"id\", j.Id).Set(\"kind\", j.Kind).Set(\"set\", j.Set).Set(\"state\", j.State).Set(\"result\", j.Result).Set(\"detail\", j.Detail).Set(\"started\", RunId.UnixMs(j.Started)));"
+ },
+ {
+  "id": "eeedb23173",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/DbDump.cs",
+  "line": 119,
+  "code": "try { if (File.Exists(tmp)) File.Delete(tmp); } catch (IOException) { }"
+ },
+ {
+  "id": "c8bcb17359",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/DbDump.cs",
+  "line": 131,
+  "code": "catch (Exception e) { warn(\"[PostgreSQL] roles not dumped: \" + e.Message); }"
+ },
+ {
+  "id": "858ab294f9",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/DbDump.cs",
+  "line": 149,
+  "code": "var tmp = sqlFile + \".load.sql\"; File.WriteAllText(tmp, text, new UTF8Encoding(false));"
+ },
+ {
+  "id": "858ab294f9",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/DbDump.cs",
+  "line": 158,
+  "code": "var tmp = sqlFile + \".load.sql\"; File.WriteAllText(tmp, text, new UTF8Encoding(false));"
+ },
+ {
+  "id": "5b58278bb1",
+  "cls": "static-dictionary",
+  "file": "src/Agent/DbDump.cs",
+  "line": 44,
+  "code": "static Dictionary<string, string> Env(BackupSetInfo set, string password)"
+ },
+ {
+  "id": "91dbbc61e8",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Restore.cs",
+  "line": 31,
+  "code": "public void Report(Msg log) { if (!test) try { client.Call(\"POST\", \"/api/sets/\" + setId + \"/restorelog\", log); } catch (AgentException) { } }"
+ },
+ {
+  "id": "b0e6a8f981",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Restore.cs",
+  "line": 149,
+  "code": "catch (Exception) { try { File.Delete(tmp); } catch (IOException) { } throw; }"
+ },
+ {
+  "id": "e55db74041",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Restore.cs",
+  "line": 156,
+  "code": "finally { foreach (var p in paths) try { File.Delete(p); } catch (IOException) { } }"
+ },
+ {
+  "id": "34c6eec2e2",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Program.cs",
+  "line": 208,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "967bc39dac",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Program.cs",
+  "line": 280,
+  "code": "try { Directory.Delete(target, true); } catch (Exception) { }"
+ },
+ {
+  "id": "cd44d6d370",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Program.cs",
+  "line": 305,
+  "code": "for (int i = 0; i < 20 && ui == null; i++) try { ui = new ClientUi(app, port + i); } catch (System.Net.HttpListenerException) { }"
+ },
+ {
+  "id": "44783e23be",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Program.cs",
+  "line": 308,
+  "code": "if (!o.ContainsKey(\"no-browser\")) try { Setup.OpenBrowser(ui.Url); } catch (Exception) { }"
+ },
+ {
+  "id": "997da07b98",
+  "cls": "raw-process",
+  "file": "src/Agent/Program.cs",
+  "line": 149,
+  "code": "try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, string.Join(\" \", args.Select(a => \"\\\"\" + a + \"\\\"\").ToArray())) { UseShell"
+ },
+ {
+  "id": "448f3cfbba",
+  "cls": "static-dictionary",
+  "file": "src/Agent/Program.cs",
+  "line": 361,
+  "code": "static Dictionary<string, List<string>> Parse(string[] args)"
+ },
+ {
+  "id": "de1031a16f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Oracle.cs",
+  "line": 121,
+  "code": "try { if (Directory.Exists(tmp)) Directory.Delete(tmp, true); } catch (IOException) { }"
+ },
+ {
+  "id": "e019c5b8b7",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Oracle.cs",
+  "line": 113,
+  "code": "File.WriteAllText(Path.Combine(tmp, \"RESTORE-README.txt\"), Readme(sid), Encoding.UTF8);"
+ },
+ {
+  "id": "6afbde70d0",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/HyperV.cs",
+  "line": 81,
+  "code": "try { if (Directory.Exists(tmp)) Directory.Delete(tmp, true); } catch (IOException) { }"
+ },
+ {
+  "id": "b201a730b9",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 49,
+  "code": "catch (HttpListenerException e) { last = e; try { http.Close(); } catch (Exception) { } if (port > 0) break; }"
+ },
+ {
+  "id": "d6d6137a7d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 57,
+  "code": "public void Dispose() { try { http.Stop(); http.Close(); } catch (Exception) { } }"
+ },
+ {
+  "id": "fce8e42984",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 78,
+  "code": "ThreadPool.QueueUserWorkItem(_ => { try { Handle(c); } catch (Exception) { try { c.Response.Abort(); } catch (Exception) { } } });"
+ },
+ {
+  "id": "d9455edfa3",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 174,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "d9455edfa3",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 211,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "8b2321e223",
+  "cls": "raw-process",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 172,
+  "code": "System.Diagnostics.Process.Start(psi);"
+ },
+ {
+  "id": "4c144b8564",
+  "cls": "static-dictionary",
+  "file": "src/Agent/SetupUi.cs",
+  "line": 191,
+  "code": "public static Dictionary<string, object> CheckServer(XElement conn, string typed, string lang)"
+ },
+ {
+  "id": "a2ee9beb1c",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 47,
+  "code": "foreach (var p in Process.GetProcessesByName(\"OnlineBackup.Client\")) try { p.Kill(); p.WaitForExit(5000); } catch (Exception) { }"
+ },
+ {
+  "id": "03fcccc545",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 48,
+  "code": "try { ServiceSetup.Stop(); } catch (Exception) { }"
+ },
+ {
+  "id": "c26442e83c",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 72,
+  "code": "try { c2.Save(Path.Combine(r.InstallDir, \"connection.xml\")); } catch (Exception) { }"
+ },
+ {
+  "id": "ee27c0543d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 218,
+  "code": "var ver = \"\"; try { ver = File.ReadAllText(Path.Combine(r.InstallDir, \"version.txt\")).Trim(); } catch (Exception) { }"
+ },
+ {
+  "id": "8221bd9a3a",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 219,
+  "code": "long kb = 0; try { kb = Directory.GetFiles(r.InstallDir).Sum(f => new FileInfo(f).Length) / 1024; } catch (Exception) { }"
+ },
+ {
+  "id": "846088dd3e",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 246,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "a2ee9beb1c",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 260,
+  "code": "foreach (var p in Process.GetProcessesByName(\"OnlineBackup.Client\")) try { p.Kill(); p.WaitForExit(5000); } catch (Exception) { }"
+ },
+ {
+  "id": "1893f48e17",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 263,
+  "code": "try { var l = Path.Combine(Environment.GetFolderPath(d), ClientSafe(product) + \".lnk\"); if (File.Exists(l)) File.Delete(l); } catch (Exception) { }"
+ },
+ {
+  "id": "f2eefa1b6a",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Setup.cs",
+  "line": 265,
+  "code": "try { Microsoft.Win32.Registry.LocalMachine.DeleteSubKeyTree(UninstallKey(folder)); } catch (Exception) { }"
+ },
+ {
+  "id": "a927f65e53",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 92,
+  "code": "try { RegisterUninstall(r, folder, (string)brand.Attribute(\"COMPANY\")); } catch (Exception e) { say(\"Not added to Programs and Features: \" + e.Message); }"
+ },
+ {
+  "id": "97e86dd592",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 110,
+  "code": "catch (Exception e) { say(\"App not created: \" + e.Message); }"
+ },
+ {
+  "id": "ca20f922c9",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 147,
+  "code": "catch (Exception e) { say(\"Shortcut not created: \" + e.Message); }"
+ },
+ {
+  "id": "e98f6d2f5c",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 204,
+  "code": "catch (Exception e) { say(\"Server certificate not saved for restic: \" + e.Message); }"
+ },
+ {
+  "id": "11cd8a5b01",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 267,
+  "code": "try { Directory.Delete(dataDir, true); say(\"This computer's settings removed\"); } catch (Exception e) { say(\"Settings not removed: \" + e.Message); }"
+ },
+ {
+  "id": "c64fe31369",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Setup.cs",
+  "line": 275,
+  "code": "try { Directory.Delete(installDir, true); } catch (Exception e) { say(\"Some files are in use and stay until a restart: \" + e.Message); }"
+ },
+ {
+  "id": "bd269e55bc",
+  "cls": "raw-process",
+  "file": "src/Agent/Setup.cs",
+  "line": 273,
+  "code": "Process.Start(new ProcessStartInfo(\"cmd.exe\", \"/c ping -n 4 127.0.0.1 >nul & rd /s /q \\\"\" + installDir + \"\\\"\") { CreateNoWindow = true, UseShellExecute = false });"
+ },
+ {
+  "id": "468c63d8a6",
+  "cls": "raw-process",
+  "file": "src/Agent/Setup.cs",
+  "line": 430,
+  "code": "if (Environment.OSVersion.Platform == PlatformID.Win32NT) { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); return; }"
+ },
+ {
+  "id": "29267c342a",
+  "cls": "raw-process",
+  "file": "src/Agent/Setup.cs",
+  "line": 431,
+  "code": "Process.Start(new ProcessStartInfo(IsMac ? \"/usr/bin/open\" : \"xdg-open\", \"\\\"\" + url + \"\\\"\") { UseShellExecute = false });"
+ },
+ {
+  "id": "16551b99a7",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Setup.cs",
+  "line": 100,
+  "code": "File.WriteAllText(plist, LaunchdPlist(label, exe, r.DataDir));"
+ },
+ {
+  "id": "f8639df784",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Setup.cs",
+  "line": 120,
+  "code": "File.WriteAllText(unitPath, SystemdUnit(exe, r.DataDir, product));"
+ },
+ {
+  "id": "13131f7830",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Setup.cs",
+  "line": 201,
+  "code": "File.WriteAllText(pem, ServerCertificatePem(new Uri(server), pin));"
+ },
+ {
+  "id": "8b490612a0",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Setup.cs",
+  "line": 372,
+  "code": "File.WriteAllText(Path.Combine(contents, \"Info.plist\"), \"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"?>\\n<!DOCTYPE plist PUBLIC \\\"-//Apple//DTD PLIST 1.0//EN\\\" \\\"http://www.apple.com/DTDs/PropertyList-1.0.dtd\\\">\\n<plist vers"
+ },
+ {
+  "id": "928b20b913",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Setup.cs",
+  "line": 379,
+  "code": "File.WriteAllText(launcher, \"#!/bin/sh\\n# \" + product + \": the customer's screen (served by the background service on 127.0.0.1)\\n\""
+ },
+ {
+  "id": "162d71403f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/DiskImage.cs",
+  "line": 167,
+  "code": "try { Directory.Delete(work, true); } catch (IOException) { }"
+ },
+ {
+  "id": "2cc429bfe2",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/DiskImage.cs",
+  "line": 64,
+  "code": "catch (Exception e) { warn(\"Bare-metal backup failed: \" + e.Message); unreachable.Add(Prefix); items.Clear(); }"
+ },
+ {
+  "id": "09a2322b63",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/DiskImage.cs",
+  "line": 110,
+  "code": "File.WriteAllText(bks, string.Join(\"\\r\\n\", vols.Concat(new[] { \"SystemState\" }).ToArray()) + \"\\r\\n\", Encoding.Unicode);"
+ },
+ {
+  "id": "43f5715aaa",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 39,
+  "code": "try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch (NotSupportedException) { }"
+ },
+ {
+  "id": "060c689873",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 69,
+  "code": "try { using (var rd = new StreamReader(e.Response.GetResponseStream())) code = Json.Str(Json.Obj(Json.Parse(rd.ReadToEnd())), \"error\") ?? code; } catch { }"
+ },
+ {
+  "id": "5d991dc3c3",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 89,
+  "code": "try { using (var rd = new StreamReader(resp.GetResponseStream())) text = rd.ReadToEnd(); } catch { }"
+ },
+ {
+  "id": "b372699389",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 93,
+  "code": "try { msg = Json.Str(Json.Child(Json.Obj(Json.Parse(text)), \"error\"), \"message\") ?? text; } catch { }"
+ },
+ {
+  "id": "4d0cc84655",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 291,
+  "code": "File.WriteAllBytes(Full(rel), raw);"
+ },
+ {
+  "id": "4bce8d74f8",
+  "cls": "static-dictionary",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 190,
+  "code": "static readonly Dictionary<string, string[]> Exports = new Dictionary<string, string[]>"
+ },
+ {
+  "id": "f6a54cad6b",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 52,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(TokenUrl);"
+ },
+ {
+  "id": "858fa5ca9c",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/GoogleWorkspace.cs",
+  "line": 78,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(url.StartsWith(\"http\") ? url : Api + url);"
+ },
+ {
+  "id": "afe3bded31",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 113,
+  "code": "p => { if (set.LowPriority) try { p.PriorityClass = ProcessPriorityClass.BelowNormal; } catch (Exception) { } },   // RES-010"
+ },
+ {
+  "id": "10c9b9bc9b",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 115,
+  "code": "onLine: line => { if (OnStatus != null && line.Contains(\"\\\"message_type\\\":\\\"status\\\"\")) { try { OnStatus(line); } catch (Exception) { } } });"
+ },
+ {
+  "id": "677e900db7",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 277,
+  "code": "finally { run.StopHeartbeat(); if (clean) try { File.Delete(RunningFlag); } catch (IOException) { } Commands.Run(set.PostCommands, \"post\", m => log.Add(AhsayLog.Info(Clock(), m)), m => { run.Warnings++; log.Add(AhsayLog."
+ },
+ {
+  "id": "2db22e6d36",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 309,
+  "code": "try { if (File.Exists(f) && RunId.TryParse(File.ReadAllText(f).Trim(), out last) && started <= last) started = last.AddSeconds(1); } catch (IOException) { }"
+ },
+ {
+  "id": "b28100386e",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 327,
+  "code": "catch (AgentException) { }"
+ },
+ {
+  "id": "dcb1a2b22e",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 378,
+  "code": "finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }"
+ },
+ {
+  "id": "dcb1a2b22e",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 401,
+  "code": "finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }"
+ },
+ {
+  "id": "63d4f23a16",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 424,
+  "code": "try { alive = !Process.GetProcessById(pid).HasExited && pid != Process.GetCurrentProcess().Id; } catch (ArgumentException) { } catch (InvalidOperationException) { }"
+ },
+ {
+  "id": "63d4f23a16",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 424,
+  "code": "try { alive = !Process.GetProcessById(pid).HasExited && pid != Process.GetCurrentProcess().Id; } catch (ArgumentException) { } catch (InvalidOperationException) { }"
+ },
+ {
+  "id": "c9652643bf",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 515,
+  "code": "if (UnlockAfterDeadRun(notes) == true) try { File.Delete(RunningFlag); } catch (IOException) { }"
+ },
+ {
+  "id": "92dbbae77d",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 162,
+  "code": "File.WriteAllText(flag, RunId.From(Clock()));"
+ },
+ {
+  "id": "a8385ef6e0",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 292,
+  "code": "if (report[\"files\"] != null) File.WriteAllText(prev, report[\"files\"]);"
+ },
+ {
+  "id": "05ba46d163",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/ResticRunner.cs",
+  "line": 414,
+  "code": "File.WriteAllText(RunningFlag, Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));"
+ },
+ {
+  "id": "0bbd151f05",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Domino.cs",
+  "line": 90,
+  "code": "catch (Exception e) { warn(\"[Domino] dbcache flush: \" + e.Message); }"
+ },
+ {
+  "id": "a7126d7258",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Domino.cs",
+  "line": 98,
+  "code": "catch (Exception e) { warn(\"[Domino] VSS writers not checked: \" + e.Message); }"
+ },
+ {
+  "id": "5167dc7863",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BuiltinTls.cs",
+  "line": 30,
+  "code": "public void Close() { try { Body.Dispose(); } catch { } try { Tcp.Close(); } catch { } }"
+ },
+ {
+  "id": "5167dc7863",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BuiltinTls.cs",
+  "line": 30,
+  "code": "public void Close() { try { Body.Dispose(); } catch { } try { Tcp.Close(); } catch { } }"
+ },
+ {
+  "id": "5031bccbde",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Resources.cs",
+  "line": 52,
+  "code": "try { var p = Process.GetCurrentProcess(); var old = p.PriorityClass; p.PriorityClass = ProcessPriorityClass.BelowNormal; return new Restore(() => { try { p.PriorityClass = old; } catch (Exception) { } }); }"
+ },
+ {
+  "id": "9a65d01aa2",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 125,
+  "code": "if (st != null && (DateTime.UtcNow - updAt).TotalMinutes > 30) { updAt = DateTime.UtcNow; try { u = api.Call(\"update\", null, null); } catch (Exception) { } }"
+ },
+ {
+  "id": "5828688eec",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 144,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "59b0b8d1e7",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 160,
+  "code": "string saved { get { try { return (string)Microsoft.Win32.Registry.GetValue(@\"HKEY_CURRENT_USER\\Software\\OnlineBackup\", \"Language\", null); } catch (Exception) { return null; } } set { try { Microsoft.Win32.Registry.SetVa"
+ },
+ {
+  "id": "847f50c8d3",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 165,
+  "code": "try { var f = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, \"language.txt\"); if (File.Exists(f)) { var v = File.ReadAllText(f).Trim(); if (v.Length > 0) return L.Norm(v); } } catch (Exception) { }"
+ },
+ {
+  "id": "6f08d8b84f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 169,
+  "code": "static Color Hex(string h, Color d) { try { if (!string.IsNullOrEmpty(h) && h.Length == 7 && h[0] == '#') return ColorTranslator.FromHtml(h); } catch (Exception) { } return d; }"
+ },
+ {
+  "id": "5828688eec",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 200,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "fa6ce95d18",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 434,
+  "code": "try { BeginInvoke(new Action(() => AfterCheck(chk, err))); } catch (Exception) { }"
+ },
+ {
+  "id": "5828688eec",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 466,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "5828688eec",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 740,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "351248790e",
+  "cls": "static-dictionary",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 299,
+  "code": "static readonly Dictionary<string, string> Names = new Dictionary<string, string> { { \"en\", \"English\" }, { \"he\", \"\u05e2\u05d1\u05e8\u05d9\u05ea\" } };"
+ },
+ {
+  "id": "f92d587a7f",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/ClientForm.cs",
+  "line": 33,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(baseUrl + op + q);"
+ },
+ {
+  "id": "28b23c01f6",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Vss.cs",
+  "line": 55,
+  "code": "foreach (var l in links.Values) try { Directory.Delete(l); } catch (Exception) { }"
+ },
+ {
+  "id": "adb496f70e",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Vss.cs",
+  "line": 56,
+  "code": "foreach (var id in ids) try { Run(\"vssadmin\", \"delete shadows /shadow=\" + id + \" /quiet\"); } catch (Exception) { }"
+ },
+ {
+  "id": "dc92d04af6",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Vss.cs",
+  "line": 39,
+  "code": "catch (Exception e) { warn(\"Shadow Copy of \" + vol + \" failed: \" + e.Message); }"
+ },
+ {
+  "id": "f869d326bc",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/VMware.cs",
+  "line": 30,
+  "code": "try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch (NotSupportedException) { }"
+ },
+ {
+  "id": "0b07fec33d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/VMware.cs",
+  "line": 73,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "5ad37e8a0a",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/VMware.cs",
+  "line": 86,
+  "code": "try { Call(\"<Logout xmlns=\\\"urn:vim25\\\"><_this type=\\\"SessionManager\\\">\" + X(SessionManager) + \"</_this></Logout>\"); } catch (Exception) { }"
+ },
+ {
+  "id": "047822e66c",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/VMware.cs",
+  "line": 99,
+  "code": "finally { try { Call(\"<DestroyView xmlns=\\\"urn:vim25\\\"><_this type=\\\"ContainerView\\\">\" + X(view) + \"</_this></DestroyView>\"); } catch (Exception) { } }"
+ },
+ {
+  "id": "9031b67126",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/VMware.cs",
+  "line": 297,
+  "code": "try { if (Directory.Exists(tmp)) Directory.Delete(tmp, true); } catch (IOException) { }"
+ },
+ {
+  "id": "e94c6bf67b",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/VMware.cs",
+  "line": 304,
+  "code": "catch (Exception e) { warn(\"[VMware] \" + vmName + \": the backup snapshot could not be removed \u2014 remove \\\"\" + SnapName + \"\\\" in vSphere: \" + e.Message); }"
+ },
+ {
+  "id": "5c52151a2f",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/VMware.cs",
+  "line": 289,
+  "code": "File.WriteAllText(Path.Combine(tmp, \"vm-info.txt\"), \"name=\" + vmName + \"\\r\\nvmx=\" + vmx + \"\\r\\nhost=\" + set.DbHost + \"\\r\\ndatacenter=\" + v.Datacenter + \"\\r\\nfiles=\" + string.Join(\";\", keep.ToArray()) + \"\\r\\n\", Encoding.U"
+ },
+ {
+  "id": "93a5c4ab64",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/VMware.cs",
+  "line": 51,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(Base + \"/sdk\");"
+ },
+ {
+  "id": "af776ef996",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/VMware.cs",
+  "line": 170,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(FolderUrl(p.Key, p.Value));"
+ },
+ {
+  "id": "e91d51decb",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/VMware.cs",
+  "line": 183,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(FolderUrl(ds, path));"
+ },
+ {
+  "id": "65b6e649f5",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/M365.cs",
+  "line": 32,
+  "code": "try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch (NotSupportedException) { }"
+ },
+ {
+  "id": "9cebcf899d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/M365.cs",
+  "line": 64,
+  "code": "try { using (var rd = new StreamReader(e.Response.GetResponseStream())) code = Json.Str(Json.Obj(Json.Parse(rd.ReadToEnd())), \"error\") ?? code; } catch { }"
+ },
+ {
+  "id": "59a410da9a",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/M365.cs",
+  "line": 102,
+  "code": "catch { }"
+ },
+ {
+  "id": "54b24d1be2",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/M365.cs",
+  "line": 326,
+  "code": "try { messages = Json.Obj(Json.Parse(File.ReadAllText(Full((string)oldRel), Encoding.UTF8))); } catch (FormatException) { }"
+ },
+ {
+  "id": "685fee7753",
+  "cls": "static-dictionary",
+  "file": "src/Agent/M365.cs",
+  "line": 601,
+  "code": "static Dictionary<string, object> Writable(Dictionary<string, object> item, string[] fields)"
+ },
+ {
+  "id": "cbf65c5e96",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/M365.cs",
+  "line": 46,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(LoginBase + \"/\" + Uri.EscapeDataString(tenant) + \"/oauth2/v2.0/token\");"
+ },
+ {
+  "id": "7aa52b909f",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/M365.cs",
+  "line": 75,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(Abs(url));"
+ },
+ {
+  "id": "1a2ccd9a40",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Client.cs",
+  "line": 98,
+  "code": "try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch (NotSupportedException) { }"
+ },
+ {
+  "id": "bb62491c60",
+  "cls": "static-dictionary",
+  "file": "src/Agent/Client.cs",
+  "line": 64,
+  "code": "static readonly Dictionary<string, string> hostPins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);"
+ },
+ {
+  "id": "5dfed46a8f",
+  "cls": "web-no-timeout",
+  "file": "src/Agent/Client.cs",
+  "line": 107,
+  "code": "var r = (HttpWebRequest)WebRequest.Create(baseUrl + path);"
+ },
+ {
+  "id": "da765cb69d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 61,
+  "code": "try { if (!string.IsNullOrEmpty(hex) && hex.Length == 7 && hex[0] == '#') return ColorTranslator.FromHtml(hex); } catch (Exception) { }"
+ },
+ {
+  "id": "2b1c515b26",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 76,
+  "code": "if (lg.StartsWith(\"data:image/\") && comma > 0) try { logo = Image.FromStream(new MemoryStream(Convert.FromBase64String(lg.Substring(comma + 1)))); } catch (Exception) { }"
+ },
+ {
+  "id": "8e80ed3833",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 79,
+  "code": "try { var sv = L.Norm((string)Microsoft.Win32.Registry.GetValue(@\"HKEY_CURRENT_USER\\Software\\OnlineBackup\", \"Language\", null)); if (!string.IsNullOrEmpty(sv)) lang = sv; } catch (Exception) { }"
+ },
+ {
+  "id": "daa18d6389",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 86,
+  "code": "try { Icon = Icon.ExtractAssociatedIcon(System.Reflection.Assembly.GetExecutingAssembly().Location); } catch (Exception) { }"
+ },
+ {
+  "id": "98a2007d36",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 97,
+  "code": "langBox.SelectedIndexChanged += (s, e) => { lang = ((LangItem)langBox.SelectedItem).Code; try { Microsoft.Win32.Registry.SetValue(@\"HKEY_CURRENT_USER\\Software\\OnlineBackup\", \"Language\", lang); } catch (Exception) { } Ren"
+ },
+ {
+  "id": "94792819ac",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 325,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "ce06a901bf",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 326,
+  "code": "try { if (text == null && File.Exists(own)) text = File.ReadAllText(own); } catch (Exception) { }"
+ },
+ {
+  "id": "38305d850f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 367,
+  "code": "catch (Exception) { try { System.Diagnostics.Process.Start(gui); } catch (Exception) { } }"
+ },
+ {
+  "id": "584cf50379",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 379,
+  "code": "Action<string> say = m => { lock (lines) lines.Add(m); try { BeginInvoke(new Action(Render)); } catch (Exception) { } };"
+ },
+ {
+  "id": "16e22def66",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 392,
+  "code": "try { File.WriteAllText(Path.Combine(result.InstallDir, \"language.txt\"), lang); } catch (Exception) { }   // the program opens in the language of the installation"
+ },
+ {
+  "id": "a84bb53c80",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 394,
+  "code": "if (accepted != null) try { File.WriteAllText(Path.Combine(result.InstallDir, \"contract-accepted.txt\"), accepted); } catch (Exception) { }"
+ },
+ {
+  "id": "3b4ce378a8",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 398,
+  "code": "try { BeginInvoke(new Action(() => { busy = false; finished = true; step = StepNames.Length - 1; Render(); })); } catch (Exception) { }"
+ },
+ {
+  "id": "c39a935d26",
+  "cls": "raw-process",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 366,
+  "code": "try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), \"explorer.exe\"), \"\\\"\" + gui + \"\\\"\") { UseShellExecute = false }); "
+ },
+ {
+  "id": "c555bfd89f",
+  "cls": "raw-process",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 367,
+  "code": "catch (Exception) { try { System.Diagnostics.Process.Start(gui); } catch (Exception) { } }"
+ },
+ {
+  "id": "3c43756c21",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 392,
+  "code": "try { File.WriteAllText(Path.Combine(result.InstallDir, \"language.txt\"), lang); } catch (Exception) { }   // the program opens in the language of the installation"
+ },
+ {
+  "id": "0e50440b15",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 394,
+  "code": "if (accepted != null) try { File.WriteAllText(Path.Combine(result.InstallDir, \"contract-accepted.txt\"), accepted); } catch (Exception) { }"
+ },
+ {
+  "id": "23f4481bd1",
+  "cls": "static-dictionary",
+  "file": "src/Agent/SetupForm.cs",
+  "line": 117,
+  "code": "static readonly Dictionary<string, string> Names = new Dictionary<string, string> { { \"en\", \"English\" }, { \"he\", \"\u05e2\u05d1\u05e8\u05d9\u05ea\" } };"
+ },
+ {
+  "id": "1099a82e1f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 75,
+  "code": "internal static void ClearMarker(AgentHome home, string setId) { try { File.Delete(MarkerPath(home, setId)); } catch (IOException) { } catch (UnauthorizedAccessException) { } }"
+ },
+ {
+  "id": "1099a82e1f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 75,
+  "code": "internal static void ClearMarker(AgentHome home, string setId) { try { File.Delete(MarkerPath(home, setId)); } catch (IOException) { } catch (UnauthorizedAccessException) { } }"
+ },
+ {
+  "id": "163c900d6d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 86,
+  "code": "try { client.Call(\"POST\", \"/api/sets/\" + set.Id + \"/progress\", new Msg().Set(\"job\", Job).Set(\"files\", files).Set(\"bytes\", bytes).Set(\"current\", current).Set(\"percent\", percent >= 0 ? (object)percent : null)); } catch (Ex"
+ },
+ {
+  "id": "85762305fc",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 118,
+  "code": "try { Job = client.Call(\"POST\", \"/api/sets/\" + set.Id + \"/begin?key=\" + beginKey)[\"job\"]; client.Call(\"POST\", \"/api/sets/\" + set.Id + \"/jobs/\" + Job + \"/abort\", LogMsg()); } catch (AgentException) { }"
+ },
+ {
+  "id": "50b6cece97",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 299,
+  "code": "if (Job != null) try { client.Call(\"POST\", \"/api/sets/\" + set.Id + \"/jobs/\" + Job + \"/abort\", LogMsg()); endConfirmed = true; } catch (AgentException) { }"
+ },
+ {
+  "id": "1f0f4732ca",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 300,
+  "code": "if (local != null) try { local.Abort(); } catch (Exception) { }"
+ },
+ {
+  "id": "880f68b66d",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 309,
+  "code": "try { var dumps = Path.Combine(tmp, \"mssql\"); if (Directory.Exists(dumps)) Directory.Delete(dumps, true); } catch (Exception) { }"
+ },
+ {
+  "id": "bbc8fe1b4f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 322,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "7ce6a4ca13",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 443,
+  "code": "if (localStream != null) try { localStream.Dispose(); } catch (Exception) { }"
+ },
+ {
+  "id": "bbc8fe1b4f",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 522,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "ffa3e8c7bb",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 154,
+  "code": "catch (Exception e) { Warn(\"[Local Copy] not available: \" + e.Message); local = null; }"
+ },
+ {
+  "id": "6d4e91c085",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 286,
+  "code": "catch (Exception e) { Warnings++; Info(\"[Local Copy] failed: \" + e.Message); }"
+ },
+ {
+  "id": "1775cdeb2e",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 419,
+  "code": "if (local != null) try { localStream = local.Open(rel, seq); } catch (Exception e) { Warn(\"[Local Copy] \" + e.Message); }"
+ },
+ {
+  "id": "822197836a",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 551,
+  "code": "catch (Exception e) { warn(kind + \"-command failed: \" + c + \": \" + e.Message); ok = false; }"
+ },
+ {
+  "id": "f694d05398",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 73,
+  "code": "File.WriteAllText(MarkerPath(home, setId), job + \"\\t\" + RunId.UnixMs(started) + \"\\t\" + me.Id + \"\\t\" + RunId.UnixMs(me.StartTime.ToUniversalTime()));"
+ },
+ {
+  "id": "ab6004765c",
+  "cls": "timer-no-dispose",
+  "file": "src/Agent/BackupRun.cs",
+  "line": 63,
+  "code": "heartbeat = new System.Threading.Timer(_ => SendProgress(lastFiles, lastBytes, lastCurrent, lastPercent), null, 60000, 60000);"
+ },
+ {
+  "id": "b6e48d0271",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Sources.cs",
+  "line": 170,
+  "code": "catch (Exception) { }"
+ },
+ {
+  "id": "3e9c049577",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/Sources.cs",
+  "line": 219,
+  "code": "if (set.SqlFullDay >= 0) try { Directory.CreateDirectory(System.IO.Path.GetDirectoryName(marker)); File.WriteAllText(marker, lastFull()); } catch (Exception) { }"
+ },
+ {
+  "id": "0166929f71",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Sources.cs",
+  "line": 162,
+  "code": "catch (Exception e) { warn(\"Cannot list databases of \" + instance + \": \" + e.Message); unreachable.Add(src); continue; }"
+ },
+ {
+  "id": "7bdccb1987",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Sources.cs",
+  "line": 226,
+  "code": "catch (Exception e)"
+ },
+ {
+  "id": "3ba2d31b83",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/Sources.cs",
+  "line": 306,
+  "code": "catch (Exception e) { warn(\"System State backup failed: \" + e.Message); unreachable.Add(\"System State\"); }"
+ },
+ {
+  "id": "1f3f5574ae",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/Sources.cs",
+  "line": 219,
+  "code": "if (set.SqlFullDay >= 0) try { Directory.CreateDirectory(System.IO.Path.GetDirectoryName(marker)); File.WriteAllText(marker, lastFull()); } catch (Exception) { }"
+ },
+ {
+  "id": "b267008bda",
+  "cls": "sql-concat",
+  "file": "src/Agent/Sources.cs",
+  "line": 129,
+  "code": "var q = modern ? \"SET NOCOUNT ON; SELECT CAST(SUM(CAST(size AS bigint)) * 8192 AS varchar(30)) FROM sys.master_files WHERE type = 0 AND database_id = DB_ID('\" + db.Replace(\"'\", \"''\") + \"')\""
+ },
+ {
+  "id": "427e5e2027",
+  "cls": "sql-concat",
+  "file": "src/Agent/Sources.cs",
+  "line": 130,
+  "code": ": \"SET NOCOUNT ON; SELECT CAST(SUM(CAST(size AS bigint)) * 8192 AS varchar(30)) FROM master..sysaltfiles WHERE dbid = DB_ID('\" + db.Replace(\"'\", \"''\") + \"') AND (status & 0x40) = 0\";"
+ },
+ {
+  "id": "0fbe607ac1",
+  "cls": "sql-concat",
+  "file": "src/Agent/Sources.cs",
+  "line": 191,
+  "code": "Func<string> lastFull = () => run(instance, \"SET NOCOUNT ON; SELECT TOP 1 CONVERT(varchar(33), backup_finish_date, 126) FROM msdb..backupset WHERE database_name='\" + db.Replace(\"'\", \"''\") + \"' AND type='D' AND is_copy_on"
+ },
+ {
+  "id": "cff9f259fa",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 98,
+  "code": "if (k == null) try { k = KeySet.FromRaw(Convert.FromBase64String(DeviceClient().Call(\"GET\", \"/api/sets/\" + s.Id + \"/sharedkey\")[\"key\"])); } catch (AgentException) { }"
+ },
+ {
+  "id": "d5965ae5a0",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 145,
+  "code": "catch (ArgumentException) { } catch (InvalidOperationException) { } catch (System.ComponentModel.Win32Exception) { }"
+ },
+ {
+  "id": "d5965ae5a0",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 145,
+  "code": "catch (ArgumentException) { } catch (InvalidOperationException) { } catch (System.ComponentModel.Win32Exception) { }"
+ },
+ {
+  "id": "d5965ae5a0",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 145,
+  "code": "catch (ArgumentException) { } catch (InvalidOperationException) { } catch (System.ComponentModel.Win32Exception) { }"
+ },
+ {
+  "id": "fa39d22cd4",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 163,
+  "code": "try { ReportInterrupted(s.Id); } catch (AgentException) { }   // the server is told before the new run begins"
+ },
+ {
+  "id": "083768ca11",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 192,
+  "code": "try { if (!File.Exists(OfflineFile)) File.WriteAllText(OfflineFile, RunId.UnixMs(nowUtc).ToString(System.Globalization.CultureInfo.InvariantCulture)); } catch (IOException) { }"
+ },
+ {
+  "id": "4e2177c56b",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 204,
+  "code": "catch (IOException) { }"
+ },
+ {
+  "id": "b7d2d90d61",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 233,
+  "code": "try { var cur = Sets().FirstOrDefault(x => x.Id == s.Id); stop = cur != null && cur.StopRequest > since; } catch (Exception) { }"
+ },
+ {
+  "id": "d0a4776e93",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 343,
+  "code": "finally { try { Directory.Delete(dir, true); } catch (Exception) { } }"
+ },
+ {
+  "id": "d17eaa1985",
+  "cls": "swallowed-exception",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 482,
+  "code": "foreach (var s in prof.Sets) try { if (ReportInterrupted(s.Id)) say(s.Name + \": the previous backup was interrupted \u2014 reported\"); } catch (AgentException) { }"
+ },
+ {
+  "id": "1a3040646d",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 484,
+  "code": "try { SendFolders(prof, SystemClock.UtcNow); } catch (Exception e) { say(\"folders: \" + e.Message); }"
+ },
+ {
+  "id": "55fc13d136",
+  "cls": "catch-all-continue",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 493,
+  "code": "catch (Exception e) { say(\"error: \" + e.Message); }"
+ },
+ {
+  "id": "e5660ec2b0",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 176,
+  "code": "File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == \"LOG\" ? \"last-log.txt\" : \"last-attempt.txt\"), RunId.From(SystemClock.UtcNow) + \"\\tNETWORK\");"
+ },
+ {
+  "id": "f37693ce4a",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 180,
+  "code": "File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == \"LOG\" ? \"last-log.txt\" : \"last-attempt.txt\"), RunId.From(SystemClock.UtcNow) + \"\\t\" + run.Result);"
+ },
+ {
+  "id": "5900b0bdc8",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 192,
+  "code": "try { if (!File.Exists(OfflineFile)) File.WriteAllText(OfflineFile, RunId.UnixMs(nowUtc).ToString(System.Globalization.CultureInfo.InvariantCulture)); } catch (IOException) { }"
+ },
+ {
+  "id": "b69010a7aa",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 201,
+  "code": "File.WriteAllText(BackFile, File.ReadAllText(OfflineFile).Trim() + \"\\t\" + RunId.UnixMs(nowUtc).ToString(System.Globalization.CultureInfo.InvariantCulture));"
+ },
+ {
+  "id": "5470a6cf2f",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 245,
+  "code": "File.WriteAllText(f, s.RunRequest.ToString(System.Globalization.CultureInfo.InvariantCulture));"
+ },
+ {
+  "id": "dfafe2bba4",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 279,
+  "code": "File.WriteAllText(p, RunId.From(utc));"
+ },
+ {
+  "id": "cd2a20b44d",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 431,
+  "code": "if (seen.Length != 2 || seen[0] != key || !long.TryParse(seen[1], out first)) { File.WriteAllText(seenFile, key + \"\\t\" + nowLocal.Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture)); return false; }"
+ },
+ {
+  "id": "c995cb01b2",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 466,
+  "code": "File.WriteAllLines(openFile, open.ToArray());"
+ },
+ {
+  "id": "da4a56999e",
+  "cls": "non-atomic-state",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 467,
+  "code": "File.WriteAllText(stateFile, now.ToString(System.Globalization.CultureInfo.InvariantCulture));"
+ },
+ {
+  "id": "5cf86fe08b",
+  "cls": "sync-over-async",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 180,
+  "code": "File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == \"LOG\" ? \"last-log.txt\" : \"last-attempt.txt\"), RunId.From(SystemClock.UtcNow) + \"\\t\" + run.Result);"
+ },
+ {
+  "id": "9843a025a9",
+  "cls": "sync-over-async",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 487,
+  "code": "if (RunRequested(s) || Due(s, SystemClock.Now)) { var r = Backup(s.Id); say(s.Name + \": \" + r.Result); }"
+ },
+ {
+  "id": "0f82975b87",
+  "cls": "sync-over-async",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 488,
+  "code": "else if (LogDue(s, SystemClock.UtcNow)) { var r = Backup(s.Id, \"LOG\"); say(s.Name + \" (log): \" + r.Result); }"
+ },
+ {
+  "id": "4e19aab446",
+  "cls": "static-dictionary",
+  "file": "src/Agent/AgentApp.cs",
+  "line": 120,
+  "code": "static readonly Dictionary<string, object> running = new Dictionary<string, object>();"
+ },
+ {
+  "id": "9bcf42f74a",
+  "cls": "swallowed-exception",
+  "file": "src/Setup/Program.cs",
+  "line": 61,
+  "code": "try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(\"cmd.exe\", \"/c ping -n 4 127.0.0.1 >nul & rd /s /q \\\"\" + temp + \"\\\"\") { CreateNoWindow = true, UseShellExecute = false }); } catch (Exception"
+ },
+ {
+  "id": "741a215b0d",
+  "cls": "raw-process",
+  "file": "src/Setup/Program.cs",
+  "line": 61,
+  "code": "try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(\"cmd.exe\", \"/c ping -n 4 127.0.0.1 >nul & rd /s /q \\\"\" + temp + \"\\\"\") { CreateNoWindow = true, UseShellExecute = false }); } catch (Exception"
+ },
+ {
+  "id": "3b5c25c19d",
+  "cls": "swallowed-exception",
+  "file": "src/ClientApp/Program.cs",
+  "line": 27,
+  "code": "catch (Exception) { }"
+ }
+]

@@ -1,0 +1,17 @@
+/* AI-080: the data-protection report (opened from the management site) */
+body{font:14px/1.5 system-ui,Segoe UI,Arial,sans-serif;color:#111;max-width:900px;margin:24px auto;padding:0 16px}
+h1{font-size:22px;margin:0}
+h2{font-size:17px;margin:22px 0 6px;border-bottom:2px solid #ddd;padding-bottom:3px}
+table{border-collapse:collapse;width:100%;margin:6px 0}
+td,th{border:1px solid #ccc;padding:5px 7px;text-align:start;vertical-align:top}
+th{background:#f3f3f3}
+.ok{color:#0a7a2f;font-weight:600}
+.bad{color:#b00020;font-weight:600}
+.muted{color:#666;font-size:12px}
+.num{direction:ltr;unicode-bidi:isolate;display:inline-block}
+.sig{display:flex;gap:40px;margin-top:40px}
+.sig div{flex:1;border-top:1px solid #333;padding-top:4px}
+@media print{.noprint{display:none}
+body{margin:0}
+}
+th.k{width:34%}

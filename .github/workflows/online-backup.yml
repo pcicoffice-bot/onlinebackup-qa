@@ -1,0 +1,163 @@
+# QA-010: the quality gate. Every push and every pull request runs all the checks; the installation package is built
+# ONLY when every check passed (a broken version never becomes a package). Every night the same checks run again, so a
+# change outside the code (a download, a browser, a certificate) is noticed the next morning, not on a customer's machine.
+name: Online Backup — quality gate and package
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '17 1 * * *'   # every night, 01:17 UTC
+  workflow_dispatch:
+# a newer push of the same branch replaces a run still going (only the latest version matters; saves Actions minutes)
+concurrency:
+  group: ob-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+env:
+  RESTIC_URL: https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_amd64.bz2
+  RESTIC_SHA: 680838f19d67151adba227e1570cdd8af12c19cf1735783ed1ba928bc41f363d
+jobs:
+  tests:
+    # 1. every unit and end-to-end test (backup → restore byte for byte, every engine and source type, security,
+    #    licensing, portal, translations, the layout lint)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: restic for the tests (checked against its published SHA-256)
+        run: |
+          curl -sSL -o restic.bz2 "$RESTIC_URL" && echo "$RESTIC_SHA  restic.bz2" | sha256sum -c -
+          bunzip2 -c restic.bz2 > restic && chmod 755 restic && rm restic.bz2
+          echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
+      - name: Security scan — libraries with known flaws, secrets in the code (SEC-090)
+        run: tools/security-scan.sh
+      - name: Tests
+        run: ./run-tests.sh
+      - name: Load — 500 customers, 5,000 sets, 50 computers at once (LOAD-010)
+        run: OB_LOAD=1 OB_LOAD_OUT=$PWD/load-report.txt dotnet test tests/Tests --filter "FullyQualifiedName~LoadTests"; r=$?; cat load-report.txt; exit $r
+  windows:
+    # 1b. the same tests on Windows Server — the system the server and most clients run on (paths, services,
+    #     shadow copy, the Windows build of every program). Reported, not yet a gate: it starts as a look.
+    runs-on: windows-latest
+    timeout-minutes: 90
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build
+        run: |
+          dotnet build src/Agent -nologo -v q
+          dotnet build tests/Tests -nologo -v q
+      - name: Client installation program and the client program — every page as Windows draws it (Hebrew and English)
+        shell: pwsh
+        run: |
+          dotnet build src/Setup -c Release -o setupbin -nologo -v q
+          New-Item -ItemType Directory -Force shotpkg | Out-Null
+          Set-Content -Encoding UTF8 shotpkg/connection.xml '<CONNECTION SERVER="https://backup.example.com:8443" FOLDER="Acme" />'
+          Set-Content -Encoding UTF8 shotpkg/branding.xml '<BRANDING PRODUCT="Acme Backup" COMPANY="Acme IT" LANGUAGE="he" COLOR="#4F46E5" ACCENT="#F97316" />'
+          foreach ($l in 'he','en') { & ./setupbin/OnlineBackup.Agent.exe setup-screens --package "$pwd/shotpkg" --out "$pwd/shots" --lang $l; & ./setupbin/OnlineBackup.Agent.exe client-screens --out "$pwd/shots" --lang $l }
+          Get-ChildItem shots/*.png | ForEach-Object { "=== PNG $($_.Name)"; [Convert]::ToBase64String([IO.File]::ReadAllBytes($_.FullName)); "=== END" }
+      - name: Client robot — typing is kept on every page (UI-030)
+        shell: pwsh
+        run: |
+          $csc = "$env:WINDIR\Microsoft.NET\Framework64\v4.0.30319\csc.exe"
+          Copy-Item tools/client-check/*.cs setupbin/
+          Push-Location setupbin
+          & $csc /nologo /r:OnlineBackup.Agent.exe /r:OnlineBackup.Core.dll /r:System.Windows.Forms.dll /r:System.Drawing.dll /out:typing-check.exe typing-check.cs
+          & $csc /nologo /r:OnlineBackup.Agent.exe /r:OnlineBackup.Core.dll /r:System.Windows.Forms.dll /r:System.Drawing.dll /out:pages-check.exe pages-check.cs
+          $a = (& ./typing-check.exe | Out-String); $a
+          $b = (& ./pages-check.exe | Out-String); $b
+          Pop-Location
+          if ($a -match 'disposed=True' -or $b -notmatch 'ALL KEPT') { Write-Error 'The client throws away what is typed'; exit 1 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-setup-screens
+          path: shots
+          retention-days: 14
+      - name: Tests (Windows)
+        run: dotnet test tests/Tests --no-build -nologo --logger "console;verbosity=normal"
+  screens:
+    # 2. UI-020: every screen of the product, every language, computer and phone — the report (with screenshots) is kept
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: restic and the browser
+        run: |
+          curl -sSL -o restic.bz2 "$RESTIC_URL" && echo "$RESTIC_SHA  restic.bz2" | sha256sum -c -
+          bunzip2 -c restic.bz2 > restic && chmod 755 restic && rm restic.bz2
+          echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
+          npm install --no-save playwright@1
+          npx playwright install --with-deps chromium
+      - name: Screen check (all languages)
+        run: OUT=ui-report NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
+      - name: Real phones and a tablet (touch, small screen, landscape) — Hebrew and English
+        if: always()
+        run: OUT=ui-report/devices LANGS="he en" DEVICES="phone-small phone-landscape tablet" NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
+      - name: Every option — changed, saved, read back (OPT-020)
+        if: always()
+        run: OUT=ui-report/options ROBOT=options NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
+      - name: Behaviour robot — wrong sign-in, typing kept in every field, Hebrew screens, script errors (UX-010)
+        run: OUT=ui-report/behaviour ROBOT=behaviour NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: screen-check-report
+          path: ui-report
+          retention-days: 30
+  website:
+    # 3. SITE-010/020: the website is built in every language (a missing translation fails) and checked like the product
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Build
+        run: node tools/site/build.mjs site/dist
+      - name: Check (every language, computer and phone)
+        run: |
+          npm install --no-save playwright@1
+          npx playwright install --with-deps chromium
+          SHOTS=all NODE_PATH=$PWD/node_modules node tools/site/check.mjs site/dist site-report
+      - uses: actions/upload-artifact@v4
+        with:
+          name: website
+          path: site/dist
+          retention-days: 90
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: website-check-report
+          path: site-report
+          retention-days: 30
+  package:
+    # 4. only after 1–3 passed
+    needs: [tests, screens, website]
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Installation package
+        run: VERSION=0.1.${{ github.run_number }} OUT=out bash build-package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: OnlineBackup-Server-0.1.${{ github.run_number }}
+          path: out/OnlineBackup-Server-*.zip
+          retention-days: 90

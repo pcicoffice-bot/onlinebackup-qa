@@ -1,0 +1,13 @@
+{
+  "name": "onlinebackup-qa",
+  "private": true,
+  "description": "OnlineBackup automated QA — black-box: the product is started and used from outside, results are checked in the real world (files, SHA-256, services).",
+  "scripts": {
+    "qa": "node runner/qa.mjs",
+    "web": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/mcp": "^0.0.83",
+    "@playwright/test": "1.63.0"
+  }
+}

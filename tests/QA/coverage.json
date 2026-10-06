@@ -1,0 +1,7665 @@
+[
+ {
+  "id": "BK-01",
+  "area": "Backup",
+  "name": "File backup, native engine (first, incremental: new / changed / deleted / permissions)",
+  "critical": true,
+  "code": "A/BackupRun.cs, S/SetStore.cs",
+  "regression": [
+   1,
+   2,
+   11
+  ],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+    "qa:journeys/j3",
+    "qa:journeys/j4"
+   ],
+   "failure": [
+    "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning",
+    "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly"
+   ],
+   "boundary": [
+    "x:ReliabilityTests.Volume_20000SmallFilesAnd1GB_BackupChangeRestore",
+    "qa:journeys/j4"
+   ],
+   "recovery": [
+    "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+    "qa:failure-recovery/f1",
+    "qa:failure-recovery/f2"
+   ],
+   "concurrency": [
+    "qa:failure-recovery/f3"
+   ],
+   "integrity": [
+    "qa:journeys/j3",
+    "qa:journeys/j4",
+    "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource"
+   ],
+   "security": [
+    "x:UnitTests.TamperedOrWrongKeyIsRejected"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning",
+     "Passed"
+    ],
+    [
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:ReliabilityTests.Volume_20000SmallFilesAnd1GB_BackupChangeRestore",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f1",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f2",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "qa:failure-recovery/f3",
+     "Passed"
+    ]
+   ],
+   "integrity": [
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:UnitTests.TamperedOrWrongKeyIsRejected",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:UnitTests.TamperedOrWrongKeyIsRejected"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "x:ReliabilityTests.Volume_20000SmallFilesAnd1GB_BackupChangeRestore",
+     "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning",
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f1",
+     "qa:failure-recovery/f2",
+     "qa:failure-recovery/f3",
+     "qa:journeys/j3",
+     "qa:journeys/j4"
+    ]
+   }
+  },
+  "spec": [
+   "Copy a folder tree to the server so that any run can be restored exactly",
+   "a tree of new, changed, deleted and permission-changed files; two runs",
+   "run 2 sends only what changed; every point restores byte-identical (SHA-256); deleted files gone from the newest point only"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-02",
+  "area": "Backup",
+  "name": "Delta chains (incremental / differential), long chain \u2192 new full",
+  "critical": true,
+  "code": "A/BackupRun.cs, C/Chunker.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy",
+    "x:EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull"
+   ],
+   "failure": [],
+   "boundary": [
+    "x:UnitTests.InsertInTheMiddleChangesOnlyNearbyChunks"
+   ],
+   "recovery": [],
+   "concurrency": "one run per set",
+   "integrity": [
+    "x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy"
+   ],
+   "security": "same as BK-01"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "PASS",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:UnitTests.InsertInTheMiddleChangesOnlyNearbyChunks",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity"
+    ],
+    "tests": [
+     "x:UnitTests.InsertInTheMiddleChangesOnlyNearbyChunks"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull",
+     "x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Send only the changed parts of large files, and keep every point restorable",
+   "a large file changed in the middle N times; incremental and differential modes",
+   "each delta is small; every point of the chain restores identical; past the chain limit a new full copy is sent"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-03",
+  "area": "Backup",
+  "name": "File backup, restic engine",
+  "critical": true,
+  "code": "A/ResticRunner.cs, S/ResticStore.cs, S/ApiRestic.cs",
+  "regression": [
+   1,
+   4,
+   17,
+   21,
+   22,
+   23
+  ],
+  "dims": {
+   "happy": [
+    "qa:journeys/j6",
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository"
+   ],
+   "failure": [
+    "x:ResticComponentTests.AnotherKey_ReadsNothing",
+    "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+    "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+    "x:ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical"
+   ],
+   "boundary": [
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars"
+   ],
+   "recovery": [
+    "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical",
+    "x:ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores",
+    "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "qa:journeys/j6",
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+    "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository"
+   ],
+   "security": [
+    "x:ResticComponentTests.AnotherKey_ReadsNothing",
+    "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j6",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+     "Passed"
+    ],
+    [
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+     "Passed"
+    ],
+    [
+     "x:ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "qa:journeys/j6",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "x:ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical",
+     "x:ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores",
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars",
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j6"
+    ]
+   }
+  },
+  "spec": [
+   "Back up with restic to the server's restic store",
+   "a source tree, two runs with one change",
+   "second run adds only the change; restore identical; `restic check` clean; another set cannot read the repository"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "BK-04",
+  "area": "Backup",
+  "name": "Filters, skipped folders, links",
+  "critical": true,
+  "code": "A/BackupRun.cs (Scanner)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore",
+    "x:UnitTests.FiltersExcludeLikeAhsay"
+   ],
+   "failure": "configuration only",
+   "boundary": [
+    "x:OptionsTests.Links_FollowedOnlyWhenTheOptionIsOn"
+   ],
+   "recovery": "stateless",
+   "concurrency": "stateless",
+   "integrity": [
+    "x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore"
+   ],
+   "security": "no access decision"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "PASS",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.FiltersExcludeLikeAhsay",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:OptionsTests.Links_FollowedOnlyWhenTheOptionIsOn",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:UnitTests.FiltersExcludeLikeAhsay"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:OptionsTests.Links_FollowedOnlyWhenTheOptionIsOn",
+     "x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Leave out what the set excludes; follow links only when asked",
+   "a tree with excluded folders, filter patterns and a symbolic link",
+   "excluded items absent from the restore, included ones identical; the link followed only with the option on"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-05",
+  "area": "Backup",
+  "name": "Unreadable data is an error (permission denied, locked file, folder gone)",
+  "critical": true,
+  "code": "A/BackupRun.cs, A/Sources.cs",
+  "regression": [
+   2
+  ],
+  "dims": {
+   "happy": [
+    "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning"
+   ],
+   "failure": [
+    "x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical",
+    "x:SourceTests.SubfolderNotReadable_IsAnError_NotAWarning"
+   ],
+   "boundary": [],
+   "recovery": [
+    "qa:failure-recovery/f5"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical",
+    "qa:failure-recovery/f5"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical",
+     "Passed"
+    ],
+    [
+     "x:SourceTests.SubfolderNotReadable_IsAnError_NotAWarning",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "qa:failure-recovery/f5",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f5",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical",
+     "x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning",
+     "x:SourceTests.SubfolderNotReadable_IsAnError_NotAWarning"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f5"
+    ]
+   }
+  },
+  "spec": [
+   "A file or folder that cannot be read is an error, never a silent success",
+   "a source with an unreadable subfolder; a source that is gone; all sources gone",
+   "partly unreadable = success with error (red); all gone = failure; last good backup kept and still restorable"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-06",
+  "area": "Backup",
+  "name": "Volume Shadow Copy (open files)",
+  "critical": true,
+  "code": "A/Vss.cs",
+  "regression": [
+   5
+  ],
+  "dims": {
+   "happy": [],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "NOT TESTED",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Copy files that are open or locked by another program, consistent to one moment",
+   "a file held open with an exclusive lock and written during the backup",
+   "the file is in the backup with its content at snapshot time; the shadow copy is removed afterwards, also on failure"
+  ],
+  "status": "NONE"
+ },
+ {
+  "id": "BK-07",
+  "area": "Backup",
+  "name": "Maximum duration, stop from the admin site",
+  "critical": false,
+  "code": "A/BackupRun.cs, S/SetControl.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:OptionsTests.MaximumDuration_StopsTheBackup_AndTheNextRunGoesOn",
+    "x:SetControlTests.BackUpNow_And_Stop_FromTheServer"
+   ],
+   "failure": "-",
+   "boundary": [],
+   "recovery": [
+    "x:OptionsTests.MaximumDuration_StopsTheBackup_AndTheNextRunGoesOn"
+   ],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:OptionsTests.MaximumDuration_StopsTheBackup_AndTheNextRunGoesOn",
+     "Passed"
+    ],
+    [
+     "x:SetControlTests.BackUpNow_And_Stop_FromTheServer",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:OptionsTests.MaximumDuration_StopsTheBackup_AndTheNextRunGoesOn",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:OptionsTests.MaximumDuration_StopsTheBackup_AndTheNextRunGoesOn",
+     "x:SetControlTests.BackUpNow_And_Stop_FromTheServer"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Stop a backup at its maximum duration or on request, and go on next time",
+   "a slow backup with a 1-minute limit; a stop sent from the admin site",
+   "the run ends as stopped (not success), nothing half-stored is visible, the next run completes"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-08",
+  "area": "Backup",
+  "name": "Upload limit, compression, low priority, wait while busy",
+  "critical": false,
+  "code": "A/Resources.cs, A/BackupRun.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit",
+    "x:OptionsTests.Compression_ReachesTheEngine_AndChangesWhatIsStored",
+    "x:ResourceTests.UploadLimit_And_Compression"
+   ],
+   "failure": "-",
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": [
+    "x:OptionsTests.Compression_ReachesTheEngine_AndChangesWhatIsStored"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit",
+     "Passed"
+    ],
+    [
+     "x:OptionsTests.Compression_ReachesTheEngine_AndChangesWhatIsStored",
+     "Passed"
+    ],
+    [
+     "x:ResourceTests.UploadLimit_And_Compression",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:OptionsTests.Compression_ReachesTheEngine_AndChangesWhatIsStored",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:ResourceTests.UploadLimit_And_Compression"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:OptionsTests.Compression_ReachesTheEngine_AndChangesWhatIsStored",
+     "x:OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Honour the upload limit, compression and priority settings",
+   "a 20 MB source with a 1 MB/s limit; compression on / off",
+   "the transfer takes about 20 s; with compression the stored size is smaller; restore identical either way"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-09",
+  "area": "Backup",
+  "name": "Pre- and post-commands (with time limit)",
+  "critical": false,
+  "code": "A/BackupRun.cs (Commands)",
+  "regression": [
+   5
+  ],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns"
+   ],
+   "failure": [
+    "x:OptionsTests.FailedPreCommand_StopsTheBackupOnlyWhenAsked"
+   ],
+   "boundary": [
+    "x:ProcessTests.StuckPreCommand_EndsAtTheLimit_AndTheBackupGoesOn"
+   ],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": "-",
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:OptionsTests.FailedPreCommand_StopsTheBackupOnlyWhenAsked",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:ProcessTests.StuckPreCommand_EndsAtTheLimit_AndTheBackupGoesOn",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:ProcessTests.StuckPreCommand_EndsAtTheLimit_AndTheBackupGoesOn"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns",
+     "x:OptionsTests.FailedPreCommand_StopsTheBackupOnlyWhenAsked"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Run the set's commands before and after the backup, within a time limit",
+   "a pre-command that succeeds, one that fails, one that never ends",
+   "output logged; a failure stops the backup only when the set says so; a stuck command ends at the limit"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "BK-10",
+  "area": "Backup",
+  "name": "Local copy beside the online backup",
+  "critical": false,
+  "code": "A/LocalRepo.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer",
+    "x:DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer",
+     "Passed"
+    ],
+    [
+     "x:DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic",
+     "x:FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Keep a second copy on a local disk / NAS beside the online one",
+   "a set with a local copy path",
+   "the local copy restores without the server, identical; a full local disk is a warning, not a lost online backup"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "DB-01",
+  "area": "Databases",
+  "name": "SQL Server: full, differential, log; free-space check",
+  "critical": true,
+  "code": "A/Sources.cs (SqlBackup)",
+  "regression": [
+   3,
+   5,
+   6
+  ],
+  "dims": {
+   "happy": [
+    "x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles",
+    "x:FeatureTests.MssqlWeeklyFullAndDailyDifferential_TheFullStaysInEveryPoint_AnotherProgramsFullForcesOurs"
+   ],
+   "failure": [
+    "x:SqlScaleTests.FailingDatabase_IsAnError_AllFailing_IsAFailure",
+    "x:SqlScaleTests.NoDatabaseFound_IsAFailure_NotAnEmptySuccess"
+   ],
+   "boundary": [
+    "x:SqlScaleTests.NotEnoughRoom_TheDatabaseIsSkippedWithAClearMessage_BigOnesGetLargerBuffers",
+    "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup"
+   ],
+   "recovery": [
+    "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles"
+   ],
+   "security": [
+    "x:OptionsTests.SqlLogin_LikeSa_PasswordNeverOnTheCommandLine"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles",
+     "Passed"
+    ],
+    [
+     "x:FeatureTests.MssqlWeeklyFullAndDailyDifferential_TheFullStaysInEveryPoint_AnotherProgramsFullForcesOurs",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SqlScaleTests.FailingDatabase_IsAnError_AllFailing_IsAFailure",
+     "Passed"
+    ],
+    [
+     "x:SqlScaleTests.NoDatabaseFound_IsAFailure_NotAnEmptySuccess",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:SqlScaleTests.NotEnoughRoom_TheDatabaseIsSkippedWithAClearMessage_BigOnesGetLargerBuffers",
+     "Passed"
+    ],
+    [
+     "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:OptionsTests.SqlLogin_LikeSa_PasswordNeverOnTheCommandLine",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:OptionsTests.SqlLogin_LikeSa_PasswordNeverOnTheCommandLine"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles",
+     "x:FeatureTests.MssqlWeeklyFullAndDailyDifferential_TheFullStaysInEveryPoint_AnotherProgramsFullForcesOurs",
+     "x:SqlScaleTests.FailingDatabase_IsAnError_AllFailing_IsAFailure",
+     "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds",
+     "x:SqlScaleTests.NoDatabaseFound_IsAFailure_NotAnEmptySuccess",
+     "x:SqlScaleTests.NotEnoughRoom_TheDatabaseIsSkippedWithAClearMessage_BigOnesGetLargerBuffers",
+     "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up SQL Server databases with native full / differential / log backups",
+   "a database with transactions committed between runs",
+   "restored .bak files load and contain every committed transaction; not enough room \u2192 the database skipped with a clear error"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "DB-02",
+  "area": "Databases",
+  "name": "MySQL / PostgreSQL dumps",
+  "critical": true,
+  "code": "A/DbDump.cs",
+  "regression": [
+   3,
+   5
+  ],
+  "dims": {
+   "happy": [
+    "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase"
+   ],
+   "failure": [
+    "x:DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase"
+   ],
+   "security": [
+    "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported",
+     "x:DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Dump MySQL / PostgreSQL databases",
+   "two databases with known rows; one database that fails",
+   "the dumps load into a new server with the same rows; the failing database is an error; passwords never in a log"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "DB-03",
+  "area": "Databases",
+  "name": "Oracle RMAN",
+  "critical": false,
+  "code": "A/Oracle.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup"
+   ],
+   "failure": [
+    "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": [
+    "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EnterpriseTests.Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Run an Oracle RMAN online backup",
+   "an RMAN script and password",
+   "RMAN gets the password only on stdin; a failed RMAN run keeps the previous backup"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "DB-04",
+  "area": "Databases",
+  "name": "HCL Domino",
+  "critical": false,
+  "code": "A/Domino.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EnterpriseTests.Domino_FoldersFromNotesIni_CacheFlushedBeforeTheCopy"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EnterpriseTests.Domino_FoldersFromNotesIni_CacheFlushedBeforeTheCopy",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:EnterpriseTests.Domino_FoldersFromNotesIni_CacheFlushedBeforeTheCopy"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up HCL Domino data folders",
+   "notes.ini with a data folder",
+   "the folders from notes.ini are backed up after the cache is flushed"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-01",
+  "area": "Applications",
+  "name": "System State (wbadmin / ntbackup)",
+  "critical": true,
+  "code": "A/Sources.cs (SystemState)",
+  "regression": [
+   5
+  ],
+  "dims": {
+   "happy": [],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "NOT TESTED",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up the Windows System State",
+   "a Windows server",
+   "wbadmin output in the backup; a failure of wbadmin is a failed run"
+  ],
+  "status": "NONE"
+ },
+ {
+  "id": "AP-02",
+  "area": "Applications",
+  "name": "Bare-metal image",
+  "critical": true,
+  "code": "A/DiskImage.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads"
+   ],
+   "failure": [
+    "x:BareMetalTests.ImageToolFailureKeepsThePreviousImage_AndWindows2003UsesNtbackup"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:BareMetalTests.ImageToolFailureKeepsThePreviousImage_AndWindows2003UsesNtbackup",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:BareMetalTests.ImageToolFailureKeepsThePreviousImage_AndWindows2003UsesNtbackup",
+     "x:BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up a bare-metal image of the computer",
+   "a Windows computer with a system volume",
+   "an image that boots on new hardware; tool failure = failed run"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-03",
+  "area": "Applications",
+  "name": "Hyper-V virtual machines",
+  "critical": false,
+  "code": "A/HyperV.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up Hyper-V virtual machines",
+   "a VM, running",
+   "export of the VM restores and starts; a failed export is a failed run"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-04",
+  "area": "Applications",
+  "name": "VMware ESXi / vCenter",
+  "critical": false,
+  "code": "A/VMware.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EnterpriseTests.VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm"
+   ],
+   "failure": [
+    "x:EnterpriseTests.VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EnterpriseTests.VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:EnterpriseTests.VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EnterpriseTests.VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up VMware virtual machines",
+   "a VM on ESXi / vCenter",
+   "the VM restores to another datastore under a new name"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-05",
+  "area": "Applications",
+  "name": "Microsoft 365 (mail, OneDrive, Teams)",
+  "critical": false,
+  "code": "A/M365.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:M365Tests.Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:M365Tests.Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox"
+   ],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:M365Tests.Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:M365Tests.Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:M365Tests.Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up Microsoft 365 mail, OneDrive and Teams",
+   "a tenant with mail, files and chats",
+   "items restored to the mailbox / OneDrive with their content"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-06",
+  "area": "Applications",
+  "name": "Google Workspace",
+  "critical": false,
+  "code": "A/GoogleWorkspace.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:GoogleTests.GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:GoogleTests.GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle"
+   ],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:GoogleTests.GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:GoogleTests.GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:GoogleTests.GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up Google Workspace",
+   "a domain with Gmail and Drive",
+   "items restored with their content"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AP-07",
+  "area": "Applications",
+  "name": "External programs: time limit, both streams, process tree",
+  "critical": true,
+  "code": "C/ProcessRunner.cs",
+  "regression": [
+   5
+  ],
+  "dims": {
+   "happy": [
+    "x:ProcessTests.ProgramWritingMuchToBothStreams_IsReadToTheEnd"
+   ],
+   "failure": [
+    "x:ProcessTests.StuckProgram_IsKilledWithItsChildren_AtTheLimit"
+   ],
+   "boundary": [
+    "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup"
+   ],
+   "recovery": [
+    "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds"
+   ],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:ProcessTests.ProgramWritingMuchToBothStreams_IsReadToTheEnd",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:ProcessTests.StuckProgram_IsKilledWithItsChildren_AtTheLimit",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "recovery"
+    ],
+    "tests": [
+     "x:ProcessTests.ProgramWritingMuchToBothStreams_IsReadToTheEnd",
+     "x:ProcessTests.StuckProgram_IsKilledWithItsChildren_AtTheLimit"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds",
+     "x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Run any external program safely",
+   "a program that hangs; one that writes much to both streams; one that spawns children",
+   "stopped at its limit with its children; both streams read in full; never a hung backup or installation"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "RS-01",
+  "area": "Restore",
+  "name": "Restore all / a folder / a file, native, any point",
+  "critical": true,
+  "code": "A/Restore.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+    "qa:journeys/j4",
+    "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint"
+   ],
+   "failure": [
+    "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft"
+   ],
+   "boundary": [
+    "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+    "qa:journeys/j8",
+    "qa:journeys/j4"
+   ],
+   "recovery": [
+    "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+    "qa:failure-recovery/f4",
+    "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+    "qa:journeys/j3",
+    "qa:journeys/j4",
+    "qa:failure-recovery/f4"
+   ],
+   "security": [
+    "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j8",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f4",
+     "Passed"
+    ],
+    [
+     "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f4",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "x:RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles",
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f4",
+     "qa:journeys/j3",
+     "qa:journeys/j4",
+     "qa:journeys/j8"
+    ]
+   }
+  },
+  "spec": [
+   "Restore everything, a folder or one file, from any point",
+   "a set with 3 points; a request for point 2, one file",
+   "exactly the requested files, byte-identical to that point (SHA-256)"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "RS-02",
+  "area": "Restore",
+  "name": "Restore to the original place: overwrite rules, existing files",
+  "critical": true,
+  "code": "A/Restore.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt",
+    "qa:journeys/j4"
+   ],
+   "failure": [
+    "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft"
+   ],
+   "boundary": [
+    "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt"
+   ],
+   "recovery": [
+    "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt",
+    "qa:journeys/j4"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j4",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft",
+     "x:RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt"
+    ]
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j4"
+    ]
+   }
+  },
+  "spec": [
+   "Restore to the original place safely",
+   "files that exist at the target, overwrite off / on",
+   "off: existing files kept and the result says how many were skipped; on: replaced; a failed file = error"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "RS-03",
+  "area": "Restore",
+  "name": "Restore, restic engine",
+  "critical": true,
+  "code": "A/ResticRunner.cs",
+  "regression": [
+   23
+  ],
+  "dims": {
+   "happy": [
+    "qa:journeys/j6",
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository"
+   ],
+   "failure": [
+    "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+    "x:ResticComponentTests.AnotherKey_ReadsNothing"
+   ],
+   "boundary": [
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars"
+   ],
+   "recovery": [
+    "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical",
+    "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "qa:journeys/j6",
+    "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+    "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository"
+   ],
+   "security": [
+    "x:ResticComponentTests.AnotherKey_ReadsNothing"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j6",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical",
+     "Passed"
+    ],
+    [
+     "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "qa:journeys/j6",
+     "Passed"
+    ],
+    [
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:ResticComponentTests.AnotherKey_ReadsNothing",
+     "x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+     "x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+     "x:ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:ReliabilityTests.RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles",
+     "x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository",
+     "x:ResticTests.SingleFileRestore_NamesWithBracketsAndStars"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j6"
+    ]
+   }
+  },
+  "spec": [
+   "Restore restic sets",
+   "a restic set with 2 snapshots",
+   "identical files from the chosen snapshot"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "RS-04",
+  "area": "Restore",
+  "name": "Restore from the website (download)",
+  "critical": true,
+  "code": "S/WebRestore.cs, Web/restore.js",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+   ],
+   "security": [
+    "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Restore from the website as a ZIP download",
+   "the encryption password, a point, 2 files",
+   "the ZIP holds exactly those files, identical; a wrong password refused; a hung restic stopped with a clear error"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "RS-05",
+  "area": "Restore",
+  "name": "Restore on a new computer (key recovery, local index rebuilt)",
+  "critical": true,
+  "code": "A/AgentApp.cs (Key), A/Restore.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+    "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+   ],
+   "failure": [],
+   "boundary": "-",
+   "recovery": [
+    "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer"
+   ],
+   "security": [
+    "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "n/a",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Restore on a new computer after the old one is lost",
+   "a new computer, the account and the encryption password",
+   "the keys come back, the local index is rebuilt, every file restores identical"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "RS-06",
+  "area": "Restore",
+  "name": "Automatic restore test",
+  "critical": false,
+  "code": "A/AgentApp.cs (RestoreTest)",
+  "regression": [
+   12
+  ],
+  "dims": {
+   "happy": [
+    "x:FeatureTests.AutomaticRestoreTestComparesWithTheSourceAndReportsToTheServer"
+   ],
+   "failure": [
+    "x:SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed"
+   ],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": [
+    "x:FeatureTests.AutomaticRestoreTestComparesWithTheSourceAndReportsToTheServer"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:FeatureTests.AutomaticRestoreTestComparesWithTheSourceAndReportsToTheServer",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:FeatureTests.AutomaticRestoreTestComparesWithTheSourceAndReportsToTheServer",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:FeatureTests.AutomaticRestoreTestComparesWithTheSourceAndReportsToTheServer",
+     "x:SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Prove automatically that the backup can be restored",
+   "a set with the restore test on",
+   "sample restored and compared; no source to compare = NOT CHECKED, never FAILED"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-01",
+  "area": "Server storage",
+  "name": "Run commit (journal, roll forward), truncated/half objects refused",
+  "critical": true,
+  "code": "S/SetStore.cs",
+  "regression": [
+   11
+  ],
+  "dims": {
+   "happy": [
+    "x:SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes",
+    "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint"
+   ],
+   "failure": [
+    "x:SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile",
+    "x:EndToEndTests.TruncatedUploadIsRejectedAndNeverCommitted",
+    "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError"
+   ],
+   "boundary": [
+    "x:SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile"
+   ],
+   "recovery": [
+    "x:SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart",
+    "x:EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing",
+    "qa:failure-recovery/f1"
+   ],
+   "concurrency": [
+    "x:SetStoreComponentTests.ASecondRunOfTheSameSet_IsRefusedWhileTheFirstIsOpen",
+    "qa:failure-recovery/f3"
+   ],
+   "integrity": [
+    "x:SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes",
+    "x:SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart",
+    "x:EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing"
+   ],
+   "security": [
+    "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.TruncatedUploadIsRejectedAndNeverCommitted",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f1",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "x:SetStoreComponentTests.ASecondRunOfTheSameSet_IsRefusedWhileTheFirstIsOpen",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f3",
+     "Passed"
+    ]
+   ],
+   "integrity": [
+    [
+     "x:SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes",
+     "Passed"
+    ],
+    [
+     "x:SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:SetStoreComponentTests.ASecondRunOfTheSameSet_IsRefusedWhileTheFirstIsOpen",
+     "x:SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart",
+     "x:SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile",
+     "x:SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing",
+     "x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint",
+     "x:EndToEndTests.TruncatedUploadIsRejectedAndNeverCommitted",
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f1",
+     "qa:failure-recovery/f3"
+    ]
+   }
+  },
+  "spec": [
+   "Store a run all-or-nothing on the server",
+   "a run committed; the server killed during the commit; a truncated object",
+   "after restart the run is either fully there or not at all; truncated objects refused; repeated commit answered the same"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "ST-02",
+  "area": "Server storage",
+  "name": "Run lease, interrupted runs closed and recorded",
+  "critical": true,
+  "code": "S/SetStore.cs, S/Api.cs (SweepInterrupted)",
+  "regression": [
+   1,
+   11
+  ],
+  "dims": {
+   "happy": [
+    "x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain",
+    "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper"
+   ],
+   "failure": [
+    "x:LeaseComponentTests.TheComputersReport_ClosesAnOpenRunAtOnce_AndIsHarmlessOtherwise",
+    "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp"
+   ],
+   "boundary": [
+    "x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain"
+   ],
+   "recovery": [
+    "x:LeaseComponentTests.ACommittingRun_IsNeverExpired",
+    "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+    "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce",
+    "qa:journeys/j5"
+   ],
+   "concurrency": [
+    "qa:failure-recovery/f3"
+   ],
+   "integrity": [
+    "x:LeaseComponentTests.ACommittingRun_IsNeverExpired",
+    "qa:journeys/j5"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:LeaseComponentTests.TheComputersReport_ClosesAnOpenRunAtOnce_AndIsHarmlessOtherwise",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:LeaseComponentTests.ACommittingRun_IsNeverExpired",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "qa:failure-recovery/f3",
+     "Passed"
+    ]
+   ],
+   "integrity": [
+    [
+     "x:LeaseComponentTests.ACommittingRun_IsNeverExpired",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:LeaseComponentTests.ACommittingRun_IsNeverExpired",
+     "x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain",
+     "x:LeaseComponentTests.TheComputersReport_ClosesAnOpenRunAtOnce_AndIsHarmlessOtherwise"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp",
+     "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper",
+     "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f3",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "Never leave a run open or \"Running\" after the computer died",
+   "a run with no sign of life for 5 minutes; the same run reported by 3 paths",
+   "closed and recorded once as interrupted; the set can back up again at once"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "ST-03",
+  "area": "Server storage",
+  "name": "Retention (days / jobs / GFS), never the current version",
+  "critical": true,
+  "code": "S/SetStore.cs (ApplyRetention)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "qa:journeys/j8",
+    "x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints",
+    "x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched",
+    "x:UnitTests.RetentionByDaysJobsAndAdvanced",
+    "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded"
+   ],
+   "failure": "a policy has no failing input; a bad policy value is a boundary",
+   "boundary": [
+    "x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit",
+    "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+   ],
+   "recovery": [
+    "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "qa:journeys/j8",
+    "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded",
+    "x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j8",
+     "Passed"
+    ],
+    [
+     "x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.RetentionByDaysJobsAndAdvanced",
+     "Passed"
+    ],
+    [
+     "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit",
+     "Passed"
+    ],
+    [
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "qa:journeys/j8",
+     "Passed"
+    ],
+    [
+     "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "recovery",
+     "integrity"
+    ],
+    "tests": [
+     "x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit",
+     "x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints",
+     "x:UnitTests.RetentionByDaysJobsAndAdvanced"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched",
+     "x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded",
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j8"
+    ]
+   }
+  },
+  "spec": [
+   "Delete old versions by the retention policy, never the current one",
+   "versions over 40 days; policy 30 days / N jobs / GFS",
+   "only versions outside the policy deleted; every kept point restores identical; the current version never deleted"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-04",
+  "area": "Server storage",
+  "name": "Verify, damaged object quarantined and resent; index rebuild",
+  "critical": true,
+  "code": "S/SetStore.cs (VerifyAll, Rebuild)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+    "x:EndToEndTests.RebuildRecreatesTheIndexFromTheDisk"
+   ],
+   "failure": [
+    "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+    "x:RetentionTests.ADamagedSet_DoesNotBreakTheBackupsOfTheCustomersOtherSets",
+    "x:RetentionTests.AFailingMaintenanceTask_IsAlerted_AndTheOtherSetsAreStillMaintained"
+   ],
+   "boundary": [],
+   "recovery": [
+    "x:EndToEndTests.RebuildRecreatesTheIndexFromTheDisk"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.RebuildRecreatesTheIndexFromTheDisk",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "Passed"
+    ],
+    [
+     "x:RetentionTests.ADamagedSet_DoesNotBreakTheBackupsOfTheCustomersOtherSets",
+     "Passed"
+    ],
+    [
+     "x:RetentionTests.AFailingMaintenanceTask_IsAlerted_AndTheOtherSetsAreStillMaintained",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:EndToEndTests.RebuildRecreatesTheIndexFromTheDisk",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource",
+     "x:EndToEndTests.RebuildRecreatesTheIndexFromTheDisk",
+     "x:RetentionTests.ADamagedSet_DoesNotBreakTheBackupsOfTheCustomersOtherSets",
+     "x:RetentionTests.AFailingMaintenanceTask_IsAlerted_AndTheOtherSetsAreStillMaintained"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Find damaged stored data, quarantine it, get it again",
+   "a stored object with flipped bytes",
+   "found, quarantined, resent from the source; the index can be rebuilt from the objects"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-05",
+  "area": "Server storage",
+  "name": "Quota (compressed / original), stop new backups, keep existing",
+  "critical": true,
+  "code": "S/Api.cs (Begin, Upload)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes",
+    "x:ResticTests.ResticRespectsTheQuota"
+   ],
+   "failure": [
+    "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes",
+     "Passed"
+    ],
+    [
+     "x:ResticTests.ResticRespectsTheQuota",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes",
+     "x:ResticTests.ResticRespectsTheQuota"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Stop new backups at the quota and keep what exists",
+   "a user at 100 % of the quota",
+   "new backup refused with QUOTA; existing points restore; the warning at the set percentage"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-06",
+  "area": "Server storage",
+  "name": "Server disk full",
+  "critical": true,
+  "code": "S/Api.cs, S/ApiRestic.cs",
+  "regression": [
+   13
+  ],
+  "dims": {
+   "happy": "a failure capability",
+   "failure": [
+    "qa:failure-recovery/f6",
+    "x:ReliabilityTests.ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes"
+   ],
+   "boundary": [],
+   "recovery": [
+    "qa:failure-recovery/f6"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "qa:failure-recovery/f6"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "n/a",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [
+    [
+     "qa:failure-recovery/f6",
+     "Passed"
+    ],
+    [
+     "x:ReliabilityTests.ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "qa:failure-recovery/f6",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "qa:failure-recovery/f6",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:ReliabilityTests.ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f6"
+    ]
+   }
+  },
+  "spec": [
+   "Say clearly that the server disk is full",
+   "a server disk filled during a backup",
+   "507 DISK_FULL, a clear message on the computer, one alert to the administrators, space of the failed run given back"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-07",
+  "area": "Server storage",
+  "name": "Replication to a second server",
+  "critical": false,
+  "code": "S/Replication.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:FeatureTests.SecondServerReceivesEveryCommitInOrder_AgentsRestoreFromIt_DeletionsWaitForTheDelay"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    "x:FeatureTests.SecondServerReceivesEveryCommitInOrder_AgentsRestoreFromIt_DeletionsWaitForTheDelay"
+   ],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:FeatureTests.SecondServerReceivesEveryCommitInOrder_AgentsRestoreFromIt_DeletionsWaitForTheDelay",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:FeatureTests.SecondServerReceivesEveryCommitInOrder_AgentsRestoreFromIt_DeletionsWaitForTheDelay",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:FeatureTests.SecondServerReceivesEveryCommitInOrder_AgentsRestoreFromIt_DeletionsWaitForTheDelay"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Copy everything to a second server",
+   "a commit on the main server",
+   "the same objects, database and logs on the replica"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-08",
+  "area": "Server storage",
+  "name": "Earlier versions of the storage open as they are (upgrade with existing data)",
+  "critical": true,
+  "code": "S/SetStore.cs, S/Users.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn"
+   ],
+   "failure": [],
+   "boundary": "-",
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "n/a",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Open data written by earlier versions",
+   "a store written by version N-1",
+   "every point restores identical after the upgrade"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-09",
+  "area": "Server storage",
+  "name": "Recycle bin for deleted sets / customers",
+  "critical": false,
+  "code": "S/Recycle.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:RecycleTests.OneAdministrator_DeletesAtOnce_ToTheRecycleBin_AndRestores"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": [
+    "x:RecycleTests.TwoAdministrators_ASecondOneApproves"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:RecycleTests.OneAdministrator_DeletesAtOnce_ToTheRecycleBin_AndRestores",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:RecycleTests.TwoAdministrators_ASecondOneApproves",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:RecycleTests.OneAdministrator_DeletesAtOnce_ToTheRecycleBin_AndRestores",
+     "x:RecycleTests.TwoAdministrators_ASecondOneApproves"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Undo deleting a set or a customer",
+   "a deleted set",
+   "restorable from the recycle bin until it expires"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "ST-10",
+  "area": "Server storage",
+  "name": "Backup of the server settings",
+  "critical": false,
+  "code": "S/ConfigBackup.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:ConfigBackupTests.SettingsBackup_NowAndDaily_WithACopy_WithoutTheData"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:ConfigBackupTests.SettingsBackup_NowAndDaily_WithACopy_WithoutTheData",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:ConfigBackupTests.SettingsBackup_NowAndDaily_WithACopy_WithoutTheData"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Back up the server settings",
+   "the server configuration",
+   "a copy that restores the settings"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-01",
+  "area": "Agent",
+  "name": "Scheduler: times, days, several a day, missed runs (computer off, offline)",
+  "critical": true,
+  "code": "A/AgentApp.cs (Due, ServiceLoop)",
+  "regression": [
+   22
+  ],
+  "dims": {
+   "happy": [
+    "qa:journeys/j7",
+    "x:SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce",
+    "x:SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime",
+    "x:SetControlTests.SeveralTimesADay_EachWithItsDays",
+    "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns"
+   ],
+   "failure": [
+    "x:SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks"
+   ],
+   "boundary": [
+    "x:SchedulerTests.Boundary_NoDayOfTheWeekChosen_NeverDue_AndASlotExactlyNowIsDue",
+    "x:ResourceTests.MissedRun_AfterTheDelay_OnlyWhenOldEnough_OrNever",
+    "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+   ],
+   "recovery": [
+    "qa:journeys/j7",
+    "x:SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce",
+    "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack"
+   ],
+   "concurrency": "one service loop per computer",
+   "integrity": "decides when, stores nothing",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j7",
+     "Passed"
+    ],
+    [
+     "x:SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce",
+     "Passed"
+    ],
+    [
+     "x:SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime",
+     "Passed"
+    ],
+    [
+     "x:SetControlTests.SeveralTimesADay_EachWithItsDays",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:SchedulerTests.Boundary_NoDayOfTheWeekChosen_NeverDue_AndASlotExactlyNowIsDue",
+     "Passed"
+    ],
+    [
+     "x:ResourceTests.MissedRun_AfterTheDelay_OnlyWhenOldEnough_OrNever",
+     "Passed"
+    ],
+    [
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "qa:journeys/j7",
+     "Passed"
+    ],
+    [
+     "x:SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce",
+     "Passed"
+    ],
+    [
+     "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks",
+     "x:SchedulerTests.Boundary_NoDayOfTheWeekChosen_NeverDue_AndASlotExactlyNowIsDue",
+     "x:SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce",
+     "x:SetControlTests.SeveralTimesADay_EachWithItsDays"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns",
+     "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack",
+     "x:ResourceTests.MissedRun_AfterTheDelay_OnlyWhenOldEnough_OrNever",
+     "x:SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime",
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j7"
+    ]
+   }
+  },
+  "spec": [
+   "Start backups on time: once per due time, never twice, and catch up missed ones",
+   "a schedule of 3 times a day; the computer off at one of them; a restart of the service",
+   "each due time runs once; a missed time runs once at start-up; nothing runs twice after a restart"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "AG-02",
+  "area": "Agent",
+  "name": "\"Back up now\" and \"Stop\" from the server reach the computer",
+  "critical": true,
+  "code": "A/AgentApp.cs (RunRequested, StopCheck)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:SetControlTests.BackUpNow_And_Stop_FromTheServer",
+    "qa:journeys/j3"
+   ],
+   "failure": [],
+   "boundary": "-",
+   "recovery": [
+    "qa:journeys/j5"
+   ],
+   "concurrency": [
+    "qa:failure-recovery/f3"
+   ],
+   "integrity": [
+    "qa:journeys/j3"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "n/a",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:SetControlTests.BackUpNow_And_Stop_FromTheServer",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "qa:failure-recovery/f3",
+     "Passed"
+    ]
+   ],
+   "integrity": [
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:SetControlTests.BackUpNow_And_Stop_FromTheServer"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f3",
+     "qa:journeys/j3",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "\"Back up now\" and \"Stop\" from the admin site reach the computer",
+   "a press of Back up now; a press of Stop",
+   "the run starts within a minute; Stop ends it as stopped"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-03",
+  "area": "Agent",
+  "name": "Settings changed on the server reach the computer",
+  "critical": true,
+  "code": "S/SetControl.cs, A/AgentApp.cs (Profile)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:OptionsTests.EveryOption_ChangedOnTheServer_ArrivesAtTheComputer",
+    "qa:journeys/j2"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:OptionsTests.EveryOption_ChangedOnTheServer_ArrivesAtTheComputer",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j2",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows",
+     "x:OptionsTests.EveryOption_ChangedOnTheServer_ArrivesAtTheComputer"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j2"
+    ]
+   }
+  },
+  "spec": [
+   "Settings changed on the server reach the computer",
+   "a set edited in the admin site",
+   "the computer uses the new settings in its next run"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-04",
+  "area": "Agent",
+  "name": "Heartbeat, open-run note, report of a dead run",
+  "critical": true,
+  "code": "A/BackupRun.cs, A/AgentApp.cs (ReportInterrupted)",
+  "regression": [
+   1,
+   11
+  ],
+  "dims": {
+   "happy": [
+    "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper"
+   ],
+   "failure": [
+    "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning"
+   ],
+   "boundary": [],
+   "recovery": [
+    "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce",
+    "qa:failure-recovery/f1"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "qa:journeys/j5"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f1",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning",
+     "x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper",
+     "x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f1",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "Keep the server informed while a run is alive",
+   "a long run; the agent killed",
+   "progress every minute; the dead run reported at the next start"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-05",
+  "area": "Agent",
+  "name": "Network: server unreachable, line cut, reconnect",
+  "critical": true,
+  "code": "A/Client.cs, A/AgentApp.cs",
+  "regression": [
+   20,
+   24
+  ],
+  "dims": {
+   "happy": [
+    "x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds",
+    "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical"
+   ],
+   "failure": [
+    "x:NetworkTests.ARefusal_IsNotSentAgain",
+    "x:NetworkTests.AnUploadCutInTheMiddle_IsANetworkError_NotARawException",
+    "qa:failure-recovery/f2",
+    "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError"
+   ],
+   "boundary": [
+    "x:NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError",
+    "x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan"
+   ],
+   "recovery": [
+    "x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds",
+    "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+    "qa:failure-recovery/f2",
+    "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+    "qa:failure-recovery/f2"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds",
+     "Passed"
+    ],
+    [
+     "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:NetworkTests.ARefusal_IsNotSentAgain",
+     "Passed"
+    ],
+    [
+     "x:NetworkTests.AnUploadCutInTheMiddle_IsANetworkError_NotARawException",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f2",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds",
+     "Passed"
+    ],
+    [
+     "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f2",
+     "Passed"
+    ],
+    [
+     "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f2",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "integrity"
+    ],
+    "tests": [
+     "x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds",
+     "x:NetworkTests.ARefusal_IsNotSentAgain",
+     "x:NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError",
+     "x:NetworkTests.AnUploadCutInTheMiddle_IsANetworkError_NotARawException"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan",
+     "x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError",
+     "x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical",
+     "x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f2"
+    ]
+   }
+  },
+  "spec": [
+   "Survive network trouble",
+   "the line cut during upload; the server unreachable; a request whose answer is lost",
+   "the run resumes or ends as failed with a clear reason; a repeated request is not counted twice; the next run completes and restores identical"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-06",
+  "area": "Agent",
+  "name": "Local state (chunk index, keys) \u2014 lost, damaged",
+  "critical": true,
+  "code": "A/LocalState.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+   ],
+   "concurrency": [],
+   "integrity": [
+    "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+   ],
+   "security": [
+    "x:UnitTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:UnitTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:UnitTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Recover from lost or damaged local state",
+   "the local index deleted / damaged",
+   "rebuilt from the server; the next backup is correct and restores identical"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-07",
+  "area": "Agent",
+  "name": "TLS: built-in TLS 1.2 for old Windows, certificate pin",
+  "critical": true,
+  "code": "A/BuiltinTls.cs, A/Client.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+    "x:TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic"
+   ],
+   "failure": [
+    "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused"
+   ],
+   "boundary": "-",
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": [
+    "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused"
+   ],
+   "security": [
+    "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "n/a",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+     "Passed"
+    ],
+    [
+     "x:TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+     "x:TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Talk TLS 1.2 on old Windows and pin the server certificate",
+   "a server certificate; a different certificate",
+   "the pinned one accepted; another refused"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AG-08",
+  "area": "Agent",
+  "name": "The agent on .NET 4.0 (Windows 2003 / XP era)",
+  "critical": false,
+  "code": "A (net40)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores",
+    "x:TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls"
+   ],
+   "failure": [],
+   "boundary": "-",
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores"
+   ],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "n/a",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores",
+     "Passed"
+    ],
+    [
+     "x:TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores",
+     "x:TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Run on .NET 4.0 (old Windows)",
+   "the net40 build under mono",
+   "the same backup and restore results as net8"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-01",
+  "area": "Accounts and security",
+  "name": "Administrator sign-in: password, mandatory two-step, lock, sessions, sign-out",
+  "critical": true,
+  "code": "S/Staff.cs, S/Users.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed",
+    "qa:journeys/j1",
+    "x:StaffTests.TwoStep_IsMandatory_NothingOpensBeforeItIsSetUp"
+   ],
+   "failure": [
+    "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+    "qa:journeys/j1",
+    "x:StaffTests.Administrators_AddChangeDelete_LockAndUnlock"
+   ],
+   "boundary": [
+    "x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting",
+    "x:UnitTests.PasswordRule_AtLeast8Characters_WithALetter"
+   ],
+   "recovery": [
+    "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+    "x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt"
+   ],
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:UnitTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened",
+    "x:GuardTests.AdministratorSignIn_AfterFailures_IsReported"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j1",
+     "Passed"
+    ],
+    [
+     "x:StaffTests.TwoStep_IsMandatory_NothingOpensBeforeItIsSetUp",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j1",
+     "Passed"
+    ],
+    [
+     "x:StaffTests.Administrators_AddChangeDelete_LockAndUnlock",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.PasswordRule_AtLeast8Characters_WithALetter",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+     "Passed"
+    ],
+    [
+     "x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:UnitTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened",
+     "Passed"
+    ],
+    [
+     "x:GuardTests.AdministratorSignIn_AfterFailures_IsReported",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed",
+     "x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting",
+     "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+     "x:UnitTests.PasswordRule_AtLeast8Characters_WithALetter",
+     "x:UnitTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:GuardTests.AdministratorSignIn_AfterFailures_IsReported",
+     "x:StaffTests.Administrators_AddChangeDelete_LockAndUnlock",
+     "x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt",
+     "x:StaffTests.TwoStep_IsMandatory_NothingOpensBeforeItIsSetUp"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j1"
+    ]
+   }
+  },
+  "spec": [
+   "Only administrators get in, with two steps",
+   "right / wrong password, right / wrong code, 10 failures, sign-out",
+   "right + right = in; anything wrong refused; locked after failures; after sign-out the session no longer works"
+  ],
+  "status": "FULL"
+ },
+ {
+  "id": "AU-02",
+  "area": "Accounts and security",
+  "name": "Customer sign-in, register a computer, device token",
+  "critical": true,
+  "code": "S/Users.cs, A/AgentApp.cs (Register)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer",
+    "x:ClientUiTests.SignInScreen_ChecksTheServer_ConnectsThisComputer_ThenNeverAgain"
+   ],
+   "failure": [
+    "x:AuthComponentTests.TwoStep_NoCodeOrWrongCodeRefused_RightCodeIn_BackupCodeOnlyOnce",
+    "x:AuthComponentTests.ASuspendedCustomer_CannotSignIn_EvenWithTheRightPassword",
+    "x:EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode"
+   ],
+   "boundary": [
+    "x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer"
+   ],
+   "recovery": [
+    "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain"
+   ],
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode",
+    "x:SecurityTests.Customer_TurnsTwoStepVerificationOnAndOff_ProviderCanRequireIt"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer",
+     "Passed"
+    ],
+    [
+     "x:ClientUiTests.SignInScreen_ChecksTheServer_ConnectsThisComputer_ThenNeverAgain",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:AuthComponentTests.TwoStep_NoCodeOrWrongCodeRefused_RightCodeIn_BackupCodeOnlyOnce",
+     "Passed"
+    ],
+    [
+     "x:AuthComponentTests.ASuspendedCustomer_CannotSignIn_EvenWithTheRightPassword",
+     "Passed"
+    ],
+    [
+     "x:EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode",
+     "Passed"
+    ],
+    [
+     "x:SecurityTests.Customer_TurnsTwoStepVerificationOnAndOff_ProviderCanRequireIt",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:AuthComponentTests.ASuspendedCustomer_CannotSignIn_EvenWithTheRightPassword",
+     "x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer",
+     "x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain",
+     "x:AuthComponentTests.TwoStep_NoCodeOrWrongCodeRefused_RightCodeIn_BackupCodeOnlyOnce"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:ClientUiTests.SignInScreen_ChecksTheServer_ConnectsThisComputer_ThenNeverAgain",
+     "x:EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode",
+     "x:SecurityTests.Customer_TurnsTwoStepVerificationOnAndOff_ProviderCanRequireIt"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Customers and their computers sign in",
+   "a login, a registered device token, a revoked token",
+   "valid = allowed; revoked = refused at once"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-03",
+  "area": "Accounts and security",
+  "name": "Sign-up from the client with the contract",
+  "critical": false,
+  "code": "S/Contract.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:ContractTests.Signup_FromTheClient_WithTheContract"
+   ],
+   "failure": [
+    "x:ContractTests.NewVersion_AcceptedAtTheNextSignIn_AndPerAddressLimit"
+   ],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:ContractTests.NewVersion_AcceptedAtTheNextSignIn_AndPerAddressLimit"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:ContractTests.Signup_FromTheClient_WithTheContract",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:ContractTests.NewVersion_AcceptedAtTheNextSignIn_AndPerAddressLimit",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:ContractTests.NewVersion_AcceptedAtTheNextSignIn_AndPerAddressLimit",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:ContractTests.NewVersion_AcceptedAtTheNextSignIn_AndPerAddressLimit",
+     "x:ContractTests.Signup_FromTheClient_WithTheContract"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Sign up from the client with the contract",
+   "a new customer accepting the contract",
+   "account created with the contract recorded"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-04",
+  "area": "Accounts and security",
+  "name": "Guard: IP blocking (guessing, spraying, scanning)",
+  "critical": false,
+  "code": "S/Guard.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart"
+   ],
+   "failure": "-",
+   "boundary": [
+    "x:GuardTests.ABlock_EndsByItself_AfterTheBlockingHours"
+   ],
+   "recovery": [
+    "x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart"
+   ],
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:GuardTests.Scanning_ManyUnknownAddresses_IsBlocked"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:GuardTests.ABlock_EndsByItself_AfterTheBlockingHours",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:GuardTests.Scanning_ManyUnknownAddresses_IsBlocked",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:GuardTests.ABlock_EndsByItself_AfterTheBlockingHours",
+     "x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart",
+     "x:GuardTests.Scanning_ManyUnknownAddresses_IsBlocked"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Block addresses that guess or scan",
+   "many failed sign-ins from one address",
+   "the address blocked; others not affected; the administrator alerted"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-05",
+  "area": "Accounts and security",
+  "name": "Encryption: keys (password / random / custom), check value, tamper detection",
+  "critical": true,
+  "code": "C/Crypto.cs, C/BackupObject.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:UnitTests.EncryptDecryptRoundTrip"
+   ],
+   "failure": [
+    "x:UnitTests.TamperedOrWrongKeyIsRejected"
+   ],
+   "boundary": [],
+   "recovery": [
+    "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "x:UnitTests.EncryptDecryptRoundTrip"
+   ],
+   "security": [
+    "x:UnitTests.TamperedOrWrongKeyIsRejected"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:UnitTests.EncryptDecryptRoundTrip",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:UnitTests.TamperedOrWrongKeyIsRejected",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:UnitTests.EncryptDecryptRoundTrip",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:UnitTests.TamperedOrWrongKeyIsRejected",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "recovery"
+    ],
+    "tests": [
+     "x:UnitTests.EncryptDecryptRoundTrip",
+     "x:UnitTests.TamperedOrWrongKeyIsRejected"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Encrypt data so that only the key holder can read it",
+   "data with key A; reading with key B; a changed byte",
+   "B cannot read; the changed byte detected"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-06",
+  "area": "Accounts and security",
+  "name": "Customer limits, vendors (resellers) see only theirs",
+  "critical": false,
+  "code": "S/Vendors.cs, S/SetControl.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": "-",
+   "security": [
+    "x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand",
+    "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand",
+     "Passed"
+    ],
+    [
+     "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows",
+     "x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Each reseller sees only its own customers",
+   "two vendors with customers",
+   "each sees and changes only its own"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "AU-07",
+  "area": "Accounts and security",
+  "name": "API refuses junk and attacks clearly",
+  "critical": true,
+  "code": "S/Api.cs",
+  "regression": [],
+  "dims": {
+   "happy": "-",
+   "failure": [
+    "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+   ],
+   "boundary": [
+    "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+   ],
+   "recovery": "-",
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+   ]
+  },
+  "dimstatus": {
+   "happy": "n/a",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "n/a",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [
+    [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "The API refuses junk and attacks clearly",
+   "malformed, oversized, path-traversal and unauthenticated requests",
+   "clear 4xx refusals; nothing written outside its place"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-01",
+  "area": "Install and update",
+  "name": "Server installation (wizard / script), Windows service, certificate, port",
+  "critical": true,
+  "code": "S/Installer.cs, S/SetupWizard.cs, install-server.ps1",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:SetupTests.WizardAnswers_AreChecked_ThenInstall_ThenARerunOnlyUpdates",
+    "win:install-server"
+   ],
+   "failure": [
+    "x:SetupTests.SETUP030_NeverTakesAPortOfIis_OrAnotherProgramsCertificate"
+   ],
+   "boundary": [
+    "x:SetupTests.SETUP040_TheBackupsFolder_IsChosenFreely_ButNeverANetworkOrNonsensePath"
+   ],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:SetupTests.WizardAnswers_AreChecked_ThenInstall_ThenARerunOnlyUpdates",
+     "Passed"
+    ],
+    [
+     "win:install-server",
+     "Not run"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SetupTests.SETUP030_NeverTakesAPortOfIis_OrAnotherProgramsCertificate",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:SetupTests.SETUP040_TheBackupsFolder_IsChosenFreely_ButNeverANetworkOrNonsensePath",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "recovery"
+    ],
+    "tests": [
+     "x:SetupTests.SETUP030_NeverTakesAPortOfIis_OrAnotherProgramsCertificate",
+     "x:SetupTests.SETUP040_TheBackupsFolder_IsChosenFreely_ButNeverANetworkOrNonsensePath",
+     "x:SetupTests.WizardAnswers_AreChecked_ThenInstall_ThenARerunOnlyUpdates"
+    ]
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": [
+     "win:install-server"
+    ]
+   }
+  },
+  "spec": [
+   "Install the server",
+   "a clean Windows Server",
+   "service running, certificate bound, port open, admin site answers"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-02",
+  "area": "Install and update",
+  "name": "Client installation (Setup.exe wizard), service, uninstall, reinstall",
+  "critical": true,
+  "code": "Setup/Program.cs, A/SetupForm.cs, A/Setup.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage",
+    "win:setup-robot"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    "win:reinstall"
+   ],
+   "concurrency": "-",
+   "integrity": [
+    "win:reinstall"
+   ],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT RUN",
+   "concurrency": "n/a",
+   "integrity": "NOT RUN",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage",
+     "Passed"
+    ],
+    [
+     "win:setup-robot",
+     "Not run"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [
+    [
+     "win:reinstall",
+     "Not run"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [
+    [
+     "win:reinstall",
+     "Not run"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": [
+     "win:reinstall",
+     "win:setup-robot"
+    ]
+   }
+  },
+  "spec": [
+   "Install / uninstall / reinstall the client",
+   "Setup.exe on a clean computer, then uninstall, then reinstall",
+   "service running, registration kept on reinstall, nothing left after uninstall"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-03",
+  "area": "Install and update",
+  "name": "Client update (all or nothing)",
+  "critical": true,
+  "code": "A/ClientUpdate.cs",
+  "regression": [
+   9,
+   10
+  ],
+  "dims": {
+   "happy": [
+    "x:UpdateInstallTests.Normal_EveryFileNew_Checked_ServiceRunning_ResultOk",
+    "x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles"
+   ],
+   "failure": [
+    "x:UpdateInstallTests.AFileThatCannotBePutBack_IsNamed_TheResultNeverClaimsACleanRollback",
+    "x:UpdateInstallTests.ServiceDoesNotStop_NothingIsChanged_ResultFailed",
+    "x:UpdateInstallTests.OneFileCannotBeReplaced_AllFilesBackToThePreviousVersion"
+   ],
+   "boundary": [],
+   "recovery": [
+    "x:UpdateInstallTests.NewVersionDoesNotStart_PreviousVersionPutBackAndStarted"
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    "x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "NOT TESTED",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:UpdateInstallTests.Normal_EveryFileNew_Checked_ServiceRunning_ResultOk",
+     "Passed"
+    ],
+    [
+     "x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:UpdateInstallTests.AFileThatCannotBePutBack_IsNamed_TheResultNeverClaimsACleanRollback",
+     "Passed"
+    ],
+    [
+     "x:UpdateInstallTests.ServiceDoesNotStop_NothingIsChanged_ResultFailed",
+     "Passed"
+    ],
+    [
+     "x:UpdateInstallTests.OneFileCannotBeReplaced_AllFilesBackToThePreviousVersion",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "x:UpdateInstallTests.NewVersionDoesNotStart_PreviousVersionPutBackAndStarted",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "integrity"
+    ],
+    "tests": [
+     "x:UpdateInstallTests.AFileThatCannotBePutBack_IsNamed_TheResultNeverClaimsACleanRollback",
+     "x:UpdateInstallTests.NewVersionDoesNotStart_PreviousVersionPutBackAndStarted",
+     "x:UpdateInstallTests.Normal_EveryFileNew_Checked_ServiceRunning_ResultOk",
+     "x:UpdateInstallTests.OneFileCannotBeReplaced_AllFilesBackToThePreviousVersion",
+     "x:UpdateInstallTests.ServiceDoesNotStop_NothingIsChanged_ResultFailed"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Update the client all-or-nothing",
+   "an update while the service runs; a file that cannot be replaced",
+   "all files new and the service back; or all old (rolled back) and the result says why"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-04",
+  "area": "Install and update",
+  "name": "Server update (signed, SHA-256, from files)",
+  "critical": true,
+  "code": "S/Updater.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused"
+   ],
+   "failure": [
+    "x:UpdaterTests.UpdateFromFiles_PartsJoinedInOrder_OnTheServerOnly_ANonPackageIsRefused"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn"
+   ],
+   "security": [
+    "x:UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "NOT TESTED",
+   "integrity": "PASS",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:UpdaterTests.UpdateFromFiles_PartsJoinedInOrder_OnTheServerOnly_ANonPackageIsRefused",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn",
+     "Passed"
+    ]
+   ],
+   "security": [
+    [
+     "x:UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused",
+     "x:UpdaterTests.UpdateFromFiles_PartsJoinedInOrder_OnTheServerOnly_ANonPackageIsRefused",
+     "x:UpgradeTests.EveryEarlierVersion_OpensAsItIs_RestoresEveryPoint_AndGoesOn"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Update the server only with a signed package",
+   "a signed package; a changed package",
+   "signed installed with data kept; changed refused"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-05",
+  "area": "Install and update",
+  "name": "Client packages: Windows, Linux, Mac; branding and server inside",
+  "critical": false,
+  "code": "S/ClientPackage.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage",
+    "x:PackageTests.LinuxClientPackage_KeepsExecutableBits_AndInstallsUnderTheProductName",
+    "x:PackageTests.MacClientPackage_BothProcessors_LaunchDaemonAndApp"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": [],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage",
+     "Passed"
+    ],
+    [
+     "x:PackageTests.LinuxClientPackage_KeepsExecutableBits_AndInstallsUnderTheProductName",
+     "Passed"
+    ],
+    [
+     "x:PackageTests.MacClientPackage_BothProcessors_LaunchDaemonAndApp",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage",
+     "x:PackageTests.LinuxClientPackage_KeepsExecutableBits_AndInstallsUnderTheProductName",
+     "x:PackageTests.MacClientPackage_BothProcessors_LaunchDaemonAndApp"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Build client packages with branding and the server inside",
+   "a branded package request",
+   "Windows / Linux / Mac packages that connect to this server"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "IN-06",
+  "area": "Install and update",
+  "name": "Reboot of the computer: service back, runs go on",
+  "critical": true,
+  "code": "A/AgentService.cs",
+  "regression": [],
+  "dims": {
+   "happy": [],
+   "failure": [],
+   "boundary": "-",
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "NOT TESTED",
+   "failure": "NOT TESTED",
+   "boundary": "n/a",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Survive a reboot",
+   "a reboot during idle and during a backup",
+   "service back; the interrupted run recorded; the next run completes"
+  ],
+  "status": "NONE"
+ },
+ {
+  "id": "SH-01",
+  "area": "State and history",
+  "name": "Last backup vs last result; history of every run; tasks page",
+  "critical": true,
+  "code": "S/Api.cs (UpdateStats), S/RunLog.cs",
+  "regression": [
+   4
+  ],
+  "dims": {
+   "happy": [
+    "x:TasksTests.Tasks_Of24Hours_WithStatusAndCounts",
+    "qa:journeys/j3"
+   ],
+   "failure": [
+    "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+    "qa:failure-recovery/f5"
+   ],
+   "boundary": [],
+   "recovery": [
+    "qa:journeys/j5"
+   ],
+   "concurrency": [],
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:TasksTests.Tasks_Of24Hours_WithStatusAndCounts",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j3",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f5",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly",
+     "x:TasksTests.Tasks_Of24Hours_WithStatusAndCounts"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f5",
+     "qa:journeys/j3",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "Show the truth: last backup vs last result, every run in the history",
+   "a success then a failure",
+   "last backup = the success; last result = the failure (red); both runs in the history"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-02",
+  "area": "State and history",
+  "name": "Running now (live list) \u2014 no ghost",
+  "critical": true,
+  "code": "S/Api.cs (live, SweepInterrupted)",
+  "regression": [
+   1,
+   19,
+   26
+  ],
+  "dims": {
+   "happy": [
+    "x:TasksTests.ActiveBackups_ReportedWhileRunning_GoneWhenDone",
+    "x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack"
+   ],
+   "failure": [
+    "qa:journeys/j5",
+    "qa:failure-recovery/f1"
+   ],
+   "boundary": [
+    "x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack"
+   ],
+   "recovery": [
+    "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp"
+   ],
+   "concurrency": [
+    "x:InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce"
+   ],
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:TasksTests.ActiveBackups_ReportedWhileRunning_GoneWhenDone",
+     "Passed"
+    ],
+    [
+     "x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ],
+    [
+     "qa:failure-recovery/f1",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "x:InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce",
+     "Passed"
+    ]
+   ],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp",
+     "x:InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce",
+     "x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack",
+     "x:TasksTests.ActiveBackups_ReportedWhileRunning_GoneWhenDone"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f1",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "Show only runs that are really running",
+   "a run that ended; a run whose computer died",
+   "neither stays in \"Running now\""
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-03",
+  "area": "State and history",
+  "name": "Mails: run report, failure, missed backup, quota, disk full",
+  "critical": true,
+  "code": "S/Notify.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle",
+    "x:FeatureTests.BackupReportTestMailAndMissedBackupAlertAreSent_PasswordsNeverLeaveTheServer"
+   ],
+   "failure": [
+    "x:NotifyComponentTests.NoSmtpServer_NothingSent_NothingThrown",
+    "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle"
+   ],
+   "boundary": [
+    "x:NotifyComponentTests.TheCustomersChoice_FailureOnly_And_None",
+    "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+   ],
+   "recovery": [
+    "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle"
+   ],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": [
+    "x:FeatureTests.BackupReportTestMailAndMissedBackupAlertAreSent_PasswordsNeverLeaveTheServer"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle",
+     "Passed"
+    ],
+    [
+     "x:FeatureTests.BackupReportTestMailAndMissedBackupAlertAreSent_PasswordsNeverLeaveTheServer",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:NotifyComponentTests.NoSmtpServer_NothingSent_NothingThrown",
+     "Passed"
+    ],
+    [
+     "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:NotifyComponentTests.TheCustomersChoice_FailureOnly_And_None",
+     "Passed"
+    ],
+    [
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:FeatureTests.BackupReportTestMailAndMissedBackupAlertAreSent_PasswordsNeverLeaveTheServer",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:NotifyComponentTests.EachResult_OneMail_WithTheRightMarkAndTitle",
+     "x:NotifyComponentTests.NoSmtpServer_NothingSent_NothingThrown",
+     "x:NotifyComponentTests.TheCustomersChoice_FailureOnly_And_None"
+    ]
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:FeatureTests.BackupReportTestMailAndMissedBackupAlertAreSent_PasswordsNeverLeaveTheServer",
+     "x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Send the right mail, and no false one",
+   "a success, a failure, a missed backup, quota, disk full",
+   "one mail of the right kind each; no failure mail for a success; no duplicate"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-04",
+  "area": "State and history",
+  "name": "Service calls opened / closed by backup results",
+  "critical": false,
+  "code": "S/Tickets.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:TicketTests.BackupFailures_OpenOneCall_AtThreshold_CloseItselfOnSuccess"
+   ],
+   "failure": [],
+   "boundary": [
+    "x:TicketTests.Thresholds_General_And_PerCustomer"
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:TicketTests.Api_Admin_And_Client"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "PASS",
+   "recovery": "NOT TESTED",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:TicketTests.BackupFailures_OpenOneCall_AtThreshold_CloseItselfOnSuccess",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:TicketTests.Thresholds_General_And_PerCustomer",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:TicketTests.Api_Admin_And_Client",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:TicketTests.Api_Admin_And_Client",
+     "x:TicketTests.BackupFailures_OpenOneCall_AtThreshold_CloseItselfOnSuccess",
+     "x:TicketTests.Thresholds_General_And_PerCustomer"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Open and close service calls from backup results",
+   "a failure, then a success",
+   "a call opened, then closed"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-05",
+  "area": "State and history",
+  "name": "Ransomware suspicion: retention frozen, alert",
+  "critical": true,
+  "code": "S/Api.cs (CheckMassChange), S/Insights.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:FeatureTests.MassChangeFreezesRetentionUntilAnAdministratorReleasesIt_AndAlertsByMail"
+   ],
+   "failure": [],
+   "boundary": [
+    "x:AiTests.Ransomware_LearnsWhatIsNormalForEachSet"
+   ],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [],
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "PASS",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "NOT TESTED",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:FeatureTests.MassChangeFreezesRetentionUntilAnAdministratorReleasesIt_AndAlertsByMail",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:AiTests.Ransomware_LearnsWhatIsNormalForEachSet",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity"
+    ],
+    "tests": [
+     "x:AiTests.Ransomware_LearnsWhatIsNormalForEachSet"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:FeatureTests.MassChangeFreezesRetentionUntilAnAdministratorReleasesIt_AndAlertsByMail"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Suspect ransomware and freeze retention",
+   "a run that changes most files with one new extension",
+   "retention frozen, administrators alerted"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-06",
+  "area": "State and history",
+  "name": "Computers: list, disconnect, move to another customer with backups",
+  "critical": false,
+  "code": "S/Computers.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": [
+    "x:ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups"
+   ],
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "PASS",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [
+    [
+     "x:ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "integrity",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Manage computers",
+   "disconnect a computer; move it to another customer",
+   "its token stops working; backups move with it"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "SH-07",
+  "area": "State and history",
+  "name": "Licence: editions, limits, check-in",
+  "critical": false,
+  "code": "S/License.cs, S/LicenseCenter.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:LicenseTests.LicenceLimits_UsersModulesAndStorage"
+   ],
+   "failure": [
+    "x:LicenseCenterTests.CheckIn_UnreachableMeans7DayTemporary_AddressChangeNeedsApproval_RevokedAndForgedAnswersRefused"
+   ],
+   "boundary": [
+    "x:LicenseTests.WithoutALicence_TheFreeEditionLimitsUsersAndModules_AndShowsPoweredBy"
+   ],
+   "recovery": [
+    "x:LicenseCenterTests.CheckIn_UnreachableMeans7DayTemporary_AddressChangeNeedsApproval_RevokedAndForgedAnswersRefused"
+   ],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": [
+    "x:LicenseCenterTests.UpdateLicence_BringsTheNewQuotaTheOwnerIssued_OnlyGenuineAndOnlyForThisServer"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:LicenseTests.LicenceLimits_UsersModulesAndStorage",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:LicenseCenterTests.CheckIn_UnreachableMeans7DayTemporary_AddressChangeNeedsApproval_RevokedAndForgedAnswersRefused",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:LicenseTests.WithoutALicence_TheFreeEditionLimitsUsersAndModules_AndShowsPoweredBy",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:LicenseCenterTests.CheckIn_UnreachableMeans7DayTemporary_AddressChangeNeedsApproval_RevokedAndForgedAnswersRefused",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:LicenseCenterTests.UpdateLicence_BringsTheNewQuotaTheOwnerIssued_OnlyGenuineAndOnlyForThisServer",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:LicenseCenterTests.CheckIn_UnreachableMeans7DayTemporary_AddressChangeNeedsApproval_RevokedAndForgedAnswersRefused",
+     "x:LicenseCenterTests.UpdateLicence_BringsTheNewQuotaTheOwnerIssued_OnlyGenuineAndOnlyForThisServer",
+     "x:LicenseTests.LicenceLimits_UsersModulesAndStorage",
+     "x:LicenseTests.WithoutALicence_TheFreeEditionLimitsUsersAndModules_AndShowsPoweredBy"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Enforce the licence",
+   "an edition with limits; a check-in",
+   "limits applied; check-in recorded"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-01",
+  "area": "User interfaces",
+  "name": "Admin site: every page opens, no errors; sign-in, reload, sign-out",
+  "critical": true,
+  "code": "S/Web/app.js",
+  "regression": [
+   7,
+   8
+  ],
+  "dims": {
+   "happy": [
+    "qa:journeys/j1",
+    "robot:behaviour"
+   ],
+   "failure": [
+    "qa:journeys/j1"
+   ],
+   "boundary": [
+    "robot:behaviour"
+   ],
+   "recovery": [
+    "qa:journeys/j1"
+   ],
+   "concurrency": [],
+   "integrity": "-",
+   "security": [
+    "x:FeatureTests.ManagementUiIsServedWithStrictHeadersAndBranding"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "NOT RUN",
+   "recovery": "PASS",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j1",
+     "Passed"
+    ],
+    [
+     "robot:behaviour",
+     "Not run"
+    ]
+   ],
+   "failure": [
+    [
+     "qa:journeys/j1",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "robot:behaviour",
+     "Not run"
+    ]
+   ],
+   "recovery": [
+    [
+     "qa:journeys/j1",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:FeatureTests.ManagementUiIsServedWithStrictHeadersAndBranding",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:FeatureTests.ManagementUiIsServedWithStrictHeadersAndBranding"
+    ]
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j1",
+     "robot:behaviour"
+    ]
+   }
+  },
+  "spec": [
+   "Every admin page opens without errors",
+   "each page, reload, sign-out",
+   "no console errors; sign-out ends the session"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-02",
+  "area": "User interfaces",
+  "name": "Admin site: set editor (every tab saved and read back)",
+  "critical": true,
+  "code": "S/Web/app.js (setEditor)",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "qa:journeys/j2",
+    "robot:options"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": [],
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "NOT TESTED",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "qa:journeys/j2",
+     "Passed"
+    ],
+    [
+     "robot:options",
+     "Not run"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:journeys/j2",
+     "robot:options"
+    ]
+   }
+  },
+  "spec": [
+   "The set editor saves every tab",
+   "a change on each tab",
+   "read back the same; reaches the computer"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-03",
+  "area": "User interfaces",
+  "name": "Admin site: the truth after failures (red, failed, not running)",
+  "critical": true,
+  "code": "S/Web/app.js",
+  "regression": [
+   4,
+   12
+  ],
+  "dims": {
+   "happy": "-",
+   "failure": [
+    "qa:failure-recovery/f5",
+    "qa:journeys/j5"
+   ],
+   "boundary": [],
+   "recovery": [
+    "qa:journeys/j5"
+   ],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "n/a",
+   "failure": "PASS",
+   "boundary": "NOT TESTED",
+   "recovery": "PASS",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [],
+   "failure": [
+    [
+     "qa:failure-recovery/f5",
+     "Passed"
+    ],
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [
+    [
+     "qa:journeys/j5",
+     "Passed"
+    ]
+   ],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "qa:failure-recovery/f5",
+     "qa:journeys/j5"
+    ]
+   }
+  },
+  "spec": [
+   "The admin site shows the truth after failures",
+   "a failed run; a dead run",
+   "red, failed, not running"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-04",
+  "area": "User interfaces",
+  "name": "Client window (every page, typing kept)",
+  "critical": true,
+  "code": "A/ClientForm.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "ci:client-pages"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "NOT RUN",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "ci:client-pages",
+     "Not run"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": [
+     "ci:client-pages"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "The client window works",
+   "each page; typing in a field during a refresh",
+   "pages open; typed text kept"
+  ],
+  "status": "NONE"
+ },
+ {
+  "id": "UI-05",
+  "area": "User interfaces",
+  "name": "Client installation wizard (Welcome \u2192 License \u2192 Install \u2192 Finish)",
+  "critical": true,
+  "code": "A/SetupForm.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "win:setup-robot"
+   ],
+   "failure": [
+    "win:setup-robot"
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": "-",
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "NOT RUN",
+   "failure": "NOT RUN",
+   "boundary": "NOT TESTED",
+   "recovery": "NOT TESTED",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "win:setup-robot",
+     "Not run"
+    ]
+   ],
+   "failure": [
+    [
+     "win:setup-robot",
+     "Not run"
+    ]
+   ],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "recovery",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": [
+     "win:setup-robot"
+    ]
+   }
+  },
+  "spec": [
+   "The client installation wizard",
+   "Welcome \u2192 License \u2192 Install \u2192 Finish",
+   "each step reachable; Back / Cancel work; the service installed"
+  ],
+  "status": "NONE"
+ },
+ {
+  "id": "UI-06",
+  "area": "User interfaces",
+  "name": "Partner portal and licensing centre",
+  "critical": false,
+  "code": "S/Portal.cs, Web/portal.js",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:PortalTests.PartnerSignsUp_BrandsItsProduct_DownloadsServerThatLicensesItself_AndItsClients"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": "-",
+   "security": []
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "NOT TESTED"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:PortalTests.PartnerSignsUp_BrandsItsProduct_DownloadsServerThatLicensesItself_AndItsClients",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:PortalTests.PartnerSignsUp_BrandsItsProduct_DownloadsServerThatLicensesItself_AndItsClients"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Partner portal and licensing centre",
+   "a partner session",
+   "licences and packages managed"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-07",
+  "area": "User interfaces",
+  "name": "Translations (13 languages), Hebrew screens",
+  "critical": false,
+  "code": "C/i18n",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:I18nTests.TemplatesTranslateFinishedMessages_AndEveryDictionaryKeepsItsPlaceholders",
+    "robot:behaviour"
+   ],
+   "failure": "-",
+   "boundary": [
+    "x:LayoutLintTests.NoScreenFixesLeftOrRight"
+   ],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "PASS",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:I18nTests.TemplatesTranslateFinishedMessages_AndEveryDictionaryKeepsItsPlaceholders",
+     "Passed"
+    ],
+    [
+     "robot:behaviour",
+     "Not run"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:LayoutLintTests.NoScreenFixesLeftOrRight",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:I18nTests.TemplatesTranslateFinishedMessages_AndEveryDictionaryKeepsItsPlaceholders",
+     "x:LayoutLintTests.NoScreenFixesLeftOrRight"
+    ]
+   },
+   "integration": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/recovery"
+    ],
+    "tests": []
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": [
+     "robot:behaviour"
+    ]
+   }
+  },
+  "spec": [
+   "Every screen in 13 languages, Hebrew right-to-left",
+   "each language",
+   "no missing keys; Hebrew screens laid out right-to-left"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-08",
+  "area": "User interfaces",
+  "name": "AI: explain a failed run, insights, forecasts",
+  "critical": false,
+  "code": "S/Ai.cs, S/Insights.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:AiTests.FailedJob_IsExplainedByTheAi_WithoutSecrets_AndOpensATicket",
+    "x:AiTests.Forecasts_DiskQuotaAndComputersAtRisk"
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": "-",
+   "concurrency": "-",
+   "integrity": "-",
+   "security": [
+    "x:AiTests.Redact_MasksSecretsAndKeepsTheEnd"
+   ]
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "NOT TESTED",
+   "boundary": "NOT TESTED",
+   "recovery": "n/a",
+   "concurrency": "n/a",
+   "integrity": "n/a",
+   "security": "PASS"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:AiTests.FailedJob_IsExplainedByTheAi_WithoutSecrets_AndOpensATicket",
+     "Passed"
+    ],
+    [
+     "x:AiTests.Forecasts_DiskQuotaAndComputersAtRisk",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [],
+   "recovery": [],
+   "concurrency": [],
+   "integrity": [],
+   "security": [
+    [
+     "x:AiTests.Redact_MasksSecretsAndKeepsTheEnd",
+     "Passed"
+    ]
+   ]
+  },
+  "layers": {
+   "component": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/boundary"
+    ],
+    "tests": [
+     "x:AiTests.Forecasts_DiskQuotaAndComputersAtRisk",
+     "x:AiTests.Redact_MasksSecretsAndKeepsTheEnd"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "failure/recovery"
+    ],
+    "tests": [
+     "x:AiTests.FailedJob_IsExplainedByTheAi_WithoutSecrets_AndOpensATicket"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "AI explains failures and forecasts",
+   "a failed run log",
+   "an explanation without secrets"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "UI-09",
+  "area": "User interfaces",
+  "name": "Large installations: 500 customers, 5 000 sets stay fast",
+  "critical": false,
+  "code": "S/Api.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast"
+   ],
+   "failure": "-",
+   "boundary": [
+    "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast"
+   ],
+   "recovery": "-",
+   "concurrency": [
+    "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast"
+   ],
+   "integrity": "-",
+   "security": "-"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "n/a",
+   "boundary": "PASS",
+   "recovery": "n/a",
+   "concurrency": "PASS",
+   "integrity": "n/a",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast",
+     "Passed"
+    ]
+   ],
+   "failure": [],
+   "boundary": [
+    [
+     "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast",
+     "Passed"
+    ]
+   ],
+   "recovery": [],
+   "concurrency": [
+    [
+     "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast",
+     "Passed"
+    ]
+   ],
+   "integrity": [],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "NONE",
+    "missing": [
+     "happy",
+     "failure/boundary"
+    ],
+    "tests": []
+   },
+   "integration": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Large installations stay fast",
+   "500 customers, 5 000 sets",
+   "pages within the time limit"
+  ],
+  "status": "PARTIAL"
+ },
+ {
+  "id": "CO-01",
+  "area": "Core",
+  "name": "Shared formats: messages, profile, log lines, run ids, atomic file writes",
+  "critical": true,
+  "code": "C/Msg.cs, C/Profile.cs, C/Formats.cs, C/Json.cs",
+  "regression": [],
+  "dims": {
+   "happy": [
+    "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+    "x:UnitTests.LogLinesMatchAhsayFormat",
+    "x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes",
+    "x:AiTests.JsonReadsAndWritesGraphShapes",
+    "x:OptionsTests.Settings_Survive_TheProfile"
+   ],
+   "failure": [
+    "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+   ],
+   "boundary": [
+    "x:CoreFormatsTests.AMessage_ReadsBackExactly"
+   ],
+   "recovery": [
+    "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail"
+   ],
+   "concurrency": [
+    "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail"
+   ],
+   "integrity": [
+    "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+    "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail",
+    "x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes"
+   ],
+   "security": "no access decision"
+  },
+  "dimstatus": {
+   "happy": "PASS",
+   "failure": "PASS",
+   "boundary": "PASS",
+   "recovery": "PASS",
+   "concurrency": "PASS",
+   "integrity": "PASS",
+   "security": "n/a"
+  },
+  "outs": {
+   "happy": [
+    [
+     "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.LogLinesMatchAhsayFormat",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes",
+     "Passed"
+    ],
+    [
+     "x:AiTests.JsonReadsAndWritesGraphShapes",
+     "Passed"
+    ],
+    [
+     "x:OptionsTests.Settings_Survive_TheProfile",
+     "Passed"
+    ]
+   ],
+   "failure": [
+    [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks",
+     "Passed"
+    ]
+   ],
+   "boundary": [
+    [
+     "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+     "Passed"
+    ]
+   ],
+   "recovery": [
+    [
+     "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail",
+     "Passed"
+    ]
+   ],
+   "concurrency": [
+    [
+     "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail",
+     "Passed"
+    ]
+   ],
+   "integrity": [
+    [
+     "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+     "Passed"
+    ],
+    [
+     "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail",
+     "Passed"
+    ],
+    [
+     "x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes",
+     "Passed"
+    ]
+   ],
+   "security": []
+  },
+  "layers": {
+   "component": {
+    "status": "VERIFIED",
+    "missing": [],
+    "tests": [
+     "x:AiTests.JsonReadsAndWritesGraphShapes",
+     "x:CoreFormatsTests.AMessage_ReadsBackExactly",
+     "x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail",
+     "x:OptionsTests.Settings_Survive_TheProfile",
+     "x:UnitTests.LogLinesMatchAhsayFormat",
+     "x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes"
+    ]
+   },
+   "integration": {
+    "status": "PARTIAL",
+    "missing": [
+     "happy"
+    ],
+    "tests": [
+     "x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks"
+    ]
+   },
+   "e2e": {
+    "status": "NONE",
+    "missing": [
+     "a real user run",
+     "restore + SHA-256"
+    ],
+    "tests": []
+   }
+  },
+  "spec": [
+   "Read and write the shared formats exactly, and never leave a half-written state file",
+   "messages, a profile with unknown attributes, log lines, a write interrupted midway",
+   "what is written reads back the same; unknown attributes are kept; a reader never sees a half file"
+  ],
+  "status": "PARTIAL"
+ }
+]

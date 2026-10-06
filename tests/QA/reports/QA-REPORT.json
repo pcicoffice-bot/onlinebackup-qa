@@ -1,0 +1,174 @@
+{
+  "mode": "candidate",
+  "commit": "01e12a3",
+  "version": "dev",
+  "environment": "linux x64, node v22.22.2",
+  "started": "2026-10-06T10:11:18.327Z",
+  "build": {
+    "Core": "PASS",
+    "Server": "PASS",
+    "Agent (net40 + net8)": "PASS",
+    "ClientApp": "PASS",
+    "Setup": "PASS",
+    "Tests": "PASS"
+  },
+  "levels": {
+    "L2": {
+      "name": "Integration",
+      "total": 77,
+      "passed": 77,
+      "failed": 0,
+      "skipped": 0,
+      "failedTests": []
+    },
+    "L7": {
+      "name": "Install / Upgrade / Reboot",
+      "total": 19,
+      "passed": 19,
+      "failed": 0,
+      "skipped": 0,
+      "failedTests": []
+    },
+    "L5": {
+      "name": "Full E2E",
+      "total": 48,
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "failedTests": []
+    },
+    "L1": {
+      "name": "Unit",
+      "total": 17,
+      "passed": 17,
+      "failed": 0,
+      "skipped": 0,
+      "failedTests": []
+    },
+    "L6": {
+      "name": "Failure / Recovery",
+      "total": 17,
+      "passed": 16,
+      "failed": 1,
+      "skipped": 0,
+      "failedTests": [
+        "failure-recovery/f2-network-cut.spec.ts › F2 network cut mid-backup → failure, not success → line back → next backup restores identical, no ghost"
+      ]
+    },
+    "L3": {
+      "name": "API",
+      "total": 8,
+      "passed": 8,
+      "failed": 0,
+      "skipped": 0,
+      "failedTests": []
+    }
+  },
+  "items": {
+    "build": "PASS",
+    "qa:failure-recovery/f1-server-crash": "PASS",
+    "qa:failure-recovery/f2-network-cut": "FAIL",
+    "qa:failure-recovery/f3-two-at-once": "PASS",
+    "qa:failure-recovery/f4-restore-interrupted": "PASS",
+    "qa:failure-recovery/f5-source-gone-ui": "PASS",
+    "qa:failure-recovery/f6-server-disk-full": "PASS",
+    "qa:journeys/j1-login-navigation": "PASS",
+    "qa:journeys/j2-edit-backup-set": "PASS",
+    "qa:journeys/j3-backup-now": "PASS",
+    "qa:journeys/j4-restore-after-loss": "PASS",
+    "qa:journeys/j5-kill-agent": "PASS",
+    "qa:seed": "PASS",
+    "windows:install": "NOT TESTED",
+    "windows:update": "NOT TESTED",
+    "windows:reboot": "NOT TESTED"
+  },
+  "failures": [
+    {
+      "what": "QA failure-recovery/f2-network-cut.spec.ts › F2 network cut mid-backup → failure, not success → line back → next backup restores identical, no ghost",
+      "detail": "Error: dotnet OnlineBackup.Agent.dll register --home /tmp/obqa-iPAhsX/agent-qa-f2-F2-PC --server http://127.0.0.1:38373/ --login qa-f2 --password Customer-Pass-1 --computer F2-PC → exit 1\nerror: Not Found\n"
+    }
+  ],
+  "notTested": "Every item here was NOT run. None of them counts as PASS.\n\n| Area | Why not yet | What is needed |\n|---|---|---|\n| Real Windows: server install as a service, client installer robot, backup / restore / SHA-256 on Windows, service killed, uninstall, reinstall | Written (`tests/QA/windows/`), not run yet: the Windows machines of GitHub are free only on a public repository, and the public mirror is not created yet | The owner creates the public repository `onlinebackup-qa`; the mirror is pushed; `.github/workflows/qa.yml` runs it |\n| Reboot of a real computer (idle, during a backup, after an update) | GitHub's Windows machines cannot reboot and continue a test | A Windows VM of our own as a GitHub runner (a script is ready to register it) |\n| Client window (ClientApp) robot — every screen and control through UI Automation | Not written yet (the CI already types into every page of the window, UI-030) | Next step after the installer robot runs green |\n| Update of a real installed client and server, then backup + restore | Update logic is tested (UpdateInstallTests, UpdaterTests); a real Windows update chain is not | Windows job: install version N, update to N+1, smoke backup + restore |\n| VSS, locked files, System State, SQL Server, Hyper-V, Exchange, Oracle, Domino on Windows | Need Windows Server with those products | Windows runner with SQL Server Express (scripted) for SQL; others need a lab |\n| Permission denied (a folder the backup cannot read) | The Linux runs are root: permissions do not stop root | Run the agent as a normal user in the QA world |\n| Disk full on the server or the client | Not simulated yet | A small mounted disk in the QA world |\n| Soak / long run (hours of change → backup → restore sample) | Suite not written yet | `tests/QA/soak/` nightly |\n| Exploratory runs by the Planner agent on a schedule | Run once by hand through the Playwright MCP (found bugs 7 and 8); not scheduled | A nightly Claude Code session with the planner agent |\n| macOS / Linux client installers | No Mac; Linux client package not robot-tested | — |\n",
+  "gate": [
+    {
+      "id": "build",
+      "what": "Build of every component",
+      "status": "PASS"
+    },
+    {
+      "id": "L1",
+      "what": "Unit tests",
+      "status": "PASS"
+    },
+    {
+      "id": "L2",
+      "what": "Integration tests",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:journeys/j1",
+      "what": "Critical UI flow: sign-in and navigation",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:journeys/j2",
+      "what": "Critical UI flow: edit a backup set (reaches the computer)",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:journeys/j3",
+      "what": "Backup E2E (Back up now → restore → SHA-256)",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:journeys/j4",
+      "what": "Restore E2E + SHA-256 (lost data, older version)",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:journeys/j5",
+      "what": "Crash recovery (agent killed mid-backup)",
+      "status": "PASS"
+    },
+    {
+      "id": "qa:failure-recovery",
+      "what": "Failure / recovery suite",
+      "status": "FAIL"
+    },
+    {
+      "id": "L6",
+      "what": "Regression tests of every known bug",
+      "status": "FAIL"
+    },
+    {
+      "id": "L7",
+      "what": "Update E2E",
+      "status": "PASS"
+    },
+    {
+      "id": "windows:install",
+      "what": "Install smoke on real Windows (server + client + service + backup + restore)",
+      "status": "NOT TESTED"
+    },
+    {
+      "id": "windows:update",
+      "what": "Update on real Windows, then backup + restore",
+      "status": "NOT TESTED"
+    },
+    {
+      "id": "windows:reboot",
+      "what": "Reboot during and after a backup on real Windows",
+      "status": "NOT TESTED"
+    }
+  ],
+  "verdict": "NOT READY",
+  "reasons": [
+    "Failure / recovery suite: FAIL",
+    "Regression tests of every known bug: FAIL",
+    "Install smoke on real Windows (server + client + service + backup + restore): NOT TESTED",
+    "Update on real Windows, then backup + restore: NOT TESTED",
+    "Reboot during and after a backup on real Windows: NOT TESTED"
+  ],
+  "finished": "2026-10-06T10:31:16.535Z",
+  "minutes": 20
+}

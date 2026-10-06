@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Cpath d=%27M16 2 4 7v8c0 7.5 5.1 13.6 12 15 6.9-1.4 12-7.5 12-15V7z%27 fill=%27%234F46E5%27/%3E%3Cpath d=%27m10 16 4.5 4.5L23 12%27 stroke=%27white%27 stroke-width=%273%27 fill=%27none%27/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backup Server Setup</title>
+<link rel="stylesheet" href="/i18n/theme.css">
+<style>
+h1, h2, h3, p, label, li, td, th { overflow-wrap: break-word; }
+/* colours, fonts, the top bar: /i18n/theme.css (DESIGN-040) */
+* { box-sizing: border-box; }
+body { font-size: 15px; line-height: 1.55; }
+header { padding: 16px 24px; display: flex; align-items: center; gap: 12px; }
+header select { width: auto; flex: none; font-size: 13px; }
+header h1 { font-size: 18px; margin: 0; flex: 1; min-width: 0; font-weight: 800; letter-spacing: -.01em; } header h1 small { display: block; font-size: 12px; font-weight: 450; opacity: .7; letter-spacing: 0; }
+header img { max-height: 36px; background: #fff; border-radius: 9px; padding: 3px; }
+main { max-width: 760px; margin: 24px auto; padding: 0 16px; }
+.steps { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.steps span { font-size: 12px; padding: 5px 12px; border-radius: 999px; background: #E2E8F0; color: var(--muted); font-weight: 600; }
+.steps span.on { background: var(--ink2); color: #fff; }
+.steps span.done { background: #D1FAE5; color: var(--ok); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: 30px; box-shadow: var(--shadow-lg); }
+h2 { margin: 0 0 6px; font-size: 20px; }
+p.lead { color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
+label { display: block; font-weight: 600; margin: 14px 0 4px; }
+.hint { color: var(--muted); font-size: 13px; margin-top: 3px; line-height: 1.45; }
+input, select { font: inherit; padding: 9px 12px; border: 1px solid #CBD5E1; border-radius: 9px; width: 100%; }
+input[type=color] { width: 72px; height: 42px; padding: 3px; cursor: pointer; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+.drives { display: grid; gap: 10px; }
+.drive { border: 2px solid var(--line); border-radius: 12px; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+.drive.on { border-color: var(--brand); background: var(--soft); }
+.bar { height: 6px; background: #e4e8ee; border-radius: 3px; margin-top: 6px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--brand); }
+.tag { font-size: 12px; background: #D1FAE5; color: var(--ok); padding: 2px 8px; border-radius: 10px; }
+.nav { display: flex; gap: 10px; margin-top: 22px; align-items: center; flex-wrap: wrap; }
+.nav .space { flex: 1; }
+button { font: inherit; padding: 10px 20px; border-radius: 9px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 600; color: var(--text); }
+button.link { border: none; background: none; color: var(--muted); text-decoration: underline; padding: 0; }
+.errors { background: #fdecea; color: var(--bad); border-radius: 6px; padding: 10px 14px; margin-top: 16px; }
+.errors div + div { margin-top: 4px; }
+.box { background: #f6f8fb; border: 1px solid var(--line); border-radius: 6px; padding: 12px 14px; margin-top: 12px; line-height: 1.6; }
+.ok { color: var(--ok); } .bad { color: var(--bad); }
+.log div { padding: 4px 0; } .log div::before { content: "✓ "; color: var(--ok); }
+.log div.cur::before { content: "⏳ "; }
+code { background: #eef1f5; padding: 1px 6px; border-radius: 4px; direction: ltr; unicode-bidi: isolate; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+@media (max-width: 600px) { .row2 { grid-template-columns: 1fr; } main { margin: 12px auto; } .card { padding: 16px; } }
+@media print { header, .nav, .steps { display: none; } .card { border: none; } }
+</style>
+</head>
+<body>
+<header><img id="hlogo" alt="" hidden><h1 id="title">Backup Server Setup</h1><select id="lang" class="lang" aria-label="Language"></select></header>
+<main><div class="steps" id="steps"></div><div class="card" id="card"></div></main>
+<script src="/i18n/i18n.js"></script>
+<script src="/setup.js"></script>
+</body>
+</html>

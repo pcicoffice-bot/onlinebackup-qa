@@ -1,0 +1,33 @@
+{
+  "_comment": "Which level each existing xUnit test class belongs to (tests/Tests). L1 Unit = pure code; L2 Integration = real server in-process + real HTTP + real files; L3 API = the HTTP API's contracts and refusals; L5 E2E = a real agent backs up and restores; L6 Failure/Recovery = faults injected; L7 Install/Upgrade = installer, updater, package. QA journeys (tests/QA) are classified by their folder.",
+  "xunit": {
+    "ChunkerTests": "L1", "CryptoTests": "L1", "FormatTests": "L1", "ObjectTests": "L1", "I18nTests": "L1", "LayoutLintTests": "L1",
+    "AiTests": "L2", "BackupChecksTests": "L2", "BulkTests": "L2", "ComputerTests": "L2", "ConfigBackupTests": "L2", "ContractTests": "L2",
+    "CustomerTests": "L2", "DefaultsTests": "L2", "EnterpriseTests": "L2", "FeatureTests": "L2", "GuardTests": "L2", "LicenseCenterTests": "L2",
+    "LicenseTests": "L2", "OptionsTests": "L2", "PortalTests": "L2", "RecycleTests": "L2", "ResourceTests": "L2", "SetControlTests": "L2",
+    "StaffTests": "L2", "TasksTests": "L2", "TicketTests": "L2", "VendorTests": "L2", "TimeMachineTests": "L2", "ClientUiTests": "L2",
+    "SecurityTests": "L3", "FuzzTests": "L3", "TlsTests": "L3", "LoadTests": "L3",
+    "EndToEndTests": "L5", "DestinationTests": "L5", "ResticTests": "L5", "DbHyperVTests": "L5", "M365Tests": "L5", "GoogleTests": "L5",
+    "BareMetalTests": "L5", "WebRestoreTests": "L5", "SqlScaleTests": "L5", "SourceTests": "L5",
+    "InterruptionTests": "L6", "ProcessTests": "L6", "ReliabilityTests": "L6",
+    "UpdateInstallTests": "L7", "UpdaterTests": "L7", "UpgradeTests": "L7", "SetupTests": "L7", "SetupWizardTests": "L7", "PackageTests": "L7", "ClientUpdateTests": "L7"
+  },
+  "qa": { "journeys": "L5", "e2e": "L5", "web": "L4", "regression": "L6", "failure-recovery": "L6", "windows": "L7", "soak": "L8" },
+  "names": { "L1": "Unit", "L2": "Integration", "L3": "API", "L4": "UI automation", "L5": "Full E2E", "L6": "Failure / Recovery", "L7": "Install / Upgrade / Reboot", "L8": "Soak / Chaos" },
+  "gate": [
+    { "id": "build", "what": "Build of every component" },
+    { "id": "L1", "what": "Unit tests" },
+    { "id": "L2", "what": "Integration tests" },
+    { "id": "qa:journeys/j1", "what": "Critical UI flow: sign-in and navigation" },
+    { "id": "qa:journeys/j2", "what": "Critical UI flow: edit a backup set (reaches the computer)" },
+    { "id": "qa:journeys/j3", "what": "Backup E2E (Back up now → restore → SHA-256)" },
+    { "id": "qa:journeys/j4", "what": "Restore E2E + SHA-256 (lost data, older version)" },
+    { "id": "qa:journeys/j5", "what": "Crash recovery (agent killed mid-backup)" },
+    { "id": "qa:failure-recovery", "what": "Failure / recovery suite" },
+    { "id": "L6", "what": "Regression tests of every known bug" },
+    { "id": "L7", "what": "Update E2E" },
+    { "id": "windows:install", "what": "Install smoke on real Windows (server + client + service + backup + restore)" },
+    { "id": "windows:update", "what": "Update on real Windows, then backup + restore" },
+    { "id": "windows:reboot", "what": "Reboot during and after a backup on real Windows" }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "i18n-review",
+  "private": true,
+  "type": "module",
+  "description": "UI-030: the AI reviews every translation of the product (meaning, terms, length) — run: ANTHROPIC_API_KEY=… node review.mjs [he de …]",
+  "dependencies": { "@anthropic-ai/sdk": "*", "zod": "^4" }
+}

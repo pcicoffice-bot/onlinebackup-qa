@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "playwright-test": {
+      "command": "node",
+      "args": ["tests/QA/node_modules/@playwright/test/cli.js", "run-test-mcp-server", "-c", "tests/QA/playwright.config.ts", "--headless"]
+    },
+    "playwright": {
+      "command": "node",
+      "args": ["tests/QA/node_modules/@playwright/mcp/cli.js", "--headless", "--isolated", "--output-dir", "tests/QA/artifacts/mcp", "--executable-path", "/opt/pw-browsers/chromium-1194/chrome-linux/chrome"]
+    }
+  }
+}
