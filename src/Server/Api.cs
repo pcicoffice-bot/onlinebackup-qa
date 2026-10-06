@@ -598,6 +598,7 @@ namespace OnlineBackup.Server
             var m = new Msg().Set("job", job).Set("quota", quota).Set("used", used).Set("quotaType", prof.Get("QUOTA_TYPE"));
             if (quota > 0 && used * 100 >= quota * Math.Max(1, prof.GetLong("QUOTA_REMIND_PERCENTAGE") == 0 ? 90 : prof.GetLong("QUOTA_REMIND_PERCENTAGE"))) m.Set("quotaWarning", 1);
             foreach (var rel in store.Resend()) m.Add("resend", new Msg().Set("rel", rel));
+            m.Set("last", store.LastCommitted() ?? "");
             SysLog.Write(ip, "Access", "backup started " + login + "/" + store.SetId + " " + job);
             return m;
         }
@@ -667,6 +668,13 @@ namespace OnlineBackup.Server
             try { verify = store.Commit(job, body); }
             catch (IOException e) when (DiskFull(e)) { DiskFullAlert(store.Dir, ip); throw new ApiException(507, "DISK_FULL", "The backup server's disk is full: new backups cannot be stored. Existing backups are not affected — the provider must free space."); }
             var moves = store.LastMoves;
+            if (store.LastRefused.Count > 0)
+            {
+                // Agent B (B-3): changes refused here are not in this point — the run must not be reported as a full success
+                body.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "err", message: store.LastRefused.Count + " changed file(s) were not stored: their earlier version is not on the server. They are sent in full in the next backup.")));
+                if ((body["result"] ?? "").StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal)) body.Set("result", "BS_STOP_SUCCESS_WITH_ERROR");
+                verify.Set("refused", store.LastRefused.Count);
+            }
             var logFile = WriteJobLog(login, store.SetId, "Backup", job, body);
             UpdateStats(login, store.SetId, body);
             SysLog.Write(ip, "Access", "backup committed " + login + "/" + store.SetId + " " + job + " bad=" + verify["bad"]);

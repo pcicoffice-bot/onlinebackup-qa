@@ -139,7 +139,7 @@ namespace OnlineBackup.Agent
                 EnsureRepository(log);
                 var r = Run(args.ToArray());
                 if (r.Code != 0 && r.Code != 3) { run.Warnings++; log.Add(AhsayLog.Line(Clock(), "warn", message: "[Local Copy] restic exit " + r.Code + ": " + Last(r.Err))); return; }
-                var forget = new List<string> { "forget", "--prune", "--tag", "set:" + set.Id, "--host", app.Home.Computer, "--keep-within", Math.Max(1, set.LocalCopyDays) + "d" };
+                var forget = new List<string> { "forget", "--prune", "--tag", "set:" + set.Id, "--host", app.Home.Computer, "--group-by", "host,tags", "--keep-within", Math.Max(1, set.LocalCopyDays) + "d" };
                 Run(forget.ToArray());
                 log.Add(AhsayLog.Info(Clock(), "[Local Copy] to " + LocalRepository + " (" + Math.Max(1, set.LocalCopyDays) + " days kept)"));
             }
@@ -155,6 +155,14 @@ namespace OnlineBackup.Agent
             var cat = Run("cat", "config");
             if (cat.Code != 0)
             {
+                // Agent J (J-4): only a repository that is not there is created. restic 0.17+ answers 10 for "no repository"
+                // and 12 for "wrong password or no key found"; a wrong key used to fall through to `init`, whose "config
+                // file already exists" read like a server fault. Any other answer (the line, the server) is told as it is.
+                var said = (cat.Err + "\n" + cat.Out);
+                if (cat.Code == 12 || Regex.IsMatch(said, "wrong password|no key found", RegexOptions.IgnoreCase))
+                    throw new AgentException(0, "WRONG_KEY", "The encryption key of this set does not open its backup (wrong key or password) — nothing was changed in the backup");
+                if (cat.Code != 10 && !Regex.IsMatch(said, "Is there a repository|repository does not exist", RegexOptions.IgnoreCase))
+                    throw new AgentException(0, "RESTIC", "The backup could not be reached: " + Last(cat.Err));
                 var init = Run("init");
                 if (init.Code != 0) throw new AgentException(0, "RESTIC_INIT", "restic init: " + Last(init.Err));
                 log.Add(AhsayLog.Info(Clock(), "Repository created (restic)"));
@@ -261,7 +269,9 @@ namespace OnlineBackup.Agent
                     + ", files " + N(summary, "total_files_processed") + ", added " + N(summary, "data_added") + " bytes"));
                 if (r.Code == 3 && run.Errors == 0) { run.Errors++; log.Add(AhsayLog.Line(Clock(), "err", message: "Some files could not be read (restic exit 3) and are not in this point")); }
 
-                var forget = new List<string> { "forget", "--prune", "--tag", "set:" + set.Id, "--host", app.Home.Computer };
+                // Agent J (J-5): one group per set and computer — restic groups by host AND paths by default, so after the set's
+                // folders changed every older snapshot sat in its own group, kept forever as that group's latest
+                var forget = new List<string> { "forget", "--prune", "--tag", "set:" + set.Id, "--host", app.Home.Computer, "--group-by", "host,tags" };
                 forget.AddRange(KeepArgs(set.Retention));
                 var fr = Run(forget.ToArray());
                 if (fr.Code != 0) { run.Warnings++; log.Add(AhsayLog.Line(Clock(), "warn", message: "Retention (restic forget --prune): " + Last(fr.Err))); }

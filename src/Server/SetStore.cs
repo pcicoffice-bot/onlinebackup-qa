@@ -67,7 +67,10 @@ namespace OnlineBackup.Server
               CREATE INDEX IF NOT EXISTS objects_removed ON objects(removed);
               CREATE TABLE IF NOT EXISTS jobs(id TEXT PRIMARY KEY, status TEXT NOT NULL, finished INTEGER NOT NULL DEFAULT 0, newf INTEGER NOT NULL DEFAULT 0,
                 updf INTEGER NOT NULL DEFAULT 0, permf INTEGER NOT NULL DEFAULT 0, delf INTEGER NOT NULL DEFAULT 0, bytes INTEGER NOT NULL DEFAULT 0, expired INTEGER NOT NULL DEFAULT 0);
-              CREATE TABLE IF NOT EXISTS resend(rel TEXT PRIMARY KEY, reason TEXT);");
+              CREATE TABLE IF NOT EXISTS resend(rel TEXT PRIMARY KEY, reason TEXT);
+              CREATE TABLE IF NOT EXISTS lost(loc TEXT PRIMARY KEY, rel TEXT NOT NULL, seq INTEGER NOT NULL, kind TEXT NOT NULL, job TEXT NOT NULL,
+                removed TEXT NULL, enc TEXT NOT NULL, orig INTEGER NOT NULL, mtime INTEGER NOT NULL);
+              CREATE INDEX IF NOT EXISTS lost_rel ON lost(rel);");
         }
 
         static int Exec(SqliteConnection c, SqliteTransaction t, string sql, params object[] args)
@@ -327,10 +330,22 @@ namespace OnlineBackup.Server
         }
 
         /// <summary>Plans the moves and writes the journal (the point of no return). Public for the crash tests.</summary>
+        /// <summary>The changes the last PrepareCommit refused (a delta whose earlier version is not on the server); each is
+        /// on the resend list. Agent B (B-3): the run used to be reported as a success without them.</summary>
+        public List<string> LastRefused = new List<string>();
+
+        /// <summary>Agent B / D (B-3, D-3): the id of the set's last committed run — the computer compares it with the run
+        /// its own index was made from, and rebuilds the index when they differ.</summary>
+        public string LastCommitted()
+        {
+            using (var c = Open()) { var r = Query(c, "SELECT MAX(id) FROM jobs WHERE status='OK'"); return r.Count == 0 || r[0][0] is DBNull ? null : (string)r[0][0]; }
+        }
+
         public List<string[]> PrepareCommit(string job, Msg stats)
         {
             lock (Gate)
             {
+                LastRefused = new List<string>();
                 var jd = JobDir(job);
                 var uploads = ReadLines(Path.Combine(jd, "uploads.txt")).Distinct().ToList();
                 var deletes = ReadLines(Path.Combine(jd, "deletes.txt")).Distinct().ToList();
@@ -353,6 +368,7 @@ namespace OnlineBackup.Server
                             {
                                 // A delta whose base is missing can never be restored: refuse it and ask the agent for a full copy.
                                 Exec(c, null, "INSERT OR REPLACE INTO resend(rel, reason) VALUES($0,$1)", rec.Rel, "delta without base");
+                                LastRefused.Add(rec.Rel);
                                 continue;
                             }
                         }
@@ -402,6 +418,7 @@ namespace OnlineBackup.Server
                 }
                 else if (!File.Exists(dst)) SysLog.Write(null, "System", "warn: commit move source missing " + m[0]);
             }
+            var ended = new HashSet<string>(ReadLines(Path.Combine(JobsDir, job, "deletes.txt")));   // B-4: a lost version ends with its file
             using (var c = Open())
             using (var t = c.BeginTransaction())
             {
@@ -414,9 +431,10 @@ namespace OnlineBackup.Server
                         var rec = ChkRecord.Parse(File.ReadAllText(Abs(m[1]) + ".chk"));
                         Exec(c, t, "INSERT OR REPLACE INTO objects(loc,rel,seq,kind,job,removed,size,orig,mtime,sha,enc,perm) VALUES($0,$1,$2,$3,$4,NULL,$5,$6,$7,$8,$9,$10)",
                             m[1], rec.Rel, rec.Seq, rec.Kind, rec.Job, rec.Size, rec.Orig, rec.Mtime, rec.Sha256, rec.EncPath, rec.PermOnly ? 1 : 0);
-                        if (rec.Kind == "F") Exec(c, t, "DELETE FROM resend WHERE rel=$0", rec.Rel);
+                        if (rec.Kind == "F") { Exec(c, t, "DELETE FROM resend WHERE rel=$0", rec.Rel); ended.Add(rec.Rel); }
                     }
                 }
+                foreach (var rel in ended) Exec(c, t, "UPDATE lost SET removed=$0 WHERE rel=$1 AND removed IS NULL", job, rel);
                 Exec(c, t, "INSERT OR REPLACE INTO jobs(id,status,finished,newf,updf,permf,delf,bytes,expired) VALUES($0,'OK',$1,$2,$3,$4,$5,$6,0)",
                     job, RunId.UnixMs(SystemClock.UtcNow), stats == null ? 0 : stats.Long("new"), stats == null ? 0 : stats.Long("upd"),
                     stats == null ? 0 : stats.Long("perm"), stats == null ? 0 : stats.Long("del"), stats == null ? 0 : stats.Long("bytes"));
@@ -521,7 +539,7 @@ namespace OnlineBackup.Server
                 if (!RunId.TryParse(folder, out _)) return;
                 var d = Path.Combine(Dir, folder);
                 if (Directory.Exists(d)) Directory.Delete(d, true);
-                using (var c = Open()) Exec(c, null, "DELETE FROM objects WHERE removed=$0", folder);
+                using (var c = Open()) { Exec(c, null, "DELETE FROM objects WHERE removed=$0", folder); Exec(c, null, "DELETE FROM lost WHERE removed=$0", folder); }
             }
         }
 
@@ -569,9 +587,23 @@ namespace OnlineBackup.Server
             {
                 if (Query(c, "SELECT 1 FROM jobs WHERE id=$0 AND status='OK' AND expired=0", point).Count == 0) throw new ApiException(404, "NO_POINT", "The restore point does not exist or has expired.");
                 var rows = Query(c, "SELECT rel,seq,kind,job,loc,size,orig,mtime,sha,enc,perm FROM objects WHERE job<=$0 AND (removed IS NULL OR removed>$0) ORDER BY rel, seq", point);
-                foreach (var g in rows.GroupBy(r => (string)r[0]))
+                // B-4: versions lost to damage that this point held (a later full copy of the file replaces them)
+                var lost = Query(c, "SELECT rel,job,enc,orig,mtime FROM lost WHERE job<=$0 AND (removed IS NULL OR removed>$0)", point)
+                    .GroupBy(r => (string)r[0]).ToDictionary(g => g.Key, g => g.ToList());
+                var byRel = rows.GroupBy(r => (string)r[0]).ToDictionary(g => g.Key, g => g.OrderBy(r => (long)r[1]).ToList());
+                foreach (var kv in lost)
                 {
-                    var items = g.OrderBy(r => (long)r[1]).ToList();
+                    List<object[]> items;
+                    byRel.TryGetValue(kv.Key, out items);
+                    var fullJob = items != null && (string)items[0][2] == "F" ? (string)items[0][3] : null;
+                    var hit = kv.Value.Where(l => fullJob == null || string.CompareOrdinal((string)l[1], fullJob) >= 0).OrderBy(l => (string)l[1]).LastOrDefault();
+                    if (hit == null) continue;
+                    m.Add("files", new Msg().Set("rel", kv.Key).Set("enc", hit[2]).Set("orig", hit[3]).Set("mtime", hit[4]).Set("damaged", 1));
+                    byRel.Remove(kv.Key);
+                }
+                foreach (var g in byRel)
+                {
+                    var items = g.Value;
                     if ((string)items[0][2] != "F") continue;   // a chain without its full copy is not restorable (reported by verify)
                     var last = items[items.Count - 1];
                     var f = new Msg().Set("rel", g.Key).Set("enc", last[9]).Set("orig", last[6]).Set("mtime", last[7]).Set("perm", last[10]);
@@ -648,6 +680,9 @@ namespace OnlineBackup.Server
                 if (actual == sha) { ok++; continue; }
                 bad++;
                 Quarantine(loc);
+                // Agent B (B-4): the version this object belonged to is remembered as lost — the restore points that held it
+                // say so, instead of silently giving the previous version (a lost delta) or leaving the file out (a lost full copy)
+                Exec(c, null, "INSERT OR REPLACE INTO lost(loc,rel,seq,kind,job,removed,enc,orig,mtime) SELECT loc,rel,seq,kind,job,removed,enc,orig,mtime FROM objects WHERE loc=$0", loc);
                 Exec(c, null, "DELETE FROM objects WHERE loc=$0", loc);
                 // Self-healing: the agent sends a full copy of this file from the source in its next run.
                 Exec(c, null, "INSERT OR REPLACE INTO resend(rel, reason) VALUES($0,$1)", rel, "damaged object " + loc);
@@ -744,8 +779,12 @@ namespace OnlineBackup.Server
                         // Keep the resend requests of the old index (damage found earlier and not yet repaired).
                         if (File.Exists(IndexPath))
                             using (var old = Open())
+                            {
                                 foreach (var r in Query(old, "SELECT rel, reason FROM resend"))
                                     Exec(c, t, "INSERT OR IGNORE INTO resend(rel, reason) VALUES($0,$1)", r[0], r[1]);
+                                foreach (var r in Query(old, "SELECT loc,rel,seq,kind,job,removed,enc,orig,mtime FROM lost"))
+                                    Exec(c, t, "INSERT OR IGNORE INTO lost(loc,rel,seq,kind,job,removed,enc,orig,mtime) VALUES($0,$1,$2,$3,$4,$5,$6,$7,$8)", r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], r[8]);
+                            }
                         t.Commit();
                     }
                     using (var cmd = c.CreateCommand()) { cmd.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);"; cmd.ExecuteNonQuery(); }
@@ -796,6 +835,7 @@ namespace OnlineBackup.Server
                             deletedObjects++; freed += (long)r[1];
                         }
                         Exec(c, null, "DELETE FROM objects WHERE removed=$0", removed);
+                        Exec(c, null, "DELETE FROM lost WHERE removed=$0", removed);
                         result.Add("folders", new Msg().Set("id", removed));
                         var dir = Path.Combine(Dir, removed);
                         if (Directory.Exists(dir) && !Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Any()) Directory.Delete(dir, true);

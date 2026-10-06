@@ -104,6 +104,8 @@ namespace OnlineBackup.Agent
 
         public void RestoreFile(Msg file, string dest)
         {
+            if (file.Bool("damaged"))
+                throw new InvalidDataException("This version was found damaged on the server and quarantined; it cannot be restored. Restore an earlier point — the next backup stores the file again.");
             var objects = file.List("objects").OrderBy(o => o.Int("seq")).ToList();
             var paths = new List<string>();
             try
@@ -167,6 +169,7 @@ namespace OnlineBackup.Agent
             foreach (var f in m.List("files"))
             {
                 string path;
+                if (f.Bool("damaged")) continue;   // B-4: not on the server: left out of the index, so it is sent again
                 try { path = NameCipher.DecryptPath(key, f["enc"]); } catch (Exception) { continue; }
                 var objs = f.List("objects");
                 state.Files[f["rel"]] = new LocalState.Entry

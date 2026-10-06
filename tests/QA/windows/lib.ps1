@@ -62,6 +62,8 @@ function Step([string]$what, [string]$expected, [scriptblock]$check, [switch]$No
   $row = [ordered]@{ step = $what; expected = $expected; actual = $actual; result = $(if ($ok) { 'PASS' } else { 'FAIL' }); seconds = [int]((Get-Date) - $t).TotalSeconds; screenshot = $shot; at = (Get-Date).ToString('HH:mm:ss') }
   [void]$script:Journey.steps.Add($row)
   Write-Host ('[{0}] {1} -- {2}' -f $row.result, $what, $actual)
+  # a failed step is also a GitHub annotation: the job log cannot always be fetched, the annotations can
+  if (-not $ok) { $a = ('{0}: {1}' -f $what, $actual) -replace '[\r\n]+', ' '; Write-Host ('::warning title=Windows QA step FAIL::' + $a.Substring(0, [Math]::Min(900, $a.Length))) }
   return $ok
 }
 function Note([string]$what, [string]$text) {
@@ -214,12 +216,12 @@ function Runs([string]$login, [string]$kind) { @(Items (Api 'GET' 'tasks?hours=4
 # to the set (when given). Times are the server's and the agent's clocks: the same machine as the robot.
 function NowMs { [long][Math]::Floor(([DateTime]::UtcNow - [DateTime]'1970-01-01').TotalMilliseconds) }
 function RunKey($r) { '{0}|{1}|{2}|{3}' -f $r['time'], $r['set'], $r['job'], $r['kind'] }
-function RunMark([string]$login, [string]$kind) { $k = @{}; foreach ($r in @(Runs $login $kind)) { $k[(RunKey $r)] = 1 }; return @{ keys = $k; ms = (NowMs) - 2000; kind = $kind } }
+function RunMark([string]$login, [string]$kind) { $k = @{}; foreach ($r in @(Runs $login $kind)) { $k[(RunKey $r)] = 1 }; return @{ seen = $k; ms = (NowMs) - 2000; kind = $kind } }   # never a key named keys/values/count: $h.keys is the hashtable's own Keys
 function NewRuns([string]$login, [string]$kind, $mark, [string]$set = '') {
-  @(Runs $login $kind | Where-Object { (-not $mark.keys.ContainsKey((RunKey $_))) -and ([long]$_['time'] -ge $mark.ms) -and ((-not $_['started']) -or ([long]$_['started'] -ge $mark.ms)) -and ((-not $set) -or ($_['set'] -eq $set)) })
+  @(Runs $login $kind | Where-Object { (-not $mark['seen'].ContainsKey((RunKey $_))) -and ([long]$_['time'] -ge $mark['ms']) -and ((-not $_['started']) -or ([long]$_['started'] -ge $mark['ms'])) -and ((-not $set) -or ($_['set'] -eq $set)) })
 }
 function WaitNewRun([string]$login, [string]$kind, $mark, [int]$minutes = 10, [string]$set = '') {
-  if (-not (($mark -is [hashtable]) -and $mark.ContainsKey('keys'))) { throw 'WaitNewRun needs a RunMark taken before the action (a count is reached by any other run too)' }
+  if (-not (($mark -is [hashtable]) -and $mark.ContainsKey('seen'))) { throw 'WaitNewRun needs a RunMark taken before the action (a count is reached by any other run too)' }
   $until = (Get-Date).AddMinutes($minutes)
   while ((Get-Date) -lt $until) {
     try { $n = @(NewRuns $login $kind $mark $set); if ($n.Count -gt 0) { return $n[0] } } catch { Write-Host "[robot] the server's history could not be read: $($_.Exception.Message)" }

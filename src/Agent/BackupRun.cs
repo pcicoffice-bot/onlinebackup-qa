@@ -144,6 +144,17 @@ namespace OnlineBackup.Agent
 
                 var state = new LocalState(home.SetDir(set.Id));
                 if (!state.Exists) Restore.RebuildLocalState(client, set, key, state, Info);
+                else if (!string.IsNullOrEmpty(begin["last"]) && begin["last"] != state.LastSuccess)
+                {
+                    // Agent B / D (B-3, D-3): the index is not the server's last backup — this computer stopped between the
+                    // server's commit and its own save, or another copy of it (a cloned disk, a program folder put back)
+                    // backed up the set. Trusted as it was, changes went as deltas the server refused, or files that differ
+                    // from the other copy's were "unchanged": a success whose newest point did not hold this computer's files
+                    Warn("This computer's index of the set is not the server's last backup (" + (string.IsNullOrEmpty(state.LastSuccess) ? "none" : state.LastSuccess) + " / " + begin["last"]
+                        + "): another copy of this computer backed it up, or the last run was not recorded here. The index is rebuilt from the server and every difference is sent.");
+                    state.Forget();
+                    Restore.RebuildLocalState(client, set, key, state, Info);
+                }
                 var pendingChunks = new Dictionary<string, List<KeyValuePair<string, int>>>();
                 var next = new Dictionary<string, LocalState.Entry>(StringComparer.Ordinal);
                 var deadline = set.DurationHours > 0 ? started.AddHours(set.DurationHours) : DateTime.MaxValue;
@@ -269,6 +280,11 @@ namespace OnlineBackup.Agent
                 foreach (var l in log) commit.Add("log", new Msg().Set("l", l));
                 var ok = client.Call("POST", "/api/sets/" + set.Id + "/jobs/" + Job + "/commit", commit);
                 endConfirmed = true;
+                if (ok.Int("refused") > 0)
+                {
+                    Err("", ok.Int("refused") + " changed file(s) were not stored by the server (their earlier version is missing); they are sent in full in the next backup");
+                    if (result.StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal)) result = Result = "BS_STOP_SUCCESS_WITH_ERROR";
+                }
                 // Committed: now (and only now) the local index moves forward.
                 state.Files = next;
                 foreach (var kv in pendingChunks) state.SaveChunks(kv.Key, kv.Value);
@@ -432,7 +448,12 @@ namespace OnlineBackup.Agent
                             chunksOut.Add(new KeyValuePair<string, int>(id, c.Length));
                             if ((known == null || !known.Contains(id)) && storedHere.Add(id)) w.AddChunk(id, c);
                         }
-                    var header = new Msg().Set("path", path).Set("size", entry.Size).Set("mtime", entry.Mtime).Set("attrs", entry.Attrs).Set("kind", kind).Set("seq", seq);
+                    // Agent B (B-2): the size in the object is what was READ, not what the folder listing said — a file
+                    // written during the backup (a log, a mail store; with VSS the listing is even the live file) made a
+                    // point whose restore always refused the file as "size differs"
+                    long read = 0; foreach (var c in chunksOut) read += c.Value;
+                    if (read != entry.Size) Info("Changed while it was being backed up (" + entry.Size + " → " + read + " bytes): the point holds what was read; the next backup sends it again: " + path);
+                    var header = new Msg().Set("path", path).Set("size", read).Set("mtime", entry.Mtime).Set("attrs", entry.Attrs).Set("kind", kind).Set("seq", seq);
                     foreach (var c in chunksOut) header.Add("recipe", new Msg().Set("h", c.Key).Set("n", c.Value));
                     w.Finish(header);
                 });

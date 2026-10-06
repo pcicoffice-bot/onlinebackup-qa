@@ -134,6 +134,14 @@ namespace OnlineBackup.Agent
             }
         }
 
+        /// <summary>Drops the whole index and every chunk list (they describe versions the server may not have).</summary>
+        public void Forget()
+        {
+            Files.Clear(); LastSuccess = "";
+            var ch = System.IO.Path.Combine(dir, "chunks");
+            try { if (Directory.Exists(ch)) Directory.Delete(ch, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+
         public bool Exists { get { return File.Exists(System.IO.Path.Combine(dir, "state.txt")); } }
 
         public void Save()

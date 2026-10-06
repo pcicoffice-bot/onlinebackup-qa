@@ -87,6 +87,11 @@ if __name__ == '__main__':
         s = open(p, encoding='utf-8').read(); t = fix(s)
         for n, l in unwrapped(s):
             bad += 1; print('%s:%d: a list of server items used without @( ): one item is a hashtable whose .Count is its field count:\n  %s' % (p, n, l.strip()[:200]))
+        # Q9 (W1 run 5): a hashtable with a key named keys / values / count - $h.keys is the hashtable's own Keys
+        # collection, never the value: RunMark's "keys" made NewRuns throw (the self-test stopped the run)
+        for n, l in enumerate(s.splitlines(), 1):
+            if re.search(r'@\{[^}]*(?:^|[;{\s])(?:keys|values|count)\s*=', l, re.I):
+                bad += 1; print('%s:%d: a hashtable key named keys/values/count is hidden by the hashtable\'s own property:\n  %s' % (p, n, l.strip()[:200]))
         if t != s:
             bad += 1
             if '--fix' in sys.argv: open(p, 'w', encoding='utf-8').write(t); print(p, 'fixed')

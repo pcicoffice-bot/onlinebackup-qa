@@ -163,7 +163,10 @@ namespace OnlineBackup.Tests
             Assert.False(File.Exists(path));
             Assert.NotEmpty(Directory.GetFiles(Path.Combine(userDir, "files", SetId, "Quarantine"), "*", SearchOption.AllDirectories));
             Assert.Contains(N("C/b.txt"), st.Resend());
-            Assert.DoesNotContain(st.FilesAt(null).List("files"), f => f["rel"] == N("C/b.txt"));
+            // B-4: not silently left out of the point — listed as damaged, with nothing that could be restored as it
+            var lostB = st.FilesAt(null).List("files").Single(f => f["rel"] == N("C/b.txt"));
+            Assert.True(lostB.Bool("damaged"));
+            Assert.Empty(lostB.List("objects"));
             Assert.Equal(0, st.VerifyAll().Int("bad"));                                       // the rest is sound
         }
 }

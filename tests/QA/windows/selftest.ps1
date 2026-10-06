@@ -4,7 +4,9 @@
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'lib.ps1')
 $bad = 0
-function Expect([string]$what, $got, $want) { if ("$got" -ne "$want") { Write-Host "[SELFTEST FAIL] $what -- got '$got', want '$want'"; $script:bad++ } else { Write-Host "[SELFTEST PASS] $what" } }
+# every failure is also a GitHub annotation: the job's log cannot always be read, its annotations can
+function Expect([string]$what, $got, $want) { if ("$got" -ne "$want") { Write-Host "[SELFTEST FAIL] $what -- got '$got', want '$want'"; Write-Host "::error title=robot self-test::$what -- got '$got', want '$want'"; $script:bad++ } else { Write-Host "[SELFTEST PASS] $what" } }
+trap { Write-Host ("::error title=robot self-test::stopped: " + $_.Exception.Message + " at " + $_.InvocationInfo.PositionMessage.Replace("`r", ' ').Replace("`n", ' ')); exit 1 }
 $x = '<m><l n="tasks"><i><f n="login">qa-win</f><f n="kind">Backup</f></i><i><f n="login">qa-win</f><f n="kind">Restore</f></i></l></m>'
 # Q5 (W1 run 4): a list returned as one array and piped on was one item - every server check saw no run
 Expect 'server items piped on are elements' @(Items $x 'tasks' | Where-Object { $_['kind'] -eq 'Backup' }).Count 1
