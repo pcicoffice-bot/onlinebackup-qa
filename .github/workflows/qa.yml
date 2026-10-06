@@ -117,6 +117,7 @@ jobs:
             -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" --stop-timeout 120 docker.io/dockurr/windows
       - name: Installation, the journeys and two real restarts (the driver reports to the shared folder)
         run: |
+          set +e   # a missing status file is normal until Windows reaches the QA driver
           end=$((SECONDS + 300*60)); last=""
           while [ $SECONDS -lt $end ]; do
             [ -f vm/shared/done.txt ] && { echo "done"; break; }

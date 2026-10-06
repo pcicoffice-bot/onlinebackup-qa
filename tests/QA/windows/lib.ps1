@@ -8,12 +8,16 @@
 Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, UIAutomationClientsideProviders, System.Drawing, System.Windows.Forms
 # The client-side providers tell UI Automation what a classic Windows control is (a button, a check box, an edit field).
 # Without them (W1 run 1) every WinForms control came back as a "Pane": names readable, types and patterns not.
-[System.Windows.Automation.ClientSettings]::RegisterClientSideProviderAssembly([UIAutomationClientsideProviders.UIAutomationClientSideProviders].Assembly.GetName())
+$script:UiaTypes = $true
+try { [System.Windows.Automation.ClientSettings]::RegisterClientSideProviderAssembly([System.Reflection.AssemblyName]'UIAutomationClientsideProviders, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35') }
+catch { Write-Host "[robot] the client-side providers could not be registered ($($_.Exception.Message)); controls are found by their name and window class, and used through Windows messages" }
 Add-Type -Namespace ObQa -Name Win -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
 [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
 [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int cmd);
 [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+[DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, string l);
+[DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
 '@
 [void][ObQa.Win]::SetProcessDPIAware()
 $script:AE = [System.Windows.Automation.AutomationElement]
@@ -214,9 +218,10 @@ function Find($w, $type, [string]$name = $null, [switch]$Like) {
   $all = @($w.FindAll($TS::Descendants, ($PC::new($AE::ControlTypeProperty, $type))))
   $short = $type.ProgrammaticName -replace 'ControlType\.', ''
   if ($all.Count -eq 0 -and $script:ClassOf.ContainsKey($short)) {
+    # UI Automation reported no types (every control a "Pane"): the window class says what the control is; a check box
+    # and a button share the class BUTTON, so the robot always names the one it wants
     $cls = $script:ClassOf[$short]
     $all = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $_.Current.ClassName -like "*.$cls.*" -or $_.Current.ClassName -eq $cls })
-    if ($cls -eq 'BUTTON' -and $all.Count -gt 0) { Write-Host "[robot] $short found by window class (UI Automation reported no type)" }
   }
   if ($name) { if ($Like) { $all = @($all | Where-Object { $_.Current.Name -like $name }) } else { $all = @($all | Where-Object { $_.Current.Name -eq $name }) } }
   return ,$all
@@ -235,8 +240,19 @@ function Click($el) {
   else { ($el.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() }
   Start-Sleep -Milliseconds 800
 }
-function IsOn($el) { try { return [string]($el.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)).Current.ToggleState -eq 'On' } catch { return $false } }
-function SetCheck($el, [bool]$on) { if ((IsOn $el) -ne $on) { Click $el }; Start-Sleep -Milliseconds 300; return (IsOn $el) -eq $on }
+# a check box's state when UI Automation can read it; $null when it cannot (then the effect of the click is the proof)
+function IsOn($el) { try { return [string]($el.GetCurrentPattern([System.Windows.Automation.TogglePattern]::Pattern)).Current.ToggleState -eq 'On' } catch { return $null } }
+# sets a check box; $known = its state when nobody touched it (the screen's default), used when the state is not readable
+function SetCheck($el, [bool]$on, $known = $null) {
+  $now = IsOn $el; if ($now -eq $null) { $now = $known }
+  if ($now -eq $null -or $now -ne $on) { Click $el }
+  Start-Sleep -Milliseconds 300; $after = IsOn $el
+  return ($after -eq $null) -or ($after -eq $on)
+}
+# any element by its visible name (a pattern), whatever its type
+function Named($w, [string]$pattern) {
+  @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $_.Current.Name -like $pattern -and -not $_.Current.IsOffscreen }) | Select-Object -First 1
+}
 function Edit($w, [string]$name) {
   $e = @(Find $w $CT::Edit $name) | Select-Object -First 1
   if (-not $e) { throw "no field '$name' (fields: $((@(Find $w $CT::Edit) | ForEach-Object { $_.Current.Name }) -join ', '))" }
@@ -246,10 +262,12 @@ function Edit($w, [string]$name) {
 # read back, so it is typed with the keyboard instead
 function TypeInto($el, [string]$text) {
   $done = $false
-  try { ($el.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern)).SetValue($text); $done = $true } catch { }
-  if (-not $done -or $el.Current.IsPassword) {
-    $el.SetFocus(); Start-Sleep -Milliseconds 200
-    [System.Windows.Forms.SendKeys]::SendWait('^a{DEL}'); [System.Windows.Forms.SendKeys]::SendWait(($text -replace '([+^%~(){}\[\]])', '{$1}'))
+  if (-not $el.Current.IsPassword) { try { ($el.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern)).SetValue($text); $done = $true } catch { } }
+  if (-not $done) {
+    # the field's own text message (what typing ends in; the program sees its text change)
+    $h = [IntPtr]$el.Current.NativeWindowHandle
+    if ($h -ne [IntPtr]::Zero) { [void][ObQa.Win]::SendMessage($h, 0x000C, [IntPtr]::Zero, $text) }
+    else { $el.SetFocus(); Start-Sleep -Milliseconds 200; [System.Windows.Forms.SendKeys]::SendWait('^a{DEL}'); [System.Windows.Forms.SendKeys]::SendWait(($text -replace '([+^%~(){}\[\]])', '{$1}')) }
   }
   Start-Sleep -Milliseconds 300
 }
@@ -296,6 +314,13 @@ function Finding([string]$screen, [string]$shot, [string]$problem, [string]$expe
   Write-Host "[$kind $severity] $screen -- $problem -- $actual"
 }
 $script:Allow = @('OnlineBackup', 'Backup', 'Windows', 'SHA-256', 'HTTPS', 'TOTP', 'Microsoft', 'SQL', 'Server', 'QA', 'IT', 'OK', 'VSS', 'AI', 'localhost', 'https', 'Program Files', 'ProgramData')
+# the control's kind: UI Automation's type, or (when it reports only "Pane") the kind its window class says
+function TypeOf($c) {
+  $t = $c.ControlType.ProgrammaticName -replace 'ControlType\.', ''
+  if ($t -ne 'Pane') { return $t }
+  switch -Wildcard ($c.ClassName) { '*.BUTTON.*' { return 'Button' } '*.EDIT.*' { return 'Edit' } '*.COMBOBOX.*' { return 'ComboBox' } '*.STATIC.*' { return 'Text' } '*SysTreeView32*' { return 'Tree' } '*SysListView32*' { return 'List' } '*msctls_progress32*' { return 'ProgressBar' } '*RichEdit*' { return 'Edit' } }
+  return $t
+}
 # Looks at one window as the customer sees it; returns the screenshot file name. $lang: the language the screen should be in.
 function Look($w, [string]$screen, [string]$lang = 'en', [string]$process = $null) {
   if (-not $script:Journey) { return '' }
@@ -305,7 +330,7 @@ function Look($w, [string]$screen, [string]$lang = 'en', [string]$process = $nul
   if (-not $w) { Finding $screen $shot 'The expected window is not on the screen' 'a window' 'none' 'High' 'Find why the window did not open'; return $shot }
   $wr = Rect $w
   $els = @(); try { $els = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) } catch { }
-  $tree = @(foreach ($e in $els) { try { $c = $e.Current; [ordered]@{ type = $c.ControlType.ProgrammaticName -replace 'ControlType\.', ''; name = $c.Name; cls = $c.ClassName; rect = (Rect $e); enabled = $c.IsEnabled; offscreen = $c.IsOffscreen } } catch { } })
+  $tree = @(foreach ($e in $els) { try { $c = $e.Current; [ordered]@{ type = (TypeOf $c); name = $c.Name; cls = $c.ClassName; rect = (Rect $e); enabled = $c.IsEnabled; offscreen = $c.IsOffscreen } } catch { } })
   $base = [IO.Path]::GetFileNameWithoutExtension($shot)
   [ordered]@{ screen = $screen; window = $w.Current.Name; rect = $wr; resolution = (Resolution); dpi = (Dpi); controls = $tree } | ConvertTo-Json -Depth 6 | Set-Content (Join-Path $j.dir ($base + '.tree.json')) -Encoding UTF8
   # the window alone (what a reviewer zooms into)

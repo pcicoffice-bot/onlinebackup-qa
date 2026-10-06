@@ -383,9 +383,8 @@ Journey 'W17' 'System State backup (Windows Server Backup)' {
   $w = Open-Client $S.installDir
   Nav $w 'New backup'
   $combo = @(Find $w $CT::ComboBox) | Where-Object { $_.Current.BoundingRectangle.X -gt ($w.Current.BoundingRectangle.X + 240) } | Select-Object -First 1
-  ($combo.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)).Expand(); Start-Sleep 1
-  $item = @($combo.FindAll($TS::Descendants, ($PC::new($AE::ControlTypeProperty, $CT::ListItem)))) | Where-Object { $_.Current.Name -like '*System State*' } | Select-Object -First 1
-  ($item.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern)).Select(); Start-Sleep 1
+  Key $combo 0x28; Key $combo 0x28; Start-Sleep 1   # the down arrow twice: Files and folders -> SQL Server -> System State
+  Step 'The type list shows Windows System State' 'System State chosen' { $n = $combo.Current.Name; @((($n -like '*System State*') -or ((Texts $w) -like '*System State*')), "list: $n") } -NoShot | Out-Null
   Look $w 'System State backup configured' 'en' $ClientProc | Out-Null
   Click (PageButton $w 'New backup'); $m = Answer-Dialogs $w $CustPass 'System State added' 30
   Step 'The System State set is added' 'was added' { @((($m -join ' ') -like '*was added*'), ($m -join ' || ')) } -NoShot | Out-Null

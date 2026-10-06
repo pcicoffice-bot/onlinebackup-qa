@@ -195,10 +195,10 @@ cap('AU-07', 'Accounts and security', 'API refuses junk and attacks clearly', Tr
     recovery=NA('-'), concurrency=[], integrity=NA('-'), security=['x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks'])
 # ------------------------------------------------------------------ install, update
 cap('IN-01', 'Install and update', 'Server installation (wizard / script), Windows service, certificate, port', True, 'S/Installer.cs, S/SetupWizard.cs, install-server.ps1',
-    happy=['x:SetupTests.WizardAnswers_AreChecked_ThenInstall_ThenARerunOnlyUpdates', 'win:install-server'], failure=['x:SetupTests.SETUP030_NeverTakesAPortOfIis_OrAnotherProgramsCertificate'], boundary=['x:SetupTests.SETUP040_TheBackupsFolder_IsChosenFreely_ButNeverANetworkOrNonsensePath'],
+    happy=['x:SetupTests.WizardAnswers_AreChecked_ThenInstall_ThenARerunOnlyUpdates', 'win:W01'], failure=['x:SetupTests.SETUP030_NeverTakesAPortOfIis_OrAnotherProgramsCertificate'], boundary=['x:SetupTests.SETUP040_TheBackupsFolder_IsChosenFreely_ButNeverANetworkOrNonsensePath'],
     recovery=[], concurrency=NA('-'), integrity=NA('-'), security=[])
 cap('IN-02', 'Install and update', 'Client installation (Setup.exe wizard), service, uninstall, reinstall', True, 'Setup/Program.cs, A/SetupForm.cs, A/Setup.cs',
-    happy=['x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage', 'win:setup-robot'], failure=[], boundary=[], recovery=['win:reinstall'], concurrency=NA('-'), integrity=['win:reinstall'], security=[])
+    happy=['x:PackageTests.ClientSoftwareCarriesTheCompanysNameAndServer_AndInstallsFromThePackage', 'win:W03'], failure=[], boundary=[], recovery=['win:W15'], concurrency=NA('-'), integrity=['win:W15'], security=[])
 cap('IN-03', 'Install and update', 'Client update (all or nothing)', True, 'A/ClientUpdate.cs',
     happy=['x:UpdateInstallTests.Normal_EveryFileNew_Checked_ServiceRunning_ResultOk', 'x:ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles'],
     failure=['x:UpdateInstallTests.AFileThatCannotBePutBack_IsNamed_TheResultNeverClaimsACleanRollback', 'x:UpdateInstallTests.ServiceDoesNotStop_NothingIsChanged_ResultFailed', 'x:UpdateInstallTests.OneFileCannotBeReplaced_AllFilesBackToThePreviousVersion'], boundary=[],
@@ -239,7 +239,7 @@ cap('UI-01', 'User interfaces', 'Admin site: every page opens, no errors; sign-i
 cap('UI-02', 'User interfaces', 'Admin site: set editor (every tab saved and read back)', True, 'S/Web/app.js (setEditor)', happy=['qa:journeys/j2', 'robot:options'], failure=[], boundary=[], recovery=NA('-'), concurrency=[], integrity=NA('-'), security=NA('-'))
 cap('UI-03', 'User interfaces', 'Admin site: the truth after failures (red, failed, not running)', True, 'S/Web/app.js', happy=NA('-'), failure=['qa:failure-recovery/f5', 'qa:journeys/j5'], boundary=[], recovery=['qa:journeys/j5'], concurrency=NA('-'), integrity=NA('-'), security=NA('-'), regression=[4, 12])
 cap('UI-04', 'User interfaces', 'Client window (every page, typing kept)', True, 'A/ClientForm.cs', happy=['ci:client-pages'], failure=[], boundary=[], recovery=[], concurrency=NA('-'), integrity=NA('-'), security=NA('-'))
-cap('UI-05', 'User interfaces', 'Client installation wizard (Welcome → License → Install → Finish)', True, 'A/SetupForm.cs', happy=['win:setup-robot'], failure=['win:setup-robot'], boundary=[], recovery=[], concurrency=NA('-'), integrity=NA('-'), security=NA('-'))
+cap('UI-05', 'User interfaces', 'Client installation wizard (Welcome → License → Install → Finish)', True, 'A/SetupForm.cs', happy=['win:W03'], failure=['win:W02'], boundary=[], recovery=[], concurrency=NA('-'), integrity=NA('-'), security=NA('-'))
 cap('UI-06', 'User interfaces', 'Partner portal and licensing centre', False, 'S/Portal.cs, Web/portal.js', happy=['x:PortalTests.PartnerSignsUp_BrandsItsProduct_DownloadsServerThatLicensesItself_AndItsClients'], failure=[], boundary=[], recovery=NA('-'), concurrency=NA('-'), integrity=NA('-'), security=[])
 cap('UI-07', 'User interfaces', 'Translations (13 languages), Hebrew screens', False, 'C/i18n', happy=['x:I18nTests.TemplatesTranslateFinishedMessages_AndEveryDictionaryKeepsItsPlaceholders', 'robot:behaviour'], failure=NA('-'), boundary=['x:LayoutLintTests.NoScreenFixesLeftOrRight'], recovery=NA('-'), concurrency=NA('-'), integrity=NA('-'), security=NA('-'))
 cap('UI-08', 'User interfaces', 'AI: explain a failed run, insights, forecasts', False, 'S/Ai.cs, S/Insights.cs', happy=['x:AiTests.FailedJob_IsExplainedByTheAi_WithoutSecrets_AndOpensATicket', 'x:AiTests.Forecasts_DiskQuotaAndComputersAtRisk'], failure=[], boundary=[], recovery=NA('-'), concurrency=NA('-'), integrity=NA('-'),
@@ -266,6 +266,46 @@ EXTRA_COMPONENTS = {
 }
 
 # ------------------------------------------------------------------ evaluation
+# Real Windows (tests/QA/windows/win-e2e.ps1): a journey counts only when it really ran on Windows and passed — its
+# windows-<phase>.json is the record (NOT TESTED there stays not run here). W19 runs in the VM after a real restart.
+WIN = {
+    'BK-01': dict(happy=['win:W05', 'win:W06'], integrity=['win:W05']),
+    'BK-05': dict(failure=['win:W12', 'win:W11'], recovery=['win:W12']),
+    'BK-06': dict(happy=['win:W10'], failure=['win:W11'], recovery=['win:W11'], integrity=['win:W10']),
+    'AP-01': dict(happy=['win:W17']),
+    'RS-01': dict(happy=['win:W05'], integrity=['win:W05']),
+    'ST-02': dict(recovery=['win:W07', 'win:W09']),
+    'AG-04': dict(recovery=['win:W07', 'win:W08']),
+    'AG-05': dict(recovery=['win:W09']),
+    'AU-02': dict(happy=['win:W04']),
+    'SH-02': dict(failure=['win:W07', 'win:W09'], recovery=['win:W07']),
+    'IN-01': dict(happy=['win:W01']),
+    'IN-02': dict(happy=['win:W03'], failure=['win:W02', 'win:W13'], recovery=['win:W13', 'win:W15'], integrity=['win:W15']),
+    'IN-03': dict(happy=['win:W14'], failure=['win:W14'], recovery=['win:W14']),
+    'IN-06': dict(happy=['win:W19'], recovery=['win:W19'], integrity=['win:W19']),
+    'UI-04': dict(happy=['win:W04', 'win:W05', 'win:W16']),
+    'UI-05': dict(happy=['win:W03'], failure=['win:W02']),
+}
+for _c in C:
+    for _d, _ids in WIN.get(_c['id'], {}).items():
+        if not isinstance(_c['dims'][_d], NA): _c['dims'][_d] = list(_c['dims'][_d]) + [i for i in _ids if i not in _c['dims'][_d]]
+
+def windows_results():
+    """win:Wnn from every windows-*.json under reports/windows (the main job and the VM's phases); a journey that ran
+    in several phases is Failed if it failed in any, Passed if it passed in one, else not run."""
+    r = {}
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports', 'windows')
+    for dp, dn, fn in os.walk(base):
+        for f in fn:
+            if not (f.startswith('windows-') and f.endswith('.json')): continue
+            try: d = json.load(open(os.path.join(dp, f), encoding='utf-8-sig'))
+            except Exception: continue
+            for j in d.get('journeys') or []:
+                k = 'win:' + j['id']; v = {'PASS': 'Passed', 'FAIL': 'Failed'}.get(j.get('functional'), 'Skipped')
+                if r.get(k) == 'Failed' or (r.get(k) == 'Passed' and v == 'Skipped'): continue
+                r[k] = v
+    return r
+
 def results():
     """The outcome of every test id in the last runs: xUnit trx + QA Playwright json + Windows json + robots."""
     here = os.path.dirname(os.path.abspath(__file__)); r = {}
@@ -286,10 +326,7 @@ def results():
                 skipped = all(res.get('status') == 'skipped' for t in sp.get('tests', []) for res in t.get('results', []))
                 r[key] = 'Skipped' if skipped else 'Passed' if ok else 'Failed'
         walk(json.load(open(js)), '')
-    win = os.path.join(here, 'reports', 'windows.json')
-    if os.path.exists(win):
-        w = json.load(open(win))
-        for k in ['setup-robot', 'install-server', 'reinstall']: r['win:' + k] = 'Passed' if w.get('install') == 'PASS' else 'Failed'
+    r.update(windows_results())
     for k, v in json.loads(os.environ.get('QA_EXTRA_RESULTS', '{}')).items(): r[k] = v
     return r
 
@@ -311,7 +348,7 @@ def resolve(ref, res):
 # A capability is FULLY VERIFIED only when all three layers are; a passing unit test or a passing journey alone never is.
 LAYERS = ['component', 'integration', 'e2e']
 E2E_DATA_CHECK = {'qa:journeys/j6', 'qa:journeys/j7', 'qa:journeys/j8', 'qa:journeys/j3', 'qa:journeys/j4', 'qa:journeys/j5', 'qa:failure-recovery/f1', 'qa:failure-recovery/f2', 'qa:failure-recovery/f3',
-                  'qa:failure-recovery/f4', 'qa:failure-recovery/f5', 'qa:failure-recovery/f6', 'qa:failure-recovery/f7', 'win:install-server', 'win:reinstall'}
+                  'qa:failure-recovery/f4', 'qa:failure-recovery/f5', 'qa:failure-recovery/f6', 'qa:failure-recovery/f7', 'win:W05', 'win:W06', 'win:W07', 'win:W08', 'win:W09', 'win:W10', 'win:W11', 'win:W12', 'win:W13', 'win:W14', 'win:W15', 'win:W19'}
 NO_DATA = {'UI-01', 'UI-02', 'UI-04', 'UI-05', 'UI-06', 'UI-07', 'UI-08', 'UI-09', 'AU-01', 'AU-02', 'AU-03', 'AU-04', 'AU-06', 'AU-07',
            'SH-03', 'SH-04', 'SH-05', 'SH-06', 'SH-07', 'AG-02', 'AG-03', 'AG-07', 'IN-05'}   # the user operation ends without a restore
 

@@ -22,15 +22,15 @@ function Install-ViaUi([string]$setup, [switch]$Launch) {
   UxCheck 'Installer: the first page says what will be installed' 'the product name and what it does' ((Texts $w) -like '*installs*') (Texts $w)
   Click (Button $w 'Next')
   Start-Sleep -Seconds 1
-  $lic = StepLook 'Installer 02 - License agreement' 'the license text and an accept box' $w { $t = Texts $w; $box = @(Find $w $CT::CheckBox); @(($box.Count -ge 1), $t) } $lang $script:SetupProc
+  $lic = StepLook 'Installer 02 - License agreement' 'the license text and an accept box' $w { $t = Texts $w; @((($t -like '*License agreement*') -and [bool](Named $w '*accept the terms*')), $t) } $lang $script:SetupProc
   $install = Button $w 'Install'
   Step 'Install is disabled before the license is accepted' 'not enabled' { @((-not $install.Current.IsEnabled), 'enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
   UxCheck 'Installer: a license agreement must be accepted before installing' 'Install disabled until accepted' (-not $install.Current.IsEnabled) ('enabled=' + $install.Current.IsEnabled) 'High'
   if ($true) {
     Step 'Back returns to Welcome, Next comes back' 'Welcome, then the license again' { Click (Button $w 'Back'); $t = Texts $w; $ok = $t -like '*Welcome*'; Click (Button $w 'Next'); @(($ok -and ((Texts $w) -like '*License*')), $t) } -NoShot | Out-Null
   }
-  $box = @(Find $w $CT::CheckBox) | Select-Object -First 1
-  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true; @(($ok -and $install.Current.IsEnabled), 'ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
+  $box = Named $w '*accept the terms*'
+  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true $false; Start-Sleep -Milliseconds 400; @(($ok -and $install.Current.IsEnabled), 'ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
   Look $w 'Installer 03 - License accepted' $lang $script:SetupProc | Out-Null
   Note 'Installer pages that exist' 'Welcome -> License agreement -> Installation (progress) -> Finish. There is no configuration page (folder, options) and no "Ready to install" page in the current installer.'
   UxCheck 'Installer: a "Ready to install" summary before installing' 'a page listing what will be installed and where' $false 'the license page''s button installs at once (no configuration or ready page)' 'Low' 'Proposal only - the owner decides (the UX spec is not approved yet)'
@@ -43,8 +43,8 @@ function Install-ViaUi([string]$setup, [switch]$Launch) {
   $text = Texts $w
   $ok = StepLook 'Installer 05 - Finish' 'the Finish page says it is installed' $w { @(([bool]$fin -and ($text -notlike '*did not finish*')), $text) } $lang $script:SetupProc
   UxCheck 'Installer: the last page says the result and what to do next' 'installed + how to sign in' (($text -like '*installed*') -and ($text -like '*sign in*')) $text
-  $open = @(Find $w $CT::CheckBox) | Select-Object -First 1
-  if ($open) { [void](SetCheck $open ([bool]$Launch)) }
+  $open = Named $w 'Open * now'
+  if ($open) { [void](SetCheck $open ([bool]$Launch) $true) }   # ticked when the page opens
   if ($fin) { Click $fin }
   Start-Sleep -Seconds 3
   Step 'The setup window closes after Finish' 'no setup window' { $left = TopWindows $script:SetupProc; @(($left.Count -eq 0), "$($left.Count) window(s) left") } -NoShot | Out-Null
@@ -72,7 +72,7 @@ function Maintain-ViaUi([string]$setup, [ValidateSet('repair', 'remove', 'update
   $pick = $(switch ($action) { 'remove' { $radios | Where-Object { $_.Current.Name -like 'Remove*' } } 'update' { $radios | Where-Object { $_.Current.Name -like 'Update*' } } default { $radios | Where-Object { $_.Current.Name -like 'Repair*' } } }) | Select-Object -First 1
   if (-not (Step "Choose $action" "a '$action' choice" { @([bool]$pick, ($radios | ForEach-Object { $_.Current.Name }) -join ' / ') } -NoShot)) { return $false }
   Click $pick; Start-Sleep -Milliseconds 700
-  if ($action -eq 'remove' -and $RemoveSettings) { $c = @(Find $w $CT::CheckBox) | Select-Object -First 1; if ($c) { [void](SetCheck $c $true) } }
+  if ($action -eq 'remove' -and $RemoveSettings) { $c = Named $w '*remove this computer*settings*'; if ($c) { [void](SetCheck $c $true $false) } }
   Look $w "Maintenance - $action chosen" 'en' $script:SetupProc | Out-Null
   $go = @(Find $w $CT::Button) | Where-Object { @('Remove', 'Repair', 'Update') -contains $_.Current.Name } | Select-Object -First 1
   Click $go
@@ -88,7 +88,7 @@ function Maintain-ViaUi([string]$setup, [ValidateSet('repair', 'remove', 'update
   $text = Texts $w
   $want = $(if ($action -eq 'remove') { '*was removed*' } else { '*is installed*' })
   $ok = StepLook "Maintenance - $action finished" "the Finish page ($want)" $w { @(([bool]$fin -and ($text -like $want)), $text) } 'en' $script:SetupProc
-  $open = @(Find $w $CT::CheckBox) | Select-Object -First 1; if ($open) { [void](SetCheck $open $false) }
+  $open = Named $w 'Open * now'; if ($open) { [void](SetCheck $open $false $true) }
   if ($fin) { Click $fin }
   Start-Sleep -Seconds 3
   return $ok
@@ -136,9 +136,9 @@ function Answer-Dialogs($main, [string]$password, [string]$screen, [int]$seconds
     $text = (DialogText $d); if (-not $text) { $text = Texts $d }
     Look $d ("$screen - dialog: " + $d.Current.Name) 'en' $script:ClientProc | Out-Null
     $seen += ($d.Current.Name + ': ' + $text)
-    $pw = @(Find $d $CT::Edit) | Where-Object { $_.Current.IsPassword } | Select-Object -First 1
+    $pw = @(Find $d $CT::Edit) | Where-Object { $_.Current.IsPassword -or $_.Current.Name -eq 'Password' } | Select-Object -First 1
     if ($pw -and $password) { TypeInto $pw $password; Click (@(Find $d $CT::Button) | Where-Object { $_.Current.Name -eq 'Sign in' -or $_.Current.Name -eq 'OK' } | Select-Object -First 1); Start-Sleep -Seconds 2; continue }
-    foreach ($c in @(Find $d $CT::CheckBox)) { [void](SetCheck $c $true) }   # "I have read and accept the agreement"
+    $agree = Named $d '*read and accept*'; if ($agree) { [void](SetCheck $agree $true $false) }   # the provider's agreement
     $yes = @(Find $d $CT::Button) | Where-Object { @('OK', 'Yes', 'Continue') -contains $_.Current.Name } | Select-Object -First 1
     if ($yes) { Click $yes } else { Click (@(Find $d $CT::Button) | Select-Object -First 1) }
     Start-Sleep -Seconds 1; $last = Get-Date
@@ -165,7 +165,23 @@ function Connect-ViaUi($w, [string]$login, [string]$password) {
 }
 
 # The folder tree of "New backup": open C:\ -> ... -> the folder, tick it (as a person clicks the box)
+# The keyboard way through a folder tree (when UI Automation shows no items): Home, then for each level type the
+# folder's name (the tree selects the item that starts so), the right arrow opens it; returns $null (no item element)
+function TreePathKeys($tree, [string]$path) {
+  $parts = $path.TrimEnd('\').Split('\')
+  Key $tree 0x24   # Home
+  for ($i = 0; $i -lt $parts.Count; $i++) {
+    Start-Sleep -Milliseconds 1600   # the tree's type-to-find forgets after about a second
+    $h = [IntPtr]$tree.Current.NativeWindowHandle
+    foreach ($ch in $parts[$i].ToCharArray()) { [void][ObQa.Win]::PostMessage($h, 0x102, [IntPtr][int]$ch, [IntPtr]::Zero) }
+    Start-Sleep -Milliseconds 500
+    if ($i -lt $parts.Count - 1) { Key $tree 0x27; Start-Sleep -Milliseconds 1200 }
+  }
+  return $null
+}
 function TreePath($tree, [string]$path) {
+  $items = @($tree.FindAll($TS::Children, [System.Windows.Automation.Condition]::TrueCondition))
+  if ($items.Count -eq 0 -or -not ($items | Where-Object { $_.Current.Name })) { return TreePathKeys $tree $path }
   $parts = $path.TrimEnd('\').Split('\'); $node = $null; $scope = $tree
   for ($i = 0; $i -lt $parts.Count; $i++) {
     $name = $(if ($i -eq 0) { $parts[0] + '\' } else { $parts[$i] })
@@ -195,8 +211,8 @@ function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
   TypeInto (Edit $w 'Backup name') $name
   $tree = @(Find $w $CT::Tree) | Select-Object -First 1
   $node = TreePath $tree $folder
-  $how = Tick $tree $node; Start-Sleep -Milliseconds 600
-  $state = 'not readable through UI Automation'; try { $state = 'ticked=' + (IsOn $node) } catch { }
+  if ($node) { $how = Tick $tree $node } else { Key $tree 0x20; $how = 'keyboard: name typed, space bar' }; Start-Sleep -Milliseconds 600
+  $state = 'not readable through UI Automation'; if ($node) { $v = IsOn $node; if ($v -ne $null) { $state = "ticked=$v" } }
   Note 'Tick the folder in the tree' "$folder ($how); $state - the server's copy of the set is the proof (next step)"
   Look $w 'Client 06 - Backup configured' 'en' $script:ClientProc | Out-Null
   Click (PageButton $w 'New backup')
