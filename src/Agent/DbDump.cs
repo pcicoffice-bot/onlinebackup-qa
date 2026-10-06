@@ -128,7 +128,14 @@ namespace OnlineBackup.Agent
                     Run(Tool("OB_PGDUMPALL", "pg_dumpall", new[] { "PostgreSQL" }), conn.Concat(new[] { "--globals-only" }), env, g + ".part");
                     if (File.Exists(g)) File.Delete(g); File.Move(g + ".part", g); written.Add(g);
                 }
-                catch (Exception e) { warn("[PostgreSQL] roles not dumped: " + e.Message); }
+                catch (Exception e)
+                {
+                    // bug 36 (Agent B): a failed roles dump was only a warning and the cleaning below deleted the last one —
+                    // the latest point lost the roles. Like a database: an error, and the last dump is kept
+                    try { var p = Path.Combine(dir, "_globals_roles.sql.part"); if (File.Exists(p)) File.Delete(p); } catch (IOException) { }
+                    warn("[PostgreSQL] roles not dumped (the last dump is kept): " + e.Message);
+                    unreachable.Add(kind + "\\_globals_roles.sql");
+                }
             // dumps of databases no longer chosen leave the folder (they stay in earlier restore points)
             foreach (var f in Directory.GetFiles(dir, "*.sql")) if (!written.Contains(f) && !unreachable.Contains(kind + "\\" + Path.GetFileName(f))) File.Delete(f);
             return written;

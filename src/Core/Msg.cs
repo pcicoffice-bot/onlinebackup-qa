@@ -71,6 +71,9 @@ namespace OnlineBackup.Core
         public byte[] ToBytes() { return Encoding.UTF8.GetBytes(ToXml().ToString(SaveOptions.DisableFormatting)); }
         public override string ToString() { return ToXml().ToString(SaveOptions.DisableFormatting); }
 
+        /// <summary>The deepest nesting of elements a message may have (real ones: under 10).</summary>
+        public const int MaxDepth = 64;
+
         public static Msg Parse(byte[] data) { return data == null || data.Length == 0 ? new Msg() : Parse(Encoding.UTF8.GetString(data)); }
 
         /// <summary>FUZZ-010: a message is plain XML — no DOCTYPE, no entities (no file of this computer can be pulled in).</summary>
@@ -78,6 +81,11 @@ namespace OnlineBackup.Core
         {
             if (string.IsNullOrEmpty(text)) return new Msg();
             var settings = new System.Xml.XmlReaderSettings { DtdProcessing = System.Xml.DtdProcessing.Prohibit, XmlResolver = null };
+            // bug 41 (Agent C, F1): one unauthenticated request with a message nested thousands of levels deep crashed the
+            // whole server (stack overflow — it cannot be caught). The nesting is counted while reading, before anything
+            // is built: deeper than any real message is refused as malformed (the API answers 400)
+            using (var r = System.Xml.XmlReader.Create(new System.IO.StringReader(text), settings))
+                while (r.Read()) if (r.Depth > MaxDepth) throw new System.Xml.XmlException("The message is nested too deeply.");
             using (var r = System.Xml.XmlReader.Create(new System.IO.StringReader(text), settings)) return FromXml(XElement.Load(r));
         }
 

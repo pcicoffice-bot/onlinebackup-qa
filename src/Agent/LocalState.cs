@@ -109,6 +109,18 @@ namespace OnlineBackup.Agent
             dir = setDir;
             var p = System.IO.Path.Combine(dir, "state.txt");
             if (!File.Exists(p)) return;
+            try { Read(p); }
+            catch (Exception e) when (e is FormatException || e is OverflowException || e is IOException || e is ArgumentException)
+            {
+                // bug 38 (Agent B): a damaged state.txt threw at every look and stopped the schedule. Kept aside for
+                // diagnosis; the index then counts as missing and the next backup rebuilds it from the server
+                Files.Clear(); LastSuccess = null;
+                try { File.Move(p, p + ".damaged-" + DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture)); } catch (Exception) { }
+            }
+        }
+
+        void Read(string p)
+        {
             foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
             {
                 if (line.StartsWith("#last\t")) { LastSuccess = line.Substring(6); continue; }
@@ -144,9 +156,31 @@ namespace OnlineBackup.Agent
         /// <summary>Chunk list of the last version: "id length" per line, in file order.</summary>
         public List<KeyValuePair<string, int>> LoadChunks(string rel)
         {
-            var p = ChunkFile(rel);
+            return ReadChunkList(ChunkFile(rel));
+        }
+
+        /// <summary>Bug 44 (Agent C, F3): one damaged chunk list threw in every later backup (the run failed, again and
+        /// again). A list that does not read is dropped: the file is then sent as a new full copy — more data, never less.</summary>
+        static List<KeyValuePair<string, int>> ReadChunkList(string p)
+        {
             if (!File.Exists(p)) return null;
-            return File.ReadAllLines(p).Where(l => l.Length > 0).Select(l => { var x = l.Split(' '); return new KeyValuePair<string, int>(x[0], int.Parse(x[1], CultureInfo.InvariantCulture)); }).ToList();
+            var list = new List<KeyValuePair<string, int>>();
+            try
+            {
+                foreach (var l in File.ReadAllLines(p))
+                {
+                    if (l.Length == 0) continue;
+                    var x = l.Split(' '); int n;
+                    if (x.Length != 2 || x[0].Length == 0 || !int.TryParse(x[1], NumberStyles.None, CultureInfo.InvariantCulture, out n) || n <= 0) throw new FormatException("bad chunk line");
+                    list.Add(new KeyValuePair<string, int>(x[0], n));
+                }
+                return list;
+            }
+            catch (Exception e) when (e is FormatException || e is IOException)
+            {
+                try { File.Delete(p); } catch (Exception) { }
+                return null;
+            }
         }
 
         public void SaveChunks(string rel, List<KeyValuePair<string, int>> chunks)
@@ -160,9 +194,7 @@ namespace OnlineBackup.Agent
         string BaseFile(string rel) { return ChunkFile(rel).Replace(".txt", ".full.txt"); }
         public List<KeyValuePair<string, int>> LoadBaseChunks(string rel)
         {
-            var p = BaseFile(rel);
-            if (!File.Exists(p)) return null;
-            return File.ReadAllLines(p).Where(l => l.Length > 0).Select(l => { var x = l.Split(' '); return new KeyValuePair<string, int>(x[0], int.Parse(x[1], CultureInfo.InvariantCulture)); }).ToList();
+            return ReadChunkList(BaseFile(rel));
         }
         public void SaveBaseChunks(string rel, List<KeyValuePair<string, int>> chunks)
         {

@@ -76,7 +76,7 @@ namespace OnlineBackup.Server
                     Call("POST", "/api/replica/user", new Msg().Set("login", login).Set("quota", ev["quota"]));
                     break;
                 case "db":
-                    foreach (var f in Directory.GetFiles(Path.Combine(userDir, "db"), "*", SearchOption.AllDirectories).Where(x => !x.Contains(".tmp")))
+                    foreach (var f in Directory.GetFiles(Path.Combine(userDir, "db"), "*", SearchOption.AllDirectories).Where(x => !Atomic.IsTemp(x)))   // bug 35: by the file's name, never the path
                     {
                         var rel = f.Substring(userDir.Length + 1).Replace(Path.DirectorySeparatorChar, '/');
                         if (rel.StartsWith("db/keys/"))

@@ -243,7 +243,9 @@ namespace OnlineBackup.Agent
                     throw new StoppedException(byAdmin);
                 }
                 string summary = null;
-                foreach (var line in r.Out.Split('\n'))
+                // bug 40 (Agent J, J-1): with --json restic writes the files it could not read to its ERROR stream; only the
+                // output stream was read, so an unreadable file was a "warning" that named nothing — both streams now
+                foreach (var line in (r.Out + "\n" + r.Err).Split('\n'))
                 {
                     var t = line.Trim();
                     if (t.Length == 0 || t[0] != '{') continue;
@@ -257,7 +259,7 @@ namespace OnlineBackup.Agent
                 report.Set("files", N(summary, "total_files_processed")).Set("orig", N(summary, "total_bytes_processed")).Set("snapshot", Get(summary, "snapshot_id"));
                 log.Add(AhsayLog.Info(Clock(), "Snapshot " + Get(summary, "snapshot_id") + ": new " + run.New + ", changed " + run.Updated + ", unchanged " + N(summary, "files_unmodified")
                     + ", files " + N(summary, "total_files_processed") + ", added " + N(summary, "data_added") + " bytes"));
-                if (r.Code == 3) { run.Warnings++; log.Add(AhsayLog.Line(Clock(), "warn", message: "Some files could not be read (see the errors above)")); }
+                if (r.Code == 3 && run.Errors == 0) { run.Errors++; log.Add(AhsayLog.Line(Clock(), "err", message: "Some files could not be read (restic exit 3) and are not in this point")); }
 
                 var forget = new List<string> { "forget", "--prune", "--tag", "set:" + set.Id, "--host", app.Home.Computer };
                 forget.AddRange(KeepArgs(set.Retention));
@@ -274,7 +276,14 @@ namespace OnlineBackup.Agent
                 run.Errors++; log.Add(AhsayLog.Line(Clock(), "err", message: e.Message));
             }
             catch (Exception e) { result = "BS_STOP_BY_SYSTEM_ERROR"; run.Errors++; log.Add(AhsayLog.Line(Clock(), "err", message: e.Message)); }
-            finally { run.StopHeartbeat(); if (clean) try { File.Delete(RunningFlag); } catch (IOException) { } Commands.Run(set.PostCommands, "post", m => log.Add(AhsayLog.Info(Clock(), m)), m => { run.Warnings++; log.Add(AhsayLog.Line(Clock(), "warn", message: m)); }); }
+            finally
+            {
+                EndRunFlag(clean);
+                // Agent F (F-2): the post-commands run while the run still signs life to the server — a post-command
+                // longer than the lease had the run recorded as interrupted (a failed backup in the history, a mail)
+                Commands.Run(set.PostCommands, "post", m => log.Add(AhsayLog.Info(Clock(), m)), m => { run.Warnings++; log.Add(AhsayLog.Line(Clock(), "warn", message: m)); });
+                run.StopHeartbeat();
+            }
 
             if (result == "BS_STOP_SUCCESS" && run.Errors > 0) result = "BS_STOP_SUCCESS_WITH_ERROR";
             else if (result == "BS_STOP_SUCCESS" && run.Warnings > 0) result = "BS_STOP_SUCCESS_WITH_WARNING";
@@ -411,7 +420,38 @@ namespace OnlineBackup.Agent
         void RecoverInterrupted(List<string> log)
         {
             if (UnlockAfterDeadRun(log) == false) throw new AgentException(0, "BUSY", "Another run of this set is still working");
-            File.WriteAllText(RunningFlag, Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
+            // Agent F (F-3): the flag names this process by its id AND its start time — an id alone is reused by Windows and
+            // Linux for any later program, and a flag naming a live stranger refused every backup of the set from then on
+            var me = Process.GetCurrentProcess();
+            File.WriteAllText(RunningFlag, me.Id.ToString(CultureInfo.InvariantCulture) + "\t" + RunId.UnixMs(me.StartTime.ToUniversalTime()).ToString(CultureInfo.InvariantCulture));
+        }
+
+        /// <summary>The end of this process's run: a clean run removes its flag; a run that may have left locks keeps a flag
+        /// that names no live process (the next run removes the locks) — never this process's id, which stays alive in the
+        /// service and would refuse the runs of another program (the window, the command line) as "still working".</summary>
+        void EndRunFlag(bool clean)
+        {
+            try { if (clean) File.Delete(RunningFlag); else File.WriteAllText(RunningFlag, "interrupted"); }
+            catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
+
+        /// <summary>True only when the flag names a process that is alive now, is not this one, and started when the flag's
+        /// writer started (to 2 s) — a reused id is another program. A flag without a start time (older versions, or an
+        /// interrupted run) names no provable live run.</summary>
+        static bool FlagNamesLiveRun(string flag)
+        {
+            var f = flag.Trim().Split('\t');
+            int pid; long startMs;
+            if (f.Length < 2 || !int.TryParse(f[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out pid)
+                || !long.TryParse(f[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out startMs)) return false;
+            if (pid == Process.GetCurrentProcess().Id) return false;
+            try
+            {
+                var p = Process.GetProcessById(pid);
+                return !p.HasExited && Math.Abs(RunId.UnixMs(p.StartTime.ToUniversalTime()) - startMs) < 2000;
+            }
+            catch (ArgumentException) { return false; } catch (InvalidOperationException) { return false; }
+            catch (System.ComponentModel.Win32Exception) { return false; }
         }
 
         /// <summary>The locks of a run of this set that is no longer alive are removed. null: no such run; true: removed;
@@ -419,10 +459,7 @@ namespace OnlineBackup.Agent
         bool? UnlockAfterDeadRun(List<string> log)
         {
             if (!File.Exists(RunningFlag)) return null;
-            int pid; bool alive = false;
-            if (int.TryParse(File.ReadAllText(RunningFlag).Trim(), out pid))
-                try { alive = !Process.GetProcessById(pid).HasExited && pid != Process.GetCurrentProcess().Id; } catch (ArgumentException) { } catch (InvalidOperationException) { }
-            if (alive) return false;
+            if (FlagNamesLiveRun(File.ReadAllText(RunningFlag))) return false;
             var u = Run("unlock", "--remove-all");
             log.Add(AhsayLog.Info(Clock(), "The previous run was interrupted: its repository locks were removed (" + (u.Code == 0 ? "ok" : Last(u.Err)) + ")"));
             return true;
@@ -449,9 +486,9 @@ namespace OnlineBackup.Agent
         }
 
         /// <summary>Restore a snapshot ("latest" by default) to a folder; optional path filter (restic --include).</summary>
-        public void Restore(string snapshot, string target, string include, List<string> log)
+        public void Restore(string snapshot, string target, string include, List<string> log, bool overwrite = false)
         {
-            RestoreMany(snapshot, target, string.IsNullOrEmpty(include) ? null : new[] { include }, log);
+            RestoreMany(snapshot, target, string.IsNullOrEmpty(include) ? null : new[] { include }, log, overwrite);
         }
 
         /// <summary>restic's --include is a pattern: [ * ? in a real name ("Report [final].docx") are made literal ([[] [*] [?]).</summary>
@@ -462,14 +499,66 @@ namespace OnlineBackup.Agent
             return sb.ToString();
         }
 
-        public void RestoreMany(string snapshot, string target, IEnumerable<string> includes, List<string> log)
+        /// <summary>Bug 39 (Agent J, J-2): the restore ignored "Replace existing files" and restic's default replaces
+        /// everything — a file the customer changed after the backup was overwritten by the old version without being asked.
+        /// Existing files are now kept unless <paramref name="overwrite"/>.
+        /// Bug 48 (found by ReliabilityTests after bug 39): restic writes straight into the target, so a restore cut midway
+        /// (line, power, kill) left half files under their real names — and the next restore kept them as "existing": the
+        /// customer got a damaged file with no error. restic now restores into a fresh folder beside the files
+        /// (".ob-restoring-…", same volume) and only a restore that ended well is moved into place, one rename per file or
+        /// new folder; a cut restore leaves nothing under a real name, and its folder is removed then or by the next restore.
+        /// J-3: a restore that brought nothing (the chosen path is not in the point) is an error, not "OK".</summary>
+        public void RestoreMany(string snapshot, string target, IEnumerable<string> includes, List<string> log, bool overwrite = false)
         {
             EnsureAccess();
-            var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", target, "--tag", "set:" + set.Id };
-            if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(inc)); }
-            var r = Run(args.ToArray());
-            log.Add(AhsayLog.Info(Clock(), "restic restore " + (snapshot ?? "latest") + " to " + target + ": exit " + r.Code));
-            if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err));
+            Directory.CreateDirectory(target);
+            foreach (var old in Directory.GetDirectories(target, StagePrefix + "*"))
+                try { Directory.Delete(old, true); } catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + old + " (" + e.Message + ")")); }
+            var stage = Path.Combine(target, StagePrefix + Guid.NewGuid().ToString("N").Substring(0, 12));
+            Directory.CreateDirectory(stage);
+            try
+            {
+                var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", stage, "--tag", "set:" + set.Id };
+                if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(inc)); }
+                var r = Run(args.ToArray());
+                log.Add(AhsayLog.Info(Clock(), "restic restore " + (snapshot ?? "latest") + " to " + target + ": exit " + r.Code));
+                if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err) + " — nothing was put in place; run the restore again");
+                var c = new int[3];   // placed, kept (existed), replaced
+                Place(stage, target, overwrite, c);
+                if (c[0] + c[1] + c[2] == 0) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
+                log.Add(AhsayLog.Info(Clock(), "Restored: " + c[0] + " new, " + c[2] + " replaced, " + c[1] + " kept (already there" + (overwrite ? "" : "; 'Replace existing files' was not chosen") + ")"));
+            }
+            finally { try { if (Directory.Exists(stage)) Directory.Delete(stage, true); } catch (Exception) { } }
+        }
+
+        const string StagePrefix = ".ob-restoring-";
+
+        static bool IsLink(FileSystemInfo i) { return (i.Attributes & FileAttributes.ReparsePoint) != 0; }
+
+        /// <summary>Moves what restic restored into place. A folder that is not there yet moves whole (one rename); an
+        /// existing one is entered. An existing file (or link) is kept, or replaced when asked. A link is never followed.</summary>
+        static void Place(string from, string to, bool overwrite, int[] c)
+        {
+            foreach (var e in new DirectoryInfo(from).GetFileSystemInfos())
+            {
+                var dest = Path.Combine(to, e.Name);
+                var isDir = e is DirectoryInfo && !IsLink(e);
+                var there = File.Exists(dest) || Directory.Exists(dest);
+                if (isDir && !there) { c[0] += Math.Max(1, Count((DirectoryInfo)e)); Directory.Move(e.FullName, dest); }
+                else if (isDir && Directory.Exists(dest) && !IsLink(new DirectoryInfo(dest))) Place(e.FullName, dest, overwrite, c);
+                else if (!there) { MoveEntry(e, dest); c[0]++; }
+                else if (overwrite && File.Exists(dest) && !isDir) { File.Delete(dest); MoveEntry(e, dest); c[2]++; }
+                else c[1]++;
+            }
+        }
+
+        static void MoveEntry(FileSystemInfo e, string dest) { if (e is DirectoryInfo) Directory.Move(e.FullName, dest); else File.Move(e.FullName, dest); }
+
+        static int Count(DirectoryInfo d)
+        {
+            int n = 0;
+            foreach (var e in d.GetFileSystemInfos()) n += e is DirectoryInfo && !IsLink(e) ? Count((DirectoryInfo)e) : 1;
+            return n;
         }
 
         /// <summary>The snapshots of the set, newest first: id, time, files of the run.</summary>

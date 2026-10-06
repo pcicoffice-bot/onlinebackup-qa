@@ -22,7 +22,10 @@ test('J7 a scheduled backup runs on time, exactly once, also across a restart of
     await new Promise((r) => setTimeout(r, 5000));
   }
   expect(runs.length, 'the scheduled backup did not run').toBe(1);
-  expect(Date.now()).toBeGreaterThanOrEqual(due.getTime() - 1000);   // not before its time
+  // not before its time: the schedule is a minute (hour:minute), so the run may start from the first second of that
+  // minute — the seconds of "due" are not part of the schedule (CI run 4 failed here at 16:07:05 for a 16:07:59 "due")
+  const dueMinute = new Date(due); dueMinute.setSeconds(0, 0);
+  expect(Date.now()).toBeGreaterThanOrEqual(dueMinute.getTime() - 1000);
   evidence.step('the service restarts; two more minutes pass');
   ag.stopService(); ag.startService();
   await new Promise((r) => setTimeout(r, 150 * 1000));

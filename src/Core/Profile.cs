@@ -299,6 +299,18 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
     /// <summary>Write to a temporary name, flush to disk, then rename: a crash never leaves a half-written file.</summary>
     public static class Atomic
     {
+        /// <summary>A file left by a write that never finished: "&lt;name&gt;.tmp" + 8 hex digits — judged by the FILE NAME only.
+        /// Bug 35 (Agent B): the index rebuild tested the whole path for ".tmp" and deleted every object of a customer
+        /// called "acme.tmp" (or under a folder "D:\Backup.tmp").</summary>
+        public static bool IsTemp(string path)
+        {
+            var n = Path.GetFileName(path ?? "");
+            int i = n.LastIndexOf(".tmp", StringComparison.Ordinal);
+            if (i < 0 || n.Length - i != 12) return false;
+            for (int k = i + 4; k < n.Length; k++) if (Uri.IsHexDigit(n[k]) == false || char.IsUpper(n[k])) return false;
+            return true;
+        }
+
         public static void WriteText(string path, string text) { WriteBytes(path, new UTF8Encoding(false).GetBytes(text)); }
 
         public static void WriteBytes(string path, byte[] data)

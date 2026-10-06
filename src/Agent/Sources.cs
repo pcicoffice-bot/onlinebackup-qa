@@ -45,7 +45,7 @@ namespace OnlineBackup.Agent
             if (set.Type == VMware.Type) return Staged("VMware", VMware.Backup(CurrentHome, set, sqlPassword, info, warn));
             if (set.Type == DiskImage.Type)
                 return DiskImage.Run(set, info, warn, unreachable);
-            return Files(set, snapshot, warn, unreachable);
+            return Files(set, snapshot, info, warn, unreachable);
         }
 
         /// <summary>The dumps under stable names ("MySQL\db.sql"), so each database keeps one delta chain.</summary>
@@ -67,9 +67,9 @@ namespace OnlineBackup.Agent
         /// <summary>The agent folder of the run in progress (set by BackupRun).</summary>
         [ThreadStatic] public static AgentHome CurrentHome;
 
-        static IEnumerable<SourceItem> Files(BackupSetInfo set, Vss snapshot, Action<string> warn, List<string> unreachable)
+        static IEnumerable<SourceItem> Files(BackupSetInfo set, Vss snapshot, Action<string> info, Action<string> warn, List<string> unreachable)
         {
-            foreach (var f in Scanner.Files(set, warn, unreachable))
+            foreach (var f in Scanner.Files(set, warn, unreachable, info))
                 yield return new SourceItem { Path = f.FullName, ReadPath = snapshot == null ? f.FullName : snapshot.Map(f.FullName), Info = f };
         }
     }

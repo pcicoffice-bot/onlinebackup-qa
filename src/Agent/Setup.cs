@@ -88,7 +88,7 @@ namespace OnlineBackup.Agent
             var exe = Path.Combine(r.InstallDir, windows ? "OnlineBackup.Agent.exe" : "OnlineBackup.Agent");
             if (windows && !flag("no-service"))
             {
-                say(ServiceSetup.Install(exe, r.DataDir, product)); r.Service = true;
+                say(ServiceSetup.Install(exe, r.DataDir, product)); r.Service = true;   // throws when the service does not run (UX-17)
                 try { RegisterUninstall(r, folder, (string)brand.Attribute("COMPANY")); } catch (Exception e) { say("Not added to Programs and Features: " + e.Message); }
             }
             if (mac)

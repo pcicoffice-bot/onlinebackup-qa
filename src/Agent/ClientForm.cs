@@ -820,7 +820,9 @@ namespace OnlineBackup.Agent
     sealed class FolderPicker
     {
         readonly Form owner; readonly IClientApi api; readonly Func<string, object[], string> t; readonly bool rtl;
-        public readonly List<string> Included = new List<string>(), Excluded = new List<string>();
+        readonly FolderSelection sel = new FolderSelection();
+        public List<string> Included { get { return sel.Included; } }
+        public List<string> Excluded { get { return sel.Excluded; } }
         TreeView tree; bool filling;
         public FolderPicker(Form owner, IClientApi api, Func<string, object[], string> t, bool rtl) { this.owner = owner; this.api = api; this.t = t; this.rtl = rtl; }
 
@@ -832,11 +834,8 @@ namespace OnlineBackup.Agent
             tree.AfterCheck += (s, e) =>
             {
                 if (filling) return;
-                var p = (string)e.Node.Tag;
-                Included.RemoveAll(x => x.Equals(p, StringComparison.OrdinalIgnoreCase)); Excluded.RemoveAll(x => x.Equals(p, StringComparison.OrdinalIgnoreCase));
-                bool insideIncluded = Included.Any(x => p.StartsWith(x.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase));
-                if (e.Node.Checked && !insideIncluded) Included.Add(p);
-                if (!e.Node.Checked && insideIncluded) Excluded.Add(p);
+                // UX-27: a line that is not a folder ("No access to this folder.", "…") cannot be ticked
+                if (!sel.Toggle((string)e.Node.Tag, e.Node.Checked)) { filling = true; e.Node.Checked = false; filling = false; return; }
                 filling = true; Mark(e.Node.Nodes, e.Node.Checked); filling = false;
             };
             return tree;

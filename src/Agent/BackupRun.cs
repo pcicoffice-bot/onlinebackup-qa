@@ -461,15 +461,64 @@ namespace OnlineBackup.Agent
     }
 
     /// <summary>Walks the selected sources with the set filters (Ahsay FILTER) and the de-selected paths.</summary>
+    /// <summary>The real place of a folder (a link / junction followed to the end).</summary>
+    public static class Links
+    {
+        public static string RealPath(string dir)
+        {
+            try
+            {
+#if NET40
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT) { var r = Final(dir); if (!string.IsNullOrEmpty(r)) return r; }
+                return Path.GetFullPath(dir).TrimEnd('\\', '/');
+#else
+                var full = Path.GetFullPath(dir).TrimEnd('\\', '/');
+                // each part of the path, a link resolved where it is one
+                var root = Path.GetPathRoot(full) ?? ""; var acc = root;
+                foreach (var part in full.Substring(root.Length).Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    acc = Path.Combine(acc, part);
+                    var t = Directory.ResolveLinkTarget(acc, true);
+                    if (t != null) acc = Path.GetFullPath(t.FullName).TrimEnd('\\', '/');
+                }
+                return acc.Length > 0 ? acc : full;
+#endif
+            }
+            catch (Exception) { return Path.GetFullPath(dir).TrimEnd('\\', '/'); }
+        }
+#if NET40
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+        static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFile(string name, uint access, uint share, IntPtr sec, uint disp, uint flags, IntPtr tmpl);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+        static extern uint GetFinalPathNameByHandle(Microsoft.Win32.SafeHandles.SafeFileHandle h, System.Text.StringBuilder buf, uint size, uint flags);
+        static string Final(string dir)
+        {
+            using (var h = CreateFile(dir, 0, 7, IntPtr.Zero, 3, 0x02000000 /* BACKUP_SEMANTICS: a folder */, IntPtr.Zero))
+            {
+                if (h.IsInvalid) return null;
+                var sb = new System.Text.StringBuilder(1024);
+                var n = GetFinalPathNameByHandle(h, sb, (uint)sb.Capacity, 0);
+                if (n == 0 || n >= sb.Capacity) return null;
+                var r = sb.ToString(); if (r.StartsWith(@"\\?\UNC\")) r = @"\\" + r.Substring(8); else if (r.StartsWith(@"\\?\")) r = r.Substring(4);
+                return r.TrimEnd('\\');
+            }
+        }
+#endif
+    }
+
     public static class Scanner
     {
-        public static IEnumerable<FileInfo> Files(BackupSetInfo set, Action<string> warn, List<string> unreachable = null)
+        public static IEnumerable<FileInfo> Files(BackupSetInfo set, Action<string> warn, List<string> unreachable = null, Action<string> info = null)
         {
             foreach (var src in set.Sources)
             {
                 if (File.Exists(src)) { yield return new FileInfo(src); continue; }
                 if (!Directory.Exists(src)) { warn("Source not found (files kept, not treated as deleted): " + src); if (unreachable != null) unreachable.Add(src); continue; }
                 var stack = new Stack<DirectoryInfo>();
+                // bug 37 (Agent B): a followed link to its own parent (Windows profiles have such junctions) was walked
+                // again and again — the same files backed up many times, until the path was too long. Every folder's
+                // real place is remembered; a link to one already walked, or to one of its own parents, is not followed.
+                var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { Links.RealPath(src) };
                 stack.Push(new DirectoryInfo(src));
                 while (stack.Count > 0)
                 {
@@ -488,7 +537,15 @@ namespace OnlineBackup.Agent
                         if (Excluded(set, it.FullName, it.Name, isDir)) continue;
                         if (isDir)
                         {
-                            if ((it.Attributes & FileAttributes.ReparsePoint) != 0 && !set.FollowLink) continue;
+                            if ((it.Attributes & FileAttributes.ReparsePoint) != 0)
+                            {
+                                if (!set.FollowLink) continue;
+                                var real = Links.RealPath(it.FullName);
+                                var parent = Links.RealPath(d.FullName);
+                                if (!seen.Add(real) || parent.StartsWith(real.TrimEnd('\\', '/') + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) || parent.Equals(real, StringComparison.OrdinalIgnoreCase))
+                                { (info ?? warn)("Link not followed (it leads back to a folder already backed up): " + it.FullName + " -> " + real); continue; }   // not data left out: an information
+                            }
+                            else seen.Add(Links.RealPath(it.FullName));
                             stack.Push((DirectoryInfo)it);
                         }
                         else yield return (FileInfo)it;

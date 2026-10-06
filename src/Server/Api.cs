@@ -646,6 +646,12 @@ namespace OnlineBackup.Server
         {
             lock (EndGate(login, store.SetId))
             {
+                // bug 42 (Agent F, F-1): a commit that arrives after the server closed its run (no sign of life for longer
+                // than the lease: a laptop asleep, a line down) was answered "ok" — the computer kept its files as stored and
+                // never sent them again: on no restore point. Only a run that was really committed has a kept reply; any
+                // other ended run refuses the commit, so the computer counts the run as failed and sends the files again.
+                if (File.Exists(EndedLog(login, store.SetId, job)) && !File.Exists(ReplyFile(login, store.SetId, job)))
+                    throw new ApiException(409, "RUN_CLOSED", "The server closed this run before it ended (no sign of life for too long); it was recorded as interrupted. The files are sent again in the next backup.");
                 var done = EndedReply(login, store.SetId, job);
                 if (done != null) return done;
                 var reply = CommitOnce(login, store, job, body, ip);

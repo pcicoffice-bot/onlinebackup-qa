@@ -266,6 +266,52 @@ EXTRA_COMPONENTS = {
 }
 
 # ------------------------------------------------------------------ evaluation
+# Component tests of the agent against a recording stand-in server (tests/Tests/StubServer.cs) and of the server's store /
+# sweep alone (no web server) — each against its contract in specs.py; a failing one is a finding and stays registered.
+U, O, R, LS, SL, SW = 'x:UnreadableComponentTests.', 'x:OpenRunComponentTests.', 'x:RunRequestComponentTests.', 'x:LocalStateComponentTests.', 'x:StorageLimitsComponentTests.', 'x:SweepComponentTests.'
+COMPONENT_C = {
+    'BK-05': dict(happy=[U + 'ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree'],
+                  failure=[U + 'ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree', U + 'EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending'],
+                  boundary=[U + 'OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted'],
+                  recovery=[U + 'ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree', U + 'EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending'],
+                  integrity=[U + 'ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree', U + 'EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending']),
+    'AG-04': dict(happy=[O + 'WhileARunIsOpen_TheNoteHoldsIt_AConfirmedEndRemovesIt', O + 'ASilentUpload_StillSendsASignOfLifeWithinAMinute'],
+                  failure=[O + 'ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain'],
+                  boundary=[O + 'ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote'],
+                  recovery=[O + 'ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain', O + 'ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote'],
+                  integrity=[O + 'ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain']),
+    'AG-02': dict(happy=[R + 'EachNewRequest_StartsExactlyOneRun_AnOldOrRepeatedOneNone', R + 'AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical'],
+                  failure=[R + 'AnOlderStop_OrAServerThatFails_NeverStopsARun', R + 'ARequestWhoseBackupCouldNotStart_IsNotLost'],
+                  recovery=[R + 'AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical'],
+                  integrity=[R + 'AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical']),
+    'AG-06': dict(happy=[LS + 'ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical'],
+                  failure=[LS + 'ADamagedIndexLine_DoesNotFailEveryLaterBackup', LS + 'ADamagedChunkList_DoesNotFailEveryLaterBackup'],
+                  boundary=[LS + 'ADamagedIndexLine_DoesNotFailEveryLaterBackup'],
+                  recovery=[LS + 'ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical'],
+                  integrity=[LS + 'ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical']),
+    'ST-05': dict(happy=[SL + 'Quota_ExactlyTheRoomIsAccepted_OneByteOverIsRefused_NothingLeft_StoredPointsUnchanged', SL + 'AQuotaRefusalMidRun_EndsQuotaExceeded_NothingDeleted_TheRestWaits_TheNextRunCompletes'],
+                  failure=[SL + 'AQuotaRefusalMidRun_EndsQuotaExceeded_NothingDeleted_TheRestWaits_TheNextRunCompletes'],
+                  boundary=[SL + 'Quota_ExactlyTheRoomIsAccepted_OneByteOverIsRefused_NothingLeft_StoredPointsUnchanged'],
+                  recovery=[SL + 'AQuotaRefusalMidRun_EndsQuotaExceeded_NothingDeleted_TheRestWaits_TheNextRunCompletes'],
+                  integrity=[SL + 'Quota_ExactlyTheRoomIsAccepted_OneByteOverIsRefused_NothingLeft_StoredPointsUnchanged', SL + 'AQuotaRefusalMidRun_EndsQuotaExceeded_NothingDeleted_TheRestWaits_TheNextRunCompletes']),
+    'ST-06': dict(failure=[SL + 'ServerDiskFull_MidObject_NoHalfObjectLeft_EarlierPointsUnchanged_TheSameObjectIsAcceptedOnceSpaceIsBack', SL + 'ServerDiskFull_TheRunFailsWithTheServersReason_TheIndexDoesNotMove_TheNextRunCompletes'],
+                  recovery=[SL + 'ServerDiskFull_MidObject_NoHalfObjectLeft_EarlierPointsUnchanged_TheSameObjectIsAcceptedOnceSpaceIsBack', SL + 'ServerDiskFull_TheRunFailsWithTheServersReason_TheIndexDoesNotMove_TheNextRunCompletes'],
+                  integrity=[SL + 'ServerDiskFull_MidObject_NoHalfObjectLeft_EarlierPointsUnchanged_TheSameObjectIsAcceptedOnceSpaceIsBack', SL + 'ServerDiskFull_TheRunFailsWithTheServersReason_TheIndexDoesNotMove_TheNextRunCompletes']),
+    'SH-02': dict(happy=[SW + 'ARunThatKeepsSendingSignsOfLife_IsNeverClosedBySweeps', SW + 'ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain'],
+                  failure=[SW + 'ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain'],
+                  boundary=[SW + 'ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain'],
+                  recovery=[SW + 'ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain']),
+    'AU-07': dict(failure=['x:ApiInputComponentTests.JunkBodies_FailAsTheSendersMistake_Quickly_AndNeverPullInALocalFile', 'x:ApiInputComponentTests.BadNames_Objects_RunIds_AreRefused400_AndNothingIsWrittenAnywhere',
+                           'x:ApiInputIntegrationTests.ADeeplyNestedMessage_IsRefused_AndTheServerStaysUp'],
+                  boundary=['x:ApiInputComponentTests.JunkBodies_FailAsTheSendersMistake_Quickly_AndNeverPullInALocalFile'],
+                  security=['x:ApiInputComponentTests.JunkBodies_FailAsTheSendersMistake_Quickly_AndNeverPullInALocalFile', 'x:ApiInputComponentTests.BadNames_Objects_RunIds_AreRefused400_AndNothingIsWrittenAnywhere',
+                            'x:ApiInputIntegrationTests.ADeeplyNestedMessage_IsRefused_AndTheServerStaysUp']),
+}
+for _c in C:
+    for _d, _ids in COMPONENT_C.get(_c['id'], {}).items():
+        assert not isinstance(_c['dims'][_d], NA), (_c['id'], _d)
+        _c['dims'][_d] = list(_c['dims'][_d]) + [i for i in _ids if i not in _c['dims'][_d]]
+
 # Real Windows (tests/QA/windows/win-e2e.ps1): a journey counts only when it really ran on Windows and passed — its
 # windows-<phase>.json is the record (NOT TESTED there stays not run here). W19 runs in the VM after a real restart.
 WIN = {
@@ -297,7 +343,7 @@ def windows_results():
     base = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'reports', 'windows')
     for dp, dn, fn in os.walk(base):
         for f in fn:
-            if not (f.startswith('windows-') and f.endswith('.json')): continue
+            if not re.match(r'^windows-(main|before-reboot|after-reboot)\.json$', f): continue   # a phase summary, not windows-state.json
             try: d = json.load(open(os.path.join(dp, f), encoding='utf-8-sig'))
             except Exception: continue
             for j in d.get('journeys') or []:
@@ -359,7 +405,7 @@ def xunit_kinds():
     for f in sorted(os.listdir(tdir)):
         if not f.endswith('.cs'): continue
         src = open(os.path.join(tdir, f), encoding='utf-8').read()
-        for m in re.finditer(r'\[(Fact|Theory)[^\]]*\](?:\s*\[[^\]]*\])*\s*public\s+(?:async\s+\w+\s+|void\s+)(\w+)\s*\(', src):
+        for m in re.finditer(r'\[(Fact|Theory)[^\]]*\](?:\s*(?:\[[^\]]*\]|//[^\n]*))*\s*public\s+(?:async\s+\w+\s+|void\s+)(\w+)\s*\(', src):
             k = m.end(); depth = 0; start = src.index('{', k); e = start
             for e in range(start, len(src)):
                 if src[e] == '{': depth += 1
@@ -396,14 +442,14 @@ def evaluate(res):
             bad = any(o == 'Failed' for d in D for t, o in got[d])
             na = {d: dims[d][0] == 'n/a' for d in D}
             if L == 'component':
-                need = ['happy'] + [x for x in ('recovery', 'integrity') if not na[x]]
+                need = [x for x in ('happy', 'recovery', 'integrity') if not na[x]]   # a dimension marked n/a (e.g. happy of a failure capability) is not required
                 fb = na['failure'] and na['boundary'] or ok['failure'] or ok['boundary']
                 verified = c['id'] in SPEC and all(ok[x] for x in need) and fb
                 missing = ([] if c['id'] in SPEC else ['contract']) + [x for x in need if not ok[x]] + ([] if fb else ['failure/boundary'])
             elif L == 'integration':
                 fb = all(na[x] for x in ('failure', 'boundary', 'recovery')) or any(ok[x] for x in ('failure', 'boundary', 'recovery'))
-                verified = ok['happy'] and fb
-                missing = ([] if ok['happy'] else ['happy']) + ([] if fb else ['failure/recovery'])
+                verified = (ok['happy'] or na['happy']) and fb
+                missing = ([] if ok['happy'] or na['happy'] else ['happy']) + ([] if fb else ['failure/recovery'])
             else:
                 tests = [(t, o) for d in D for t, o in got[d]]
                 data = c['id'] in NO_DATA or any(o == 'Passed' and t.split('-')[0] in E2E_DATA_CHECK or o == 'Passed' and any(t.startswith(x) for x in E2E_DATA_CHECK) for t, o in tests)

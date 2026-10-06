@@ -127,8 +127,9 @@ namespace OnlineBackup.Server
                     throw new ApiException(409, "BUSY", "Another backup of this set is still running (it last answered " + Math.Max(0, (int)(utc - LeaseTime(d)).TotalMinutes) + " minutes ago).");
                 }
                 string id = RunId.From(utc);
+                var ended = new HashSet<string>(ReadLines(JobsLog).Where(l => l.StartsWith("E\t", StringComparison.Ordinal)).Select(l => l.Substring(2).Trim()));
                 using (var c = Open())
-                    while (Query(c, "SELECT 1 FROM jobs WHERE id=$0", id).Count > 0 || Directory.Exists(Path.Combine(Dir, id)) || Directory.Exists(Path.Combine(JobsDir, id)))
+                    while (Query(c, "SELECT 1 FROM jobs WHERE id=$0", id).Count > 0 || ended.Contains(id) || Directory.Exists(Path.Combine(Dir, id)) || Directory.Exists(Path.Combine(JobsDir, id)))
                     { utc = utc.AddSeconds(1); id = RunId.From(utc); }
                 Directory.CreateDirectory(Path.Combine(JobsDir, id, "new"));
                 File.WriteAllText(Path.Combine(JobsDir, id, "lease"), "");
@@ -136,6 +137,10 @@ namespace OnlineBackup.Server
                 return id;
             }
         }
+
+        /// <summary>A run closed without a commit (aborted, its lease expired, reported dead): its id is kept as used
+        /// ("E" in jobs.log), so a run begun in the same second never gets it again (found while fixing bug 42).</summary>
+        void Ended(string job) { try { Atomic.AppendLine(JobsLog, "E\t" + job); } catch (IOException) { } }
 
         static DateTime LeaseTime(string jobDir)
         {
@@ -150,9 +155,22 @@ namespace OnlineBackup.Server
         {
             if (!RunId.TryParse(job ?? "", out _)) return;
             var d = Path.Combine(JobsDir, job);
-            try { if (Directory.Exists(d)) File.SetLastWriteTimeUtc(TouchFile(d), SystemClock.UtcNow); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            // bug 47 (Agent F, F-5): a sign of life that came while the run was being closed wrote a NEW lease into the
+            // half-deleted folder — a ghost run that refused the next backup. Only an existing lease is touched.
+            var l = Path.Combine(d, "lease");
+            try { if (File.Exists(l)) File.SetLastWriteTimeUtc(l, SystemClock.UtcNow); } catch (IOException) { } catch (UnauthorizedAccessException) { }
         }
-        static string TouchFile(string d) { var l = Path.Combine(d, "lease"); if (!File.Exists(l)) File.WriteAllText(l, ""); return l; }
+
+        /// <summary>A run's folder leaves the open runs in one step (moved aside, then deleted): nothing arriving late — a
+        /// sign of life, an object — can bring it back half (bug 47).</summary>
+        void DropJobDir(string d)
+        {
+            var dead = Path.Combine(Dir, "closed-runs", Path.GetFileName(d) + "-" + Guid.NewGuid().ToString("N").Substring(0, 6));
+            try { Directory.CreateDirectory(Path.GetDirectoryName(dead)); Directory.Move(d, dead); d = dead; } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            try { Directory.Delete(d, true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
+            // what an earlier close could not delete (a file still open then) goes now
+            try { foreach (var old in Directory.GetDirectories(Path.Combine(Dir, "closed-runs"))) try { Directory.Delete(old, true); } catch (IOException) { } catch (UnauthorizedAccessException) { } } catch (IOException) { }
+        }
 
         /// <summary>Closes the open runs whose lease ran out (not those already committing: they are rolled forward). Returns their ids.</summary>
         public List<string> ExpireStale(DateTime utc)
@@ -165,7 +183,8 @@ namespace OnlineBackup.Server
                 {
                     if (File.Exists(Path.Combine(d, "journal"))) continue;
                     if (utc - LeaseTime(d) <= Lease) continue;
-                    Directory.Delete(d, true);
+                    Ended(Path.GetFileName(d));
+                    DropJobDir(d);
                     gone.Add(Path.GetFileName(d));
                 }
             }
@@ -180,7 +199,8 @@ namespace OnlineBackup.Server
             {
                 var d = Path.Combine(JobsDir, job);
                 if (!Directory.Exists(d) || File.Exists(Path.Combine(d, "journal"))) return false;
-                Directory.Delete(d, true);
+                Ended(job);
+                DropJobDir(d);
                 return true;
             }
         }
@@ -289,7 +309,8 @@ namespace OnlineBackup.Server
             {
                 var d = JobDir(job);
                 if (File.Exists(Path.Combine(d, "journal"))) return;   // already committing: will be rolled forward
-                Directory.Delete(d, true);
+                Ended(job);
+                DropJobDir(d);
             }
         }
 
@@ -606,13 +627,24 @@ namespace OnlineBackup.Server
 
         Msg VerifyRows(SqliteConnection c, List<object[]> rows)
         {
-            int ok = 0, bad = 0;
+            int ok = 0, bad = 0, unreadable = 0;
             foreach (var r in rows)
             {
                 string loc = (string)r[0], rel = (string)r[1], sha = (string)r[2];
                 var p = Abs(loc);
                 string actual = null;
-                try { using (var fs = File.OpenRead(p)) actual = Bytes.Sha256Hex(fs); } catch (IOException) { }
+                try { using (var fs = File.OpenRead(p)) actual = Bytes.Sha256Hex(fs); }
+                catch (FileNotFoundException) { } catch (DirectoryNotFoundException) { }   // gone: damaged
+                catch (IOException e)
+                {
+                    // bug 46 (Agent F, F-4): a read that failed for a moment (an antivirus, a copy of the store, too many
+                    // open files) made a sound object "damaged": quarantined and taken out of every restore point — an old
+                    // version cannot be sent again. Not read is not checked: counted, said, tried at the next check.
+                    unreadable++;
+                    SysLog.Write(null, "System", "warning: object not checked (could not be read now: " + e.Message + ") " + SetId + "/" + loc);
+                    continue;
+                }
+                catch (UnauthorizedAccessException e) { unreadable++; SysLog.Write(null, "System", "warning: object not checked (" + e.Message + ") " + SetId + "/" + loc); continue; }
                 if (actual == sha) { ok++; continue; }
                 bad++;
                 Quarantine(loc);
@@ -621,7 +653,7 @@ namespace OnlineBackup.Server
                 Exec(c, null, "INSERT OR REPLACE INTO resend(rel, reason) VALUES($0,$1)", rel, "damaged object " + loc);
                 SysLog.Write(null, "System", "error: damaged object quarantined " + SetId + "/" + loc);
             }
-            return new Msg().Set("checked", ok + bad).Set("ok", ok).Set("bad", bad);
+            return new Msg().Set("checked", ok + bad).Set("ok", ok).Set("bad", bad).Set("unreadable", unreadable);
         }
 
         void Quarantine(string loc)
@@ -660,7 +692,7 @@ namespace OnlineBackup.Server
                             if (!File.Exists(f.Substring(0, f.Length - 4))) { orphans++; Quarantine(loc.Substring(0, loc.Length - 4)); }
                             continue;
                         }
-                        if (f.Contains(".tmp")) { File.Delete(f); continue; }
+                        if (Atomic.IsTemp(f)) { File.Delete(f); continue; }   // bug 35: by the file's name, never the path
                         if (!File.Exists(f + ".chk")) { orphans++; Quarantine(loc); continue; }
                         ChkRecord rec;
                         try { rec = ChkRecord.Parse(File.ReadAllText(f + ".chk")); }

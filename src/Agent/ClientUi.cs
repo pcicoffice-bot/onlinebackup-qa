@@ -373,7 +373,7 @@ namespace OnlineBackup.Agent
                 }
                 if (s.Engine == "RESTIC")
                 {
-                    app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>());
+                    app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>(), overwrite);
                     return new[] { "OK", "Restored to " + target };
                 }
                 var r = app.RestoreFor(client, s.Id, pw);

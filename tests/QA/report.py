@@ -15,8 +15,8 @@ import capabilities as C
 # a wrong record or a delay; Low = cosmetic.
 SEVERITY = {
     'Critical': [2, 3, 4, 6, 14, 15, 17, 24, 28, 29],
-    'High': [1, 5, 9, 10, 18, 20, 22, 27],
-    'Medium': [11, 12, 13, 16, 19, 21, 23, 25, 26, 30],
+    'High': [1, 5, 9, 10, 18, 20, 22, 27, 32, 33],
+    'Medium': [11, 12, 13, 16, 19, 21, 23, 25, 26, 30, 31, 34],
     'Low': [7, 8],
 }
 

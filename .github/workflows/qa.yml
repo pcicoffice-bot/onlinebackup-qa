@@ -18,6 +18,7 @@ jobs:
     # in the private repository the same suite runs inside the quality gate (online-backup.yml, job "qa")
     if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
+    permissions: { contents: write }
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
@@ -35,6 +36,11 @@ jobs:
       - name: Every journey and failure / recovery scenario
         working-directory: tests/QA
         run: npx playwright test
+      - name: On a failure, keep the logs of the failed journeys in qa-evidence (runs/<run id>/journeys; no videos)
+        if: failure()
+        run: |
+          mkdir -p jlogs && cd tests/QA/artifacts/test-results 2>/dev/null && find . \( -name '*.log' -o -name 'error-context.md' -o -name '*.xml' -o -name 'test-failed-*.png' \) -size -5M | while read f; do mkdir -p "../../../../jlogs/$(dirname "$f")"; cp "$f" "../../../../jlogs/$f"; done; cd - >/dev/null
+          sh tests/QA/windows/keep-evidence.sh jlogs journeys ${{ github.run_id }} ${{ github.sha }} || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -78,6 +84,9 @@ jobs:
       - name: Every check is written safely (the comma binds tighter than -and in PowerShell; tests/QA/windows/lint.py)
         shell: pwsh
         run: python tests/QA/windows/lint.py (Get-ChildItem tests/QA/windows -Recurse -Filter *.ps1).FullName
+      - name: The robot's self-test (its own past defects must not come back)
+        shell: powershell
+        run: .\tests\QA\windows\selftest.ps1
       - name: Windows journeys (Windows PowerShell 5.1, as on any customer's Windows)
         shell: powershell
         run: |
@@ -126,6 +135,10 @@ jobs:
             sleep 30
           done
           cat vm/shared/status.log 2>/dev/null || echo "no status from Windows (it never reached the QA driver)"
+          # the job's colour is the truth (agent G, G-16): red when Windows did not finish, finished "aborted", or a journey failed
+          [ -f vm/shared/done.txt ] || { echo "FAIL: the VM run did not finish (no done.txt)"; exit 1; }
+          grep -qi aborted vm/shared/done.txt && { echo "FAIL: the VM run was aborted: $(cat vm/shared/done.txt)"; exit 1; }
+          if grep -l '"functional": *"FAIL"' vm/shared/out/*/windows-*.json 2>/dev/null | grep -q .; then echo "FAIL: a journey failed in the VM"; exit 1; fi
       - name: Keep the container's log
         if: always()
         run: docker logs win > vm/shared/container.log 2>&1 || true; docker stop win || true
@@ -134,28 +147,26 @@ jobs:
         with: { name: qa-windows-vm-evidence, path: vm/shared/, retention-days: 30 }
 
   windows-report:
-    # the contact sheet: every journey's screens in order, FUNCTIONAL / VISUAL / UX apart; kept in the branch
-    # "qa-evidence" so the screens can be opened without downloading anything
-    needs: [windows, windows-reboot]
+    # the contact sheet of the Windows job (every journey's screens in order, FUNCTIONAL / VISUAL / UX apart), kept in
+    # the branch qa-evidence (runs/<run id>) so the screens open without downloading anything
+    needs: windows
     if: ${{ always() && !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions: { contents: write }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        continue-on-error: true
         with: { name: qa-windows-evidence, path: win-out }
+      - run: sh tests/QA/windows/keep-evidence.sh win-out . ${{ github.run_id }} ${{ github.sha }}
+
+  windows-vm-report:
+    # the same for the VM (the real restarts), added to the same run's folder when the VM ends
+    needs: windows-reboot
+    if: ${{ always() && !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        continue-on-error: true
-        with: { name: qa-windows-vm-evidence, path: win-out/vm }
-      - run: mkdir -p win-out && python3 tests/QA/windows/contact-sheet.py win-out
-      - uses: actions/upload-artifact@v4
-        with: { name: qa-windows-contact-sheet, path: win-out/, retention-days: 30 }
-      - name: Keep the evidence in the branch qa-evidence (runs/<run id>)
-        run: |
-          git config user.name "qa-bot"; git config user.email "qa-bot@users.noreply.github.com"
-          git fetch origin qa-evidence || true
-          if git rev-parse --verify origin/qa-evidence >/dev/null 2>&1; then git checkout -B qa-evidence origin/qa-evidence; else git checkout --orphan qa-evidence; git rm -rfq .; fi
-          mkdir -p runs && rm -rf "runs/${{ github.run_id }}" && cp -r win-out "runs/${{ github.run_id }}"
-          ls -1t runs | tail -n +11 | while read d; do git rm -rfq "runs/$d"; done
-          git add runs && git commit -qm "Windows QA evidence, run ${{ github.run_id }} (${{ github.sha }})" && git push -q origin qa-evidence
+        with: { name: qa-windows-vm-evidence, path: vm-out }
+      - run: sh tests/QA/windows/keep-evidence.sh vm-out vm ${{ github.run_id }} ${{ github.sha }}

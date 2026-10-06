@@ -273,6 +273,10 @@ namespace OnlineBackup.Server
                 r.Pin = (string)SystemConfig.Load(r.SystemHome).Doc.Root.Attribute("CERT_PIN") ?? "";
                 say("STEP_RESTART");
                 Exec("sc.exe", "start " + ServerService.Name, say, false);
+                // like a new installation: "updated" only when the server answers again (UX-17 class: a server that did
+                // not come back after an update looked updated)
+                int port; if (!int.TryParse((string)ex.Attribute("PORT"), out port)) port = Uri.TryCreate((string)ex.Attribute("URL"), UriKind.Absolute, out var u) ? u.Port : 443;
+                Answer(port, r.Pin, say);
                 say("STEP_UPDATED");
                 return r;
             }
@@ -339,7 +343,7 @@ namespace OnlineBackup.Server
             r.AdminUrl = url + "/admin";
 
             // 5. the server answers?
-            if (TestRoot == null) Verify(a.Port, r.Pin, say);
+            Answer(a.Port, r.Pin, say);
             say("STEP_DONE");
             return r;
         }
@@ -395,6 +399,10 @@ namespace OnlineBackup.Server
                 }
             }
         }
+
+        /// <summary>Tests: in place of the real check that the server answers over HTTPS (port, pin, progress).</summary>
+        public static Action<int, string, Action<string>> Answers;
+        static void Answer(int port, string pin, Action<string> say) { if (Answers != null) Answers(port, pin, say); else if (TestRoot == null) Verify(port, pin, say); }
 
         static void Verify(int port, string pin, Action<string> say)
         {

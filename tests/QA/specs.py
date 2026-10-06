@@ -17,8 +17,11 @@ SPEC = {
            'a tree with excluded folders, filter patterns and a symbolic link',
            'excluded items absent from the restore, included ones identical; the link followed only with the option on'),
  'BK-05': ('A file or folder that cannot be read is an error, never a silent success',
-           'a source with an unreadable subfolder; a source that is gone; all sources gone',
-           'partly unreadable = success with error (red); all gone = failure; last good backup kept and still restorable'),
+           'a source with an unreadable subfolder; a source that is gone; all sources gone; a file locked by another program (exclusive lock) among readable files, then the lock released',
+           'partly unreadable = success with error (red); all gone = failure; last good backup kept and still restorable. '
+           'Component (the backup run against a recording stand-in server): a locked file → BS_STOP_SUCCESS_WITH_ERROR, an err line naming that file, '
+           'no deletion sent for it, every other file restores identical (SHA-256); after the lock is released the next run is BS_STOP_SUCCESS and sends it; '
+           'all sources gone → BS_STOP_BY_SYSTEM_ERROR, no deletion sent, the local index keeps every file'),
  'BK-06': ('Copy files that are open or locked by another program, consistent to one moment',
            'a file held open with an exclusive lock and written during the backup',
            'the file is in the backup with its content at snapshot time; the shadow copy is removed afterwards, also on failure'),
@@ -67,20 +70,36 @@ SPEC = {
  'ST-03': ('Delete old versions by the retention policy, never the current one', 'versions over 40 days; policy 30 days / N jobs / GFS',
            'only versions outside the policy deleted; every kept point restores identical; the current version never deleted'),
  'ST-04': ('Find damaged stored data, quarantine it, get it again', 'a stored object with flipped bytes', 'found, quarantined, resent from the source; the index can be rebuilt from the objects'),
- 'ST-05': ('Stop new backups at the quota and keep what exists', 'a user at 100 % of the quota', 'new backup refused with QUOTA; existing points restore; the warning at the set percentage'),
- 'ST-06': ('Say clearly that the server disk is full', 'a server disk filled during a backup', '507 DISK_FULL, a clear message on the computer, one alert to the administrators, space of the failed run given back'),
+ 'ST-05': ('Stop new backups at the quota and keep what exists', 'a user at 100 % of the quota; an object exactly the room left and one byte over; the server refusing an upload with QUOTA',
+           'new backup refused with QUOTA; existing points restore; the warning at the set percentage. Component: exactly the room is accepted, one byte over is '
+           'refused 507 QUOTA and leaves no file; the stored points are byte-identical afterwards; on the computer the run ends BS_STOP_QUOTA_EXCEEDED, nothing '
+           'is deleted, files not yet sent stay in the local index; the next run after room is given completes and restores identical'),
+ 'ST-06': ('Say clearly that the server disk is full', 'a server disk filled during a backup; the disk failing (no space) in the middle of an object',
+           '507 DISK_FULL, a clear message on the computer, one alert to the administrators, space of the failed run given back. Component: the half object '
+           'is removed, earlier points are byte-identical and the same object is accepted once space is back; on the computer the run is BS_STOP_BY_SYSTEM_ERROR '
+           'with the server\'s reason (disk full) in its log, the local index does not move, and the run after space is freed completes and restores identical'),
  'ST-07': ('Copy everything to a second server', 'a commit on the main server', 'the same objects, database and logs on the replica'),
  'ST-08': ('Open data written by earlier versions', 'a store written by version N-1', 'every point restores identical after the upgrade'),
  'ST-09': ('Undo deleting a set or a customer', 'a deleted set', 'restorable from the recycle bin until it expires'),
  'ST-10': ('Back up the server settings', 'the server configuration', 'a copy that restores the settings'),
  'AG-01': ('Start backups on time: once per due time, never twice, and catch up missed ones', 'a schedule of 3 times a day; the computer off at one of them; a restart of the service',
            'each due time runs once; a missed time runs once at start-up; nothing runs twice after a restart'),
- 'AG-02': ('"Back up now" and "Stop" from the admin site reach the computer', 'a press of Back up now; a press of Stop', 'the run starts within a minute; Stop ends it as stopped'),
+ 'AG-02': ('"Back up now" and "Stop" from the admin site reach the computer', 'a press of Back up now; a press of Stop; a request time newer / not newer than the last handled; a stop newer / older than the run\'s start; the server unreachable; a request that arrives when the backup cannot start',
+           'the run starts within a minute; Stop ends it as stopped. Component: each new request starts exactly one run, an old one none; a stop newer than the '
+           'run\'s start ends it BS_STOP_BY_USER with nothing deleted on the server and the next run completes and restores identical (SHA-256); an older stop '
+           'or an unreachable server never stops a run; a request whose backup could not start is not lost (it runs at the next chance)'),
  'AG-03': ('Settings changed on the server reach the computer', 'a set edited in the admin site', 'the computer uses the new settings in its next run'),
- 'AG-04': ('Keep the server informed while a run is alive', 'a long run; the agent killed', 'progress every minute; the dead run reported at the next start'),
+ 'AG-04': ('Keep the server informed while a run is alive', 'a long run; the agent killed; a run whose end never reached the server; a note of a run still alive in another process; a damaged note',
+           'progress every minute; the dead run reported at the next start. Component: while a run is open the note open-run.txt holds its run id; a confirmed end '
+           'removes it; a lost end leaves it and the local index does not move (the files are sent again); the next start reports that run exactly once '
+           '(POST interrupted with its id and start time) and removes the note; a note of a live process is not reported; a server that cannot be reached '
+           'keeps the note for later; a sign of life reaches the server at least every 60 s even while one upload is silent'),
  'AG-05': ('Survive network trouble', 'the line cut during upload; the server unreachable; a request whose answer is lost',
            'the run resumes or ends as failed with a clear reason; a repeated request is not counted twice; the next run completes and restores identical'),
- 'AG-06': ('Recover from lost or damaged local state', 'the local index deleted / damaged', 'rebuilt from the server; the next backup is correct and restores identical'),
+ 'AG-06': ('Recover from lost or damaged local state', 'the local index deleted / damaged (state.txt removed; state.txt with a damaged line; a damaged chunk list of a large file)',
+           'rebuilt from the server; the next backup is correct and restores identical. Component: with the index gone, unchanged files are not sent again and a '
+           'changed one is; a damaged index or chunk list never makes every later backup fail — the run rebuilds or resends, ends BS_STOP_SUCCESS and every '
+           'file restores identical (SHA-256)'),
  'AG-07': ('Talk TLS 1.2 on old Windows and pin the server certificate', 'a server certificate; a different certificate', 'the pinned one accepted; another refused'),
  'AG-08': ('Run on .NET 4.0 (old Windows)', 'the net40 build under mono', 'the same backup and restore results as net8'),
  'AU-01': ('Only administrators get in, with two steps', 'right / wrong password, right / wrong code, 10 failures, sign-out',
@@ -90,7 +109,10 @@ SPEC = {
  'AU-04': ('Block addresses that guess or scan', 'many failed sign-ins from one address', 'the address blocked; others not affected; the administrator alerted'),
  'AU-05': ('Encrypt data so that only the key holder can read it', 'data with key A; reading with key B; a changed byte', 'B cannot read; the changed byte detected'),
  'AU-06': ('Each reseller sees only its own customers', 'two vendors with customers', 'each sees and changes only its own'),
- 'AU-07': ('The API refuses junk and attacks clearly', 'malformed, oversized, path-traversal and unauthenticated requests', 'clear 4xx refusals; nothing written outside its place'),
+ 'AU-07': ('The API refuses junk and attacks clearly', 'malformed, oversized, path-traversal and unauthenticated requests; (alone) message bodies of random bytes, cut XML, 5 000 nested elements, an external entity naming a local file, an entity expansion bomb; file names that climb out (.., absolute, backslash, NUL); an object of random bytes; a run id that is a path',
+           'clear 4xx refusals; nothing written outside its place. Component: every junk body fails as one of the kinds the API answers with 400 '
+           '(XmlException / FormatException / ArgumentException / InvalidOperationException), within 2 s, and the local file\'s content never appears; '
+           'every climbing name and junk object / run id is an ApiException 400 and leaves no file inside or outside the store'),
  'IN-01': ('Install the server', 'a clean Windows Server', 'service running, certificate bound, port open, admin site answers'),
  'IN-02': ('Install / uninstall / reinstall the client', 'Setup.exe on a clean computer, then uninstall, then reinstall', 'service running, registration kept on reinstall, nothing left after uninstall'),
  'IN-03': ('Update the client all-or-nothing', 'an update while the service runs; a file that cannot be replaced', 'all files new and the service back; or all old (rolled back) and the result says why'),
@@ -98,7 +120,9 @@ SPEC = {
  'IN-05': ('Build client packages with branding and the server inside', 'a branded package request', 'Windows / Linux / Mac packages that connect to this server'),
  'IN-06': ('Survive a reboot', 'a reboot during idle and during a backup', 'service back; the interrupted run recorded; the next run completes'),
  'SH-01': ('Show the truth: last backup vs last result, every run in the history', 'a success then a failure', 'last backup = the success; last result = the failure (red); both runs in the history'),
- 'SH-02': ('Show only runs that are really running', 'a run that ended; a run whose computer died', 'neither stays in "Running now"'),
+ 'SH-02': ('Show only runs that are really running', 'a run that ended; a run whose computer died; (server alone) a run left open on disk with the clock before / after its lease, the sweep run twice',
+           'neither stays in "Running now". Component: inside its lease an open run is left alone; after it the sweep closes it once — one job log with '
+           'BS_STOP_BY_SYSTEM_ERROR and "interrupted", one history row, the set\'s last result failed and its last backup not moved — and the set can begin again'),
  'SH-03': ('Send the right mail, and no false one', 'a success, a failure, a missed backup, quota, disk full', 'one mail of the right kind each; no failure mail for a success; no duplicate'),
  'SH-04': ('Open and close service calls from backup results', 'a failure, then a success', 'a call opened, then closed'),
  'SH-05': ('Suspect ransomware and freeze retention', 'a run that changes most files with one new extension', 'retention frozen, administrators alerted'),

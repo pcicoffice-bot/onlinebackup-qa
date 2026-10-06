@@ -70,5 +70,18 @@ namespace OnlineBackup.Tests
             Atomic.WriteText(path, ""); Assert.Equal("", File.ReadAllText(path));              // boundary: empty
             Directory.Delete(Path.GetDirectoryName(Path.GetDirectoryName(dir)), true);
         }
+
+        [Fact]
+        public void ATemporaryFile_IsKnownByItsName_NeverByItsPath()   // bug 35
+        {
+            Assert.True(Atomic.IsTemp(Path.Combine("users", "plain", "x.chk.tmp0123abcd")));
+            Assert.False(Atomic.IsTemp(Path.Combine("users", "acme.tmp", "objects", "R1")));      // a customer called acme.tmp
+            Assert.False(Atomic.IsTemp(Path.Combine("D:", "Backup.tmp", "users", "u", "x.chk")));  // a storage root with .tmp
+            Assert.False(Atomic.IsTemp("report.tmpl")); Assert.False(Atomic.IsTemp("a.tmp")); Assert.False(Atomic.IsTemp("a.tmp0123ABCD"));
+            // and what Atomic itself leaves behind is recognised: the name it would use
+            var dir = Path.Combine(Path.GetTempPath(), "obtmp-" + Guid.NewGuid().ToString("N").Substring(0, 8)); Directory.CreateDirectory(dir);
+            try { Atomic.WriteText(Path.Combine(dir, "a.txt"), "x"); Assert.Empty(Directory.GetFiles(dir).Where(Atomic.IsTemp)); }
+            finally { Directory.Delete(dir, true); }
+        }
     }
 }

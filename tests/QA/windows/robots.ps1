@@ -7,6 +7,7 @@ $script:SetupProc = 'Setup'
 $script:ClientProc = 'OnlineBackup.Client'
 
 # ------------------------------------------------------------------ Setup.exe
+function Close-Setup { Get-Process -Name $script:SetupProc -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep 1 }
 function SetupWindow([int]$seconds = 90) { WaitWindow $script:SetupProc { $_.Current.ClassName -ne '#32770' } $seconds }
 function SetupPage($w) { Texts $w }
 
@@ -14,6 +15,7 @@ function SetupPage($w) { Texts $w }
 # -Launch keeps "Open ... now" ticked (what a customer leaves as it is); -Lang he picks Hebrew in the wizard's list.
 function Install-ViaUi([string]$setup, [switch]$Launch) {
   $lang = 'en'
+  Close-Setup
   $p = Start-Process -FilePath $setup -PassThru
   $w = SetupWindow 120
   if (-not (Step 'Setup.exe opens its window' 'the setup window within 120 s' { @([bool]$w, $(if ($w) { $w.Current.Name } else { 'no window' })) } -NoShot)) { Look $null 'Launch' | Out-Null; return $false }
@@ -24,13 +26,13 @@ function Install-ViaUi([string]$setup, [switch]$Launch) {
   Start-Sleep -Seconds 1
   $lic = StepLook 'Installer 02 - License agreement' 'the license text and an accept box' $w { $t = Texts $w; @((($t -like '*License agreement*') -and [bool](Named $w '*accept the terms*')), $t) } $lang $script:SetupProc
   $install = Button $w 'Install'
-  Step 'Install is disabled before the license is accepted' 'not enabled' { @((-not $install.Current.IsEnabled), 'enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
+  Step 'Install is disabled before the license is accepted' 'not enabled' { @((-not $install.Current.IsEnabled), ('enabled=' + $install.Current.IsEnabled)) } -NoShot | Out-Null
   UxCheck 'Installer: a license agreement must be accepted before installing' 'Install disabled until accepted' (-not $install.Current.IsEnabled) ('enabled=' + $install.Current.IsEnabled) 'High'
   if ($true) {
     Step 'Back returns to Welcome, Next comes back' 'Welcome, then the license again' { Click (Button $w 'Back'); $t = Texts $w; $ok = $t -like '*Welcome*'; Click (Button $w 'Next'); @(($ok -and ((Texts $w) -like '*License*')), $t) } -NoShot | Out-Null
   }
   $box = Named $w '*accept the terms*'
-  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true $false; Start-Sleep -Milliseconds 400; @(($ok -and $install.Current.IsEnabled), 'ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
+  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true $false; Start-Sleep -Milliseconds 400; @(($ok -and $install.Current.IsEnabled), ('ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled)) } -NoShot | Out-Null
   Look $w 'Installer 03 - License accepted' $lang $script:SetupProc | Out-Null
   Note 'Installer pages that exist' 'Welcome -> License agreement -> Installation (progress) -> Finish. There is no configuration page (folder, options) and no "Ready to install" page in the current installer.'
   UxCheck 'Installer: a "Ready to install" summary before installing' 'a page listing what will be installed and where' $false 'the license page''s button installs at once (no configuration or ready page)' 'Low' 'Proposal only - the owner decides (the UX spec is not approved yet)'
@@ -41,7 +43,8 @@ function Install-ViaUi([string]$setup, [switch]$Launch) {
   $until = (Get-Date).AddMinutes(5); $fin = $null
   while ((Get-Date) -lt $until) { $f = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -eq 'Finish' } | Select-Object -First 1; if ($f) { $fin = $f; break }; Start-Sleep -Milliseconds 700 }
   $text = Texts $w
-  $ok = StepLook 'Installer 05 - Finish' 'the Finish page says it is installed' $w { @(([bool]$fin -and ($text -notlike '*did not finish*')), $text) } $lang $script:SetupProc
+  # the page must SAY it is installed ("<product> is installed"), not only lack the failure sentence
+  $ok = StepLook 'Installer 05 - Finish' 'the Finish page says it is installed' $w { @(([bool]$fin -and ($text -like '*is installed*') -and ($text -notlike '*did not finish*')), $text) } $lang $script:SetupProc
   UxCheck 'Installer: the last page says the result and what to do next' 'installed + how to sign in' (($text -like '*installed*') -and ($text -like '*sign in*')) $text
   $open = Named $w 'Open * now'
   if ($open) { [void](SetCheck $open ([bool]$Launch) $true) }   # ticked when the page opens
@@ -65,12 +68,13 @@ function Choose-Language($w, [string]$lang) {
 
 # Repair / Update / Remove of an installed program, through the same wizard
 function Maintain-ViaUi([string]$setup, [ValidateSet('repair', 'remove', 'update')][string]$action, [switch]$RemoveSettings) {
+  Close-Setup
   Start-Process -FilePath $setup | Out-Null
   $w = SetupWindow 120
   if (-not (StepLook "Maintenance - Setup sees the installation ($action)" '"already installed" with the choices' $w { $t = Texts $w; @(($t -like '*already installed*'), $t) } 'en' $script:SetupProc)) { return $false }
   $radios = @(Find $w $CT::RadioButton)
   $pick = $(switch ($action) { 'remove' { $radios | Where-Object { $_.Current.Name -like 'Remove*' } } 'update' { $radios | Where-Object { $_.Current.Name -like 'Update*' } } default { $radios | Where-Object { $_.Current.Name -like 'Repair*' } } }) | Select-Object -First 1
-  if (-not (Step "Choose $action" "a '$action' choice" { @([bool]$pick, ($radios | ForEach-Object { $_.Current.Name }) -join ' / ') } -NoShot)) { return $false }
+  if (-not (Step "Choose $action" "a '$action' choice" { @([bool]$pick, (($radios | ForEach-Object { $_.Current.Name }) -join ' / ')) } -NoShot)) { return $false }
   Click $pick; Start-Sleep -Milliseconds 700
   if ($action -eq 'remove' -and $RemoveSettings) { $c = Named $w '*remove this computer*settings*'; if ($c) { [void](SetCheck $c $true $false) } }
   Look $w "Maintenance - $action chosen" 'en' $script:SetupProc | Out-Null
@@ -95,14 +99,22 @@ function Maintain-ViaUi([string]$setup, [ValidateSet('repair', 'remove', 'update
 }
 
 # ------------------------------------------------------------------ the customer's program window
-function ClientWindow([int]$seconds = 60) { WaitWindow $script:ClientProc { $_.Current.ClassName -ne '#32770' -and $_.Current.Name } $seconds }
+function ClientWindow([int]$seconds = 60) { WaitWindow $script:ClientProc { $_.Current.ClassName -ne '#32770' -and $_.Current.BoundingRectangle.Width -gt 300 } $seconds }
+# what Windows says about the program's processes and windows (when the robot cannot find its window)
+function ClientProcesses { (@(Get-Process -Name $script:ClientProc -ErrorAction SilentlyContinue | ForEach-Object { "pid $($_.Id) window '$($_.MainWindowTitle)' handle $($_.MainWindowHandle) responding $($_.Responding)" }) -join '; ') }
 function Open-Client([string]$installDir) {
   $w = ClientWindow 2
-  if ($w) { Front $w; return $w }
+  if ($w) {
+    # a message that came after Answer-Dialogs stopped waiting (a result shown minutes later) is modal: every click of
+    # the next journey on the window would be ignored. It is read, kept and answered here, never left open.
+    $late = @(Dialogs $script:ClientProc $w)
+    if ($late.Count -gt 0) { $m = Answer-Dialogs $w $null 'A message left open' 5; if ($script:Journey) { Note 'A message that was still open' ($m -join ' || ') } }
+    Front $w; return $w
+  }
   # a person opens it from the Start menu: the shortcut the installation made
   $lnk = @(Shortcuts '*OnlineBackup.Client.exe' | Where-Object { $_.args -notlike '*--tray*' }) | Select-Object -First 1
   if ($lnk) { Start-Process -FilePath $lnk.file | Out-Null } else { Start-Process -FilePath (Join-Path $installDir 'OnlineBackup.Client.exe') | Out-Null }
-  $w = ClientWindow 60; if ($w) { Front $w }
+  $w = ClientWindow 60; if ($w) { Front $w } else { Note 'The program window' ("not found; processes: " + (ClientProcesses)) }
   return $w
 }
 function Close-Client { foreach ($p in @(Get-Process -Name $script:ClientProc -ErrorAction SilentlyContinue)) { $p.CloseMainWindow() | Out-Null; Start-Sleep -Seconds 1; if (-not $p.HasExited) { $p.Kill() } } }
@@ -220,7 +232,7 @@ function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
   Note 'Messages when adding the backup' ($msgs -join ' || ')
   Start-Sleep -Seconds 2
   $t = Texts $w
-  return (StepLook 'Client 08 - The backup is listed on the status page' "a card '$name' with Back up now" $w { @((($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*')), $t + ' || ' + ($msgs -join ' || ')) } 'en' $script:ClientProc)
+  return (StepLook 'Client 08 - The backup is listed on the status page' "a card '$name' with Back up now" $w { @((($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*')), ($t + ' || ' + ($msgs -join ' || '))) } 'en' $script:ClientProc)
 }
 function BackupNow-ViaUi($w, [string]$screen) {
   Nav $w 'Backup status'

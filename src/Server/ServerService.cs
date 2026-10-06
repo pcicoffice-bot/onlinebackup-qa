@@ -19,17 +19,24 @@ namespace OnlineBackup.Server
         protected override void OnStop() { if (api != null) api.Dispose(); }
         protected override void OnShutdown() { OnStop(); }
 
-        public static string Install(string exe, string systemHome, string prefix)
+        /// <summary>Tests: answers in place of sc.exe.</summary>
+        public static Func<string, string> ScHook;
+
+        /// <summary>Creates and starts the server's service; returns only when Windows says it RUNS (UX-17 class), else throws.</summary>
+        public static string Install(string exe, string systemHome, string prefix, int waitSeconds = 90)
         {
             var bin = "\"" + exe + "\" run --system-home \"" + systemHome + "\" --prefix " + prefix;
-            return Sc("create " + Name + " binPath= \"" + bin.Replace("\"", "\\\"") + "\" start= auto DisplayName= \"ITSguard Server Online\"")
+            var o = Sc("create " + Name + " binPath= \"" + bin.Replace("\"", "\\\"") + "\" start= auto DisplayName= \"ITSguard Server Online\"")
                 + Sc("failure " + Name + " reset= 86400 actions= restart/60000/restart/60000/restart/300000") + Sc("start " + Name);
+            ServiceState.WaitRunning(Sc, Name, waitSeconds, ScHook != null, o);
+            return o;
         }
 
         public static string Uninstall() { return Sc("stop " + Name) + Sc("delete " + Name); }
 
         static string Sc(string args)
         {
+            if (ScHook != null) return ScHook(args) ?? "";
             var psi = new ProcessStartInfo("sc.exe", args) { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true };
             var r = ProcessRunner.Run(psi, Limits.Install);   // static review "raw-process": no limit, stdout read before stderr (pipe deadlock)
             return r.Out + r.Err + (r.TimedOut ? psi.FileName + " did not finish in " + ProcessRunner.Describe(Limits.Install) + " and was stopped\n" : "");

@@ -108,6 +108,15 @@ namespace OnlineBackup.Agent
 
         public BackupRun Backup(string setId, string mode = "FULL")
         {
+            BackupRun run;
+            try { run = BackupOnce(setId, mode); }
+            catch (Exception) { UndoRunRequest(setId); throw; }   // it did not run: a pending "back up now" stays pending (bug 45)
+            KeepRunRequest(setId);
+            return run;
+        }
+
+        BackupRun BackupOnce(string setId, string mode)
+        {
             var s = Sets().FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
             // one run per set at a time (the schedule and "back up now" share the service process)
@@ -242,9 +251,24 @@ namespace OnlineBackup.Agent
             var f = Path.Combine(Home.SetDir(s.Id), "run-request.txt");
             long done; long.TryParse(File.Exists(f) ? File.ReadAllText(f).Trim() : "0", out done);
             if (s.RunRequest <= done) return false;
+            // bug 45 (Agent C, F4): the press was marked done before its backup began — a backup that could not start
+            // (the server busy for a moment, the line down) lost the press. The previous mark is kept; Backup puts it
+            // back when the run does not start, so the press is served at the next round
+            File.WriteAllText(f + ".prev", done.ToString(System.Globalization.CultureInfo.InvariantCulture));
             File.WriteAllText(f, s.RunRequest.ToString(System.Globalization.CultureInfo.InvariantCulture));
             return true;
         }
+
+        void UndoRunRequest(string setId)
+        {
+            try
+            {
+                var f = Path.Combine(Home.SetDir(setId), "run-request.txt");
+                if (File.Exists(f + ".prev")) { File.WriteAllText(f, File.ReadAllText(f + ".prev")); File.Delete(f + ".prev"); }
+            }
+            catch (Exception) { }
+        }
+        void KeepRunRequest(string setId) { try { var f = Path.Combine(Home.SetDir(setId), "run-request.txt.prev"); if (File.Exists(f)) File.Delete(f); } catch (Exception) { } }
 
         /// <summary>SQL transaction-log backups every LOG_INTERVAL_MINUTES between the full backups.</summary>
         public bool LogDue(BackupSetInfo s, DateTime utc)
@@ -468,6 +492,26 @@ namespace OnlineBackup.Agent
             return true;
         }
 
+        /// <summary>A scheduled run that could not even start (no key on this computer, …) reaches the server as a failed
+        /// run — the history, the mail and the service call say it, not only a line on this computer. Once a day per set.</summary>
+        void ReportCannotRun(BackupSetInfo s, string why)
+        {
+            try
+            {
+                var mark = Path.Combine(Home.SetDir(s.Id), "last-attempt.txt");
+                DateTime last;
+                if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Split('\t')[0], out last) && SystemClock.UtcNow - last < TimeSpan.FromHours(20)) return;
+                Directory.CreateDirectory(Home.SetDir(s.Id));
+                File.WriteAllText(mark, RunId.From(SystemClock.UtcNow) + "\tBS_STOP_BY_SYSTEM_ERROR");
+                var c = DeviceClient(); var key = Guid.NewGuid().ToString("N");
+                var job = c.Call("POST", "/api/sets/" + s.Id + "/begin?key=" + key)["job"];
+                var m = new Msg().Set("result", "BS_STOP_BY_SYSTEM_ERROR");
+                m.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "err", "", 0, 0, 0, "The backup could not start on " + Home.Computer + ": " + why)));
+                c.Call("POST", "/api/sets/" + s.Id + "/jobs/" + job + "/abort", m);
+            }
+            catch (Exception) { }
+        }
+
         public void ServiceLoop(CancellationToken stop, Action<string> say)
         {
             while (!stop.IsCancellationRequested)
@@ -484,9 +528,24 @@ namespace OnlineBackup.Agent
                     try { SendFolders(prof, SystemClock.UtcNow); } catch (Exception e) { say("folders: " + e.Message); }
                     foreach (var s in prof.Sets.Where(x => string.IsNullOrEmpty(x.Computer) || x.Computer.Equals(Home.Computer, StringComparison.OrdinalIgnoreCase)))
                     {
-                        if (RunRequested(s) || Due(s, SystemClock.Now)) { var r = Backup(s.Id); say(s.Name + ": " + r.Result); }
-                        else if (LogDue(s, SystemClock.UtcNow)) { var r = Backup(s.Id, "LOG"); say(s.Name + " (log): " + r.Result); }
-                        if (RestoreTestDue(s, SystemClock.UtcNow)) { var t = RestoreTest(s.Id); say(s.Name + " restore test: " + t["ok"] + "/" + t["checked"]); }
+                        // bug 38 (Agent B): one set that could not run (its key missing, its local index damaged) stopped the
+                        // scheduled backups of every set after it, every minute, without a word to the server. Each set
+                        // on its own; only the network (the server away) stops them all.
+                        bool due = false;
+                        try
+                        {
+                            due = RunRequested(s) || Due(s, SystemClock.Now);
+                            if (due) { var r = Backup(s.Id); say(s.Name + ": " + r.Result); }
+                            else if (LogDue(s, SystemClock.UtcNow)) { var r = Backup(s.Id, "LOG"); say(s.Name + " (log): " + r.Result); }
+                            if (RestoreTestDue(s, SystemClock.UtcNow)) { var t = RestoreTest(s.Id); say(s.Name + " restore test: " + t["ok"] + "/" + t["checked"]); }
+                        }
+                        catch (AgentException e) when (e.Code == "NETWORK") { throw; }
+                        catch (AgentException e) when (e.Code == "BUSY") { say(s.Name + ": " + e.Message); }
+                        catch (Exception e)
+                        {
+                            say(s.Name + ": cannot run: " + e.Message);
+                            if (due) ReportCannotRun(s, e.Message);
+                        }
                     }
                 }
                 catch (AgentException e) { say("waiting: " + e.Message); }

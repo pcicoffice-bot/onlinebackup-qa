@@ -33,14 +33,23 @@ namespace OnlineBackup.Agent
 
     public static class ServiceSetup
     {
-        public static string Install(string exe, string home, string displayName = "ITSguard Server Online Agent")
+        /// <summary>Tests: answers in place of sc.exe (the arguments in, its output back).</summary>
+        public static Func<string, string> ScHook;
+
+        /// <summary>
+        /// Creates and starts the service, then waits until Windows says it RUNS (UX-17, the UX review: the setup said
+        /// "is installed" in green whatever happened — a service that stopped again at once, or was never created, left
+        /// the computer unprotected behind a success page). Any other end is an error naming the state.
+        /// </summary>
+        public static string Install(string exe, string home, string displayName = "ITSguard Server Online Agent", int waitSeconds = 60)
         {
             displayName = (displayName ?? "ITSguard Server Online Agent").Replace("\"", "");
             var bin = "\"" + exe + "\" service --home \"" + home + "\"";
             var o = Sc("create OnlineBackupAgent binPath= \"" + bin.Replace("\"", "\\\"") + "\" start= auto obj= LocalSystem DisplayName= \"" + displayName + "\"");
             o += Sc("failure OnlineBackupAgent reset= 86400 actions= restart/60000/restart/60000/restart/300000");
             o += Sc("start OnlineBackupAgent");
-            return o;
+            OnlineBackup.Core.ServiceState.WaitRunning(Sc, "OnlineBackupAgent", waitSeconds, ScHook != null, o);
+            return o + "\nService OnlineBackupAgent: RUNNING";
         }
 
         /// <summary>SETUP-C70: before the files are replaced (repair, a newer version): the service stopped, waited for (a backup ends cleanly).</summary>
@@ -60,6 +69,7 @@ namespace OnlineBackup.Agent
 
         static string Sc(string args)
         {
+            if (ScHook != null) return ScHook(args) ?? "";
             var r = OnlineBackup.Core.ProcessRunner.Run(new ProcessStartInfo("sc.exe", args), OnlineBackup.Core.Limits.Short);
             return r.Out + r.Err + (r.TimedOut ? " (sc.exe did not answer)" : "");
         }

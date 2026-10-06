@@ -108,7 +108,7 @@ namespace OnlineBackup.Agent
                             {
                                 var rl = new List<string>();
                                 if (one("target") == null) throw new AgentException(0, "TARGET", "Choose a destination folder for the restore (--target).");
-                                app.Restic(rset, one("key") ?? one("password")).Restore(one("point"), one("target"), one("filter"), rl);
+                                app.Restic(rset, one("key") ?? one("password")).Restore(one("point"), one("target"), one("filter"), rl, o.ContainsKey("overwrite"));
                                 Console.WriteLine("restored (restic) to " + one("target"));
                                 return 0;
                             }
@@ -248,7 +248,7 @@ namespace OnlineBackup.Agent
                                 var rr = app.Restic(hs, one("key") ?? one("password"));
                                 var paths = rr.Ls(one("point")).Select(f => f["path"]).Where(pth => pth.Replace('\\', '/').Contains("/" + vm + "/")).ToList();
                                 if (paths.Count == 0) throw new AgentException(404, "NO_VM", "the VM is not in this point");
-                                rr.RestoreMany(one("point"), target, paths, new List<string>());
+                                rr.RestoreMany(one("point"), target, paths, new List<string>(), true);   // as the native engine here
                             }
                             else app.RestoreFor(session, hs.Id, one("key") ?? one("password")).Run(one("point"), target, p => p.Contains("\\" + vm + "\\"), true);
                             var folder = Directory.GetDirectories(target, vm, SearchOption.AllDirectories).First();
@@ -270,7 +270,7 @@ namespace OnlineBackup.Agent
                                 var rr = app.Restic(xs, one("key") ?? one("password"));
                                 var paths = rr.Ls(one("point")).Select(f => f["path"]).Where(pth => pth.Replace('\\', '/').Contains("/" + what + "/")).ToList();
                                 if (paths.Count == 0) throw new AgentException(404, "NOT_IN_POINT", what + " is not in this point");
-                                rr.RestoreMany(one("point"), target, paths, new List<string>());
+                                rr.RestoreMany(one("point"), target, paths, new List<string>(), true);   // as the native engine here
                             }
                             else app.RestoreFor(session, xs.Id, one("key") ?? one("password")).Run(one("point"), target, p => p.Contains("\\" + what + "\\"), true);
                             var folder = Directory.GetDirectories(target, what, SearchOption.AllDirectories).First();

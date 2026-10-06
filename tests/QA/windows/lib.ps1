@@ -18,6 +18,7 @@ Add-Type -Namespace ObQa -Name Win -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
 [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, string l);
 [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
+[DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint msg, IntPtr w, string l, uint flags, uint ms, out IntPtr result);
 '@
 [void][ObQa.Win]::SetProcessDPIAware()
 $script:AE = [System.Windows.Automation.AutomationElement]
@@ -45,9 +46,18 @@ function Shot([string]$name) {
   } catch { return "(no screenshot: $($_.Exception.Message))" }
 }
 # One checked step: the check returns @(ok, what was seen). Exceptions are a FAIL with the message, never a PASS.
+# The result must be exactly two items with a real [bool] first: [bool] of anything else is True far too often - a
+# string ("False; ..." when the text part was a -join without its own parentheses; its first character is indexed), stray output of a command in
+# the check (a DirectoryInfo, an index), a string 'False'. Any other shape is a FAIL that names the shape.
+function CheckResult($r) {
+  $n = $(if ($null -eq $r) { 0 } else { @($r).Count })
+  if ($r -is [array] -and $n -eq 2 -and $r[0] -is [bool]) { return @($r[0], [string]$r[1]) }
+  $first = $(if ($n -gt 0 -and $null -ne @($r)[0]) { @($r)[0].GetType().Name } else { 'null' })
+  return @($false, ('ROBOT ERROR: the check returned {0} item(s), the first a {1}, not @(bool, text): {2}' -f $n, $first, ((@($r) | ForEach-Object { [string]$_ }) -join ' | ')))
+}
 function Step([string]$what, [string]$expected, [scriptblock]$check, [switch]$NoShot) {
   $t = Get-Date; $ok = $false; $actual = ''
-  try { $r = & $check; $ok = [bool]$r[0]; $actual = [string]$r[1] } catch { $actual = 'ERROR: ' + $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber }
+  try { $r = & $check; $c = CheckResult $r; $ok = $c[0]; $actual = $c[1] } catch { $actual = 'ERROR: ' + $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber }
   $shot = ''; if (-not $NoShot) { $shot = Shot $what }
   $row = [ordered]@{ step = $what; expected = $expected; actual = $actual; result = $(if ($ok) { 'PASS' } else { 'FAIL' }); seconds = [int]((Get-Date) - $t).TotalSeconds; screenshot = $shot; at = (Get-Date).ToString('HH:mm:ss') }
   [void]$script:Journey.steps.Add($row)
@@ -68,11 +78,13 @@ function Release-Holders { foreach ($p in @($script:Holders)) { Stop-Process -Id
 function Close-Journey([string]$notTested = '') {
   Release-Holders
   $j = $script:Journey
-  if ($notTested) { $j.result = 'NOT TESTED'; $j.reason = $notTested }
+  # a FAIL is never hidden by a later "NOT TESTED" from the body; notes (INFO) alone are not a test that ran
+  $bad = @($j.steps | Where-Object { $_.result -eq 'FAIL' })
+  $checked = @($j.steps | Where-Object { $_.result -eq 'PASS' -or $_.result -eq 'FAIL' })
+  if ($notTested -and $bad.Count -eq 0) { $j.result = 'NOT TESTED'; $j.reason = $notTested }
   else {
-    $bad = @($j.steps | Where-Object { $_.result -eq 'FAIL' })
-    if ($j.steps.Count -eq 0) { $j.result = 'NOT TESTED'; $j.reason = 'no step ran' }
-    elseif ($bad.Count -gt 0) { $j.result = 'FAIL'; $j.reason = ($bad | ForEach-Object { $_.step + ': ' + $_.actual }) -join ' || ' }
+    if ($checked.Count -eq 0) { $j.result = 'NOT TESTED'; $j.reason = 'no checked step ran (notes only)' }
+    elseif ($bad.Count -gt 0) { $j.result = 'FAIL'; $j.reason = (($bad | ForEach-Object { $_.step + ': ' + $_.actual }) -join ' || ') + $(if ($notTested) { ' || (then: NOT TESTED: ' + $notTested + ')' } else { '' }) }
     else { $j.result = 'PASS' }
   }
   $j.ended = (Get-Date).ToString('o')
@@ -182,7 +194,7 @@ function F([string]$xml, [string]$n) { $x = [xml]$xml; $e = $x.m.f | Where-Objec
 function Items([string]$xml, [string]$list) {
   $x = [xml]$xml; $out = @()
   foreach ($l in @($x.m.l | Where-Object { $_.n -eq $list })) { foreach ($i in @($l.i)) { if ($i) { $h = @{}; foreach ($f in @($i.f)) { if ($f) { $h[$f.n] = $f.'#text' } }; $out += $h } } }
-  return ,$out
+  return $out   # the items one by one (callers wrap in @())
 }
 function Totp([string]$s) {
   $A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ($s.ToCharArray() | ForEach-Object { [Convert]::ToString($A.IndexOf($_), 2).PadLeft(5, '0') }) -join ''
@@ -191,14 +203,32 @@ function Totp([string]$s) {
   $h = (New-Object Security.Cryptography.HMACSHA1(, $key)).ComputeHash($c); $o = $h[19] -band 15
   return (((($h[$o] -band 0x7f) -shl 24) -bor ($h[$o + 1] -shl 16) -bor ($h[$o + 2] -shl 8) -bor $h[$o + 3]) % 1000000).ToString('000000')
 }
-# runs of one customer from the server's history (kind Backup / Restore), newest last
+# runs of one customer from the server's history (kind Backup / Restore), oldest first. ALWAYS @(Runs ...): one run
+# comes out of the function as a single hashtable, and (Runs ...).Count is then its number of FIELDS (15), not 1 -
+# the first backup's WaitNewRun saw "15 > 0" and returned $r[-1] = the hashtable's key -1 = nothing ("no run")
 function Runs([string]$login, [string]$kind) { @(Items (Api 'GET' 'tasks?hours=48') 'tasks' | Where-Object { $_['login'] -eq $login -and $_['kind'] -eq $kind } | Sort-Object { $_['time'] }) }
-function WaitNewRun([string]$login, [string]$kind, [int]$after, [int]$minutes = 10) {
+# The run an action caused, found by identity, never by a count: a run recorded late by an EARLIER action (the killed
+# run closed as interrupted after the 5-minute lease, a stopped run's result, a scheduled run) raised the count just as
+# well and its result was taken as the new one's. RunMark is taken just before the action; the new run is one that was
+# not in the history then, ended after the mark, started after it (when the record says when it started) and belongs
+# to the set (when given). Times are the server's and the agent's clocks: the same machine as the robot.
+function NowMs { [long][Math]::Floor(([DateTime]::UtcNow - [DateTime]'1970-01-01').TotalMilliseconds) }
+function RunKey($r) { '{0}|{1}|{2}|{3}' -f $r['time'], $r['set'], $r['job'], $r['kind'] }
+function RunMark([string]$login, [string]$kind) { $k = @{}; foreach ($r in @(Runs $login $kind)) { $k[(RunKey $r)] = 1 }; return @{ keys = $k; ms = (NowMs) - 2000; kind = $kind } }
+function NewRuns([string]$login, [string]$kind, $mark, [string]$set = '') {
+  @(Runs $login $kind | Where-Object { (-not $mark.keys.ContainsKey((RunKey $_))) -and ([long]$_['time'] -ge $mark.ms) -and ((-not $_['started']) -or ([long]$_['started'] -ge $mark.ms)) -and ((-not $set) -or ($_['set'] -eq $set)) })
+}
+function WaitNewRun([string]$login, [string]$kind, $mark, [int]$minutes = 10, [string]$set = '') {
+  if (-not (($mark -is [hashtable]) -and $mark.ContainsKey('keys'))) { throw 'WaitNewRun needs a RunMark taken before the action (a count is reached by any other run too)' }
   $until = (Get-Date).AddMinutes($minutes)
-  while ((Get-Date) -lt $until) { $r = Runs $login $kind; if ($r.Count -gt $after) { return $r[-1] }; Start-Sleep -Seconds 4 }
+  while ((Get-Date) -lt $until) {
+    try { $n = @(NewRuns $login $kind $mark $set); if ($n.Count -gt 0) { return $n[0] } } catch { Write-Host "[robot] the server's history could not be read: $($_.Exception.Message)" }
+    Start-Sleep -Seconds 4
+  }
   return $null
 }
-function LiveRuns([string]$set) { @(Items (Api 'GET' 'live') 'live' | Where-Object { $_['set'] -eq $set }) }
+# (callers wrap in @(): one item comes back as a hashtable, whose .Count is its number of FIELDS)
+function LiveRuns([string]$set) { if (-not $set) { throw 'no backup set id (the set was never found on the server): a live view of no set is always empty' }; @(Items (Api 'GET' 'live') 'live' | Where-Object { $_['set'] -eq $set }) }
 
 # ------------------------------------------------------------------ Windows UI Automation: what a person sees and does
 function TopWindows([string]$processName) {
@@ -213,7 +243,7 @@ function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]
 }
 function Texts($w) { try { (@($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | ForEach-Object { $_.Current.Name } | Where-Object { $_ }) -join ' | ' } catch { '' } }
 # the window class of each kind of WinForms control (a second way to find them, if the type is not reported)
-$script:ClassOf = @{ 'Button' = 'BUTTON'; 'CheckBox' = 'BUTTON'; 'RadioButton' = 'BUTTON'; 'Edit' = 'EDIT'; 'ComboBox' = 'COMBOBOX'; 'Tree' = 'SysTreeView32'; 'ProgressBar' = 'msctls_progress32'; 'List' = 'SysListView32' }
+$script:ClassOf = @{ 'Text' = 'STATIC'; 'Button' = 'BUTTON'; 'CheckBox' = 'BUTTON'; 'RadioButton' = 'BUTTON'; 'Edit' = 'EDIT'; 'ComboBox' = 'COMBOBOX'; 'Tree' = 'SysTreeView32'; 'ProgressBar' = 'msctls_progress32'; 'List' = 'SysListView32' }
 function Find($w, $type, [string]$name = $null, [switch]$Like) {
   $all = @($w.FindAll($TS::Descendants, ($PC::new($AE::ControlTypeProperty, $type))))
   $short = $type.ProgrammaticName -replace 'ControlType\.', ''
@@ -224,7 +254,7 @@ function Find($w, $type, [string]$name = $null, [switch]$Like) {
     $all = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $_.Current.ClassName -like "*.$cls.*" -or $_.Current.ClassName -eq $cls })
   }
   if ($name) { if ($Like) { $all = @($all | Where-Object { $_.Current.Name -like $name }) } else { $all = @($all | Where-Object { $_.Current.Name -eq $name }) } }
-  return ,$all
+  return $all   # the items one by one: a caller that pipes them on gets elements, not one array (W1 run 4)
 }
 function Button($w, [string]$name, [switch]$Like) {
   $b = @(Find $w $CT::Button $name -Like:$Like) | Where-Object { -not $_.Current.IsOffscreen } | Select-Object -First 1
@@ -266,7 +296,9 @@ function TypeInto($el, [string]$text) {
   if (-not $done) {
     # the field's own text message (what typing ends in; the program sees its text change)
     $h = [IntPtr]$el.Current.NativeWindowHandle
-    if ($h -ne [IntPtr]::Zero) { [void][ObQa.Win]::SendMessage($h, 0x000C, [IntPtr]::Zero, $text) }
+    # SendMessage waits for the program for ever: a hung window hung the robot until the VM task's 5-hour limit killed
+    # it (no evidence kept, no done.txt). With a time limit a hung window is an error of this step instead.
+    if ($h -ne [IntPtr]::Zero) { $res = [IntPtr]::Zero; if ([ObQa.Win]::SendMessageTimeout($h, 0x000C, [IntPtr]::Zero, $text, 0x0002, 15000, [ref]$res) -eq [IntPtr]::Zero) { throw "the field did not take the text in 15 s (the program does not answer)" } }
     else { $el.SetFocus(); Start-Sleep -Milliseconds 200; [System.Windows.Forms.SendKeys]::SendWait('^a{DEL}'); [System.Windows.Forms.SendKeys]::SendWait(($text -replace '([+^%~(){}\[\]])', '{$1}')) }
   }
   Start-Sleep -Milliseconds 300
@@ -275,7 +307,7 @@ function TypeInto($el, [string]$text) {
 function Dialogs([string]$processName, $main) {
   @(TopWindows $processName | Where-Object { $_.Current.ClassName -eq '#32770' -or ($main -and $_.Current.NativeWindowHandle -ne $main.Current.NativeWindowHandle) })
 }
-function DialogText($d) { (@(Find $d $CT::Text) | ForEach-Object { $_.Current.Name } | Where-Object { $_ }) -join ' ' }
+function DialogText($d) { if (-not $d) { return '' }; $t = (@(Find $d $CT::Text) | ForEach-Object { $_.Current.Name } | Where-Object { $_ }) -join ' '; if (-not $t) { $t = Texts $d }; return $t }
 
 # ------------------------------------------------------------------ Visual QA: what the customer sees
 # Every screen the robot reaches is kept three ways: the real screenshot, a crop of the window, and the window's control
