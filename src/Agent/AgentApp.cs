@@ -73,12 +73,26 @@ namespace OnlineBackup.Agent
         /// New backup set. The encryption key is fixed at creation and can never be changed (to change it: a new user and
         /// a full upload). Key types as in Ahsay: PASSWORD (from the user's password now), DEFAULT (random), CUSTOM.
         /// </summary>
+        /// <summary>This computer's registration id (the middle part of its device token).</summary>
+        public string DeviceId { get { var t = (Home.DeviceToken ?? "").Split('.'); return t.Length == 3 ? t[1] : null; } }
+
+        /// <summary>D-4: the set is this computer's — by name as before, except a set another registration made whose key this
+        /// computer does not have (another computer of the same name): it is left to that computer, without a failed run.
+        /// A reinstall of the same computer (new registration) that has the key — password key, or recovered — keeps it.</summary>
+        public bool Mine(BackupSetInfo s)
+        {
+            if (!string.IsNullOrEmpty(s.Computer) && !s.Computer.Equals(Home.Computer, StringComparison.OrdinalIgnoreCase)) return false;
+            if (string.IsNullOrEmpty(s.Device) || s.Device == DeviceId) return true;
+            return Home.LoadKey(s.Id) != null;
+        }
+
         public BackupSetInfo CreateSet(Client session, string password, BackupSetInfo s, string keyType = "PASSWORD", string customKey = null)
         {
             var salt = Bytes.Random(16);
             KeySet k = keyType == "DEFAULT" ? KeySet.Random() : KeySet.Derive(keyType == "CUSTOM" ? customKey : password, salt);
             s.KeyType = keyType; s.KeySalt = Convert.ToBase64String(salt); s.KeyCheck = k.CheckValue();
             if (string.IsNullOrEmpty(s.Computer)) s.Computer = Home.Computer;
+            if (string.IsNullOrEmpty(s.Device) && string.Equals(s.Computer, Home.Computer, StringComparison.OrdinalIgnoreCase)) s.Device = DeviceId ?? "";
             var r = session.Call("POST", "/api/sets", new Msg().Set("set", s.ToXml().ToString(SaveOptions.DisableFormatting)));
             var created = BackupSetInfo.FromXml(XElement.Parse(r["set"]));
             Home.SaveKey(created.Id, k);
@@ -287,12 +301,11 @@ namespace OnlineBackup.Agent
 
         public bool RestoreTestDue(BackupSetInfo s, DateTime utc)
         {
-            if (s.Engine == "RESTIC")
-            {
-                var la = Path.Combine(Home.SetDir(s.Id), "last-attempt.txt");
-                if (!File.Exists(la) || !File.ReadAllText(la).Contains("BS_STOP_SUCCESS")) return false;
-            }
-            else
+            // I-4: only after a backup that ended well, for both engines — a native run stopped by the technician commits what
+            // it sent, and its partial point got a green "Restore test passed" next to "no completed backup"
+            var la = Path.Combine(Home.SetDir(s.Id), "last-attempt.txt");
+            if (!File.Exists(la) || !File.ReadAllText(la).Contains("BS_STOP_SUCCESS")) return false;
+            if (s.Engine != "RESTIC")
             {
                 var st = new LocalState(Home.SetDir(s.Id));
                 if (string.IsNullOrEmpty(st.LastSuccess) || s.Type != "FILE") return false;
@@ -419,7 +432,8 @@ namespace OnlineBackup.Agent
             if (slot == null) return false;
             var st = new LocalState(Home.SetDir(s.Id));
             DateTime last;
-            var lastOk = RunId.TryParse(st.LastSuccess, out last) ? last.ToLocalTime() : DateTime.MinValue;
+            var lastOk = st.LastSuccessLocalMs > 0 ? RunId.FromUnixMs(st.LastSuccessLocalMs).ToLocalTime()   // D-5: this computer's clock
+                : RunId.TryParse(st.LastSuccess, out last) ? last.ToLocalTime() : DateTime.MinValue;
             if (lastOk >= slot.Value) return false;
             // MISS-010: a slot missed (the computer was off or offline) runs when the computer is back — unless the IT company
             // chose otherwise: not at all, only when the last backup is old enough, and after a short delay (the computer and
@@ -526,7 +540,7 @@ namespace OnlineBackup.Agent
                     foreach (var s in prof.Sets) try { if (ReportInterrupted(s.Id)) say(s.Name + ": the previous backup was interrupted — reported"); } catch (AgentException) { }
                     ClientUpdate.Auto(this, say);   // UPD-020: the newest client from the server, by itself
                     try { SendFolders(prof, SystemClock.UtcNow); } catch (Exception e) { say("folders: " + e.Message); }
-                    foreach (var s in prof.Sets.Where(x => string.IsNullOrEmpty(x.Computer) || x.Computer.Equals(Home.Computer, StringComparison.OrdinalIgnoreCase)))
+                    foreach (var s in prof.Sets.Where(Mine))
                     {
                         // bug 38 (Agent B): one set that could not run (its key missing, its local index damaged) stopped the
                         // scheduled backups of every set after it, every minute, without a word to the server. Each set

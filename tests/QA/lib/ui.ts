@@ -29,12 +29,16 @@ export async function backUpNow(page: Page) {
 /** The tasks page shows a run of the set with this status; returns its row text. */
 export async function waitForTask(page: Page, setName: string, status: 'Succeeded' | 'Failed' | 'Warnings', minutes = 4) {
   const until = Date.now() + minutes * 60000;
+  let seen: string[] = [];
   while (Date.now() < until) {
     await page.locator('.rail button[data-k="tasks"]').click();
     await page.waitForLoadState('networkidle');
+    // Q10 (CI run 5): the rows are drawn after the page's own request; "networkidle" can come before it, and a count
+    // taken at once saw no row at every try while the screenshot showed the succeeded run. Wait for the row itself.
     const row = page.getByRole('row').filter({ hasText: setName }).filter({ hasText: status }).filter({ has: page.getByRole('cell', { name: 'Backup', exact: true }) });
-    if (await row.count()) return (await row.first().innerText());
+    if (await row.first().waitFor({ state: 'visible', timeout: 8000 }).then(() => true, () => false)) return (await row.first().innerText());
+    seen = await page.getByRole('row').allInnerTexts();
     await page.waitForTimeout(5000);
   }
-  throw new Error('no "' + status + '" run of "' + setName + '" on the tasks page after ' + minutes + ' minutes');
+  throw new Error('no "' + status + '" run of "' + setName + '" on the tasks page after ' + minutes + ' minutes; rows seen last: ' + JSON.stringify(seen.map((r) => r.replace(/\s+/g, ' '))));
 }

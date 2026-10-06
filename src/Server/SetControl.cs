@@ -16,7 +16,7 @@ namespace OnlineBackup.Server
     public static class SetControl
     {
         /// <summary>The attributes that belong to one copy (its computer and its backups) and are never copied.</summary>
-        static readonly string[] Own = { "ID", "SCHEDULE_HOST", "PARENT_SET", "RUN_REQUEST", "STOP_REQUEST", "LAST_BACKUP_COMPLETE", "LAST_MISSED_ALERT", "TICKET_FAILS", "TICKET_WARNS",
+        static readonly string[] Own = { "ID", "SCHEDULE_HOST", "SCHEDULE_DEVICE", "PARENT_SET", "RUN_REQUEST", "STOP_REQUEST", "LAST_BACKUP_COMPLETE", "LAST_MISSED_ALERT", "TICKET_FAILS", "TICKET_WARNS",
             "TOTAL_BSET_SIZE", "TOTAL_UNCOMPRESS_FILE_SIZE", "NO_OF_FILES", "TOTAL_BSET_RETAIN_FILE_SIZE", "TOTAL_BSET_RETAIN_UNCOMPRESS", "TOTAL_BSET_RETAIN_FILE_NO",
             "LAST_RESTORE_TEST", "RESTORE_TEST_RESULT", "SUSPECT_RANSOMWARE", "DETACHED" };
 
@@ -46,7 +46,7 @@ namespace OnlineBackup.Server
         public static Msg Detail(Profile p, string id)
         {
             var e = Find(p, id);
-            var m = new Msg().Set("set", e.ToString(SaveOptions.DisableFormatting)).Set("head", (string)Family(p, id)[0].Attribute("ID")).Set("computer", (string)e.Attribute("SCHEDULE_HOST"));
+            var m = new Msg().Set("set", e.ToString(SaveOptions.DisableFormatting)).Set("version", Version(e)).Set("head", (string)Family(p, id)[0].Attribute("ID")).Set("computer", (string)e.Attribute("SCHEDULE_HOST"));
             m.Add("computers", new Msg().Set("id", id).Set("computer", (string)e.Attribute("SCHEDULE_HOST")).Set("detached", (string)e.Attribute("DETACHED") == "Y" ? 1 : 0)
                 .Set("lastBackup", (string)e.Attribute("LAST_BACKUP_COMPLETE")).Set("size", (string)e.Attribute("TOTAL_BSET_SIZE")));
             foreach (var x in Family(p, id).Where(x => x != e))
@@ -59,7 +59,15 @@ namespace OnlineBackup.Server
         /// like Ahsay). The type, the engine and the encryption key stay as they are (changing them would orphan the
         /// backups); the computer is changed with Move.
         /// </summary>
-        public static BackupSetInfo Save(Users users, string login, string id, BackupSetInfo inc, string admin, string ip)
+        /// <summary>I-3: the version of the set's SETTINGS (not its statistics or run state, which change with every backup):
+        /// the hash of what the editor can change.</summary>
+        public static string Version(XElement e)
+        {
+            var settings = BackupSetInfo.FromXml(e).ToXml().ToString(SaveOptions.DisableFormatting);
+            return Bytes.Hex(Bytes.Sha256(System.Text.Encoding.UTF8.GetBytes(settings))).Substring(0, 16);
+        }
+
+        public static BackupSetInfo Save(Users users, string login, string id, BackupSetInfo inc, string admin, string ip, string version = null)
         {
             if (string.IsNullOrWhiteSpace(inc.Name)) throw new ApiException(400, "NAME", "Give the set a name.");
             if (inc.Hour < 0 || inc.Hour > 23 || inc.Minute < 0 || inc.Minute > 59) throw new ApiException(400, "TIME", "The time is not valid.");
@@ -72,8 +80,12 @@ namespace OnlineBackup.Server
             {
                 var p = users.LoadProfile(login);
                 var e = Find(p, id);
+                // I-3: two technicians edit one set — the later save, made on the settings as they were before the first
+                // save, silently undid it. A save names the version it was made on; a newer one is refused.
+                if (!string.IsNullOrEmpty(version) && version != Version(e))
+                    throw new ApiException(409, "CHANGED", "Another administrator changed this set after you opened it. Reload it and make your change again.");
                 var cur = BackupSetInfo.FromXml(e);
-                inc.Id = cur.Id; inc.Type = cur.Type; inc.Engine = cur.Engine; inc.Computer = cur.Computer; inc.Parent = cur.Parent;
+                inc.Id = cur.Id; inc.Type = cur.Type; inc.Engine = cur.Engine; inc.Computer = cur.Computer; inc.Device = cur.Device; inc.Parent = cur.Parent;
                 inc.KeyType = cur.KeyType; inc.KeyCheck = cur.KeyCheck; inc.KeySalt = cur.KeySalt;
                 inc.ToXml(e);
                 users.SaveProfile(login, p);
@@ -113,7 +125,7 @@ namespace OnlineBackup.Server
                 var same = fam.FirstOrDefault(x => string.Equals((string)x.Attribute("SCHEDULE_HOST"), computer, StringComparison.OrdinalIgnoreCase));
                 if (same != null && (string)same.Attribute("DETACHED") != "Y") throw new ApiException(409, "COMPUTER", "The set already runs on this computer.");
                 if (string.IsNullOrEmpty((string)fam[0].Attribute("SCHEDULE_HOST"))) throw new ApiException(400, "COMPUTER", "Choose the set's first computer before adding another.");
-                if (same != null) { same.SetAttributeValue("DETACHED", null); same.SetAttributeValue("SCHEDULE_HOST", computer); nid = (string)same.Attribute("ID"); }
+                if (same != null) { same.SetAttributeValue("DETACHED", null); same.SetAttributeValue("SCHEDULE_HOST", computer); same.SetAttributeValue("SCHEDULE_DEVICE", null); nid = (string)same.Attribute("ID"); }
                 else
                 {
                     int max = (int)Math.Max(1, p.GetLong("MAX_BACKUP_SET"));

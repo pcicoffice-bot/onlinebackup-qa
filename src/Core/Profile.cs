@@ -62,6 +62,9 @@ namespace OnlineBackup.Core
     public sealed class BackupSetInfo
     {
         public string Id, Name, Type = "FILE", Computer = "";
+        /// <summary>Agent D (D-4): the registration (device id) of the computer that made the set — two computers that carry
+        /// the same name (a cloned image registered again, two offices' "RECEPTION") each took the other's set as its own.</summary>
+        public string Device = "";
         public List<string> Sources = new List<string>();
         public List<string> Deselected = new List<string>();
         public List<FilterRule> Filters = new List<FilterRule>();
@@ -109,7 +112,7 @@ namespace OnlineBackup.Core
             Func<string, string, string> a = (n, d) => { var x = e.Attribute(n); return x == null ? d : x.Value; };
             var s = new BackupSetInfo
             {
-                Id = a("ID", ""), Name = a("NAME", ""), Type = a("TYPE", "FILE"), Computer = a("SCHEDULE_HOST", ""), Engine = a("ENGINE", ""), GwsAdmin = a("GWS_ADMIN", ""), VmDatacenter = a("VM_DATACENTER", ""), VmThumbprint = a("VM_THUMBPRINT", ""), DbHost = a("DB_HOST", ""), DbPort = (int)L(a("DB_PORT", "0")), M365Tenant = a("M365_TENANT", ""), M365ClientId = a("M365_CLIENT_ID", ""), M365Users = a("M365_USERS", ""),
+                Id = a("ID", ""), Name = a("NAME", ""), Type = a("TYPE", "FILE"), Computer = a("SCHEDULE_HOST", ""), Device = a("SCHEDULE_DEVICE", ""), Engine = a("ENGINE", ""), GwsAdmin = a("GWS_ADMIN", ""), VmDatacenter = a("VM_DATACENTER", ""), VmThumbprint = a("VM_THUMBPRINT", ""), DbHost = a("DB_HOST", ""), DbPort = (int)L(a("DB_PORT", "0")), M365Tenant = a("M365_TENANT", ""), M365ClientId = a("M365_CLIENT_ID", ""), M365Users = a("M365_USERS", ""),
                 Vss = a("ENABLED_SHADOW_COPY", "Y") == "Y", FollowLink = a("WIN_FOLLOW_LINK", "Y") == "Y",
                 BackupPermissions = a("BSET_UPLOAD_PERMISSION", "Y") == "Y",
                 MinDeltaFileSize = L(a("MIN_DELTA_FILE_SIZE", "26214400")), MaxDeltaNo = (int)L(a("MAX_DELTA_NO", "100")),
@@ -171,7 +174,7 @@ namespace OnlineBackup.Core
         {
             var e = existing ?? new XElement("BACKUP_SET");
             Action<string, object> a = (n, v) => e.SetAttributeValue(n, Convert.ToString(v, CultureInfo.InvariantCulture));
-            a("ID", Id); a("NAME", Name); a("TYPE", Type); a("SCHEDULE_HOST", Computer);
+            a("ID", Id); a("NAME", Name); a("TYPE", Type); a("SCHEDULE_HOST", Computer); e.SetAttributeValue("SCHEDULE_DEVICE", string.IsNullOrEmpty(Device) ? null : Device);
             a("ENABLED_SHADOW_COPY", Vss ? "Y" : "N"); a("WIN_FOLLOW_LINK", FollowLink ? "Y" : "N"); a("FOLLOW_LINK", "N");
             a("BSET_UPLOAD_PERMISSION", BackupPermissions ? "Y" : "N");
             a("ENABLE_DELTA_BLOCK", "Y"); a("MIN_DELTA_FILE_SIZE", MinDeltaFileSize); a("MAX_DELTA_NO", MaxDeltaNo); a("MAX_DELTA_RATIO", MaxDeltaRatio);

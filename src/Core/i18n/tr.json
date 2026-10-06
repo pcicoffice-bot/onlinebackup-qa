@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "Kaydedildi. Değişiklikleri içermesi için kurulumu yeniden indirin.",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "\"Ayarlar\" → \"İstemci yazılımı\" bölümüne gidin: indirip müşterilerinize gönderin.",
   "One click — the backups and settings are kept": "Tek tıklama — yedekler ve ayarlar korunur",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "Telefonunuzdaki kimlik doğrulama uygulamasında (Google / Microsoft Authenticator) bu sistemin adı altındaki 6 rakam. Her 30 saniyede bir değişir."
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "Telefonunuzdaki kimlik doğrulama uygulamasında (Google / Microsoft Authenticator) bu sistemin adı altındaki 6 rakam. Her 30 saniyede bir değişir.",
+  "Tick at least one day for each backup time, or remove the time.": "Her yedekleme saati için en az bir gün seçin veya saati kaldırın.",
+  "Tick at least one day for each backup time.": "Her yedekleme saati için en az bir gün seçin.",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "Siz açtıktan sonra başka bir yönetici bu seti değiştirdi. Yeniden yükleyip değişikliğinizi tekrar yapın."
+}
 }

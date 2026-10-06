@@ -20,6 +20,9 @@ Expect 'a changed file is seen' (Compare-Manifest $a @{ 'x' = 'AA'; 'y' = 'BC' }
 Expect 'a missing and an extra file are seen' (Compare-Manifest $a @{ 'x' = 'AA'; 'z' = 'BB' }).Count 2
 $g1 = Join-Path $env:TEMP ('obqa-g1-' + [guid]::NewGuid().ToString('N').Substring(0, 6)); $g2 = $g1 + 'b'
 Golden $g1; Golden $g2; $m1 = Manifest $g1; Expect 'the golden dataset is the same bytes every time' (Compare-Manifest $m1 (Manifest $g2)).Count 0
+# Q11: a manifest's names are relative to its root, whatever form of the path (short 8.3, trailing \) names the root
+Expect 'a manifest names files relative to its root' (@($m1.Keys) -contains 'Documents\letter.txt') $true
+Expect 'the same folder by another form of its path gives the same manifest' (Compare-Manifest $m1 (Manifest ($g1 + '\'))).Count 0
 Expect 'the golden dataset has its 112 files' $m1.Count 112
 Remove-Tree $g1; Remove-Tree $g2
 Expect 'an authenticator code has 6 digits' ((Totp 'JBSWY3DPEHPK3PXP') -match '^\d{6}$') $true

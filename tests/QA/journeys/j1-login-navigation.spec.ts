@@ -1,7 +1,7 @@
 // J1 — Web sign-in and navigation, as an administrator does it every morning.
 // Oracle: what the browser shows AND what the server says about the session (never only "the page answered 200").
 import { test, expect, signIn } from '../lib/fixtures';
-import { ADMIN, totp } from '../lib/world';
+import { ADMIN, totp, freshTotp } from '../lib/world';
 
 test('J1 sign-in, every menu page opens without errors, reload keeps the session, sign-out ends it on the server', async ({ page, world, evidence }) => {
   evidence.step('open the admin site');
@@ -11,7 +11,7 @@ test('J1 sign-in, every menu page opens without errors, reload keeps the session
   evidence.step('wrong password → the error is shown on the form, the form stays, the password is emptied');
   await page.locator('form.login input[autocomplete=username]').fill(ADMIN.login);
   await page.locator('form.login input[type=password]').fill('Wrong-Pass-999');
-  await page.locator('form.login input.otp').fill(totp(ADMIN.totp));
+  await page.locator('form.login input.otp').fill(await freshTotp(ADMIN.totp, world.url));
   await page.locator('form.login button[type=submit]').click();
   await expect(page.locator('.loginerr')).toBeVisible();
   await expect(page.locator('.loginerr')).not.toHaveText('');

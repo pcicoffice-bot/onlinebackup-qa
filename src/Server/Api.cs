@@ -330,7 +330,13 @@ namespace OnlineBackup.Server
             // Everything else: a device token (scheduled work) or an interactive session (password + 2FA).
             string login; bool interactive = false;
             var session = users.GetSession(ctx.Request.Headers["X-Session"]);
-            if (session != null && !session.Admin) { login = session.Login; interactive = true; }
+            if (session != null && !session.Admin)
+            {
+                // H-04: the customer's "Sign out" ends the sign-in on the server too
+                if (seg.Length == 2 && seg[1] == "logout" && method == "POST") { users.EndSession(ctx.Request.Headers["X-Session"]); Reply(ctx, 200, new Msg().Set("ok", 1)); return; }
+                users.CheckSessionUser(session.Login, ip);
+                login = session.Login; interactive = true;
+            }
             else login = users.CheckDevice(ctx.Request.Headers["X-Device"], ip, ctx.Request.Headers["X-Agent"]);
             Func<bool> requireInteractive = () => { if (!interactive) throw new ApiException(401, "SESSION", "This action requires signing in with a password and verification code."); return true; };
 
@@ -966,7 +972,7 @@ namespace OnlineBackup.Server
                 var logins = users.Logins().Where(l => super || Owns(l, vendor)).ToList();
                 int sets = 0; long used = 0;
                 foreach (var l in logins) try { var p = users.LoadProfile(l); sets += p.SetElements.Count(); used += Usage(p); } catch (Exception) { }
-                m.Set("customers", logins.Count).Set("sets", sets).Set("usedBytes", used).Set("computers", users.ActiveComputers());
+                m.Set("customers", logins.Count).Set("sets", sets).Set("usedBytes", used).Set("computers", users.ActiveComputers(super ? null : logins));   // H-12: a reseller counts its own customers' computers
                 var runs = Runs.Since(now.AddHours(-24), now, l => super || Owns(l, vendor));
                 m.Set("tasks", runs.Count).Set("ok", runs.Count(r => r["status"] == "ok")).Set("warn", runs.Count(r => r["status"] == "warn")).Set("bad", runs.Count(r => r["status"] == "bad"));
                 foreach (var r in runs.Where(x => x["status"] == "bad" || x["status"] == "warn").Take(10)) m.Add("attention", r);
@@ -1150,7 +1156,13 @@ namespace OnlineBackup.Server
                 }
                 if (seg.Length == 6 && method == "POST")
                 {
-                    var saved = SetControl.Save(users, login, sid, BackupSetInfo.FromXml(XElement.Parse(Body(ctx)["set"])), admin, ip);
+                    var body = Body(ctx);
+                    var incoming = XElement.Parse(body["set"]);
+                    // I-2: a set without a backup time (or a time with no day) is refused — it used to fall back to every day at 22:00
+                    var times = incoming.Elements().Where(x => x.Name == "DAILY_SCHEDULE" || x.Name == "WEEKLY_SCHEDULE").ToList();
+                    if (times.Count == 0 || times.Any(x => x.Name == "WEEKLY_SCHEDULE" && new[] { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" }.All(k => (string)x.Attribute(k) != "Y")))
+                        throw new ApiException(400, "SCHEDULE", "Tick at least one day for each backup time.");
+                    var saved = SetControl.Save(users, login, sid, BackupSetInfo.FromXml(incoming), admin, ip, body["version"]);
                     exporter.Profile(login, users.UserDir(login));
                     Reply(ctx, 200, SetControl.Detail(users, login, sid).Set("name", saved.Name)); return;
                 }
@@ -1327,6 +1339,9 @@ namespace OnlineBackup.Server
             if (seg.Length == 3 && (seg[2] == "rebuild" || seg[2] == "verify") && method == "POST")
             {
                 var b = Body(ctx);
+                // H-13: a set that is not the customer's (or no set id at all) is a clear 404, never a server error —
+                // and never a new empty store folder made for a well-formed id that does not exist
+                if (users.LoadProfile(b["login"] ?? "").FindSet(b["set"] ?? "") == null) throw new ApiException(404, "NO_SET", "The backup set does not exist.");
                 var store = new SetStore(users.UserDir(b["login"]), b["set"]);
                 var r = seg[2] == "rebuild" ? store.Rebuild(b.Bool("verify")) : store.VerifyAll();
                 if (seg[2] == "rebuild")

@@ -62,10 +62,13 @@ namespace OnlineBackup.Agent
         /// </summary>
         static volatile string systemPin;
         static readonly Dictionary<string, string> hostPins = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        static void UsePin(string pin)
+        static void UsePin(string pin, string host = null)
         {
             if (string.IsNullOrEmpty(pin)) return;
             systemPin = pin.Replace(":", "").ToLowerInvariant();
+            // H-08: the pin belongs to the backup server's host — other hosts this process talks to (Microsoft 365, Google,
+            // the licence centre) keep the system's validation
+            if (!string.IsNullOrEmpty(host)) lock (hostPins) hostPins[host] = systemPin;
             Install();
         }
 
@@ -81,19 +84,21 @@ namespace OnlineBackup.Agent
         {
             ServicePointManager.ServerCertificateValidationCallback = (sender, cert, chain, errors) =>
             {
-                if (errors == System.Net.Security.SslPolicyErrors.None) return true;
-                if (cert == null) return false;
-                var hex = Bytes.Hex(Bytes.Sha256(cert.GetRawCertData()));
+                // H-08: with a pin, the pin alone decides — a certificate the system trusts (a TLS-inspection proxy, a
+                // mis-issued certificate) is still not the IT company's server. Without a pin, the system's trust.
+                var hex = cert == null ? null : Bytes.Hex(Bytes.Sha256(cert.GetRawCertData()));
                 var req = sender as HttpWebRequest;
-                if (req != null) { string hp; lock (hostPins) if (hostPins.TryGetValue(req.RequestUri.Host, out hp)) return hex == hp; }
-                return systemPin != null && hex == systemPin;
+                if (req != null) { string hp; lock (hostPins) if (hostPins.TryGetValue(req.RequestUri.Host, out hp)) return hex != null && hex == hp; }
+                if (req != null) return errors == System.Net.Security.SslPolicyErrors.None;
+                if (systemPin != null) return hex != null && hex == systemPin;   // no request to name the host: the pin decides
+                return errors == System.Net.Security.SslPolicyErrors.None;
             };
         }
 
         public Client(string serverUrl, string pin = null)
         {
             baseUrl = serverUrl.TrimEnd('/');
-            Pin = pin; UsePin(pin);
+            Pin = pin; string host = null; try { host = new Uri(baseUrl).Host; } catch (UriFormatException) { } UsePin(pin, host);
             // TLS 1.2 where the OS offers it (2008 R2+ with updates). Windows 2003 needs the bundled TLS library (later phase).
             try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch (NotSupportedException) { }
             ServicePointManager.Expect100Continue = false;

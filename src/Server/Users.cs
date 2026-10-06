@@ -164,6 +164,8 @@ namespace OnlineBackup.Server
         /// Password + (if enabled) a one-time code. Wrong passwords and wrong codes count together toward the automatic
         /// lock (default 3 attempts, Ahsay "Auto Lock User").
         /// </summary>
+        public static readonly string DummyHash = PasswordHash.Create("no such account " + Guid.NewGuid().ToString("N"));
+
         public Profile CheckUser(string login, string password, string otp, string ip)
         {
             Guard.Tried = login;
@@ -171,7 +173,14 @@ namespace OnlineBackup.Server
             {
                 Profile p;
                 try { p = LoadProfile(login); }
-                catch (ApiException) { SysLog.Write(ip, "Access", "login failed (unknown user) " + login); throw new ApiException(401, "LOGIN", "Wrong user name or password."); }
+                catch (ApiException)
+                {
+                    // H-10 / H-11: an unknown name gets the same words and costs the same key derivation as a wrong password —
+                    // neither the message nor the time tells which customer names exist
+                    PasswordHash.Verify(password ?? "", DummyHash);
+                    SysLog.Write(ip, "Access", "login failed (unknown user) " + login);
+                    throw new ApiException(401, "LOGIN", "Wrong user name, password or code.");
+                }
                 CheckIp(p, ip);
                 int lockAttempts = LockAttempts(p), lockMinutes = LockMinutes(p);
                 long locked = p.GetLong("USER_LOCKED_TIME");
@@ -186,7 +195,10 @@ namespace OnlineBackup.Server
                 if (ok && !string.IsNullOrEmpty(secret))
                 {
                     if (string.IsNullOrEmpty(otp)) throw new ApiException(401, "OTP_REQUIRED", "A verification code is required.");
-                    ok = Totp.Verify(secret, otp, DateTime.UtcNow /* real time: the phone's code */) || UseBackupCode(p, otp);
+                    var step = Totp.Step(secret, otp, DateTime.UtcNow /* real time: the phone's code */);
+                    if (step >= 0 && step <= p.GetLong("TOTP_LAST_STEP")) step = -1;   // H-02: each code opens one sign-in
+                    if (step >= 0) p.SetAttr("TOTP_LAST_STEP", step);
+                    ok = step >= 0 || UseBackupCode(p, otp);
                 }
                 if (!ok)
                 {
@@ -218,6 +230,16 @@ namespace OnlineBackup.Server
         /// SEC-030: fixed addresses — when the customer has ALLOWED_IPS (addresses or ranges such as 192.0.2.10, 198.51.100.0/24),
         /// sign-in, backup, restore and the web restore are accepted only from them. Empty = from anywhere.
         /// </summary>
+        /// <summary>Agent H (H-03): a customer's open sign-in is held to what its device token is held to, at every request —
+        /// the customer exists, is not suspended, and the address is one of its fixed addresses.</summary>
+        public void CheckSessionUser(string login, string ip)
+        {
+            Profile prof;
+            try { prof = LoadProfile(login); } catch (Exception e) when (!(e is ApiException)) { throw new ApiException(401, "SESSION", "Sign in again."); }
+            if (prof.Get("STATUS") != "ENABLE" || prof.Get("DISABLED") == "Y") throw new ApiException(403, "SUSPENDED", "The user is suspended.");
+            CheckIp(prof, ip);
+        }
+
         public void CheckIp(Profile p, string ip)
         {
             var list = (p.Get("ALLOWED_IPS") ?? "").Split(new[] { ',', ' ', ';', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries);
@@ -301,7 +323,8 @@ namespace OnlineBackup.Server
             {
                 var p = LoadProfile(login);
                 var pending = p.Get("TOTP_PENDING");
-                if (string.IsNullOrEmpty(pending) || !Totp.Verify(pending, code, DateTime.UtcNow /* real time: the phone's code */)) throw new ApiException(400, "OTP", "The code is wrong.");
+                var step = Totp.Step(pending, code, DateTime.UtcNow /* real time: the phone's code */);
+                if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
                 p.SetAttr("TOTP_SECRET", pending); p.SetAttr("TOTP_BACKUP_CODES", p.Get("TOTP_PENDING_CODES"));
                 p.SetAttr("TOTP_PENDING", ""); p.SetAttr("TOTP_PENDING_CODES", "");
                 SaveProfile(login, p);
@@ -338,7 +361,11 @@ namespace OnlineBackup.Server
         public string NewSession(string login, bool admin, string device = null, string vendor = "")
         {
             var token = Bytes.Hex(Bytes.Random(24));
-            sessions[token] = new Session { Login = login, Admin = admin, Device = device, Vendor = vendor ?? "", Expires = SystemClock.UtcNow.AddHours(admin ? 2 : 12) };
+            var s = new Session { Login = login, Admin = admin, Device = device, Vendor = vendor ?? "", Expires = SystemClock.UtcNow.AddHours(admin ? 2 : 12) };
+            sessions[token] = s;
+            // Agent D (D-6): a customer's sign-in (the window, a restore) outlives a server restart as an administrator's
+            // does — a restore running across a restart failed on every remaining file and its record was refused
+            if (!admin) Keep(token, s);
             return token;
         }
 
@@ -371,7 +398,7 @@ namespace OnlineBackup.Server
                     var doc = File.Exists(KeptPath) ? XDocument.Load(KeptPath) : new XDocument(new XElement("KEPT"));
                     var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow) || (string)e.Attribute("HASH") == h).Remove();
-                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N")));
+                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N")));
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
                 catch (Exception) { }
@@ -386,8 +413,9 @@ namespace OnlineBackup.Server
                     var h = Hash(token);
                     var e = XDocument.Load(KeptPath).Root.Elements("S").FirstOrDefault(x => (string)x.Attribute("HASH") == h);
                     if (e == null || (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow)) return null;
-                    if (Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
-                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = true, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
+                    bool admin = (string)e.Attribute("ADMIN") != "N";
+                    if (admin && Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
+                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
                 }
                 catch (Exception) { return null; }
         }
@@ -414,6 +442,13 @@ namespace OnlineBackup.Server
             if (token == null) return null;
             if (!sessions.TryGetValue(token, out s)) { s = Kept(token); if (s != null) sessions[token] = s; }
             if (s == null || s.Expires < SystemClock.UtcNow) return null;
+            // Agent H (H-01): a sign-in lasts only while its reason does — an administrator removed or disabled, or whose
+            // reseller was disabled, lost the sign-in at once (it used to work for up to 30 days)
+            if (s.Admin)
+            {
+                var acc = Staff.Find(cfg, s.Login);
+                if (acc == null || (string)acc.El.Attribute("DISABLED") == "Y" || (acc.Vendor ?? "") != (s.Vendor ?? "")) { EndSession(token); return null; }
+            }
             // SEC-130: in use → 2 more hours (written down at most every 10 minutes, so a restart keeps it)
             if (s.Admin && s.Sliding && s.Expires < SystemClock.UtcNow.AddMinutes(110)) { s.Expires = SystemClock.UtcNow.AddHours(2); Keep(token, s); }
             return s;
@@ -424,10 +459,10 @@ namespace OnlineBackup.Server
         /// and uses it for scheduled runs, so a scheduled backup never needs a code. Revoking one device leaves the others.
         /// </summary>
         /// <summary>Computers with an active registration, over all users (one per user + computer name).</summary>
-        public int ActiveComputers()
+        public int ActiveComputers(IEnumerable<string> of = null)
         {
             int n = 0;
-            foreach (var l in Logins())
+            foreach (var l in of ?? Logins())
             {
                 var p = Path.Combine(UserDir(l), "db", "devices.xml");
                 if (!File.Exists(p)) continue;
@@ -464,7 +499,9 @@ namespace OnlineBackup.Server
             if (p.Length != 3) throw new ApiException(401, "DEVICE", "Unknown device.");
             string login;
             try { login = Encoding.UTF8.GetString(Convert.FromBase64String(p[0])); } catch (FormatException) { throw new ApiException(401, "DEVICE", "Unknown device."); }
-            var path = Path.Combine(UserDir(login), "db", "devices.xml");
+            string path;
+            try { path = Path.Combine(UserDir(login), "db", "devices.xml"); }
+            catch (ApiException) { throw new ApiException(401, "DEVICE", "Unknown device."); }   // H-09: an unknown name answers like a wrong token
             if (!File.Exists(path)) throw new ApiException(401, "DEVICE", "Unknown device.");
             var hash = Bytes.Hex(Bytes.Sha256(Encoding.UTF8.GetBytes(p[2])));
             var dev = XDocument.Load(path).Root.Elements("DEVICE").FirstOrDefault(d => (string)d.Attribute("ID") == p[1] && (string)d.Attribute("TOKEN_HASH") == hash && (string)d.Attribute("REVOKED") != "Y");

@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "تم الحفظ. نزّل التثبيت من جديد ليتضمن التغييرات.",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "انتقل إلى \"الإعدادات\" ← \"برنامج العميل\": نزّله وأرسله إلى عملائك.",
   "One click — the backups and settings are kept": "نقرة واحدة — تُحفظ النسخ والإعدادات",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "الأرقام الستة في تطبيق المصادقة على هاتفك (Google / Microsoft Authenticator) تحت اسم هذا النظام. تتغير كل 30 ثانية."
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "الأرقام الستة في تطبيق المصادقة على هاتفك (Google / Microsoft Authenticator) تحت اسم هذا النظام. تتغير كل 30 ثانية.",
+  "Tick at least one day for each backup time, or remove the time.": "حدّد يومًا واحدًا على الأقل لكل وقت نسخ احتياطي، أو احذف الوقت.",
+  "Tick at least one day for each backup time.": "حدّد يومًا واحدًا على الأقل لكل وقت نسخ احتياطي.",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "قام مسؤول آخر بتغيير هذه المجموعة بعد أن فتحتها. أعد تحميلها وأجرِ التغيير مرة أخرى."
+}
 }

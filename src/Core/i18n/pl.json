@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "Zapisano. Pobierz instalację ponownie, aby zawierała zmiany.",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "Przejdź do \"Ustawienia\" → \"Oprogramowanie klienta\": pobierz je i wyślij klientom.",
   "One click — the backups and settings are kept": "Jedno kliknięcie — kopie i ustawienia zostają",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "6 cyfr z aplikacji uwierzytelniającej w telefonie (Google / Microsoft Authenticator), pod nazwą tego systemu. Zmieniają się co 30 sekund."
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "6 cyfr z aplikacji uwierzytelniającej w telefonie (Google / Microsoft Authenticator), pod nazwą tego systemu. Zmieniają się co 30 sekund.",
+  "Tick at least one day for each backup time, or remove the time.": "Zaznacz co najmniej jeden dzień dla każdej godziny kopii albo usuń tę godzinę.",
+  "Tick at least one day for each backup time.": "Zaznacz co najmniej jeden dzień dla każdej godziny kopii.",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "Inny administrator zmienił ten zestaw po jego otwarciu. Wczytaj go ponownie i wprowadź zmianę jeszcze raz."
+}
 }

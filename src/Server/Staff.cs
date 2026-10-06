@@ -75,12 +75,20 @@ namespace OnlineBackup.Server
                     SysLog.Write(ip, "Access", "admin login refused (locked) " + login);
                     throw new ApiException(423, "LOCKED", "The account is locked after wrong passwords. Try again later or ask the main administrator.");
                 }
-                bool ok = acc != null && !disabled && PasswordHash.Verify(password, (string)acc.El.Attribute("HASHED_PWD"));
+                // H-11: an unknown or disabled account costs the same key derivation as a wrong password
+                bool ok = PasswordHash.Verify(password ?? "", acc != null && !disabled ? (string)acc.El.Attribute("HASHED_PWD") : Users.DummyHash) && acc != null && !disabled;
                 var secret = acc == null ? null : (string)acc.El.Attribute("TOTP_SECRET");
                 bool enroll = string.IsNullOrEmpty(secret);
                 bool noCode = Guard.NoCode(cfg, ip) || IsLocal(cfg, ip);   // SEC-100: a fixed address the owner listed, or the server itself (SEC-110) — the password is enough
                 if (noCode) enroll = false;
-                else if (ok && !enroll) ok = Totp.Verify(secret, otp, DateTime.UtcNow /* real time: the phone's code */);
+                else if (ok && !enroll)
+                {
+                    // H-02: each code opens one sign-in (its step is remembered with the account)
+                    long last; if (!long.TryParse((string)acc.El.Attribute("TOTP_LAST_STEP"), out last)) last = -1;
+                    var step = Totp.Step(secret, otp, DateTime.UtcNow /* real time: the phone's code */);
+                    ok = step > last;
+                    if (ok) acc.El.SetAttributeValue("TOTP_LAST_STEP", step);
+                }
                 if (acc != null)
                 {
                     if (ok) { acc.El.SetAttributeValue("FAIL_COUNT", null); acc.El.SetAttributeValue("LAST_LOGIN", RunId.UnixMs(nowUtc)); acc.El.SetAttributeValue("LAST_IP", ip); }
@@ -125,7 +133,8 @@ namespace OnlineBackup.Server
             {
                 var acc = Find(cfg, login) ?? throw new ApiException(404, "LOGIN", "Unknown account.");
                 var pending = (string)acc.El.Attribute("TOTP_PENDING");
-                if (string.IsNullOrEmpty(pending) || !Totp.Verify(pending, code, DateTime.UtcNow /* real time: the phone's code */)) throw new ApiException(400, "OTP", "The code is wrong.");
+                var step = Totp.Step(pending, code, DateTime.UtcNow /* real time: the phone's code */);
+                if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
                 acc.El.SetAttributeValue("TOTP_SECRET", pending); acc.El.SetAttributeValue("TOTP_PENDING", null); cfg.Save();
             }
         }

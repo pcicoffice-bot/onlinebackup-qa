@@ -116,7 +116,10 @@ namespace OnlineBackup.Agent
                             var filter = one("filter");
                             r.Run(one("point"), one("target"), filter == null ? null : (Func<string, bool>)(p => p.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0), o.ContainsKey("overwrite"));
                             Console.WriteLine("restored=" + r.Restored + " failed=" + r.Failed + " skipped=" + r.Skipped);
-                            return r.Failed == 0 ? 0 : 1;
+                            // D-6: the reason of the failures, not only their number
+                            foreach (var l in r.Log.Where(l => l.Contains(",err,")).Take(5)) Console.WriteLine("  " + l);
+                            if (r.ReportError != null) Console.WriteLine("the server did not get the record of this restore: " + r.ReportError);
+                            return r.Failed == 0 && r.ReportError == null ? 0 : 1;
                         }
                     case "restore-image":
                         {

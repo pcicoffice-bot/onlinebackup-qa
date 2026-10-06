@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "保存しました。変更を含めるにはインストールをもう一度ダウンロードしてください。",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "「設定」→「クライアントソフトウェア」でダウンロードし、お客様に送ってください。",
   "One click — the backups and settings are kept": "ワンクリック — バックアップと設定は保持されます",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "スマートフォンの認証アプリ（Google / Microsoft Authenticator）で、このシステム名の下に表示される6桁の数字です。30秒ごとに変わります。"
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "スマートフォンの認証アプリ（Google / Microsoft Authenticator）で、このシステム名の下に表示される6桁の数字です。30秒ごとに変わります。",
+  "Tick at least one day for each backup time, or remove the time.": "各バックアップ時刻に少なくとも1日を選択するか、その時刻を削除してください。",
+  "Tick at least one day for each backup time.": "各バックアップ時刻に少なくとも1日を選択してください。",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "開いた後に別の管理者がこのセットを変更しました。再読み込みして、もう一度変更してください。"
+}
 }

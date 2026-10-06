@@ -2,7 +2,7 @@
 import { test as base, expect, Page, TestInfo } from '@playwright/test';
 import * as fs from 'fs';
 import * as path from 'path';
-import { World, ADMIN, totp } from './world';
+import { World, ADMIN, totp, freshTotp } from './world';
 
 type Fixtures = { world: World; evidence: Evidence; admin: Page };
 
@@ -22,7 +22,7 @@ export async function signIn(page: Page, world: World) {
   await page.goto(world.url + '/admin');
   await page.locator('form.login input[autocomplete=username]').fill(ADMIN.login);
   await page.locator('form.login input[type=password]').fill(ADMIN.password);
-  await page.locator('form.login input.otp').fill(totp(ADMIN.totp));
+  await page.locator('form.login input.otp').fill(await freshTotp(ADMIN.totp, world.url));
   await page.locator('form.login button[type=submit]').click();
   await expect(page.locator('.rail button[data-k]').first()).toBeVisible();
 }

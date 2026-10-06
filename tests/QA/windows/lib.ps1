@@ -123,7 +123,12 @@ function ShadowCount { @(Get-CimInstance Win32_ShadowCopy -ErrorAction SilentlyC
 # ------------------------------------------------------------------ data
 function Manifest([string]$root) {
   $m = @{}; if (-not (Test-Path -LiteralPath $root)) { return $m }
-  Get-ChildItem -LiteralPath $root -Recurse -File -Force | ForEach-Object { $m[$_.FullName.Substring($root.Length).TrimStart('\')] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
+  # Q11 (W1 run 6): $env:TEMP on the runner is a short 8.3 path (RUNNER~1) while FullName is the long one - cut at the
+  # short path's length, every name came out wrong. The root is taken as Windows names it, then the names relative to it
+  $full = (Get-Item -LiteralPath $root -Force).FullName.TrimEnd('\')
+  Get-ChildItem -LiteralPath $full -Recurse -File -Force | ForEach-Object {
+    if (-not $_.FullName.StartsWith($full + '\', [StringComparison]::OrdinalIgnoreCase)) { throw ('ROBOT ERROR: ' + $_.FullName + ' is not under ' + $full) }
+    $m[$_.FullName.Substring($full.Length + 1)] = (Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash }
   return $m
 }
 function Compare-Manifest($want, $got) {
@@ -198,10 +203,20 @@ function Items([string]$xml, [string]$list) {
   foreach ($l in @($x.m.l | Where-Object { $_.n -eq $list })) { foreach ($i in @($l.i)) { if ($i) { $h = @{}; foreach ($f in @($i.f)) { if ($f) { $h[$f.n] = $f.'#text' } }; $out += $h } } }
   return $out   # the items one by one (callers wrap in @())
 }
+# H-02: the server takes each code once - a second sign-in takes the next step's code (the next step is accepted for
+# clock drift), and waits for a new step when both are used, as a person waits for the phone's next code
+$script:TotpLast = -1
 function Totp([string]$s) {
   $A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ($s.ToCharArray() | ForEach-Object { [Convert]::ToString($A.IndexOf($_), 2).PadLeft(5, '0') }) -join ''
   $key = [byte[]]@(for ($i = 0; $i + 8 -le $bits.Length; $i += 8) { [Convert]::ToByte($bits.Substring($i, 8), 2) })
-  $c = [BitConverter]::GetBytes([long][Math]::Floor(([DateTime]::UtcNow - [DateTime]'1970-01-01').TotalSeconds / 30)); [Array]::Reverse($c)
+  while ($true) {
+    $now = [long][Math]::Floor(([DateTime]::UtcNow - [DateTime]'1970-01-01').TotalSeconds / 30)
+    $step = [Math]::Max($now, $script:TotpLast + 1)
+    if ($step -le $now + 1) { break }
+    Start-Sleep -Seconds 1
+  }
+  $script:TotpLast = $step
+  $c = [BitConverter]::GetBytes([long]$step); [Array]::Reverse($c)
   $h = (New-Object Security.Cryptography.HMACSHA1(, $key)).ComputeHash($c); $o = $h[19] -band 15
   return (((($h[$o] -band 0x7f) -shl 24) -bor ($h[$o + 1] -shl 16) -bor ($h[$o + 2] -shl 8) -bor $h[$o + 3]) % 1000000).ToString('000000')
 }

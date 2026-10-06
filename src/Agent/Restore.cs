@@ -28,7 +28,7 @@ namespace OnlineBackup.Agent
         public List<string> Points() { return client.Call("GET", "/api/sets/" + setId + "/points").List("points").Select(p => p["id"]).ToList(); }
         public Msg Files(string point) { return client.Call("GET", "/api/sets/" + setId + "/files" + (point == null ? "" : "?point=" + Client.Url(point))); }
         public void Fetch(string loc, string toFile) { client.Download("/api/sets/" + setId + "/object?loc=" + Client.Url(loc) + (test ? "&test=1" : ""), toFile); }
-        public void Report(Msg log) { if (!test) try { client.Call("POST", "/api/sets/" + setId + "/restorelog", log); } catch (AgentException) { } }
+        public void Report(Msg log) { if (!test) client.Call("POST", "/api/sets/" + setId + "/restorelog", log); }
     }
 
     public sealed class LocalSource : IRestoreSource
@@ -47,6 +47,9 @@ namespace OnlineBackup.Agent
         readonly KeySet key;
         readonly string temp;
         public int Restored, Failed, Skipped;
+        /// <summary>D-6: why the server did not get this restore's record (null = it did). It used to be swallowed: a restore
+        /// that failed left no failed record anywhere but on this computer's screen.</summary>
+        public string ReportError;
         public List<string> Log = new List<string>();
 
         public Restore(Client client, BackupSetInfo set, KeySet key, string tempDir) : this(new ServerSource(client, set.Id), key, tempDir) { }
@@ -99,7 +102,8 @@ namespace OnlineBackup.Agent
             Log.Add(AhsayLog.Line(SystemClock.UtcNow, "end", message: Result));
             var m = new Msg().Set("result", Result).Set("restored", Restored).Set("failed", Failed).Set("skipped", Skipped);
             foreach (var l in Log) m.Add("log", new Msg().Set("l", l));
-            source.Report(m);
+            try { source.Report(m); }
+            catch (AgentException e) { ReportError = e.Message; }
         }
 
         public void RestoreFile(Msg file, string dest)

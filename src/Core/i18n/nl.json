@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "Opgeslagen. Download de installatie opnieuw zodat ze de wijzigingen bevat.",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "Ga naar \"Instellingen\" → \"Clientsoftware\": download het en stuur het naar uw klanten.",
   "One click — the backups and settings are kept": "Eén klik — back-ups en instellingen blijven behouden",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "De 6 cijfers in de authenticator-app op uw telefoon (Google / Microsoft Authenticator), onder de naam van dit systeem. Ze veranderen elke 30 seconden."
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "De 6 cijfers in de authenticator-app op uw telefoon (Google / Microsoft Authenticator), onder de naam van dit systeem. Ze veranderen elke 30 seconden.",
+  "Tick at least one day for each backup time, or remove the time.": "Vink voor elk back-uptijdstip minstens één dag aan, of verwijder het tijdstip.",
+  "Tick at least one day for each backup time.": "Vink voor elk back-uptijdstip minstens één dag aan.",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "Een andere beheerder heeft deze set gewijzigd nadat u hem opende. Laad hem opnieuw en breng uw wijziging opnieuw aan."
+}
 }

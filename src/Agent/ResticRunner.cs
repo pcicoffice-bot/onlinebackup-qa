@@ -303,7 +303,7 @@ namespace OnlineBackup.Agent
             // Bug 22 (found by the scheduler's tests): the scheduler counts from the last successful backup, which only the
             // native engine wrote — a restic set was "due" again within the hour and backed up every 15–20 minutes all day
             if (result.StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal))
-                try { var st = new LocalState(app.Home.SetDir(set.Id)); st.LastSuccess = report["job"]; st.Save(); }
+                try { var st = new LocalState(app.Home.SetDir(set.Id)); st.LastSuccess = report["job"]; st.LastSuccessLocalMs = RunId.UnixMs(started); st.Save(); }
                 catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "The time of this backup could not be saved: " + e.Message)); }
             report.Set("result", result).Set("new", run.New).Set("upd", run.Updated).Set("del", 0).Set("perm", 0).Set("bytes", run.BytesSent);
             var prev = Path.Combine(app.Home.SetDir(set.Id), "restic-files.txt");

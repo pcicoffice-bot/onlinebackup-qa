@@ -589,7 +589,7 @@
         const daily = !sch || sch.tagName === 'DAILY_SCHEDULE';
         const boxes = dayKeys.map((k, i) => { const c = h('input', { type: 'checkbox', checked: daily || sch.getAttribute(k) === 'Y' }); return h('label', { class: 'inline' }, c, dayNames[i]); });
         const hh = sel(Array.from({ length: 24 }, (_, i) => [String(i), String(i).padStart(2, '0')]), sch ? sch.getAttribute('HOUR') : '12');
-        const mm = sel(Array.from({ length: 12 }, (_, i) => [String(i * 5), String(i * 5).padStart(2, '0')]), String(Math.round(Number(sch ? sch.getAttribute('MINUTE') : 0) / 5) * 5));
+        const mm = minuteSel(sch ? sch.getAttribute('MINUTE') : 0);
         const row = h('div', { class: 'sched' }, h('div', { class: 'inline' }, boxes), h('div', { class: 'inline ltr' }, hh, h('b', {}, ':'), mm),
           h('button', { class: 'btn sm danger', type: 'button', 'aria-label': t('Remove'), onclick: () => { if (rows.children.length > 1) row.remove(); else toast(t('A set needs at least one time — change it instead.'), true); } }, '✕'));
         row.get = () => ({ on: boxes.map((l) => l.querySelector('input').checked), hour: hh.value, minute: mm.value });
@@ -601,6 +601,8 @@
       const missedNet = togRow(A('RUN_MISSED_NET', 'Y') === 'Y', t('When the internet is back: start a backup that was missed or cut off, right away'));
       const delay = num(A('MISSED_DELAY_MINUTES', '5'), { min: 0, max: 240 }), minH = num(A('MISSED_MIN_HOURS', '0'), { min: 0, max: 720 });
       collectors.push(() => {
+        // I-2: a time with no day ticked is refused here (it used to vanish, and the set fell back to every day at 22:00)
+        if (Array.from(rows.children).some((r) => !r.get().on.some(Boolean))) throw new Error(t('Tick at least one day for each backup time, or remove the time.'));
         drop('DAILY_SCHEDULE'); drop('WEEKLY_SCHEDULE');
         Array.from(rows.children).map((r) => r.get()).filter((x) => x.on.some(Boolean)).forEach((x, n) => {
           const attrs = { ID: Date.now() + n, NAME: n ? 'Backup Schedule ' + (n + 1) : 'Backup Schedule', HOUR: x.hour, MINUTE: x.minute, DURATION: dur.value, BACKUP_TYPE: 'FILE', ENABLED_SKIP_BACKUP: 'N' };
@@ -718,9 +720,11 @@
         btn('🗑 ' + t('Delete the set'), async () => { if (!await confirmBox(t('Delete the set? It moves to the recycle bin for 14 days.'))) return; const r = await api('POST', 'users/' + enc(u.login) + '/delete', { set: S.set }); toast(r.pending === '1' ? t('Another administrator must approve the deletion.') : t('Moved to the recycle bin')); done(); }, 'danger')),
       h('p', { class: 'muted small' }, t('A change of the settings reaches the computer within a minute.'))));
 
+    let version = d.version || '';   // I-3: the settings as they were loaded; a save over someone else's newer save is refused
     const save = async () => {
       Object.keys(panes).forEach(() => { }); collectors.forEach((c) => c());
-      await api('POST', path, { set: new XMLSerializer().serializeToString(E) });
+      const r = await api('POST', path, { set: new XMLSerializer().serializeToString(E), version });
+      version = r.version || version;
     };
     const wrapper = h('div', {}, h('div', { class: 'crumbs' }, h('button', { type: 'button', onclick: done }, t('Backup sets')), '‹', A('NAME', '')),
       h('div', { class: 'head' }, h('div', { class: 't' }, h('h1', {}, A('NAME', '')), h('p', {}, (TYPES[type] ? t(TYPES[type]) : type) + ' · ' + list(d.computers).filter((c) => c.detached !== '1').map((c) => c.computer).join(', '))),
@@ -886,6 +890,13 @@
   // ------------------------------------------------------------------ service calls (TICKETS-010: the rules of ITSguard)
   const TST = { New: ['New', 'info'], InProgress: ['In progress', 'info'], Waiting: ['Waiting for the customer', 'mut'], Deferred: ['Moved to a date', 'mut'], Resolved: ['Resolved', 'ok'], ToBill: ['To bill — not in the contract', 'warn'], Closed: ['Closed', 'ok'] };
   const TPR = { Urgent: ['Urgent', 'bad'], High: ['High', 'warn'], Normal: ['Normal', 'mut'], Low: ['Low', 'mut'] };
+  // I-1: the minutes in 5-minute steps, plus the stored minute as it is (a time made on the computer, 22:33) — the list
+  // used to round it on display (22:58 → 60 → not in the list → "00"), and a save stored the rounded time
+  const minuteSel = (v) => {
+    const m = Math.min(59, Math.max(0, Math.floor(Number(v) || 0)));
+    const opts = Array.from({ length: 12 }, (_, i) => i * 5); if (!opts.includes(m)) opts.push(m);
+    return sel(opts.sort((a, b) => a - b).map((x) => [String(x), String(x).padStart(2, '0')]), String(m));
+  };
   const slaPill = (x) => { const m = Number(x.slaMinutes || 0), d = m >= 2880 ? t('{0} days', Math.round(m / 1440)) : m >= 60 ? t('{0} hours', Math.round(m / 60)) : t('{0} minutes', m);
     return ({ late: pill('bad', t('Late by {0}', d)), warn: pill('warn', t('{0} left', d)), ok: pill('ok', t('{0} left', d)), wait: pill('mut', x.status === 'Deferred' ? t('Back on {0}', whenIso(x.followUp)) : t('Waiting')), done: pill('mut', x.slaMet === '1' ? t('Met the SLA') : t('Missed the SLA')) })[x.sla] || pill('mut', '—'); };
   function ticketTable(rows) {
@@ -1191,7 +1202,7 @@
     const quota = num(d.quotaGB, { min: 1 }), qt = sel([['COMPRESSED', t('By the size on the server (after compression)')], ['UNCOMPRESSED', t('By the original size')]], d.quotaType), sets = num(d.maxSets, { min: 1, max: 100 });
     const totp = togRow(on('requireTotp'), t('The customer must use two-step verification')), key = togRow(on('saveKey'), t('Keep the encryption key on the server for recovery'));
     const rights = RIGHTS.map(([k, label]) => togRow(on(k), t(label)));
-    const hh = sel(Array.from({ length: 24 }, (_, i) => [String(i), String(i).padStart(2, '0')]), d.hour), mm = sel(Array.from({ length: 12 }, (_, i) => [String(i * 5), String(i * 5).padStart(2, '0')]), String(Math.round(Number(d.minute) / 5) * 5 % 60));
+    const hh = sel(Array.from({ length: 24 }, (_, i) => [String(i), String(i).padStart(2, '0')]), d.hour), mm = minuteSel(d.minute);
     const days = num(d.retentionDays, { min: 1, max: 3650 }), logs = num(d.logDays, { min: 7, max: 3650 });
     const comp = sel([['MAX', t('Maximum (default — the smallest backups)')], ['FAST', t('Fast')], ['NONE', t('None')]], d.compression), bw = num(d.bandwidth, { min: 0 });
     const vss = togRow(on('vss'), t('Shadow copy (open files, Windows)')), missed = togRow(on('runMissed'), t('A backup missed while the computer was off runs when it is back')), net = togRow(on('runMissedNet'), t('A backup missed because the internet was down starts when it is back'));

@@ -219,13 +219,18 @@ namespace OnlineBackup.Core
             return CodeAt(Base32.Decode(secret), step);
         }
 
-        public static bool Verify(string secret, string code, DateTime utc)
+        public static bool Verify(string secret, string code, DateTime utc) { return Step(secret, code, utc) >= 0; }
+
+        /// <summary>The 30-second step the code belongs to (the step before and after are accepted for clock drift), -1 = wrong.
+        /// Agent H (H-02): the caller accepts a step only once — RFC 6238 §5.2: a code seen by someone else (over the
+        /// shoulder, a proxy log, a phishing page) must not open a second sign-in within its 90 seconds.</summary>
+        public static long Step(string secret, string code, DateTime utc)
         {
-            if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(code)) return false;
+            if (string.IsNullOrEmpty(secret) || string.IsNullOrEmpty(code)) return -1;
             var key = Base32.Decode(secret);
             long step = (long)(utc - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds / 30;
-            for (long s = step - 1; s <= step + 1; s++) if (CodeAt(key, s) == code.Trim()) return true;
-            return false;
+            for (long s = step - 1; s <= step + 1; s++) if (CodeAt(key, s) == code.Trim()) return s;
+            return -1;
         }
 
         static string CodeAt(byte[] key, long step)

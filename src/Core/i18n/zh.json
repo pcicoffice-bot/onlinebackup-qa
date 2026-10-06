@@ -1618,6 +1618,9 @@
   "Saved. Download the installation again so it carries the changes.": "已保存。请重新下载安装程序以包含这些更改。",
   "Go to \"Settings\" → \"Client software\": download it and send it to your customers.": "前往“设置”→“客户端软件”：下载后发送给您的客户。",
   "One click — the backups and settings are kept": "一键完成 — 备份和设置都会保留",
-  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "手机上身份验证器应用（Google / Microsoft Authenticator）中此系统名称下的 6 位数字，每 30 秒更换一次。"
- }
+  "The 6 digits in the authenticator app on your phone (Google / Microsoft Authenticator), under the name of this system. They change every 30 seconds.": "手机上身份验证器应用（Google / Microsoft Authenticator）中此系统名称下的 6 位数字，每 30 秒更换一次。",
+  "Tick at least one day for each backup time, or remove the time.": "请为每个备份时间至少勾选一天，或删除该时间。",
+  "Tick at least one day for each backup time.": "请为每个备份时间至少勾选一天。",
+  "Another administrator changed this set after you opened it. Reload it and make your change again.": "在您打开此备份集后，另一位管理员已更改它。请重新加载并再次进行更改。"
+}
 }

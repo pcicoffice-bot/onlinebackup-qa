@@ -36,6 +36,19 @@ export function totp(secret: string, at = Date.now()) {
   return String(((hm.readUInt32BE(o) & 0x7fffffff) % 1000000)).padStart(6, '0');
 }
 
+/** H-02: the server takes each authenticator code once (as a person's next sign-in takes the next code from the phone).
+ *  The code of the next unused 30-second step on this server (the next step is accepted for clock drift); when both
+ *  are used, waits for a new step. */
+const usedStep = new Map<string, number>();
+export async function freshTotp(secret: string, server: string) {
+  for (;;) {
+    const now = Math.floor(Date.now() / 30000), last = usedStep.get(server + '|' + secret) ?? -1;
+    const step = Math.max(now, last + 1);
+    if (step <= now + 1) { usedStep.set(server + '|' + secret, step); return totp(secret, step * 30000); }
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+}
+
 function freePort(): Promise<number> {
   return new Promise((res) => { const s = net.createServer(); s.listen(0, '127.0.0.1', () => { const p = (s.address() as net.AddressInfo).port; s.close(() => res(p)); }); });
 }
@@ -111,7 +124,7 @@ export class World {
   /** The administrator's API (for preconditions and the oracle's second look; journeys use the web pages). */
   async adminApi(method: string, p: string, body?: Record<string, string | number>) {
     if (!this._ses) {
-      const r = await fetch(this.url + '/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/xml' }, body: xmlMsg({ login: ADMIN.login, password: ADMIN.password, otp: totp(ADMIN.totp) }) });
+      const r = await fetch(this.url + '/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/xml' }, body: xmlMsg({ login: ADMIN.login, password: ADMIN.password, otp: await freshTotp(ADMIN.totp, this.url) }) });
       const t = await r.text(); const m = /<f n="session">([^<]+)/.exec(t); if (!m) throw new Error('admin login failed: ' + r.status + ' ' + t);
       this._ses = m[1];
     }

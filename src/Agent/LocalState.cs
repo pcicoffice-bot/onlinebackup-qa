@@ -103,6 +103,10 @@ namespace OnlineBackup.Agent
         readonly string dir;
         public Dictionary<string, Entry> Files = new Dictionary<string, Entry>(StringComparer.Ordinal);
         public string LastSuccess = "";
+        /// <summary>Agent D (D-5): the start of the last successful run on THIS computer's clock (Unix ms). LastSuccess is the
+        /// server's run id, on the server's clock — the schedule compares slots on the computer's clock with it, so a
+        /// computer ahead of the server saw the day's backup as not done and ran it again.</summary>
+        public long LastSuccessLocalMs;
 
         public LocalState(string setDir)
         {
@@ -119,19 +123,30 @@ namespace OnlineBackup.Agent
             }
         }
 
+        /// <summary>Agent D (D-2): the index ends with its own line count ("#end"). Lines lost or a torn end (a disk error, a
+        /// torn write, a cleanup tool) used to read as a shorter index: the files on the lost lines were never deleted from
+        /// the newest point although the customer had deleted them. An index that does not add up is damaged — it is put
+        /// aside and rebuilt from the server (bug 38), which knows every file it holds.</summary>
         void Read(string p)
         {
+            bool v2 = false; long end = -1; int entries = 0;
             foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
             {
+                if (line == "#v2") { v2 = true; continue; }
+                if (line.StartsWith("#lastlocal\t")) { LastSuccessLocalMs = long.Parse(line.Substring(11), NumberStyles.None, CultureInfo.InvariantCulture); continue; }
                 if (line.StartsWith("#last\t")) { LastSuccess = line.Substring(6); continue; }
+                if (line.StartsWith("#end\t")) { end = long.Parse(line.Substring(5), NumberStyles.None, CultureInfo.InvariantCulture); continue; }
+                if (v2 && end >= 0) throw new FormatException("lines after the end of the index");
                 var f = line.Split('\t');
-                if (f.Length < 7) continue;
+                if (f.Length < 7) { if (v2) throw new FormatException("a damaged line in the index"); continue; }
+                entries++;
                 Files[f[0]] = new Entry
                 {
                     Rel = f[0], Path = f[1], Size = long.Parse(f[2], CultureInfo.InvariantCulture), Mtime = long.Parse(f[3], CultureInfo.InvariantCulture),
                     Attrs = f[4], Seq = int.Parse(f[5], CultureInfo.InvariantCulture), DeltaBytes = long.Parse(f[6], CultureInfo.InvariantCulture)
                 };
             }
+            if (v2 && end != entries) throw new FormatException("the index has " + entries + " lines of " + (end < 0 ? "an unknown number (its end is missing)" : end.ToString(CultureInfo.InvariantCulture)));
         }
 
         /// <summary>Drops the whole index and every chunk list (they describe versions the server may not have).</summary>
@@ -147,11 +162,14 @@ namespace OnlineBackup.Agent
         public void Save()
         {
             var sb = new StringBuilder();
+            sb.Append("#v2\n");
             sb.Append("#last\t").Append(LastSuccess).Append('\n');
+            if (LastSuccessLocalMs > 0) sb.Append("#lastlocal\t").Append(LastSuccessLocalMs.ToString(CultureInfo.InvariantCulture)).Append('\n');
             foreach (var e in Files.Values)
                 sb.Append(e.Rel).Append('\t').Append(e.Path).Append('\t').Append(e.Size.ToString(CultureInfo.InvariantCulture)).Append('\t')
                   .Append(e.Mtime.ToString(CultureInfo.InvariantCulture)).Append('\t').Append(e.Attrs).Append('\t')
                   .Append(e.Seq.ToString(CultureInfo.InvariantCulture)).Append('\t').Append(e.DeltaBytes.ToString(CultureInfo.InvariantCulture)).Append('\n');
+            sb.Append("#end\t").Append(Files.Count.ToString(CultureInfo.InvariantCulture)).Append('\n');
             Atomic.WriteText(System.IO.Path.Combine(dir, "state.txt"), sb.ToString());
         }
 

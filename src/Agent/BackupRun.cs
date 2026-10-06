@@ -290,7 +290,7 @@ namespace OnlineBackup.Agent
                 foreach (var kv in pendingChunks) state.SaveChunks(kv.Key, kv.Value);
                 foreach (var kv in pendingBase) state.SaveBaseChunks(kv.Key, kv.Value);
                 foreach (var e in next.Values.Where(e => e.Size < set.MinDeltaFileSize)) state.DropChunks(e.Rel);
-                state.LastSuccess = Job;
+                state.LastSuccess = Job; state.LastSuccessLocalMs = RunId.UnixMs(started);
                 state.Save();
                 if (local != null)
                     try
