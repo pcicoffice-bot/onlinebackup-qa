@@ -137,8 +137,9 @@ namespace OnlineBackup.Tests
                 var repo = new ResticStore(userDir, set.Id);
                 long before = repo.Size(); var until = DateTime.UtcNow.AddSeconds(60);
                 while (repo.Size() < before + 30L * 1024 * 1024 && DateTime.UtcNow < until) Thread.Sleep(50);
-                foreach (var p in System.Diagnostics.Process.GetProcessesByName("restic")) try { p.Kill(); } catch { }
+                var killed = ReliabilityTests.KillRestic(src);   // only this test's restic (its source folder is on the command line)
                 t.Join();
+                Assert.True(killed > 0, "the fault was not injected: no restic of this backup was running to be killed");
                 // and the server was "cut" in the middle of writing a file: a half-written temporary file stays behind
                 File.WriteAllBytes(Path.Combine(repo.Dir, "data", "00", new string('0', 64) + ".deadbeef.tmp"), new byte[12345]);
 

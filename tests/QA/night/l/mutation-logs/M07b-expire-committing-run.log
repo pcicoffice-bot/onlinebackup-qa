@@ -1,0 +1,66 @@
+MUTATION M07b-expire-committing-run
+FILTER FullyQualifiedName~LeaseComponentTests|FullyQualifiedName~ChallengeF_StoreTests|FullyQualifiedName~SweepComponentTests|FullyQualifiedName~ChallengeF_ResticRunTests|FullyQualifiedName~RunIdComponentTests|FullyQualifiedName~OpenRunComponentTests
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index c07373f..4fbfa2d 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -184,7 +184,6 @@ namespace OnlineBackup.Server
+                 if (!Directory.Exists(JobsDir)) return gone;
+                 foreach (var d in Directory.GetDirectories(JobsDir))
+                 {
+-                    if (File.Exists(Path.Combine(d, "journal"))) continue;
+                     if (utc - LeaseTime(d) <= Lease) continue;
+                     Ended(Path.GetFileName(d));
+                     DropJobDir(d);
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(226,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.13]   Discovering: Tests
+[xUnit.net 00:00:00.23]   Discovered:  Tests
+[xUnit.net 00:00:00.24]   Starting:    Tests
+  Passed OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup [2 s]
+  Passed OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: "post") [2 m 12 s]
+  Passed OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: "pre") [2 m 12 s]
+[xUnit.net 00:04:27.45]       Assert.Empty() Failure: Collection was not empty
+[xUnit.net 00:04:27.45]       Collection: ["2026-10-06-19-58-25"]
+[xUnit.net 00:04:27.45]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/LeaseComponentTests.cs(50,0): at OnlineBackup.Tests.LeaseComponentTests.ACommittingRun_IsNeverExpired()
+[xUnit.net 00:04:27.45]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:04:27.45]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed OnlineBackup.Tests.RunIdComponentTests.AClosedRunsId_IsNeverGivenAgain(how: "abort") [29 ms]
+  Passed OnlineBackup.Tests.RunIdComponentTests.AClosedRunsId_IsNeverGivenAgain(how: "expired") [16 ms]
+  Passed OnlineBackup.Tests.RunIdComponentTests.AClosedRunsId_IsNeverGivenAgain(how: "reported") [69 ms]
+  Failed OnlineBackup.Tests.LeaseComponentTests.ACommittingRun_IsNeverExpired [60 ms]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: ["2026-10-06-19-58-25"]
+  Passed OnlineBackup.Tests.LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain [48 ms]
+  Passed OnlineBackup.Tests.LeaseComponentTests.TheComputersReport_ClosesAnOpenRunAtOnce_AndIsHarmlessOtherwise [9 ms]
+  Passed OnlineBackup.Tests.OpenRunComponentTests.ASilentUpload_StillSendsASignOfLifeWithinAMinute [1 m 5 s]
+  Passed OnlineBackup.Tests.OpenRunComponentTests.ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote [10 s]
+  Passed OnlineBackup.Tests.OpenRunComponentTests.ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain [2 s]
+  Passed OnlineBackup.Tests.OpenRunComponentTests.WhileARunIsOpen_TheNoteHoldsIt_AConfirmedEndRemovesIt [22 ms]
+  Passed OnlineBackup.Tests.SweepComponentTests.ARunThatKeepsSendingSignsOfLife_IsNeverClosedBySweeps [404 ms]
+  Passed OnlineBackup.Tests.SweepComponentTests.ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain [478 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AnOldVersionThatCannotBeReadForAMoment_IsNotRemovedFromItsRestorePoint(heldOpen: False) [64 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AnOldVersionThatCannotBeReadForAMoment_IsNotRemovedFromItsRestorePoint(heldOpen: True) [46 ms]
+[xUnit.net 00:05:47.34]   Finished:    Tests
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AHeartbeatWhileTheRunIsBeingClosed_LeavesNoGhostRun(heartbeatDuringClose: False) [788 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AHeartbeatWhileTheRunIsBeingClosed_LeavesNoGhostRun(heartbeatDuringClose: True) [802 ms]
+
+Total tests: 19
+     Passed: 18
+     Failed: 1
+ Total time: 5.8003 Minutes
+[xUnit.net 00:04:27.45]     OnlineBackup.Tests.LeaseComponentTests.ACommittingRun_IsNeverExpired [FAIL]
+Test Run Failed.

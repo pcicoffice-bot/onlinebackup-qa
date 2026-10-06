@@ -1,0 +1,25 @@
+MUTATION M01-endcount
+diff --git a/src/Agent/LocalState.cs b/src/Agent/LocalState.cs
+index 9abb774..a83ed0f 100644
+--- a/src/Agent/LocalState.cs
++++ b/src/Agent/LocalState.cs
+@@ -146,7 +146,7 @@ namespace OnlineBackup.Agent
+                     Attrs = f[4], Seq = int.Parse(f[5], CultureInfo.InvariantCulture), DeltaBytes = long.Parse(f[6], CultureInfo.InvariantCulture)
+                 };
+             }
+-            if (v2 && end != entries) throw new FormatException("the index has " + entries + " lines of " + (end < 0 ? "an unknown number (its end is missing)" : end.ToString(CultureInfo.InvariantCulture)));
++            if (false && v2 && end != entries) throw new FormatException("the index has " + entries + " lines of " + (end < 0 ? "an unknown number (its end is missing)" : end.ToString(CultureInfo.InvariantCulture)));
+         }
+ 
+         /// <summary>Drops the whole index and every chunk list (they describe versions the server may not have).</summary>
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     8, Skipped:     0, Total:     8, Duration: 12 s - Tests.dll (net8.0)
+
+exit=0 seconds=20

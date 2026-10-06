@@ -1,0 +1,8 @@
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ACustomerFileNamedLikeTheCurrentTemporarySuffix_DoesNotBreakTheRestore [61 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.AValidObjectOfAnotherFile_IsRefusedByItsChecksum_NotRestoredUnderTheAskedName [12 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ASetOfAnotherComputer_OrOfASameNamedComputerWithoutItsKey_IsNotThisComputers [3 s]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile [3 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint [2 s]
+  Passed OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles [11 s]
+Total tests: 6
+     Passed: 6

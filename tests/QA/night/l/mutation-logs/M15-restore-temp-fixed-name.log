@@ -1,0 +1,40 @@
+MUTATION M15-restore-temp-fixed-name
+FILTER FullyQualifiedName~RestoreTempNameComponentTests|FullyQualifiedName~RestoreComponentTests|FullyQualifiedName~ChallengeF_RunEndTests
+diff --git a/src/Agent/Restore.cs b/src/Agent/Restore.cs
+index 862eb37..4da14c8 100644
+--- a/src/Agent/Restore.cs
++++ b/src/Agent/Restore.cs
+@@ -137,7 +137,7 @@ namespace OnlineBackup.Agent
+                     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(dest)));
+                     // Bug 74 (RS-02, Agent B note): "<name>.restoring" with FileMode.Create overwrote, then moved away, a customer's
+                     // own file of exactly that name. A name that cannot exist yet, created new (never over a file)
+-                    var tmp = dest + "." + Guid.NewGuid().ToString("N").Substring(0, 8) + ".ob-restoring";
++                    var tmp = dest + ".ob-restoring";
+                     long total = 0;
+                     // Bug 30: a chunk that failed its check (or a full disk) in the middle left "<name>.restoring" in the
+                     // customer's folder — any failure while writing removes the half file
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.09]   Discovering: Tests
+[xUnit.net 00:00:00.18]   Discovered:  Tests
+[xUnit.net 00:00:00.19]   Starting:    Tests
+  Passed OnlineBackup.Tests.ChallengeF_RunEndTests.CommitAfterTheSweepClosedTheRun_IsNotReportedAsSuccess(silentBeforeCommit: True) [2 s]
+  Passed OnlineBackup.Tests.ChallengeF_RunEndTests.CommitAfterTheSweepClosedTheRun_IsNotReportedAsSuccess(silentBeforeCommit: False) [2 s]
+  Passed OnlineBackup.Tests.ChallengeF_RunEndTests.CommitAfterTheSweepClosedTheRun_TheFileIsOnTheServerAfterTheNextBackup(silentBeforeCommit: True) [2 s]
+  Passed OnlineBackup.Tests.ChallengeF_RunEndTests.CommitAfterTheSweepClosedTheRun_TheFileIsOnTheServerAfterTheNextBackup(silentBeforeCommit: False) [2 s]
+  Passed OnlineBackup.Tests.RestoreTempNameComponentTests.ACustomerFileNamedLikeTheRestoresTemporaryFile_IsNotOverwritten [2 s]
+[xUnit.net 00:00:12.18]   Finished:    Tests
+  Passed OnlineBackup.Tests.RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt [34 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft [42 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile [20 ms]
+
+Test Run Successful.
+Total tests: 8
+     Passed: 8
+ Total time: 12.7256 Seconds

@@ -6,94 +6,94 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 | ID | Capability | Crit. | Status | Component | Integration | E2E | Windows | Failure | Recovery | Visual/UX | Bugs (fix commit) | Missing |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| BK-01 | File backup, native engine (first, incremental: new / changed / deleted / permissions) | yes | **FAIL** | PARTIAL | VERIFIED | FAILING | W05 FAIL, W06 FAIL | 2/2 | 3/3 | W05: V NOT TESTED, UX NOT TESTED; W06: V NOT TESTED, UX NOT TESTED | — | component: happy, recovery, integrity, failure/boundary; e2e:  |
-| BK-02 | Delta chains (incremental / differential), long chain → new full | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| BK-03 | File backup, restic engine | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 4/4 | 3/3 | — | 17 (e341747), 21 (35bc6a9), 23 (5d78a82) | — |
+| BK-01 | File backup, native engine (first, incremental: new / changed / deleted / permissions) | yes | **FAIL** | PARTIAL | VERIFIED | FAILING | W05 FAIL, W06 FAIL | 2/2 | 3/3 | W05: V NOT TESTED, UX NOT TESTED; W06: V NOT TESTED, UX NOT TESTED | 37 (9db76f6), 54 (9db76f6), 65 (9db76f6) | component: happy, recovery, integrity, failure/boundary; e2e:  |
+| BK-02 | Delta chains (incremental / differential), long chain → new full | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 0 | 0 | — | 44 (9db76f6), 55 (9db76f6) | component: happy, recovery, integrity; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
+| BK-03 | File backup, restic engine | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 4/4 | 3/3 | — | 17 (e341747), 21 (35bc6a9), 23 (5d78a82), 39 (9db76f6), 40 (9db76f6), 48 (9db76f6), 49 (9db76f6), 50 (9db76f6), 51 (9db76f6), 52 (9db76f6), 53 (9db76f6) | — |
 | BK-04 | Filters, skipped folders, links | yes | **PARTIAL** | PARTIAL | VERIFIED | NONE | — | N/A | N/A | — | — | component: integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
-| BK-05 | Unreadable data is an error (permission denied, locked file, folder gone) | yes | **FAIL** | NONE | VERIFIED | FAILING | W11 FAIL, W12 FAIL | 2/4 | 1/2 | W11: V NOT TESTED, UX NOT TESTED; W12: V NOT TESTED, UX NOT TESTED | 2 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e:  |
-| BK-06 | Volume Shadow Copy (open files) | yes | **FAIL** | NONE | NONE | FAILING | W10 FAIL, W11 FAIL | 0/1 | 0/1 | W10: V NOT TESTED, UX NOT TESTED; W11: V NOT TESTED, UX NOT TESTED | — | component: happy, recovery, integrity, failure/boundary; integration: happy, failure/recovery; e2e: a real user run, restore + SHA-256 |
+| BK-05 | Unreadable data is an error (permission denied, locked file, folder gone) | yes | **FAIL** | NONE | VERIFIED | FAILING | W11 FAIL, W12 FAIL | 1/6 | 1/4 | W11: V NOT TESTED, UX NOT TESTED; W12: V NOT TESTED, UX NOT TESTED | 2 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e:  |
+| BK-06 | Volume Shadow Copy (open files) | yes | **FAIL** | NONE | NONE | FAILING | W10 FAIL, W11 FAIL | 0/1 | 0/1 | W10: V NOT TESTED, UX NOT TESTED; W11: V NOT TESTED, UX NOT TESTED | 54 (9db76f6) | component: happy, recovery, integrity, failure/boundary; integration: happy, failure/recovery; e2e: a real user run, restore + SHA-256 |
 | BK-07 | Maximum duration, stop from the admin site | no | **PARTIAL** | NONE | VERIFIED | NONE | — | N/A | 1/1 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | BK-08 | Upload limit, compression, low priority, wait while busy | no | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | N/A | N/A | — | — | component: integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | BK-09 | Pre- and post-commands (with time limit) | no | **PARTIAL** | PARTIAL | VERIFIED | NONE | — | 1/1 | N/A | — | — | component: happy; e2e: a real user run, restore + SHA-256 |
 | BK-10 | Local copy beside the online backup | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| DB-01 | SQL Server: full, differential, log; free-space check | yes | **PARTIAL** | PARTIAL | VERIFIED | NONE | — | 2/2 | 1/1 | — | 3 (efef555), 6 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
+| DB-01 | SQL Server: full, differential, log; free-space check | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 2/2 | 1/1 | — | 3 (efef555), 6 (efef555), 36 (9db76f6), 76 (e2b0436) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | DB-02 | MySQL / PostgreSQL dumps | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | 3 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | DB-03 | Oracle RMAN | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | DB-04 | HCL Domino | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| AP-01 | System State (wbadmin / ntbackup) | yes | **FAIL** | NONE | NONE | FAILING | W17 FAIL | 0 | 0 | W17: V NOT TESTED, UX NOT TESTED | — | component: happy, recovery, integrity, failure/boundary; integration: happy, failure/recovery; e2e: a real user run, restore + SHA-256 |
-| AP-02 | Bare-metal image | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | 3 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
+| AP-01 | System State (wbadmin / ntbackup) | yes | **FAIL** | NONE | NONE | FAILING | W17 FAIL | 0 | 0 | W17: V NOT TESTED, UX NOT TESTED | 41 (9db76f6), 64 (9db76f6) | component: happy, recovery, integrity, failure/boundary; integration: happy, failure/recovery; e2e: a real user run, restore + SHA-256 |
+| AP-02 | Bare-metal image | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | 3 (efef555), 75 (896317c) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | AP-03 | Hyper-V virtual machines | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | AP-04 | VMware ESXi / vCenter | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | AP-05 | Microsoft 365 (mail, OneDrive, Teams) | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | AP-06 | Google Workspace | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| AP-07 | External programs: time limit, both streams, process tree | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 1/1 | 1/1 | — | 5 (efef555) | component: recovery; integration: happy; e2e: a real user run, restore + SHA-256 |
-| RS-01 | Restore all / a folder / a file, native, any point | yes | **FAIL** | VERIFIED | VERIFIED | FAILING | W05 FAIL | 1/1 | 3/3 | W05: V NOT TESTED, UX NOT TESTED | 15 (f6bb21f), 30 (4ca2b84) | e2e:  |
-| RS-02 | Restore to the original place: overwrite rules, existing files | yes | **PARTIAL** | VERIFIED | NONE | VERIFIED | — | 1/1 | 1/1 | — | 16 (f6bb21f) | integration: happy, failure/recovery |
-| RS-03 | Restore, restic engine | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 2/2 | 2/2 | — | — | — |
+| AP-07 | External programs: time limit, both streams, process tree | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 1/1 | 1/1 | — | 5 (efef555) | component: happy, recovery; integration: happy; e2e: a real user run, restore + SHA-256 |
+| RS-01 | Restore all / a folder / a file, native, any point | yes | **FAIL** | VERIFIED | VERIFIED | FAILING | W05 FAIL | 1/1 | 3/3 | W05: V NOT TESTED, UX NOT TESTED | 15 (f6bb21f), 30 (4ca2b84), 39 (9db76f6), 48 (9db76f6), 56 (9db76f6), 68 (9db76f6), 74 (4b55e6f), 78 (68dc16d), 84 (2261025), 85 (1a29a2b), 86 (1a29a2b), 87 (1a29a2b) | e2e:  |
+| RS-02 | Restore to the original place: overwrite rules, existing files | yes | **PARTIAL** | VERIFIED | NONE | VERIFIED | — | 1/1 | 1/1 | — | 16 (f6bb21f), 74 (4b55e6f) | integration: happy, failure/recovery |
+| RS-03 | Restore, restic engine | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 2/2 | 2/2 | — | 50 (9db76f6) | — |
 | RS-04 | Restore from the website (download) | yes | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | RS-05 | Restore on a new computer (key recovery, local index rebuilt) | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 0 | 1/1 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | RS-06 | Automatic restore test | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | N/A | — | — | component: happy, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | ST-01 | Run commit (journal, roll forward), truncated/half objects refused | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 3/3 | 3/3 | — | 20 (35bc6a9) | — |
 | ST-02 | Run lease, interrupted runs closed and recorded | yes | **FAIL** | VERIFIED | VERIFIED | FAILING | W07 FAIL, W09 FAIL | 2/2 | 4/6 | W07: V NOT TESTED, UX NOT TESTED; W09: V NOT TESTED, UX NOT TESTED | 1 (efef555), 11 (efef555), 19 (35bc6a9) | e2e:  |
-| ST-03 | Retention (days / jobs / GFS), never the current version | yes | **PARTIAL** | PARTIAL | VERIFIED | VERIFIED | — | N/A | 1/1 | — | 28 (d85e9fc) | component: recovery, integrity |
-| ST-04 | Verify, damaged object quarantined and resent; index rebuild | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 3/4 | 1/2 | — | 12 (efef555), 23 (5d78a82), 29 (d85e9fc) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
-| ST-05 | Quota (compressed / original), stop new backups, keep existing | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
-| ST-06 | Server disk full | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 2/2 | 1/1 | — | 13 (01e12a3) | component: happy, recovery, integrity, failure/boundary; integration: happy |
+| ST-03 | Retention (days / jobs / GFS), never the current version | yes | **PARTIAL** | PARTIAL | VERIFIED | VERIFIED | — | N/A | 1/1 | — | 28 (d85e9fc), 53 (9db76f6), 77 (6a4b74c) | component: recovery, integrity |
+| ST-04 | Verify, damaged object quarantined and resent; index rebuild | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 3/4 | 1/2 | — | 12 (efef555), 23 (5d78a82), 29 (d85e9fc), 35 (9db76f6), 46 (9db76f6), 56 (9db76f6), 79 (ad160e1) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
+| ST-05 | Quota (compressed / original), stop new backups, keep existing | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/2 | 0/1 | — | 35 (9db76f6) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
+| ST-06 | Server disk full | yes | **PARTIAL** | NONE | NONE | VERIFIED | — | 1/4 | 1/3 | — | 13 (01e12a3), 87 (1a29a2b) | component: recovery, integrity, failure/boundary; integration: failure/recovery |
 | ST-07 | Replication to a second server | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | ST-08 | Earlier versions of the storage open as they are (upgrade with existing data) | yes | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | ST-09 | Recycle bin for deleted sets / customers | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | ST-10 | Backup of the server settings | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| AG-01 | Scheduler: times, days, several a day, missed runs (computer off, offline) | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 1/1 | 3/3 | — | 22 (5d78a82) | — |
-| AG-02 | "Back up now" and "Stop" from the server reach the computer | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 0 | 1/1 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery |
+| AG-01 | Scheduler: times, days, several a day, missed runs (computer off, offline) | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 1/1 | 3/3 | — | 22 (5d78a82), 38 (9db76f6), 45 (9db76f6), 66 (9db76f6), 67 (9db76f6), 80 (de5cd6b), 82 (8468f78), 83 (8468f78) | — |
+| AG-02 | "Back up now" and "Stop" from the server reach the computer | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 0/2 | 1/2 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery |
 | AG-03 | Settings changed on the server reach the computer | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 0 | N/A | — | — | component: happy, failure/boundary; integration: failure/recovery |
-| AG-04 | Heartbeat, open-run note, report of a dead run | yes | **FAIL** | NONE | VERIFIED | FAILING | W07 FAIL, W08 FAIL | 1/1 | 2/4 | W07: V NOT TESTED, UX NOT TESTED; W08: V NOT TESTED, UX NOT TESTED | 1 (efef555), 11 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e:  |
-| AG-05 | Network: server unreachable, line cut, reconnect | yes | **FAIL** | PARTIAL | VERIFIED | FAILING | W09 FAIL | 4/4 | 4/5 | W09: V NOT TESTED, UX NOT TESTED | 24 (cfa9e09) | component: integrity; e2e:  |
-| AG-06 | Local state (chunk index, keys) — lost, damaged | yes | **PARTIAL** | PARTIAL | VERIFIED | NONE | — | 0 | 1/1 | — | — | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
-| AG-07 | TLS: built-in TLS 1.2 for old Windows, certificate pin | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | N/A | — | — | component: happy, integrity, failure/boundary; e2e: a real user run |
+| AG-04 | Heartbeat, open-run note, report of a dead run | yes | **FAIL** | NONE | VERIFIED | FAILING | W07 FAIL, W08 FAIL | 1/2 | 2/6 | W07: V NOT TESTED, UX NOT TESTED; W08: V NOT TESTED, UX NOT TESTED | 1 (efef555), 11 (efef555) | component: happy, recovery, integrity, failure/boundary; e2e:  |
+| AG-05 | Network: server unreachable, line cut, reconnect | yes | **FAIL** | PARTIAL | VERIFIED | FAILING | W09 FAIL | 4/4 | 4/5 | W09: V NOT TESTED, UX NOT TESTED | 24 (cfa9e09), 42 (9db76f6), 85 (1a29a2b) | component: integrity; e2e:  |
+| AG-06 | Local state (chunk index, keys) — lost, damaged | yes | **PARTIAL** | PARTIAL | VERIFIED | NONE | — | 0/2 | 1/2 | — | 38 (9db76f6), 44 (9db76f6), 55 (9db76f6), 65 (9db76f6) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
+| AG-07 | TLS: built-in TLS 1.2 for old Windows, certificate pin | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | N/A | — | 61 (9db76f6) | component: happy, integrity, failure/boundary; e2e: a real user run |
 | AG-08 | The agent on .NET 4.0 (Windows 2003 / XP era) | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
-| AU-01 | Administrator sign-in: password, mandatory two-step, lock, sessions, sign-out | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 3/3 | 2/2 | — | — | — |
-| AU-02 | Customer sign-in, register a computer, device token | yes | **FAIL** | VERIFIED | VERIFIED | FAILING | W04 FAIL | 3/3 | 1/1 | W04: V NOT TESTED, UX NOT TESTED | — | e2e: a real user run |
+| AU-01 | Administrator sign-in: password, mandatory two-step, lock, sessions, sign-out | yes | **PASS** | VERIFIED | VERIFIED | VERIFIED | — | 3/3 | 2/2 | — | 57 (9db76f6), 58 (9db76f6), 62 (9db76f6) | — |
+| AU-02 | Customer sign-in, register a computer, device token | yes | **FAIL** | VERIFIED | VERIFIED | FAILING | W04 FAIL | 3/3 | 1/1 | W04: V NOT TESTED, UX NOT TESTED | 55 (9db76f6), 58 (9db76f6), 59 (9db76f6), 60 (9db76f6), 62 (9db76f6), 66 (9db76f6) | e2e: a real user run |
 | AU-03 | Sign-up from the client with the contract | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | N/A | — | — | component: happy, failure/boundary; e2e: a real user run |
 | AU-04 | Guard: IP blocking (guessing, spraying, scanning) | no | **PARTIAL** | NONE | VERIFIED | NONE | — | N/A | 1/1 | — | — | component: happy, recovery, failure/boundary; e2e: a real user run |
-| AU-05 | Encryption: keys (password / random / custom), check value, tamper detection | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 1/1 | 1/1 | — | — | component: recovery; integration: happy; e2e: a real user run, restore + SHA-256 |
+| AU-05 | Encryption: keys (password / random / custom), check value, tamper detection | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 1/1 | 1/1 | — | 52 (9db76f6) | component: recovery; integration: happy; e2e: a real user run, restore + SHA-256 |
 | AU-06 | Customer limits, vendors (resellers) see only theirs | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | N/A | — | — | component: happy, failure/boundary; integration: failure/recovery; e2e: a real user run |
-| AU-07 | API refuses junk and attacks clearly | yes | **PARTIAL** | NONE | PARTIAL | NONE | — | 1/1 | N/A | — | — | component: happy, failure/boundary; integration: happy; e2e: a real user run |
+| AU-07 | API refuses junk and attacks clearly | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/4 | N/A | — | — | component: failure/boundary; e2e: a real user run |
 | IN-01 | Server installation (wizard / script), Windows service, certificate, port | yes | **PARTIAL** | PARTIAL | NONE | PARTIAL | W01 PASS | 1/1 | 0 | W01: V NOT TESTED, UX NOT TESTED | 18 (e341747), 33 (107e4a4) | component: recovery; integration: happy, failure/recovery; e2e: restore + SHA-256 |
 | IN-02 | Client installation (Setup.exe wizard), service, uninstall, reinstall | yes | **FAIL** | NONE | PARTIAL | FAILING | W02 FAIL, W03 FAIL, W13 FAIL, W15 FAIL | 0/2 | 0/2 | W02: V PASS, UX FAIL; W03: V PASS, UX PASS; W13: V NOT TESTED, UX NOT TESTED; W15: V PASS, UX PASS | 18 (e341747), 31 (b262143), 32 (107e4a4) | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | IN-03 | Client update (all or nothing) | yes | **FAIL** | PARTIAL | PARTIAL | FAILING | W14 FAIL | 3/4 | 1/2 | W14: V NOT TESTED, UX NOT TESTED | 9 (efef555), 10 (efef555), 27 (d85e9fc) | component: integrity; integration: failure/recovery; e2e: a real user run, restore + SHA-256 |
 | IN-04 | Server update (signed, SHA-256, from files) | yes | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/2 | 0 | — | 33 (107e4a4) | component: happy, recovery, integrity, failure/boundary; e2e: a real user run, restore + SHA-256 |
 | IN-05 | Client packages: Windows, Linux, Mac; branding and server inside | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | N/A | — | — | component: happy, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run |
 | IN-06 | Reboot of the computer: service back, runs go on | yes | **NOT TESTED** | NONE | NONE | NONE | W19 NOT RUN | 0 | 0/1 | — | — | component: happy, recovery, integrity, failure/boundary; integration: happy, failure/recovery; e2e: a real user run, restore + SHA-256 |
-| SH-01 | Last backup vs last result; history of every run; tasks page | yes | **PARTIAL** | NONE | VERIFIED | VERIFIED | — | 2/3 | 1/2 | — | 4 (efef555), 14 (f6bb21f) | component: happy, recovery, failure/boundary |
-| SH-02 | Running now (live list) — no ghost | yes | **FAIL** | NONE | VERIFIED | FAILING | W07 FAIL, W09 FAIL | 2/4 | 1/2 | W07: V NOT TESTED, UX NOT TESTED; W09: V NOT TESTED, UX NOT TESTED | 1 (efef555), 26 (c3ed4d5) | component: happy, recovery, failure/boundary; e2e:  |
-| SH-03 | Mails: run report, failure, missed backup, quota, disk full | yes | **PARTIAL** | VERIFIED | VERIFIED | NONE | — | 2/2 | 1/1 | — | 19 (35bc6a9), 25 (cfa9e09) | e2e: a real user run |
+| SH-01 | Last backup vs last result; history of every run; tasks page | yes | **PARTIAL** | NONE | VERIFIED | VERIFIED | — | 2/3 | 1/2 | — | 4 (efef555), 14 (f6bb21f), 42 (9db76f6), 43 (9db76f6), 47 (9db76f6), 51 (9db76f6), 68 (9db76f6), 79 (ad160e1) | component: happy, recovery, failure/boundary |
+| SH-02 | Running now (live list) — no ghost | yes | **FAIL** | NONE | VERIFIED | FAILING | W07 FAIL, W09 FAIL | 2/5 | 1/3 | W07: V NOT TESTED, UX NOT TESTED; W09: V NOT TESTED, UX NOT TESTED | 1 (efef555), 26 (c3ed4d5) | component: happy, recovery, failure/boundary; e2e:  |
+| SH-03 | Mails: run report, failure, missed backup, quota, disk full | yes | **PARTIAL** | VERIFIED | VERIFIED | NONE | — | 2/2 | 1/1 | — | 19 (35bc6a9), 25 (cfa9e09), 81 (8b6cb24) | e2e: a real user run |
 | SH-04 | Service calls opened / closed by backup results | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 0 | 0 | — | — | component: happy, recovery, failure/boundary; e2e: a real user run |
 | SH-05 | Ransomware suspicion: retention frozen, alert | yes | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity; integration: failure/recovery; e2e: a real user run |
 | SH-06 | Computers: list, disconnect, move to another customer with backups | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | 0 | — | — | component: happy, recovery, integrity, failure/boundary; integration: failure/recovery; e2e: a real user run |
 | SH-07 | Licence: editions, limits, check-in | no | **PARTIAL** | NONE | VERIFIED | NONE | — | 1/1 | 1/1 | — | — | component: happy, recovery, failure/boundary; e2e: a real user run |
-| UI-01 | Admin site: every page opens, no errors; sign-in, reload, sign-out | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 1/1 | 1/1 | — | 7 (efef555), 8 (efef555) | component: happy, recovery, failure/boundary; integration: happy, failure/recovery |
-| UI-02 | Admin site: set editor (every tab saved and read back) | yes | **PARTIAL** | NONE | NONE | VERIFIED | — | 0 | N/A | — | — | component: happy, failure/boundary; integration: happy, failure/recovery |
-| UI-03 | Admin site: the truth after failures (red, failed, not running) | yes | **PARTIAL** | NONE | NONE | VERIFIED | — | 2/2 | 1/1 | — | — | component: happy, recovery, failure/boundary; integration: happy, failure/recovery |
+| UI-01 | Admin site: every page opens, no errors; sign-in, reload, sign-out | yes | **PARTIAL** | NONE | PARTIAL | VERIFIED | — | 1/1 | 1/1 | — | 7 (efef555), 8 (efef555), 63 (9db76f6) | component: happy, recovery, failure/boundary; integration: happy, failure/recovery |
+| UI-02 | Admin site: set editor (every tab saved and read back) | yes | **PARTIAL** | NONE | NONE | VERIFIED | — | 0 | N/A | — | 69 (9db76f6), 70 (9db76f6), 71 (9db76f6), 73 (db1014f) | component: happy, failure/boundary; integration: happy, failure/recovery |
+| UI-03 | Admin site: the truth after failures (red, failed, not running) | yes | **PARTIAL** | NONE | NONE | VERIFIED | — | 2/2 | 1/1 | — | 72 (9db76f6) | component: recovery, failure/boundary; integration: failure/recovery |
 | UI-04 | Client window (every page, typing kept) | yes | **FAIL** | NONE | NONE | FAILING | W04 FAIL, W05 FAIL, W16 FAIL | 0 | 0 | W04: V NOT TESTED, UX NOT TESTED; W05: V NOT TESTED, UX NOT TESTED; W16: V NOT TESTED, UX NOT TESTED | 34 (107e4a4) | component: happy, recovery, failure/boundary; integration: happy, failure/recovery; e2e: a real user run |
 | UI-05 | Client installation wizard (Welcome → License → Install → Finish) | yes | **FAIL** | NONE | NONE | FAILING | W02 FAIL, W03 FAIL | 0/1 | 0 | W02: V PASS, UX FAIL; W03: V PASS, UX PASS | 31 (b262143), 32 (107e4a4) | component: happy, recovery, failure/boundary; integration: happy, failure/recovery; e2e: a real user run |
 | UI-06 | Partner portal and licensing centre | no | **PARTIAL** | NONE | PARTIAL | NONE | — | 0 | N/A | — | — | component: happy, failure/boundary; integration: failure/recovery; e2e: a real user run |
 | UI-07 | Translations (13 languages), Hebrew screens | no | **PARTIAL** | VERIFIED | NONE | NONE | — | N/A | N/A | — | — | integration: happy, failure/recovery; e2e: a real user run |
 | UI-08 | AI: explain a failed run, insights, forecasts | no | **PARTIAL** | PARTIAL | PARTIAL | NONE | — | 0 | N/A | — | — | component: failure/boundary; integration: failure/recovery; e2e: a real user run |
-| UI-09 | Large installations: 500 customers, 5 000 sets stay fast | no | **PARTIAL** | NONE | VERIFIED | NONE | — | N/A | N/A | — | — | component: happy, failure/boundary; e2e: a real user run |
+| UI-09 | Large installations: 500 customers, 5 000 sets stay fast | no | **NOT TESTED** | NONE | NONE | NONE | — | N/A | N/A | — | — | component: happy, failure/boundary; integration: happy, failure/recovery; e2e: a real user run |
 | CO-01 | Shared formats: messages, profile, log lines, run ids, atomic file writes | yes | **PARTIAL** | VERIFIED | PARTIAL | NONE | — | 1/1 | 1/1 | — | — | integration: happy; e2e: a real user run, restore + SHA-256 |
 
 ## Production files and tests per capability
 
 ### BK-01 File backup, native engine (first, incremental: new / changed / deleted / permissions)
 - Production: `A/BackupRun.cs, S/SetStore.cs`
-- component: x:UnitTests.TamperedOrWrongKeyIsRejected NOT RUN
+- component: x:CryptoTests.TamperedOrWrongKeyIsRejected PASS
 - integration: x:EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource PASS, x:EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint PASS, x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning PASS, x:ReliabilityTests.Volume_20000SmallFilesAnd1GB_BackupChangeRestore PASS, x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning PASS, x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly PASS
 - e2e: qa:failure-recovery/f1 PASS, qa:failure-recovery/f2 PASS, qa:failure-recovery/f3 PASS, qa:journeys/j3 PASS, qa:journeys/j4 PASS, win:W05 FAIL, win:W06 FAIL
 - Regression: 1, 2, 11
 
 ### BK-02 Delta chains (incremental / differential), long chain → new full
 - Production: `A/BackupRun.cs, C/Chunker.cs`
-- component: x:UnitTests.InsertInTheMiddleChangesOnlyNearbyChunks NOT RUN
+- component: x:ChunkerTests.InsertInTheMiddleChangesOnlyNearbyChunks PASS
 - integration: x:EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull PASS, x:EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy PASS
 - e2e: none
 - Regression: —
@@ -107,15 +107,15 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### BK-04 Filters, skipped folders, links
 - Production: `A/BackupRun.cs (Scanner)`
-- component: x:UnitTests.FiltersExcludeLikeAhsay NOT RUN
+- component: x:FormatTests.FiltersExcludeLikeAhsay PASS
 - integration: x:OptionsTests.Links_FollowedOnlyWhenTheOptionIsOn PASS, x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore PASS
 - e2e: none
 - Regression: —
 
 ### BK-05 Unreadable data is an error (permission denied, locked file, folder gone)
 - Production: `A/BackupRun.cs, A/Sources.cs`
-- component: none
-- integration: x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical PASS, x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning PASS, x:SourceTests.SubfolderNotReadable_IsAnError_NotAWarning PASS
+- component: x:UnreadableComponentTests.ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree NOT RUN, x:UnreadableComponentTests.EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending NOT RUN, x:UnreadableComponentTests.OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted NOT RUN
+- integration: x:PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical PASS, x:SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning PASS, x:SourceTests.SubfolderNotReadable_IsAnError_NotAWarning NOT TESTED
 - e2e: qa:failure-recovery/f5 PASS, win:W11 FAIL, win:W12 FAIL
 - Regression: 2
 
@@ -156,7 +156,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### DB-01 SQL Server: full, differential, log; free-space check
 - Production: `A/Sources.cs (SqlBackup)`
-- component: x:OptionsTests.SqlLogin_LikeSa_PasswordNeverOnTheCommandLine PASS
+- component: x:OptionsTests.SqlLogin_LikeSa_PasswordNeverOnTheCommandLine NOT TESTED
 - integration: x:FeatureTests.MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles PASS, x:FeatureTests.MssqlWeeklyFullAndDailyDifferential_TheFullStaysInEveryPoint_AnotherProgramsFullForcesOurs PASS, x:SqlScaleTests.FailingDatabase_IsAnError_AllFailing_IsAFailure PASS, x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds PASS, x:SqlScaleTests.NoDatabaseFound_IsAFailure_NotAnEmptySuccess PASS, x:SqlScaleTests.NotEnoughRoom_TheDatabaseIsSkippedWithAClearMessage_BigOnesGetLargerBuffers PASS, x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup PASS
 - e2e: none
 - Regression: 3, 5, 6
@@ -226,7 +226,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AP-07 External programs: time limit, both streams, process tree
 - Production: `C/ProcessRunner.cs`
-- component: x:ProcessTests.ProgramWritingMuchToBothStreams_IsReadToTheEnd PASS, x:ProcessTests.StuckProgram_IsKilledWithItsChildren_AtTheLimit PASS
+- component: x:ProcessTests.ProgramWritingMuchToBothStreams_IsReadToTheEnd NOT TESTED, x:ProcessTests.StuckProgram_IsKilledWithItsChildren_AtTheLimit PASS
 - integration: x:SqlScaleTests.HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds PASS, x:SqlScaleTests.SqlcmdWritingMuchToStderr_DoesNotHangTheBackup PASS
 - e2e: none
 - Regression: 5
@@ -289,7 +289,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### ST-03 Retention (days / jobs / GFS), never the current version
 - Production: `S/SetStore.cs (ApplyRetention)`
-- component: x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit PASS, x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints PASS, x:UnitTests.RetentionByDaysJobsAndAdvanced NOT RUN
+- component: x:FormatTests.RetentionByDaysJobsAndAdvanced PASS, x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit PASS, x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints PASS
 - integration: x:EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched PASS, x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded PASS, x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails PASS
 - e2e: qa:journeys/j8 PASS
 - Regression: —
@@ -303,15 +303,15 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### ST-05 Quota (compressed / original), stop new backups, keep existing
 - Production: `S/Api.cs (Begin, Upload)`
-- component: none
+- component: x:StorageLimitsComponentTests.AQuotaRefusalMidRun_EndsQuotaExceeded_NothingDeleted_TheRestWaits_TheNextRunCompletes NOT RUN, x:StorageLimitsComponentTests.Quota_ExactlyTheRoomIsAccepted_OneByteOverIsRefused_NothingLeft_StoredPointsUnchanged NOT RUN
 - integration: x:EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes PASS, x:ResticTests.ResticRespectsTheQuota PASS
 - e2e: none
 - Regression: —
 
 ### ST-06 Server disk full
 - Production: `S/Api.cs, S/ApiRestic.cs`
-- component: none
-- integration: x:ReliabilityTests.ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes PASS
+- component: x:StorageLimitsComponentTests.ServerDiskFull_MidObject_NoHalfObjectLeft_EarlierPointsUnchanged_TheSameObjectIsAcceptedOnceSpaceIsBack NOT RUN, x:StorageLimitsComponentTests.ServerDiskFull_TheRunFailsWithTheServersReason_TheIndexDoesNotMove_TheNextRunCompletes NOT RUN
+- integration: x:ReliabilityTests.ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes NOT TESTED
 - e2e: qa:failure-recovery/f6 PASS
 - Regression: 13
 
@@ -352,7 +352,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AG-02 "Back up now" and "Stop" from the server reach the computer
 - Production: `A/AgentApp.cs (RunRequested, StopCheck)`
-- component: none
+- component: x:RunRequestComponentTests.ARequestWhoseBackupCouldNotStart_IsNotLost NOT RUN, x:RunRequestComponentTests.AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical NOT RUN, x:RunRequestComponentTests.AnOlderStop_OrAServerThatFails_NeverStopsARun NOT RUN, x:RunRequestComponentTests.EachNewRequest_StartsExactlyOneRun_AnOldOrRepeatedOneNone NOT RUN
 - integration: x:SetControlTests.BackUpNow_And_Stop_FromTheServer PASS
 - e2e: qa:failure-recovery/f3 PASS, qa:journeys/j3 PASS, qa:journeys/j5 PASS
 - Regression: —
@@ -366,7 +366,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AG-04 Heartbeat, open-run note, report of a dead run
 - Production: `A/BackupRun.cs, A/AgentApp.cs (ReportInterrupted)`
-- component: none
+- component: x:OpenRunComponentTests.ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain NOT RUN, x:OpenRunComponentTests.ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote NOT RUN, x:OpenRunComponentTests.ASilentUpload_StillSendsASignOfLifeWithinAMinute NOT RUN, x:OpenRunComponentTests.WhileARunIsOpen_TheNoteHoldsIt_AConfirmedEndRemovesIt NOT RUN
 - integration: x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning PASS, x:InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper PASS, x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce PASS
 - e2e: qa:failure-recovery/f1 PASS, qa:journeys/j5 PASS, win:W07 FAIL, win:W08 FAIL
 - Regression: 1, 11
@@ -374,13 +374,13 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 ### AG-05 Network: server unreachable, line cut, reconnect
 - Production: `A/Client.cs, A/AgentApp.cs`
 - component: x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds PASS, x:NetworkTests.ARefusal_IsNotSentAgain PASS, x:NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError PASS, x:NetworkTests.AnUploadCutInTheMiddle_IsANetworkError_NotARawException PASS
-- integration: x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan PASS, x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError PASS, x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical PASS, x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack PASS
+- integration: x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan PASS, x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError PASS, x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical PASS, x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack PASS, x:UploadStoredCopyIntegrationTests.TheServerAlwaysAnswersADifferentStoredCopy_TheFileIsNotCountedAsBackedUp NOT RUN, x:UploadStoredCopyIntegrationTests.TheServerOnceAnswersADifferentStoredCopy_TheObjectIsSentAgain_TheBackupRestoresIdentical NOT RUN
 - e2e: qa:failure-recovery/f2 PASS, win:W09 FAIL
 - Regression: 20, 24
 
 ### AG-06 Local state (chunk index, keys) — lost, damaged
 - Production: `A/LocalState.cs`
-- component: x:UnitTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword NOT RUN
+- component: x:CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword PASS, x:LocalStateComponentTests.ADamagedChunkList_DoesNotFailEveryLaterBackup NOT RUN, x:LocalStateComponentTests.ADamagedIndexLine_DoesNotFailEveryLaterBackup NOT RUN, x:LocalStateComponentTests.ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical NOT RUN
 - integration: x:EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything PASS
 - e2e: none
 - Regression: —
@@ -401,7 +401,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AU-01 Administrator sign-in: password, mandatory two-step, lock, sessions, sign-out
 - Production: `S/Staff.cs, S/Users.cs`
-- component: x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed PASS, x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting PASS, x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain PASS, x:UnitTests.PasswordRule_AtLeast8Characters_WithALetter NOT RUN, x:UnitTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened NOT RUN
+- component: x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed PASS, x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting PASS, x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain PASS, x:CryptoTests.PasswordRule_AtLeast8Characters_WithALetter PASS, x:CryptoTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened PASS
 - integration: x:GuardTests.AdministratorSignIn_AfterFailures_IsReported PASS, x:StaffTests.Administrators_AddChangeDelete_LockAndUnlock PASS, x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt PASS, x:StaffTests.TwoStep_IsMandatory_NothingOpensBeforeItIsSetUp PASS
 - e2e: qa:journeys/j1 PASS
 - Regression: —
@@ -429,7 +429,7 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AU-05 Encryption: keys (password / random / custom), check value, tamper detection
 - Production: `C/Crypto.cs, C/BackupObject.cs`
-- component: x:UnitTests.EncryptDecryptRoundTrip NOT RUN, x:UnitTests.TamperedOrWrongKeyIsRejected NOT RUN
+- component: x:CryptoTests.EncryptDecryptRoundTrip PASS, x:CryptoTests.TamperedOrWrongKeyIsRejected PASS
 - integration: x:EndToEndTests.KeyRecoveryAndRestoreOnANewComputer PASS
 - e2e: none
 - Regression: —
@@ -443,8 +443,8 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### AU-07 API refuses junk and attacks clearly
 - Production: `S/Api.cs`
-- component: none
-- integration: x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks PASS
+- component: x:ApiInputComponentTests.BadNames_Objects_RunIds_AreRefused400_AndNothingIsWrittenAnywhere NOT RUN, x:ApiInputComponentTests.JunkBodies_FailAsTheSendersMistake_Quickly_AndNeverPullInALocalFile NOT RUN
+- integration: x:ApiInputIntegrationTests.ADeeplyNestedMessage_IsRefused_AndTheServerStaysUp NOT RUN, x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks PASS
 - e2e: none
 - Regression: —
 
@@ -492,14 +492,14 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 
 ### SH-01 Last backup vs last result; history of every run; tasks page
 - Production: `S/Api.cs (UpdateStats), S/RunLog.cs`
-- component: x:ResultComponentTests.AReportWithoutAResult_TakesItsEndLine_OrIsAFailure_NeverASuccess NOT RUN
-- integration: x:ResultComponentTests.EveryResult_HasItsColour_AndOnlyARunThatBackedUpMovesLastBackup NOT RUN, x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly PASS, x:TasksTests.Tasks_Of24Hours_WithStatusAndCounts PASS
+- component: x:ResultComponentTests.AReportWithoutAResult_TakesItsEndLine_OrIsAFailure_NeverASuccess NOT RUN, x:ResultComponentTests.EveryResult_HasItsColour_AndOnlyARunThatBackedUpMovesLastBackup NOT RUN
+- integration: x:SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly PASS, x:TasksTests.Tasks_Of24Hours_WithStatusAndCounts PASS
 - e2e: qa:failure-recovery/f5 PASS, qa:journeys/j3 PASS, qa:journeys/j5 PASS
 - Regression: 4
 
 ### SH-02 Running now (live list) — no ghost
 - Production: `S/Api.cs (live, SweepInterrupted)`
-- component: none
+- component: x:SweepComponentTests.ADeadRun_IsClosedOnceAfterItsLease_AsAFailure_InTheHistory_AndTheSetCanBeginAgain NOT RUN, x:SweepComponentTests.ARunThatKeepsSendingSignsOfLife_IsNeverClosedBySweeps NOT RUN
 - integration: x:InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp PASS, x:InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce PASS, x:InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack PASS, x:TasksTests.ActiveBackups_ReportedWhileRunning_GoneWhenDone PASS
 - e2e: qa:failure-recovery/f1 PASS, qa:journeys/j5 PASS, win:W07 FAIL, win:W09 FAIL
 - Regression: 1, 19, 26
@@ -598,13 +598,13 @@ Critical capabilities: 49 — PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14.
 ### UI-09 Large installations: 500 customers, 5 000 sets stay fast
 - Production: `S/Api.cs`
 - component: none
-- integration: x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast PASS
+- integration: x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast NOT TESTED
 - e2e: none
 - Regression: —
 
 ### CO-01 Shared formats: messages, profile, log lines, run ids, atomic file writes
 - Production: `C/Msg.cs, C/Profile.cs, C/Formats.cs, C/Json.cs`
-- component: x:AiTests.JsonReadsAndWritesGraphShapes NOT RUN, x:CoreFormatsTests.AMessage_ReadsBackExactly PASS, x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail PASS, x:OptionsTests.Settings_Survive_TheProfile NOT RUN, x:UnitTests.LogLinesMatchAhsayFormat NOT RUN, x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes NOT RUN
+- component: x:CoreFormatsTests.AMessage_ReadsBackExactly PASS, x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail PASS, x:FormatTests.LogLinesMatchAhsayFormat PASS, x:FormatTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes PASS, x:M365Tests.JsonReadsAndWritesGraphShapes PASS, x:ResourceTests.Settings_Survive_TheProfile PASS
 - integration: x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks PASS
 - e2e: none
 - Regression: —

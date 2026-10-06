@@ -1,0 +1,40 @@
+MUTATION M19-restore-size-unchecked
+FILTER FullyQualifiedName~RestoreComponentTests|FullyQualifiedName~AuditB_GrowingFileTests|FullyQualifiedName~AuditB_ChainTests
+diff --git a/src/Agent/Restore.cs b/src/Agent/Restore.cs
+index 862eb37..afc0e48 100644
+--- a/src/Agent/Restore.cs
++++ b/src/Agent/Restore.cs
+@@ -152,7 +152,7 @@ namespace OnlineBackup.Agent
+                                 outp.Write(chunk, 0, chunk.Length);
+                                 total += chunk.Length;
+                             }
+-                        if (total != header.Long("size")) throw new InvalidDataException("Restored size differs from the backed-up size.");
++                        if (false) throw new InvalidDataException("Restored size differs from the backed-up size.");
+                     }
+                     catch (Exception) { try { File.Delete(tmp); } catch (IOException) { } throw; }
+                     if (File.Exists(dest)) File.Delete(dest);
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.19]   Discovered:  Tests
+[xUnit.net 00:00:00.20]   Starting:    Tests
+  Passed OnlineBackup.Tests.RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt [73 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft [40 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile [30 ms]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.DamagedLastDeltaQuarantined_RestoreOfThatPoint_NeverSilentlyGivesAnOlderVersion(damaged: "002") [6 s]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.DamagedLastDeltaQuarantined_RestoreOfThatPoint_NeverSilentlyGivesAnOlderVersion(damaged: "000") [6 s]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.LocalIndexOneRunBehind_TheNextChangedVersion_IsStored_OrTheRunSaysItWasNot [7 s]
+  Passed OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: False) [2 s]
+[xUnit.net 00:00:26.00]   Finished:    Tests
+  Passed OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: True) [1 s]
+
+Test Run Successful.
+Total tests: 8
+     Passed: 8
+ Total time: 26.8629 Seconds

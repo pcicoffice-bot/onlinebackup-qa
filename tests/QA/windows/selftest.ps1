@@ -27,6 +27,13 @@ Expect 'the golden dataset has its 112 files' $m1.Count 112
 Remove-Tree $g1; Remove-Tree $g2
 Expect 'an authenticator code has 6 digits' ((Totp 'JBSWY3DPEHPK3PXP') -match '^\d{6}$') $true
 # Agent G: a check whose text part is a -join without its own parentheses is ONE string "False; ..." - [bool] of its first character was True
+# Q14 (W1 run 10): a window matcher written with $_ sees the window (it was called with an empty $_: no window ever matched)
+$fakeWin = [pscustomobject]@{ Current = [pscustomobject]@{ ClassName = 'WindowsForms10.Window.8.app'; BoundingRectangle = [pscustomobject]@{ Width = 1044 } } }
+$fakeDlg = [pscustomobject]@{ Current = [pscustomobject]@{ ClassName = '#32770'; BoundingRectangle = [pscustomobject]@{ Width = 400 } } }
+Expect 'a wide program window matches the client matcher' (WindowMatches $fakeWin { $_.Current.ClassName -ne '#32770' -and $_.Current.BoundingRectangle.Width -gt 300 }) $true
+Expect 'a dialog does not match the client matcher' (WindowMatches $fakeDlg { $_.Current.ClassName -ne '#32770' -and $_.Current.BoundingRectangle.Width -gt 300 }) $false
+Expect 'a dialog matches the dialog matcher' (WindowMatches $fakeDlg { $_.Current.ClassName -eq '#32770' }) $true
+Expect 'a program window does not match the dialog matcher' (WindowMatches $fakeWin { $_.Current.ClassName -eq '#32770' }) $false
 Expect 'a check that returns one string is a FAIL' (CheckResult 'False; x')[0] $false
 Expect 'a check whose first item is not a bool is a FAIL' (CheckResult @('False', 'x'))[0] $false
 Expect 'a check with stray output before its result is a FAIL' (CheckResult @((Get-Item $PSScriptRoot), $false, 'x'))[0] $false

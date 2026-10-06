@@ -78,6 +78,10 @@ function SetsOf([string]$login) {
 }
 # the schedules of the customer's sets, as the server stores them (its own profile file)
 function ScheduleText { (Get-ChildItem "$Q\users\$Login" -Recurse -File -Include *.xml -ErrorAction SilentlyContinue | ForEach-Object { [regex]::Matches((Get-Content $_.FullName -Raw), '<(DAILY|WEEKLY)_SCHEDULE[^>]*>') | ForEach-Object { $_.Value } } | Sort-Object -Unique) -join "`n" }
+# What the server keeps of this set on its own disk: its finished runs (history) and the bytes of its folder (the data)
+function ServerKept { $setDir = @(Get-ChildItem "$Q\users" -Recurse -Directory -Filter $S.setId -ErrorAction SilentlyContinue | Where-Object { $_.Parent.Name -eq 'files' }) | Select-Object -First 1
+  $bytes = if ($setDir) { [long](@(Get-ChildItem $setDir.FullName -Recurse -File -ErrorAction SilentlyContinue | Measure-Object Length -Sum)[0].Sum) } else { 0 }
+  @{ runs = @(Runs $Login 'Backup' | Where-Object { $_['status'] -eq 'ok' }).Count; bytes = $bytes; dir = $(if ($setDir) { $setDir.FullName } else { 'NOT FOUND' }) } }
 function Connected { $c = @(Items (Api 'GET' "users/$Login/computers") 'computers'); return $c }
 # "Back up now" in the window, then the server's history must show a new finished run of the set
 function BackupChecked([string]$label, [string]$want = 'ok') {
@@ -422,8 +426,8 @@ Journey 'W17' 'System State backup (Windows Server Backup)' {
 Journey 'W18' 'Reboot' {
   if ($Phase -eq 'main') { return 'NOT TESTED: a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).' }
   $S.scheduleBefore = ScheduleText; $S.runsBefore = @(Runs $Login 'Backup').Count; $S.rebootAt = (Get-Date).ToString('o'); SaveState
-  Step 'The schedule before the restart' 'a daily schedule' { @([bool]$S.scheduleBefore, $S.scheduleBefore) } -NoShot | Out-Null
-  Step 'Ready for a real restart' 'the state is saved; the VM driver (vm-phase.ps1) restarts Windows after keeping this evidence' { @((Test-Path $StateFile), $StateFile) } -NoShot | Out-Null
+  Step 'The schedule before the restart' 'a daily or weekly schedule of this set, and finished backups before it' { @((($S.scheduleBefore -match '<(DAILY|WEEKLY)_SCHEDULE') -and ($S.runsBefore -gt 0)), "$($S.scheduleBefore); $($S.runsBefore) backup runs") } -NoShot | Out-Null
+  Step 'Ready for a real restart' 'the saved state reads back with the set and the time of the restart' { $back = $null; try { $back = Get-Content $StateFile -Raw | ConvertFrom-Json } catch { }; @((($back -ne $null) -and ($back.setId -eq $S.setId) -and ($back.rebootAt -eq $S.rebootAt) -and [bool]$back.setId), "$StateFile set $($back.setId) at $($back.rebootAt)") } -NoShot | Out-Null
 }
 
 WriteSummary
@@ -453,9 +457,11 @@ if ($Phase -eq 'after-reboot') {
   if ($Final) {
     Journey 'W21' 'End of the lifecycle: uninstall through the installer window; the backups stay on the server' {
       Close-Client
+      $kept = ServerKept
       Maintain-ViaUi $S.setup 'remove' | Out-Null
       Step 'Removed: no service, no entry in the installed programs, no program files' 'all gone' { $s = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); $f = Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'); @(((-not $s) -and ($u.Count -eq 0) -and (-not $f)), "service $([bool]$s); entries $($u.Count); files $f") } -NoShot | Out-Null
-      Step 'The backups are still on the server' 'the runs of this computer are listed' { $r = @(Runs $Login 'Backup'); @(($r.Count -gt 0), "$($r.Count) runs") } -NoShot | Out-Null
+      # Agent L: a history row is not a backup - the finished runs AND the set's data on the server's disk, unchanged by the uninstall
+      Step 'The backups are still on the server' 'the same finished runs and the same data bytes as before the uninstall, not zero' { $now = ServerKept; @((($kept.runs -gt 0) -and ($kept.bytes -gt 0) -and ($now.runs -eq $kept.runs) -and ($now.bytes -eq $kept.bytes)), "before: $($kept.runs) finished runs, $($kept.bytes) bytes; after: $($now.runs) runs, $($now.bytes) bytes in $($now.dir)") } -NoShot | Out-Null
     }
   }
   WriteSummary

@@ -1,0 +1,50 @@
+MUTATION M19b-size-unchecked-with-new-test
+FILTER FullyQualifiedName~RestoreComponentTests|FullyQualifiedName~AuditB_GrowingFileTests|FullyQualifiedName~QaL_MutationGapTests
+diff --git a/src/Agent/Restore.cs b/src/Agent/Restore.cs
+index 862eb37..afc0e48 100644
+--- a/src/Agent/Restore.cs
++++ b/src/Agent/Restore.cs
+@@ -152,7 +152,7 @@ namespace OnlineBackup.Agent
+                                 outp.Write(chunk, 0, chunk.Length);
+                                 total += chunk.Length;
+                             }
+-                        if (total != header.Long("size")) throw new InvalidDataException("Restored size differs from the backed-up size.");
++                        if (false) throw new InvalidDataException("Restored size differs from the backed-up size.");
+                     }
+                     catch (Exception) { try { File.Delete(tmp); } catch (IOException) { } throw; }
+                     if (File.Exists(dest)) File.Delete(dest);
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.09]   Discovering: Tests
+[xUnit.net 00:00:00.18]   Discovered:  Tests
+[xUnit.net 00:00:00.19]   Starting:    Tests
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ACustomerFileNamedLikeTheCurrentTemporarySuffix_DoesNotBreakTheRestore [63 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.AValidObjectOfAnotherFile_IsRefusedByItsChecksum_NotRestoredUnderTheAskedName [12 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ASetOfAnotherComputer_OrOfASameNamedComputerWithoutItsKey_IsNotThisComputers [2 s]
+[xUnit.net 00:00:03.00]       a file of 41 bytes was restored for a backed-up size of 4137 (result RESTORE_STOP_SUCCESS)
+[xUnit.net 00:00:03.00]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/QaL_MutationGapTests.cs(135,0): at OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile()
+[xUnit.net 00:00:03.00]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:03.00]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile [5 ms]
+  Error Message:
+   a file of 41 bytes was restored for a backed-up size of 4137 (result RESTORE_STOP_SUCCESS)
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint [2 s]
+  Passed OnlineBackup.Tests.RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt [43 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft [46 ms]
+  Passed OnlineBackup.Tests.RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile [25 ms]
+  Passed OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: False) [2 s]
+[xUnit.net 00:00:09.88]   Finished:    Tests
+  Passed OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: True) [2 s]
+
+Total tests: 10
+     Passed: 9
+     Failed: 1
+ Total time: 10.4601 Seconds
+[xUnit.net 00:00:03.00]     OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile [FAIL]
+Test Run Failed.

@@ -208,6 +208,10 @@ def chains(wruns):
     open(os.path.join(here, 'END-TO-END-CHAINS.md'), 'w', encoding='utf-8').write('\n'.join(L) + '\n')
 
 if __name__ == '__main__':
+    bad = C.wrong_ids()
+    if bad:   # a test id that names the wrong class is credited by another class's test of that name
+        for b in bad: print('WRONG TEST ID', *b)
+        raise SystemExit(1)
     res = C.results(); rows = C.evaluate(res); wr = windows_runs(); K = C.xunit_kinds()
     ledger(rows, res, bug_commits(), wr); chains(wr)
     print('MASTER-QA-LEDGER.md and END-TO-END-CHAINS.md written;', len(wr), 'Windows phase(s) read')

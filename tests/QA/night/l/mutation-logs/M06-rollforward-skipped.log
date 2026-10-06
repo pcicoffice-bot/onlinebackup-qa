@@ -1,0 +1,70 @@
+MUTATION M06-rollforward-skipped
+FILTER FullyQualifiedName~AuditB_ChainTests|FullyQualifiedName~CommitRefusalComponentTests|FullyQualifiedName~SetStoreComponentTests|FullyQualifiedName~LeaseComponentTests|FullyQualifiedName~ChallengeF_StoreTests
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index c07373f..4c680b0 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -460,7 +460,7 @@ namespace OnlineBackup.Server
+                     foreach (var m in moves)
+                     {
+                         string src = Abs(m[0]), dst = Abs(m[1]);
+-                        if (File.Exists(src)) { Directory.CreateDirectory(Path.GetDirectoryName(dst)); if (File.Exists(dst)) File.Delete(dst); File.Move(src, dst); }
++                        if (false && File.Exists(src)) { Directory.CreateDirectory(Path.GetDirectoryName(dst)); if (File.Exists(dst)) File.Delete(dst); File.Move(src, dst); }
+                     }
+                     if (!ReadLines(JobsLog).Any(l => l.StartsWith("C\t" + job + "\t"))) Atomic.AppendLine(JobsLog, "C\t" + job + "\t" + StatsLine(null));
+                     Directory.Delete(d, true);
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(226,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.21]   Discovered:  Tests
+[xUnit.net 00:00:00.22]   Starting:    Tests
+[xUnit.net 00:00:00.48]       Assert.Equal() Failure: Collections differ
+[xUnit.net 00:00:00.48]                  ↓ (pos 0)
+[xUnit.net 00:00:00.48]       Expected: ["NMR4BVPTLUNRD6NWQPYLBJQXGV/DC34WCM2T2R7KC5ITG23VAP"···]
+[xUnit.net 00:00:00.48]       Actual:   ["NMR4BVPTLUNRD6NWQPYLBJQXGV/DC34WCM2T2R7KC5ITG23VAP"···]
+[xUnit.net 00:00:00.48]                  ↑ (pos 0)
+[xUnit.net 00:00:00.48]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/SetStoreComponentTests.cs(95,0): at OnlineBackup.Tests.SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart()
+[xUnit.net 00:00:00.48]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.48]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed OnlineBackup.Tests.SetStoreComponentTests.TwoRuns_EveryPointHoldsExactlyItsFiles_AndTheStoredBytesAreTheSentOnes [128 ms]
+  Passed OnlineBackup.Tests.SetStoreComponentTests.ASecondRunOfTheSameSet_IsRefusedWhileTheFirstIsOpen [19 ms]
+  Failed OnlineBackup.Tests.SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart [52 ms]
+  Error Message:
+   Assert.Equal() Failure: Collections differ
+           ↓ (pos 0)
+Expected: ["NMR4BVPTLUNRD6NWQPYLBJQXGV/DC34WCM2T2R7KC5ITG23VAP"···]
+Actual:   ["NMR4BVPTLUNRD6NWQPYLBJQXGV/DC34WCM2T2R7KC5ITG23VAP"···]
+           ↑ (pos 0)
+  Passed OnlineBackup.Tests.SetStoreComponentTests.TruncatedWrongOrEscapingObjects_AreRefused_AndLeaveNoFile [19 ms]
+  Passed OnlineBackup.Tests.SetStoreComponentTests.ADamagedObject_IsQuarantinedAndAskedAgain_ALostIndexIsRebuilt [84 ms]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.DamagedLastDeltaQuarantined_RestoreOfThatPoint_NeverSilentlyGivesAnOlderVersion(damaged: "002") [7 s]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.DamagedLastDeltaQuarantined_RestoreOfThatPoint_NeverSilentlyGivesAnOlderVersion(damaged: "000") [6 s]
+  Passed OnlineBackup.Tests.AuditB_ChainTests.LocalIndexOneRunBehind_TheNextChangedVersion_IsStored_OrTheRunSaysItWasNot [7 s]
+  Passed OnlineBackup.Tests.LeaseComponentTests.ACommittingRun_IsNeverExpired [11 ms]
+  Passed OnlineBackup.Tests.LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain [13 ms]
+  Passed OnlineBackup.Tests.LeaseComponentTests.TheComputersReport_ClosesAnOpenRunAtOnce_AndIsHarmlessOtherwise [9 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AnOldVersionThatCannotBeReadForAMoment_IsNotRemovedFromItsRestorePoint(heldOpen: False) [33 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AnOldVersionThatCannotBeReadForAMoment_IsNotRemovedFromItsRestorePoint(heldOpen: True) [25 ms]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AHeartbeatWhileTheRunIsBeingClosed_LeavesNoGhostRun(heartbeatDuringClose: False) [1 s]
+  Passed OnlineBackup.Tests.ChallengeF_StoreTests.AHeartbeatWhileTheRunIsBeingClosed_LeavesNoGhostRun(heartbeatDuringClose: True) [1 s]
+[xUnit.net 00:00:30.96]   Finished:    Tests
+  Passed OnlineBackup.Tests.CommitRefusalComponentTests.ADeltaRefusedAtCommit_IsAnErrorOfTheRun_AndTheNextBackupStoresTheFile [5 s]
+
+Total tests: 16
+     Passed: 15
+     Failed: 1
+ Total time: 31.6244 Seconds
+[xUnit.net 00:00:00.48]     OnlineBackup.Tests.SetStoreComponentTests.AStoppedRun_LeavesNoTrace_AndAJournaledRun_IsCompletedByTheNextStart [FAIL]
+Test Run Failed.

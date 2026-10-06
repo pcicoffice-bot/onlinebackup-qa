@@ -30,10 +30,10 @@ cap('BK-01', 'Backup', 'File backup, native engine (first, incremental: new / ch
     recovery=['x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning', 'qa:failure-recovery/f1', 'qa:failure-recovery/f2'],
     concurrency=['qa:failure-recovery/f3'],
     integrity=['qa:journeys/j3', 'qa:journeys/j4', E2E + 'DamagedObjectIsFoundQuarantinedAndResentFromTheSource'],
-    security=['x:UnitTests.TamperedOrWrongKeyIsRejected'], regression=[1, 2, 11])
+    security=['x:CryptoTests.TamperedOrWrongKeyIsRejected'], regression=[1, 2, 11])
 cap('BK-02', 'Backup', 'Delta chains (incremental / differential), long chain → new full', True, 'A/BackupRun.cs, C/Chunker.cs',
     happy=[E2E + 'EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy', E2E + 'DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull'],
-    failure=[], boundary=['x:UnitTests.InsertInTheMiddleChangesOnlyNearbyChunks'], recovery=[], concurrency=NA('one run per set'),
+    failure=[], boundary=['x:ChunkerTests.InsertInTheMiddleChangesOnlyNearbyChunks'], recovery=[], concurrency=NA('one run per set'),
     integrity=[E2E + 'EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy'], security=NA('same as BK-01'))
 cap('BK-03', 'Backup', 'File backup, restic engine', True, 'A/ResticRunner.cs, S/ResticStore.cs, S/ApiRestic.cs',
     happy=['qa:journeys/j6', 'x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing', 'x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository'],
@@ -43,7 +43,7 @@ cap('BK-03', 'Backup', 'File backup, restic engine', True, 'A/ResticRunner.cs, S
     concurrency=[], integrity=['qa:journeys/j6', 'x:ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing', 'x:ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly', 'x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository'],
     security=['x:ResticComponentTests.AnotherKey_ReadsNothing', 'x:ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository'], regression=[1, 4, 17, 21, 22, 23])
 cap('BK-04', 'Backup', 'Filters, skipped folders, links', True, 'A/BackupRun.cs (Scanner)',
-    happy=['x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore', 'x:UnitTests.FiltersExcludeLikeAhsay'], failure=NA('configuration only'),
+    happy=['x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore', 'x:FormatTests.FiltersExcludeLikeAhsay'], failure=NA('configuration only'),
     boundary=['x:OptionsTests.Links_FollowedOnlyWhenTheOptionIsOn'], recovery=NA('stateless'), concurrency=NA('stateless'),
     integrity=['x:OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore'], security=NA('no access decision'))
 cap('BK-05', 'Backup', 'Unreadable data is an error (permission denied, locked file, folder gone)', True, 'A/BackupRun.cs, A/Sources.cs',
@@ -123,7 +123,7 @@ cap('ST-02', 'Server storage', 'Run lease, interrupted runs closed and recorded'
     boundary=['x:LeaseComponentTests.OpenWhileAlive_ClosedFiveMinutesAfterTheLastSignOfLife_NamedOnce_ThenTheSetBeginsAgain', ], recovery=['x:LeaseComponentTests.ACommittingRun_IsNeverExpired', 'x:InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning', 'x:InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce', 'qa:journeys/j5'],
     concurrency=['qa:failure-recovery/f3'], integrity=['x:LeaseComponentTests.ACommittingRun_IsNeverExpired', 'qa:journeys/j5'], security=NA('-'), regression=[1, 11])
 cap('ST-03', 'Server storage', 'Retention (days / jobs / GFS), never the current version', True, 'S/SetStore.cs (ApplyRetention)',
-    happy=['qa:journeys/j8', 'x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints', E2E + 'RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched', 'x:UnitTests.RetentionByDaysJobsAndAdvanced',
+    happy=['qa:journeys/j8', 'x:RetentionTests.Policy_KeepsExactlyTheExpectedPoints', E2E + 'RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched', 'x:FormatTests.RetentionByDaysJobsAndAdvanced',
            'x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded'],
     failure=NA('a policy has no failing input; a bad policy value is a boundary'), boundary=['x:RetentionTests.Boundaries_NoPoints_OnePoint_AllTooOld_ThePointExactlyAtTheLimit', 'x:TimeMachineTests.TwentyFiveDays_SchedulesVersionsAlertsServiceCallsAndMails'],
     recovery=['x:RetentionTests.RealServer_KeepsOnlyThePolicysPoints_AndEachKeptPointRestoresIdentical_DeltaChainsIncluded'], concurrency=[],
@@ -164,9 +164,9 @@ cap('AG-05', 'Agent', 'Network: server unreachable, line cut, reconnect', True, 
     failure=['x:NetworkTests.ARefusal_IsNotSentAgain', 'x:NetworkTests.AnUploadCutInTheMiddle_IsANetworkError_NotARawException', 'qa:failure-recovery/f2', 'x:InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError'],
     boundary=['x:NetworkTests.AServerThatNeverAnswers_EndsAtTheLimit_WithANetworkError', 'x:InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan'],
     recovery=['x:NetworkTests.ACut_IsSentAgain_AndTheCallSucceeds', 'x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical', 'qa:failure-recovery/f2', 'x:ResourceTests.MissedOrCutOffByTheInternet_StartsWhenItIsBack'],
-    concurrency=NA('-'), integrity=['x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical', 'qa:failure-recovery/f2'], security=NA('-'), regression=[20, 24])
+    concurrency=NA('-'), integrity=['x:NetworkTests.RealBackup_TheLineIsCutOnceMidUpload_TheBackupCompletes_AndRestoresIdentical', 'qa:failure-recovery/f2', 'x:UploadStoredCopyIntegrationTests.TheServerOnceAnswersADifferentStoredCopy_TheObjectIsSentAgain_TheBackupRestoresIdentical', 'x:UploadStoredCopyIntegrationTests.TheServerAlwaysAnswersADifferentStoredCopy_TheFileIsNotCountedAsBackedUp'], security=NA('-'), regression=[20, 24])
 cap('AG-06', 'Agent', 'Local state (chunk index, keys) — lost, damaged', True, 'A/LocalState.cs', happy=[E2E + 'LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything'], failure=[], boundary=[], recovery=[E2E + 'LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything'],
-    concurrency=[], integrity=[E2E + 'LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything'], security=['x:UnitTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword'])
+    concurrency=[], integrity=[E2E + 'LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything'], security=['x:CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword'])
 cap('AG-07', 'Agent', 'TLS: built-in TLS 1.2 for old Windows, certificate pin', True, 'A/BuiltinTls.cs, A/Client.cs',
     happy=['x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused', 'x:TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic'],
     failure=['x:TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused'], boundary=NA('-'), recovery=NA('-'), concurrency=NA('-'),
@@ -176,8 +176,8 @@ cap('AG-08', 'Agent', 'The agent on .NET 4.0 (Windows 2003 / XP era)', False, 'A
 # ------------------------------------------------------------------ accounts, security
 cap('AU-01', 'Accounts and security', 'Administrator sign-in: password, mandatory two-step, lock, sessions, sign-out', True, 'S/Staff.cs, S/Users.cs',
     happy=['x:AuthComponentTests.Sessions_LiveTheirTime_EndAtSignOut_AdministratorsSlideWhileUsed', 'qa:journeys/j1', 'x:StaffTests.TwoStep_IsMandatory_NothingOpensBeforeItIsSetUp'], failure=['x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain', 'qa:journeys/j1', 'x:StaffTests.Administrators_AddChangeDelete_LockAndUnlock'],
-    boundary=['x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting', 'x:UnitTests.PasswordRule_AtLeast8Characters_WithALetter'], recovery=['x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain', 'x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt'], concurrency=[], integrity=NA('-'),
-    security=['x:UnitTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened', 'x:GuardTests.AdministratorSignIn_AfterFailures_IsReported'])
+    boundary=['x:AuthComponentTests.TheLockCannotBeWeakened_ByTheCustomersOwnSetting', 'x:CryptoTests.PasswordRule_AtLeast8Characters_WithALetter'], recovery=['x:AuthComponentTests.ThreeWrongPasswords_LockEvenTheRightOne_UntilTheTimePasses_ThenTheCountStartsAgain', 'x:StaffTests.FixedAddress_SignsInWithoutTheCode_OthersStillNeedIt'], concurrency=[], integrity=NA('-'),
+    security=['x:CryptoTests.TheLockAfterWrongPasswords_CannotBeSwitchedOffOrWeakened', 'x:GuardTests.AdministratorSignIn_AfterFailures_IsReported'])
 cap('AU-02', 'Accounts and security', 'Customer sign-in, register a computer, device token', True, 'S/Users.cs, A/AgentApp.cs (Register)',
     happy=['x:AuthComponentTests.RightPasswordIn_WrongOrUnknownOut_WithTheSameAnswer', 'x:ClientUiTests.SignInScreen_ChecksTheServer_ConnectsThisComputer_ThenNeverAgain'],
     failure=['x:AuthComponentTests.TwoStep_NoCodeOrWrongCodeRefused_RightCodeIn_BackupCodeOnlyOnce', 'x:AuthComponentTests.ASuspendedCustomer_CannotSignIn_EvenWithTheRightPassword', E2E + 'LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode'],
@@ -188,7 +188,7 @@ cap('AU-03', 'Accounts and security', 'Sign-up from the client with the contract
 cap('AU-04', 'Accounts and security', 'Guard: IP blocking (guessing, spraying, scanning)', False, 'S/Guard.cs', happy=['x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart'], failure=NA('-'),
     boundary=['x:GuardTests.ABlock_EndsByItself_AfterTheBlockingHours'], recovery=['x:GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart'], concurrency=[], integrity=NA('-'), security=['x:GuardTests.Scanning_ManyUnknownAddresses_IsBlocked'])
 cap('AU-05', 'Accounts and security', 'Encryption: keys (password / random / custom), check value, tamper detection', True, 'C/Crypto.cs, C/BackupObject.cs',
-    happy=['x:UnitTests.EncryptDecryptRoundTrip'], failure=['x:UnitTests.TamperedOrWrongKeyIsRejected'], boundary=[], recovery=[E2E + 'KeyRecoveryAndRestoreOnANewComputer'], concurrency=NA('-'), integrity=['x:UnitTests.EncryptDecryptRoundTrip'], security=['x:UnitTests.TamperedOrWrongKeyIsRejected'])
+    happy=['x:CryptoTests.EncryptDecryptRoundTrip'], failure=['x:CryptoTests.TamperedOrWrongKeyIsRejected'], boundary=[], recovery=[E2E + 'KeyRecoveryAndRestoreOnANewComputer'], concurrency=NA('-'), integrity=['x:CryptoTests.EncryptDecryptRoundTrip'], security=['x:CryptoTests.TamperedOrWrongKeyIsRejected'])
 cap('AU-06', 'Accounts and security', 'Customer limits, vendors (resellers) see only theirs', False, 'S/Vendors.cs, S/SetControl.cs', happy=['x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand'], failure=[], boundary=[], recovery=NA('-'), concurrency=NA('-'), integrity=NA('-'),
     security=['x:VendorTests.EachVendorSeesOnlyItsCustomers_WithinItsLimits_AndMailsCarryItsBrand', 'x:CustomerTests.Customer_ChangesOnlyWhatItsProviderAllows'])
 cap('AU-07', 'Accounts and security', 'API refuses junk and attacks clearly', True, 'S/Api.cs', happy=NA('-'), failure=['x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks'], boundary=['x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks'],
@@ -247,10 +247,10 @@ cap('UI-08', 'User interfaces', 'AI: explain a failed run, insights, forecasts',
 cap('UI-09', 'User interfaces', 'Large installations: 500 customers, 5 000 sets stay fast', False, 'S/Api.cs', happy=['x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast'], failure=NA('-'), boundary=['x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast'], recovery=NA('-'), concurrency=['x:LoadTests.BigServer_500Customers_5000Sets_PagesAndComputersStayFast'], integrity=NA('-'), security=NA('-'))
 
 cap('CO-01', 'Core', 'Shared formats: messages, profile, log lines, run ids, atomic file writes', True, 'C/Msg.cs, C/Profile.cs, C/Formats.cs, C/Json.cs',
-    happy=['x:CoreFormatsTests.AMessage_ReadsBackExactly', 'x:UnitTests.LogLinesMatchAhsayFormat', 'x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes', 'x:AiTests.JsonReadsAndWritesGraphShapes', 'x:OptionsTests.Settings_Survive_TheProfile'],
+    happy=['x:CoreFormatsTests.AMessage_ReadsBackExactly', 'x:FormatTests.LogLinesMatchAhsayFormat', 'x:FormatTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes', 'x:M365Tests.JsonReadsAndWritesGraphShapes', 'x:ResourceTests.Settings_Survive_TheProfile'],
     failure=['x:FuzzTests.JunkAndAttacks_AreRefusedClearly_TheServerKeepsRunning_NothingLeaks'], boundary=['x:CoreFormatsTests.AMessage_ReadsBackExactly'],
     recovery=['x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail'], concurrency=['x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail'],
-    integrity=['x:CoreFormatsTests.AMessage_ReadsBackExactly', 'x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail', 'x:UnitTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes'], security=NA('no access decision'))
+    integrity=['x:CoreFormatsTests.AMessage_ReadsBackExactly', 'x:CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail', 'x:FormatTests.ProfileUsesAhsayNamesAndKeepsUnknownAttributes'], security=NA('no access decision'))
 
 # Files whose capability is named above only by area: every source file belongs to at least one capability (a new file
 # that belongs to none is listed as a hidden area in COVERAGE-MATRIX.md until it is added here or to a capability's code)
@@ -352,16 +352,44 @@ def windows_results():
                 r[k] = v
     return r
 
+def worst(a, b):
+    """Several results for one key: Failed > Skipped (not everything ran) > Passed."""
+    order = ['Failed', 'Skipped', 'Passed']
+    return min((x for x in (a, b) if x), key=lambda x: order.index(x) if x in order else 0, default=b)
+
+def guarded_tests():
+    """Class.Method of every xUnit test whose body opens with `if (...) return;` (a precondition guard)."""
+    tdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Tests'); out = set()
+    if not os.path.isdir(tdir): return out
+    for f in sorted(os.listdir(tdir)):
+        if not f.endswith('.cs'): continue
+        src = open(os.path.join(tdir, f), encoding='utf-8').read()
+        for m in re.finditer(r'\[(Fact|Theory)[^\]]*\](?:\s*(?:\[[^\]]*\]|//[^\n]*))*\s*public\s+(?:async\s+\w+\s+|void\s+)(\w+)\s*\(', src):
+            start = src.index('{', m.end()); body = src[start:start + 600]
+            g = re.search(r'^\s*if \((.*)\)\s*return;', body, re.M)
+            if g and g.start() < 400:
+                cls = re.findall(r'^    (?:[a-z]+ )*class (\w+)', src[:m.start()], re.M)   # the test class, not a nested helper
+                if cls: out.add(cls[-1] + '.' + m.group(2))
+    return out
+
 def results():
     """The outcome of every test id in the last runs: xUnit trx + QA Playwright json + Windows json + robots."""
     here = os.path.dirname(os.path.abspath(__file__)); r = {}
     trx = os.path.join(here, 'reports', 'trx', 'xunit.trx')
     if os.path.exists(trx):
+        guarded = guarded_tests()
         for m in re.finditer(r'<UnitTestResult [^>]*testName="([^"]+)"[^>]*outcome="([^"]+)"', open(trx, encoding='utf-8').read()):
             name = m.group(1).replace('&quot;', '"'); mm = re.match(r'OnlineBackup\.Tests\.(\w+)\.(\w+)', name)
             if mm:
+                outcome = m.group(2)
+                if outcome == 'NotExecuted': outcome = 'Skipped'
+                dur = re.search(r'duration="(\d+):(\d+):([\d.]+)"', m.group(0))
+                secs = int(dur.group(1)) * 3600 + int(dur.group(2)) * 60 + float(dur.group(3)) if dur else None
+                # L-1: a test whose body starts with `if (<precondition missing>) return;` and "passed" in under 50 ms
+                # returned at its guard — xUnit says Passed, but nothing was tested: NOT TESTED, never PASS
+                if outcome == 'Passed' and mm.group(1) + '.' + mm.group(2) in guarded and (secs is None or secs < 0.05): outcome = 'Skipped'
                 for k in ('x:' + mm.group(1) + '.' + mm.group(2), 'x:*.' + mm.group(2)):   # also by method name: a class name never hides a test
-                    if r.get(k) != 'Failed': r[k] = m.group(2)
+                    r[k] = worst(r.get(k), outcome)
     js = os.path.join(here, 'reports', 'last-run.json')
     if os.path.exists(js):
         def walk(s, f):
@@ -370,11 +398,34 @@ def results():
                 key = 'qa:' + (sp.get('file') or f).replace('.spec.ts', '')
                 ok = sp.get('ok') and all(res.get('status') == 'passed' for t in sp.get('tests', []) for res in t.get('results', []))
                 skipped = all(res.get('status') == 'skipped' for t in sp.get('tests', []) for res in t.get('results', []))
-                r[key] = 'Skipped' if skipped else 'Passed' if ok else 'Failed'
+                r[key] = worst(r.get(key), 'Skipped' if skipped else 'Passed' if ok else 'Failed')   # L-2: several tests in one file
         walk(json.load(open(js)), '')
     r.update(windows_results())
-    for k, v in json.loads(os.environ.get('QA_EXTRA_RESULTS', '{}')).items(): r[k] = v
     return r
+
+def test_classes():
+    """Method name → the test classes (top level, not nested helpers) that hold it."""
+    tdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'Tests'); where = {}
+    for f in sorted(os.listdir(tdir)) if os.path.isdir(tdir) else []:
+        if not f.endswith('.cs'): continue
+        cls = None
+        for line in open(os.path.join(tdir, f), encoding='utf-8'):
+            m = re.match(r'    (?:[a-z]+ )*class (\w+)', line)
+            if m: cls = m.group(1)
+            m = re.search(r'public\s+(?:async\s+\w+|void)\s+(\w+)\s*\(', line)
+            if m and cls: where.setdefault(m.group(1), set()).add(cls)
+    return where
+
+def wrong_ids():
+    """L-6: every x:Class.Method named in the matrix must exist in that class (else it is credited by another class's test)."""
+    where = test_classes(); bad = []
+    for c in C:
+        for d in c['dims'].values():
+            if isinstance(d, NA): continue
+            for t in d:
+                m = re.match(r'x:(\w+)\.(\w+)$', t)
+                if m and m.group(1) not in where.get(m.group(2), set()): bad.append((c['id'], t, sorted(where.get(m.group(2), []))))
+    return bad
 
 def resolve(ref, res):
     # qa:journeys/j3 matches qa:journeys/j3-backup-now
@@ -395,6 +446,10 @@ def resolve(ref, res):
 LAYERS = ['component', 'integration', 'e2e']
 E2E_DATA_CHECK = {'qa:journeys/j6', 'qa:journeys/j7', 'qa:journeys/j8', 'qa:journeys/j3', 'qa:journeys/j4', 'qa:journeys/j5', 'qa:failure-recovery/f1', 'qa:failure-recovery/f2', 'qa:failure-recovery/f3',
                   'qa:failure-recovery/f4', 'qa:failure-recovery/f5', 'qa:failure-recovery/f6', 'qa:failure-recovery/f7', 'win:W05', 'win:W06', 'win:W07', 'win:W08', 'win:W09', 'win:W10', 'win:W11', 'win:W12', 'win:W13', 'win:W14', 'win:W15', 'win:W19'}
+def data_check_id(t):
+    """qa:failure-recovery/f10-client-clock → qa:failure-recovery/f10 (the id without the file's title)."""
+    head, sep, base = t.rpartition('/')
+    return head + sep + base.split('-')[0]
 NO_DATA = {'UI-01', 'UI-02', 'UI-04', 'UI-05', 'UI-06', 'UI-07', 'UI-08', 'UI-09', 'AU-01', 'AU-02', 'AU-03', 'AU-04', 'AU-06', 'AU-07',
            'SH-03', 'SH-04', 'SH-05', 'SH-06', 'SH-07', 'AG-02', 'AG-03', 'AG-07', 'IN-05'}   # the user operation ends without a restore
 
@@ -452,7 +507,7 @@ def evaluate(res):
                 missing = ([] if ok['happy'] or na['happy'] else ['happy']) + ([] if fb else ['failure/recovery'])
             else:
                 tests = [(t, o) for d in D for t, o in got[d]]
-                data = c['id'] in NO_DATA or any(o == 'Passed' and t.split('-')[0] in E2E_DATA_CHECK or o == 'Passed' and any(t.startswith(x) for x in E2E_DATA_CHECK) for t, o in tests)
+                data = c['id'] in NO_DATA or any(o == 'Passed' and data_check_id(t) in E2E_DATA_CHECK for t, o in tests)   # L-5: exact id, f1 never credits f10
                 verified = any(o == 'Passed' for t, o in tests) and data
                 missing = ([] if any(o == 'Passed' for t, o in tests) else ['a real user run']) + ([] if data else ['restore + SHA-256'])
             anyp = any(ok.values())

@@ -1,0 +1,53 @@
+MUTATION M01b-endcount-with-new-test
+FILTER FullyQualifiedName~IndexLinesLostComponentTests|FullyQualifiedName~LocalStateComponentTests|FullyQualifiedName~AuditB_LocalStateTests|FullyQualifiedName~QaL_MutationGapTests
+diff --git a/src/Agent/LocalState.cs b/src/Agent/LocalState.cs
+index 9abb774..a83ed0f 100644
+--- a/src/Agent/LocalState.cs
++++ b/src/Agent/LocalState.cs
+@@ -146,7 +146,7 @@ namespace OnlineBackup.Agent
+                     Attrs = f[4], Seq = int.Parse(f[5], CultureInfo.InvariantCulture), DeltaBytes = long.Parse(f[6], CultureInfo.InvariantCulture)
+                 };
+             }
+-            if (v2 && end != entries) throw new FormatException("the index has " + entries + " lines of " + (end < 0 ? "an unknown number (its end is missing)" : end.ToString(CultureInfo.InvariantCulture)));
++            if (false && v2 && end != entries) throw new FormatException("the index has " + entries + " lines of " + (end < 0 ? "an unknown number (its end is missing)" : end.ToString(CultureInfo.InvariantCulture)));
+         }
+ 
+         /// <summary>Drops the whole index and every chunk list (they describe versions the server may not have).</summary>
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.16]   Discovering: Tests
+[xUnit.net 00:00:00.30]   Discovered:  Tests
+[xUnit.net 00:00:00.31]   Starting:    Tests
+  Passed OnlineBackup.Tests.LocalStateComponentTests.ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical [314 ms]
+  Passed OnlineBackup.Tests.LocalStateComponentTests.ADamagedChunkList_DoesNotFailEveryLaterBackup [90 ms]
+  Passed OnlineBackup.Tests.LocalStateComponentTests.ADamagedIndexLine_DoesNotFailEveryLaterBackup [115 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ACustomerFileNamedLikeTheCurrentTemporarySuffix_DoesNotBreakTheRestore [10 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.AValidObjectOfAnotherFile_IsRefusedByItsChecksum_NotRestoredUnderTheAskedName [7 ms]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.ASetOfAnotherComputer_OrOfASameNamedComputerWithoutItsKey_IsNotThisComputers [2 s]
+  Passed OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile [3 ms]
+[xUnit.net 00:00:07.11]       the newest point holds f00.txt,f01.txt,f02.txt,f03.txt,f04.txt,f05.txt,f06.txt,f07.txt,f08.txt,f09.txt,f10.txt,f11.txt — the source holds f04.txt,f05.txt,f06.txt,f07.txt,f08.txt,f09.txt,f10.txt,f11.txt
+[xUnit.net 00:00:07.11]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/QaL_MutationGapTests.cs(108,0): at OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint()
+[xUnit.net 00:00:07.11]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:07.11]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint [3 s]
+  Error Message:
+   the newest point holds f00.txt,f01.txt,f02.txt,f03.txt,f04.txt,f05.txt,f06.txt,f07.txt,f08.txt,f09.txt,f10.txt,f11.txt — the source holds f04.txt,f05.txt,f06.txt,f07.txt,f08.txt,f09.txt,f10.txt,f11.txt
+  Passed OnlineBackup.Tests.AuditB_LocalStateTests.OneSetsDamagedLocalIndex_DoesNotStopTheScheduledBackupsOfTheOtherSets(harm: "none") [3 s]
+  Passed OnlineBackup.Tests.AuditB_LocalStateTests.OneSetsDamagedLocalIndex_DoesNotStopTheScheduledBackupsOfTheOtherSets(harm: "lost-key") [3 s]
+  Passed OnlineBackup.Tests.AuditB_LocalStateTests.OneSetsDamagedLocalIndex_DoesNotStopTheScheduledBackupsOfTheOtherSets(harm: "damaged-index") [3 s]
+  Passed OnlineBackup.Tests.IndexLinesLostComponentTests.LinesOfTheIndexLost_TheDeletedFilesStillLeaveTheNewestPoint(damage: True) [2 s]
+[xUnit.net 00:00:22.65]   Finished:    Tests
+  Passed OnlineBackup.Tests.IndexLinesLostComponentTests.LinesOfTheIndexLost_TheDeletedFilesStillLeaveTheNewestPoint(damage: False) [2 s]
+
+Total tests: 13
+     Passed: 12
+     Failed: 1
+ Total time: 23.4285 Seconds
+[xUnit.net 00:00:07.11]     OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint [FAIL]
+Test Run Failed.

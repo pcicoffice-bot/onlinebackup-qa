@@ -22,6 +22,7 @@ test('F9 server killed and restarted during a restore → clear failure or full 
   const r = restoreProcess(ag, id, target);
   await expect.poll(() => fileCount(target), { timeout: 120000, intervals: [50] }).toBeGreaterThan(3);
   const before = fileCount(target);
+  expect(r.p.exitCode, 'the fault is injected while the restore runs (Agent L: not after it ended)').toBeNull();
   evidence.step('KILL the server with ' + before + ' files written; 20 s later it starts again');
   world.killServer();
   await new Promise((res) => setTimeout(res, 20000));

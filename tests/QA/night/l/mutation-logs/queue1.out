@@ -1,0 +1,49 @@
+baseline (799f7a519ab0): total 2 passed 2 fails []
+M08-size-header-listing mutant: total 2 passed 1 fails ['OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows:'] (12s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows:
+reverted; git diff --stat src: empty
+baseline (9a5131245afc): total 10 passed 10 fails []
+M09-place-always-overwrites mutant: total 10 passed 9 fails ['OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile'] (333s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile
+reverted; git diff --stat src: empty
+baseline (9a5131245afc): total 10 passed 10 fails []
+M10-restic-nothing-restored-ok mutant: total 10 passed 9 fails ['OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess'] (331s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess
+reverted; git diff --stat src: empty
+baseline (b93bf5a30d4f): total 18 passed 18 fails []
+MUTATION NOT APPLIED: old text found 2 times
+baseline (b93bf5a30d4f): total 18 passed 18 fails []
+MUTATION NOT APPLIED: old text found 2 times
+baseline (b93bf5a30d4f): total 18 passed 18 fails []
+M13-totp-step-reuse mutant: total 18 passed 17 fails ['OnlineBackup.Tests.AuditH_SessionTests.CustomerTwoStepCode_IsAcceptedOnlyOnce'] (50s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditH_SessionTests.CustomerTwoStepCode_IsAcceptedOnlyOnce
+reverted; git diff --stat src: empty
+baseline (d6c62feb7b96): total 6 passed 6 fails []
+M14-setcontrol-version-ignored mutant: total 6 passed 5 fails ['OnlineBackup.Tests.SetEditVersionIntegrationTests.TheSameTechnicianSavesTwice_ABackupMeanwhileDoesNotBlock_ASaveOverAnotherOneIsRefused'] (23s)
+VERDICT: KILLED by OnlineBackup.Tests.SetEditVersionIntegrationTests.TheSameTechnicianSavesTwice_ABackupMeanwhileDoesNotBlock_ASaveOverAnotherOneIsRefused
+reverted; git diff --stat src: empty
+baseline (f15384004a8e): total 8 passed 8 fails []
+M15-restore-temp-fixed-name mutant: total 8 passed 8 fails [] (20s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+baseline (95e9eed22004): total 8 passed 8 fails []
+M16-due-ignores-last-success mutant: total 8 passed 2 fails ['OnlineBackup.Tests.ClockSkewScheduleComponentTests.ADailySlotDoneOnce_IsNotDueAgain_WhenTheServerClockIsBehind(hoursBehind:', 'OnlineBackup.Tests.SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks', 'OnlineBackup.Tests.SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime(engine:', 'OnlineBackup.Tests.SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce'] (82s)
+VERDICT: KILLED by OnlineBackup.Tests.ClockSkewScheduleComponentTests.ADailySlotDoneOnce_IsNotDueAgain_WhenTheServerClockIsBehind(hoursBehind:, OnlineBackup.Tests.SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks, OnlineBackup.Tests.SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime(engine:, OnlineBackup.Tests.SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce
+reverted; git diff --stat src: empty
+baseline (139bd4c4f3c6): total 3 passed 3 fails []
+M17-diskimage-stale-accepted mutant: total 3 passed 2 fails ['OnlineBackup.Tests.BareMetalStaleImageTests.AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage'] (19s)
+VERDICT: KILLED by OnlineBackup.Tests.BareMetalStaleImageTests.AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage
+reverted; git diff --stat src: empty
+baseline (58d4ba246a33): total 15 passed 15 fails []
+M18-mine-ignores-computer mutant: total 15 passed 15 fails [] (106s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+baseline (9277ba2b1643): total 8 passed 8 fails []
+M19-restore-size-unchecked mutant: total 8 passed 8 fails [] (31s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+baseline (b242d0f3bf81): total 11 passed 11 fails []
+M20-upload-check-skipped mutant: total 11 passed 11 fails [] (19s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+QUEUE1 DONE

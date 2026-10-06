@@ -1,0 +1,47 @@
+MUTATION M18-mine-ignores-computer
+FILTER FullyQualifiedName~ComputerTests|FullyQualifiedName~GuardTests|FullyQualifiedName~SchedulerTests|FullyQualifiedName~ClientUiTests
+diff --git a/src/Agent/AgentApp.cs b/src/Agent/AgentApp.cs
+index b25cc86..7deb463 100644
+--- a/src/Agent/AgentApp.cs
++++ b/src/Agent/AgentApp.cs
+@@ -81,7 +81,7 @@ namespace OnlineBackup.Agent
+         /// A reinstall of the same computer (new registration) that has the key — password key, or recovered — keeps it.</summary>
+         public bool Mine(BackupSetInfo s)
+         {
+-            if (!string.IsNullOrEmpty(s.Computer) && !s.Computer.Equals(Home.Computer, StringComparison.OrdinalIgnoreCase)) return false;
++            /* computer not checked */
+             if (string.IsNullOrEmpty(s.Device) || s.Device == DeviceId) return true;
+             return Home.LoadKey(s.Id) != null;
+         }
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.21]   Discovered:  Tests
+[xUnit.net 00:00:00.22]   Starting:    Tests
+  Passed OnlineBackup.Tests.ComputerTests.List_Disconnect_MoveToAnotherCustomerWithTheBackups [25 s]
+  Passed OnlineBackup.Tests.ClientUiTests.Tree_NewBackupWithSkippedFolders_ChangeWithinRights_OnlyThisComputersSets [59 s]
+  Passed OnlineBackup.Tests.ClientUiTests.SignInScreen_NewCustomer_ContractShownOnlyAtSignup_ThenClosed [976 ms]
+  Passed OnlineBackup.Tests.ClientUiTests.SignInScreen_ChecksTheServer_ConnectsThisComputer_ThenNeverAgain [1 s]
+  Passed OnlineBackup.Tests.GuardTests.AdministratorSignIn_AfterFailures_IsReported [1 s]
+  Passed OnlineBackup.Tests.GuardTests.OfficeNetwork_AndThisServer_AreNeverBlocked_AndTheRulesAreSetByTheAdministrator [3 s]
+  Passed OnlineBackup.Tests.GuardTests.Scanning_ManyUnknownAddresses_IsBlocked [197 ms]
+  Passed OnlineBackup.Tests.GuardTests.ABlock_EndsByItself_AfterTheBlockingHours [212 ms]
+  Passed OnlineBackup.Tests.GuardTests.PasswordSpraying_ManyNames_FewTries_IsBlockedToo [942 ms]
+  Passed OnlineBackup.Tests.GuardTests.PasswordGuessing_BlocksTheAddress_ForEverything_UntilUnblocked_AndSurvivesARestart [1 s]
+  Passed OnlineBackup.Tests.SchedulerTests.Boundary_NoDayOfTheWeekChosen_NeverDue_AndASlotExactlyNowIsDue [4 ms]
+  Passed OnlineBackup.Tests.SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime(engine: "") [1 s]
+  Passed OnlineBackup.Tests.SchedulerTests.AfterASuccessfulScheduledBackup_TheSetIsNotDueAgain_UntilItsNextTime(engine: "RESTIC") [5 s]
+[xUnit.net 00:01:41.87]   Finished:    Tests
+  Passed OnlineBackup.Tests.SchedulerTests.AFailedRun_IsTriedAgainEvery15Minutes_NotEveryMinute_AndStopsOnceItWorks [8 ms]
+  Passed OnlineBackup.Tests.SchedulerTests.ThreeTimesADay_EachRunsOnce_NotTwiceAfterARestart_TheMissedOneOnce [14 ms]
+
+Test Run Successful.
+Total tests: 15
+     Passed: 15
+ Total time: 1.7082 Minutes

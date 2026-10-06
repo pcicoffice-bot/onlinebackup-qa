@@ -1,0 +1,49 @@
+MUTATION M17-diskimage-stale-accepted
+FILTER FullyQualifiedName~BareMetal
+diff --git a/src/Agent/DiskImage.cs b/src/Agent/DiskImage.cs
+index d78afbb..667ce14 100644
+--- a/src/Agent/DiskImage.cs
++++ b/src/Agent/DiskImage.cs
+@@ -86,7 +86,7 @@ namespace OnlineBackup.Agent
+             // nothing made an earlier run's image this run's, as a success
+             latest.Refresh();
+             var written = new[] { latest.LastWriteTimeUtc }.Concat(latest.GetFiles("*", SearchOption.AllDirectories).Select(f => f.LastWriteTimeUtc)).Max();
+-            if (written < started.AddSeconds(-2))
++            if (false)
+                 throw new IOException("wbadmin ended without writing a new image: the newest one (" + latest.Name + ") is from an earlier run");
+             manifest.Add(new XAttribute("TOOL", "wbadmin"), new XAttribute("IMAGE_COMPUTER", pc.Name), new XAttribute("BACKUP_FOLDER", latest.Name));
+             foreach (var f in pc.GetFiles("*", SearchOption.AllDirectories))
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.19]   Discovered:  Tests
+[xUnit.net 00:00:00.20]   Starting:    Tests
+  Passed OnlineBackup.Tests.BareMetalTests.WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads [5 s]
+  Passed OnlineBackup.Tests.BareMetalTests.ImageToolFailureKeepsThePreviousImage_AndWindows2003UsesNtbackup [3 s]
+[xUnit.net 00:00:13.82]       wbadmin wrote no image, and the run ended BS_STOP_SUCCESS with the old one:
+[xUnit.net 00:00:13.82]       1791318616371,info,,0,[Bare Metal Backup] wbadmin start backup -backupTarget:/tmp/obtest-0e9bd29908/stage -allCritical -quiet,,,0
+[xUnit.net 00:00:13.82]       1791318616374,info,,0,"[Bare Metal Backup] Image ready: 2 files, 1.0MB (only changed blocks are sent)",,,0
+[xUnit.net 00:00:13.82]       1791318616386,upd,Bare Metal\image.xml,634,,1791318616369,,220
+[xUnit.net 00:00:13.82]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/BareMetalStaleImageTests.cs(47,0): at OnlineBackup.Tests.BareMetalStaleImageTests.AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage()
+[xUnit.net 00:00:13.82]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:13.82]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:13.83]   Finished:    Tests
+  Failed OnlineBackup.Tests.BareMetalStaleImageTests.AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage [4 s]
+  Error Message:
+   wbadmin wrote no image, and the run ended BS_STOP_SUCCESS with the old one:
+1791318616371,info,,0,[Bare Metal Backup] wbadmin start backup -backupTarget:/tmp/obtest-0e9bd29908/stage -allCritical -quiet,,,0
+1791318616374,info,,0,"[Bare Metal Backup] Image ready: 2 files, 1.0MB (only changed blocks are sent)",,,0
+1791318616386,upd,Bare Metal\image.xml,634,,1791318616369,,220
+
+Total tests: 3
+     Passed: 2
+     Failed: 1
+ Total time: 14.4400 Seconds
+[xUnit.net 00:00:13.82]     OnlineBackup.Tests.BareMetalStaleImageTests.AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage [FAIL]
+Test Run Failed.

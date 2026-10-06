@@ -1,0 +1,50 @@
+MUTATION M10-restic-nothing-restored-ok
+FILTER FullyQualifiedName~AuditJ_ResticServerTests|FullyQualifiedName~AuditJ_ResticEngineTests
+diff --git a/src/Agent/ResticRunner.cs b/src/Agent/ResticRunner.cs
+index bd92390..2fbaf4e 100644
+--- a/src/Agent/ResticRunner.cs
++++ b/src/Agent/ResticRunner.cs
+@@ -535,7 +535,7 @@ namespace OnlineBackup.Agent
+                 if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err) + " — nothing was put in place; run the restore again");
+                 var c = new int[3];   // placed, kept (existed), replaced
+                 Place(stage, target, overwrite, c);
+-                if (c[0] + c[1] + c[2] == 0) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
++                if (false) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
+                 log.Add(AhsayLog.Info(Clock(), "Restored: " + c[0] + " new, " + c[2] + " replaced, " + c[1] + " kept (already there" + (overwrite ? "" : "; 'Replace existing files' was not chosen") + ")"));
+             }
+             finally { try { if (Directory.Exists(stage)) Directory.Delete(stage, true); } catch (Exception) { } }
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.20]   Discovered:  Tests
+[xUnit.net 00:00:00.21]   Starting:    Tests
+  Passed OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer [9 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile [7 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile [5 s]
+[xUnit.net 00:00:46.72]       restic restored 0 files and the product reported success
+[xUnit.net 00:00:46.72]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/AuditJ_ResticEngineTests.cs(286,0): at OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess()
+[xUnit.net 00:00:46.72]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:46.72]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess [24 s]
+  Error Message:
+   restic restored 0 files and the product reported success
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog [25 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot [1 m 7 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation [44 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile [26 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved [1 m 9 s]
+[xUnit.net 00:05:24.20]   Finished:    Tests
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact [44 s]
+
+Total tests: 10
+     Passed: 9
+     Failed: 1
+ Total time: 5.4128 Minutes
+[xUnit.net 00:00:46.71]     OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess [FAIL]
+Test Run Failed.

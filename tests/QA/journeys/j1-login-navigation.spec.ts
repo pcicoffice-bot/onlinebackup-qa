@@ -37,7 +37,7 @@ test('J1 sign-in, every menu page opens without errors, reload keeps the session
     await expect(page.locator('main'), 'page "' + p.name + '" shows no raw error').not.toContainText(/undefined|NaN|\[object Object\]|Exception/);
   }
   // from the very first page (the sign-in page too), except the one refusal we caused on purpose (wrong password → 401)
-  const wanted401 = (m: string) => /401/.test(m) && !/woff|\.css|\.js/.test(m);
+  const wanted401 = (m: string) => /\b401\b/.test(m) && /\/api\/admin\/login(\b|$)/.test(m);   // Agent L: only the sign-in refusal, never any other 401
   expect(evidence.console.filter((m) => !wanted401(m)), 'no console errors on any page (fonts, scripts, styles included)').toEqual([]);
   expect(evidence.network.filter((m) => !/^401 POST .*\/api\/admin\/login$/.test(m)), 'no failed request on any page').toEqual([]);
 

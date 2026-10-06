@@ -36,7 +36,21 @@ namespace OnlineBackup.Tests
                 while (true) { int n = x.Read(p, 0, p.Length); if (n == 0) return true; int m = 0; while (m < n) { int k = y.Read(q, m, n - m); if (k == 0) return false; m += k; } for (int i = 0; i < n; i++) if (p[i] != q[i]) return false; }
             }
         }
-        static void KillRestic() { foreach (var p in Process.GetProcessesByName("restic")) try { p.Kill(); } catch { } }
+        /// <summary>Kills only the restic processes whose command line names <paramref name="mine"/> (this test's folder — never
+        /// another test's or agent's restic; outside Linux every restic) and returns how many it killed while they ran.</summary>
+        internal static int KillRestic(string mine)
+        {
+            int killed = 0;
+            foreach (var p in Process.GetProcessesByName("restic"))
+                try
+                {
+                    if (OperatingSystem.IsLinux() && !File.ReadAllText("/proc/" + p.Id + "/cmdline").Replace('\0', ' ').Contains(mine)) continue;
+                    if (!p.HasExited) { p.Kill(); killed++; }
+                }
+                catch (Exception) { }
+            return killed;
+        }
+        static long BytesUnder(string d) { try { return Directory.Exists(d) ? Directory.GetFiles(d, "*", SearchOption.AllDirectories).Sum(f => { try { return new FileInfo(f).Length; } catch (IOException) { return 0L; } }) : 0; } catch (IOException) { return 0; } catch (UnauthorizedAccessException) { return 0; } }
 
         static BackupSetInfo NewSet(Env env, string login, out AgentApp app, string src, double quotaGB = 1)
         {
@@ -58,11 +72,16 @@ namespace OnlineBackup.Tests
                 Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);
                 var target = env.Dir("restore");
                 var rs = app.Restic(set);
-                var t = new Thread(() => { try { rs.Restore(null, target, null, new List<string>()); } catch { } });
+                Exception cut = null;
+                var t = new Thread(() => { try { rs.Restore(null, target, null, new List<string>()); } catch (Exception e) { cut = e; } });
                 t.Start();
-                var dir = Path.Combine(target, Env.Rel(src)); var until = DateTime.UtcNow.AddSeconds(60);
-                while (DateTime.UtcNow < until && (!Directory.Exists(dir) || Directory.GetFiles(dir).Sum(f => new FileInfo(f).Length) < 60L << 20)) Thread.Sleep(20);
-                KillRestic(); t.Join();
+                // L-3: restic writes into target/.ob-restoring-* and the files move into place only at the end, so the data
+                // to wait for is anywhere under the target, not in its final folder (that wait ended after the restore did)
+                var dir = Path.Combine(target, Env.Rel(src)); var until = DateTime.UtcNow.AddSeconds(120);
+                while (DateTime.UtcNow < until && t.IsAlive && BytesUnder(target) < 60L << 20) Thread.Sleep(20);
+                var killed = t.IsAlive ? KillRestic(target) : 0; t.Join();
+                Assert.True(killed > 0, "the fault was not injected: the restore had ended before restic could be killed");
+                Assert.NotNull(cut);                                            // the cut restore is not reported as a success
                 rs.Restore(null, target, null, new List<string>());          // "the line came back": restore again into the same folder
                 foreach (var f in Directory.GetFiles(src)) Assert.True(Same(f, Path.Combine(dir, Path.GetFileName(f))), "differs: " + f);
                 Assert.Equal(5, Directory.GetFiles(dir).Length);

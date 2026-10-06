@@ -24,11 +24,13 @@ namespace OnlineBackup.Tests
                 var src = env.Dir("src");
                 File.WriteAllText(Path.Combine(src, "report.txt"), "the report");
                 File.WriteAllText(Path.Combine(src, "report.txt.restoring"), "the customer's own file that happens to have this name");
+                File.WriteAllText(Path.Combine(src, "report.txt.ob-restoring"), "another own file, named like today's temporary file without its random part");   // Agent L, M15
                 var set = app.CreateSet(app.Interactive("Customer-Pass-1", null), "Customer-Pass-1", new BackupSetInfo { Name = "T", Sources = { src }, Vss = false });
                 Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);
 
                 // the customer lost report.txt and restores it to its original place; their other file stays where it is
                 var own = File.ReadAllBytes(Path.Combine(src, "report.txt.restoring"));
+                var own2 = File.ReadAllBytes(Path.Combine(src, "report.txt.ob-restoring"));
                 var report = File.ReadAllBytes(Path.Combine(src, "report.txt"));
                 File.Delete(Path.Combine(src, "report.txt"));
                 var rs = app.RestoreFor(app.Interactive("Customer-Pass-1", null), set.Id);
@@ -37,6 +39,8 @@ namespace OnlineBackup.Tests
                 Assert.True(File.Exists(Path.Combine(src, "report.txt.restoring")), "the customer's file report.txt.restoring is gone after restoring report.txt");
                 Assert.Equal(Bytes.Hex(Bytes.Sha256(own)), Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(src, "report.txt.restoring")))));
                 Assert.Equal(Bytes.Hex(Bytes.Sha256(report)), Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(src, "report.txt")))));
+                Assert.True(File.Exists(Path.Combine(src, "report.txt.ob-restoring")), "the customer's file report.txt.ob-restoring is gone after restoring report.txt");
+                Assert.Equal(Bytes.Hex(Bytes.Sha256(own2)), Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(src, "report.txt.ob-restoring")))));
             }
         }
 

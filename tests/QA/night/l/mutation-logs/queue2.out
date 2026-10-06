@@ -1,0 +1,37 @@
+baseline (b93bf5a30d4f): total 18 passed 18 fails []
+M11-session-ip-not-checked mutant: total 18 passed 17 fails ['OnlineBackup.Tests.AuditH_SessionTests.CustomerFixedAddresses_AlsoApplyToAnOpenSession'] (41s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditH_SessionTests.CustomerFixedAddresses_AlsoApplyToAnOpenSession
+reverted; git diff --stat src: empty
+baseline (b93bf5a30d4f): total 18 passed 18 fails []
+M12-session-suspended-not-checked mutant: total 18 passed 17 fails ['OnlineBackup.Tests.AuditH_SessionTests.SuspendedCustomer_OpenSessionIsRefused_LikeItsDeviceToken'] (43s)
+VERDICT: KILLED by OnlineBackup.Tests.AuditH_SessionTests.SuspendedCustomer_OpenSessionIsRefused_LikeItsDeviceToken
+reverted; git diff --stat src: empty
+baseline (1a9068b69448): total 13 passed 13 fails []
+M01b-endcount-with-new-test mutant: total 13 passed 12 fails ['OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint'] (28s)
+VERDICT: KILLED by OnlineBackup.Tests.QaL_MutationGapTests.LinesLost_EndLineIntact_TheCountAloneFindsIt_DeletedFilesLeaveTheNewestPoint
+reverted; git diff --stat src: empty
+baseline (9433b89559b3): total 9 passed 9 fails []
+M03b-restore-sha-with-new-test mutant: total 9 passed 8 fails ['OnlineBackup.Tests.QaL_MutationGapTests.AValidObjectOfAnotherFile_IsRefusedByItsChecksum_NotRestoredUnderTheAskedName'] (12s)
+VERDICT: KILLED by OnlineBackup.Tests.QaL_MutationGapTests.AValidObjectOfAnotherFile_IsRefusedByItsChecksum_NotRestoredUnderTheAskedName
+reverted; git diff --stat src: empty
+baseline (5b025adaa547): total 9 passed 9 fails []
+M15b-temp-fixed-name-with-new-test mutant: total 9 passed 8 fails ['OnlineBackup.Tests.QaL_MutationGapTests.ACustomerFileNamedLikeTheCurrentTemporarySuffix_DoesNotBreakTheRestore'] (12s)
+VERDICT: KILLED by OnlineBackup.Tests.QaL_MutationGapTests.ACustomerFileNamedLikeTheCurrentTemporarySuffix_DoesNotBreakTheRestore
+reverted; git diff --stat src: empty
+baseline (7f67a4e571a9): total 12 passed 12 fails []
+M18b-mine-computer-with-new-test mutant: total 12 passed 12 fails [] (29s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+baseline (58d4ba246a33): total 15 passed 15 fails []
+M18c-mine-key-not-checked mutant: total 15 passed 15 fails [] (78s)
+VERDICT: SURVIVED
+reverted; git diff --stat src: empty
+baseline (7f67a4e571a9): total 12 passed 12 fails []
+M18d-mine-key-with-new-test mutant: total 12 passed 11 fails ['OnlineBackup.Tests.QaL_MutationGapTests.ASetOfAnotherComputer_OrOfASameNamedComputerWithoutItsKey_IsNotThisComputers'] (42s)
+VERDICT: KILLED by OnlineBackup.Tests.QaL_MutationGapTests.ASetOfAnotherComputer_OrOfASameNamedComputerWithoutItsKey_IsNotThisComputers
+reverted; git diff --stat src: empty
+baseline (9804c3800a0e): total 10 passed 10 fails []
+M19b-size-unchecked-with-new-test mutant: total 10 passed 9 fails ['OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile'] (18s)
+VERDICT: KILLED by OnlineBackup.Tests.QaL_MutationGapTests.AnObjectWhoseChunksDoNotMakeItsStatedSize_IsAFailedFile_NotAShorterFile
+reverted; git diff --stat src: empty
+QUEUE2 DONE

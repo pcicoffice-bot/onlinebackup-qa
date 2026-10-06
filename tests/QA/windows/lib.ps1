@@ -321,11 +321,16 @@ function UiaReport([string]$processName) {
   }
   return ($out -join ' ;; ')
 }
+# Q14 (W1 run 10): every matcher is written with $_, but it was called as "& $match $w" - $_ was empty there, so a
+# matcher that needs a property ("wider than 300", "is a #32770 dialog") was never true: the client's window and the
+# removal's Yes/No question were "not found" in runs 8-10 while UI Automation had both; a "-ne" matcher was true for
+# anything. Where-Object gives the matcher the window as $_.
+function WindowMatches($w, [scriptblock]$match) { return (@($w | Where-Object $match).Count -gt 0) }
 function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]$seconds = 60) {
   $until = (Get-Date).AddSeconds($seconds)
   $script:LastWaitError = $null
   while ((Get-Date) -lt $until) {
-    try { foreach ($w in (TopWindows $processName)) { if (& $match $w) { return $w } } } catch { $script:LastWaitError = $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
+    try { foreach ($w in (TopWindows $processName)) { if (WindowMatches $w $match) { return $w } } } catch { $script:LastWaitError = $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
     Start-Sleep -Milliseconds 400
   }
   return $null

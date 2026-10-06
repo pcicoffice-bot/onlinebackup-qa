@@ -36,6 +36,10 @@ jobs:
       - name: Every journey and failure / recovery scenario
         working-directory: tests/QA
         run: npx playwright test
+      - name: None may be skipped (a skipped scenario is NOT TESTED, never a green job — Agent L)
+        working-directory: tests/QA
+        run: |
+          node -e "const r=require('./reports/last-run.json'); const s=r.stats; console.log(JSON.stringify(s)); if (s.unexpected||s.skipped||s.flaky) process.exit(1)"
       - name: On a failure, keep the logs of the failed journeys in qa-evidence (runs/<run id>/journeys; no videos)
         if: failure()
         run: |

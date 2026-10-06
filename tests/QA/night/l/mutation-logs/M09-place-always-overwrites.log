@@ -1,0 +1,50 @@
+MUTATION M09-place-always-overwrites
+FILTER FullyQualifiedName~AuditJ_ResticServerTests|FullyQualifiedName~AuditJ_ResticEngineTests
+diff --git a/src/Agent/ResticRunner.cs b/src/Agent/ResticRunner.cs
+index bd92390..a14ff37 100644
+--- a/src/Agent/ResticRunner.cs
++++ b/src/Agent/ResticRunner.cs
+@@ -557,7 +557,7 @@ namespace OnlineBackup.Agent
+                 if (isDir && !there) { c[0] += Math.Max(1, Count((DirectoryInfo)e)); Directory.Move(e.FullName, dest); }
+                 else if (isDir && Directory.Exists(dest) && !IsLink(new DirectoryInfo(dest))) Place(e.FullName, dest, overwrite, c);
+                 else if (!there) { MoveEntry(e, dest); c[0]++; }
+-                else if (overwrite && File.Exists(dest) && !isDir) { File.Delete(dest); MoveEntry(e, dest); c[2]++; }
++                else if (File.Exists(dest) && !isDir) { File.Delete(dest); MoveEntry(e, dest); c[2]++; }
+                 else c[1]++;
+             }
+         }
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.24]   Discovered:  Tests
+[xUnit.net 00:00:00.28]   Starting:    Tests
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess [24 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog [24 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot [1 m 8 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation [43 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile [26 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved [1 m 8 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact [46 s]
+  Passed OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer [8 s]
+[xUnit.net 00:05:18.11]       'Replace existing files' was off, yet the newer local file now reads: version from the backup
+[xUnit.net 00:05:18.11]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-l/tests/Tests/AuditJ_ResticServerTests.cs(88,0): at OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile()
+[xUnit.net 00:05:18.11]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:05:18.11]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile [6 s]
+  Error Message:
+   'Replace existing files' was off, yet the newer local file now reads: version from the backup
+[xUnit.net 00:05:23.85]   Finished:    Tests
+  Passed OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile [5 s]
+
+Total tests: 10
+     Passed: 9
+     Failed: 1
+ Total time: 5.4076 Minutes
+[xUnit.net 00:05:18.11]     OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile [FAIL]
+Test Run Failed.

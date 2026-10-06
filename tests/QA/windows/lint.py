@@ -92,10 +92,15 @@ if __name__ == '__main__':
         for n, l in enumerate(s.splitlines(), 1):
             if re.search(r'@\{[^}]*(?:^|[;{\s])(?:keys|values|count)\s*=', l, re.I):
                 bad += 1; print('%s:%d: a hashtable key named keys/values/count is hidden by the hashtable\'s own property:\n  %s' % (p, n, l.strip()[:200]))
+        # Windows PowerShell 5.1 reads a file without a BOM as the ANSI code page: one non-ASCII character (an em dash in a
+        # comment) can end a string early and break the whole script on Windows only - every script stays ASCII
+        for n, l in enumerate(s.splitlines(), 1):
+            if any(ord(c) > 127 for c in l):
+                bad += 1; print('%s:%d: a non-ASCII character (PowerShell 5.1 reads this file as ANSI):\n  %s' % (p, n, l.strip()[:200]))
         if t != s:
             bad += 1
             if '--fix' in sys.argv: open(p, 'w', encoding='utf-8').write(t); print(p, 'fixed')
             else:
                 for n, (a, b) in enumerate(zip(s.splitlines(), t.splitlines()), 1):
                     if a != b: print('%s:%d: a check whose first or second element is not one parenthesised group:\n  %s' % (p, n, a.strip()[:200]))
-    sys.exit(1 if bad and ('--fix' not in sys.argv or any(unwrapped(open(p, encoding='utf-8').read()) for p in args)) else 0)
+    sys.exit(1 if bad and ('--fix' not in sys.argv or any(any(ord(c) > 127 for c in open(p, encoding='utf-8').read()) for p in args) or any(unwrapped(open(p, encoding='utf-8').read()) for p in args)) else 0)
