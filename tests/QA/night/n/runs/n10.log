@@ -1,0 +1,8 @@
+
+Running 3 tests using 1 worker
+
+[1/3] failure-recovery/n10-external-process-hang.spec.ts:26:5 › N10a pre-command that never ends → stopped at the real 1-hour limit (agent clock 120×) with its child → backup completes → restore identical (SHA-256)
+[2/3] failure-recovery/n10-external-process-hang.spec.ts:65:5 › N10b agent killed while its pre-command hangs (real clock) → observed: what the server shows during the hang, what is left running → next backup + restore identical (SHA-256)
+[3/3] failure-recovery/n10-external-process-hang.spec.ts:91:5 › N10c restic hangs silently during the backup → stopped at the real 30-min idle limit (agent clock 120×), nothing left running, no false success → real restic → backup → restore identical (SHA-256)
+  3 passed (2.7m)
+exit=0

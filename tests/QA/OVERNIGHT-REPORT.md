@@ -43,6 +43,18 @@ _(see also docs/R1-BUGLOG.md)_
   from this environment (network policy); every competitor claim is a paraphrase of a search excerpt with the official
   URL, to be opened once before approving.
 
+- **N-1 (Agent N):** the server committed a run (BS_STOP_SUCCESS, a point), then the computer could not save its local
+  index (disk full): the computer says BS_STOP_BY_SYSTEM_ERROR, the server says success, the customer sees "failed".
+  The next run rebuilds the index and is correct. Which should the run be: success-with-warning on both, or failed?
+- **N-4 part 2:** when the server cannot even begin a run (its storage read-only), the run is not in the server's history
+  at all — record it as failed / alert, or not?
+- **N-5:** with the native engine, pre-commands run before the run is visible on the server (up to the 1-hour limit,
+  nothing on the live page); the restic engine shows it first. And a pre-command keeps running when the agent is killed.
+- **M-3:** on a spring-forward night a slot inside the gap now runs at the first minute after the gap (03:00 for 02:30) —
+  the exact minute is the owner's to confirm (before: it never ran with "run missed" off).
+- **M (observations):** the log-backup interval counts from the end of the previous log run (drifts by its length);
+  the 30-day restore-test mark is written before the test runs (a test that throws waits 30 days).
+
 ## 15. Soak
 ## 16. Failure scenarios run
 ## 17. Restore / SHA-256 evidence

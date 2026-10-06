@@ -1,0 +1,7 @@
+{
+ "dfAfterBackup1": "67108864 25694208 41414656  39% /tmp/obqa-NvaaHn/small-disk",
+ "dfFilled": "67108864 63963136 3145728  96% /tmp/obqa-NvaaHn/small-disk",
+ "backup2": "BS_STOP_BY_SYSTEM_ERROR new=0 upd=1 perm=0 del=0 bytes=506\nerr:  The backup server's disk is full: new backups cannot be stored. Existing backups are not affected — the provider must free space.\nerr:  The backup server's disk is full: new backups cannot be stored. Existing backups are not affected — your provider must free space.\n",
+ "dfAfterFailedRun": "67108864 63967232 3141632  96% /tmp/obqa-NvaaHn/small-disk",
+ "restoreDuringFault": "restored=163 failed=0 skipped=0\n"
+}

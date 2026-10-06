@@ -1,0 +1,11 @@
+
+Running 1 test using 1 worker
+
+[1/1] failure-recovery/n5-server-disk-full-second-run.spec.ts:16:5 › N5 server disk full during backup 2 → failed truthfully, point 1 intact and restorable DURING the fault → space freed → backup 3 → both points identical (SHA-256)
+failure-recovery/n5-server-disk-full-second-run.spec.ts:16:5 › N5 server disk full during backup 2 → failed truthfully, point 1 intact and restorable DURING the fault → space freed → backup 3 → both points identical (SHA-256)
+
+
+
+
+  1 passed (14.5s)
+exit=0

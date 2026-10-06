@@ -231,15 +231,17 @@ namespace OnlineBackup.Agent
                     {
                         var br = Builtin_("GET", path, AuthHeaders(), null, null);
                         if (br.Status >= 400) { BuiltinMsg(br); }
-                        try { using (var fs = new FileStream(toFile, FileMode.Create, FileAccess.Write)) br.Body.CopyTo(fs, 1 << 16); }
+                        try { var fs = LocalFile(toFile); try { CopyTo(br.Body, fs); } finally { Close(fs); } }
                         finally { br.Close(); }
                         return;
                     }
                     var r = Create("GET", path);
                     using (var resp = (HttpWebResponse)r.GetResponse())
                     using (var s = resp.GetResponseStream())
-                    using (var fs = new FileStream(toFile, FileMode.Create, FileAccess.Write))
-                        s.CopyTo(fs, 1 << 16);
+                    {
+                        var fs = LocalFile(toFile);
+                        try { CopyTo(s, fs); } finally { Close(fs); }
+                    }
                     return;
                 }
                 catch (WebException e)
@@ -252,6 +254,29 @@ namespace OnlineBackup.Agent
                 catch (SocketException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
             }
             throw new AgentException(0, "NETWORK", "The download failed: " + (last == null ? "" : last.Message));
+        }
+
+        /// <summary>Agent N (N-2): a failure of THIS computer's disk (full, no permission) while downloading is not the
+        /// network: it was retried four times with pauses, for every file — a restore onto a full disk took days to say so.
+        /// It stops at once with what Windows said (AgentException LOCAL_DISK).</summary>
+        static FileStream LocalFile(string path)
+        {
+            try { return new FileStream(path, FileMode.Create, FileAccess.Write); }
+            catch (IOException e) { throw new AgentException(0, "LOCAL_DISK", "This computer cannot write " + path + ": " + e.Message); }
+            catch (UnauthorizedAccessException e) { throw new AgentException(0, "LOCAL_DISK", "This computer cannot write " + path + ": " + e.Message); }
+        }
+
+        static void Close(FileStream f) { try { f.Dispose(); } catch (IOException) { } }   // what was written was flushed; a full disk is already said
+
+        static void CopyTo(Stream from, FileStream to)
+        {
+            var buf = new byte[1 << 16]; int n;
+            while ((n = from.Read(buf, 0, buf.Length)) > 0)   // a read error is the line's: retried by Download
+            {
+                try { to.Write(buf, 0, n); }
+                catch (IOException e) { throw new AgentException(0, "LOCAL_DISK", "This computer cannot write " + to.Name + ": " + e.Message); }
+            }
+            try { to.Flush(); } catch (IOException e) { throw new AgentException(0, "LOCAL_DISK", "This computer cannot write " + to.Name + ": " + e.Message); }
         }
 
         public static string Url(string s) { return Uri.EscapeDataString(s ?? ""); }

@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+[1/1] failure-recovery/n4-cpu-and-memory-pressure.spec.ts:21:5 › N4 CPU and memory pressure during backups → still success, only slower (durations recorded) → every set restores identical (SHA-256)
+  1 passed (1.0m)
+exit=0

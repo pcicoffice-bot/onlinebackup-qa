@@ -1,0 +1,119 @@
+
+Running 2 tests using 1 worker
+
+[1/2] failure-recovery/n6-agent-disk-full.spec.ts:15:5 › N6a agent temp folder full → backup still correct; restore through the full temp fails truthfully, no half file → temp freed → restore identical (SHA-256)
+  1) failure-recovery/n6-agent-disk-full.spec.ts:15:5 › N6a agent temp folder full → backup still correct; restore through the full temp fails truthfully, no half file → temp freed → restore identical (SHA-256) 
+
+    Error: the failed downloads leave nothing in the temp folder
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 4
+
+    - Array []
+    + Array [
+    +   "7836b8e4058b40e38e93bd2610e71e79.obj",
+    +   "89be7ac96e49484ea3b7b6c99ecebc7d.obj",
+    + ]
+
+      51 |     expect(rr.out).toMatch(/failed=2/);
+      52 |     expect.soft(rr.out, 'the reason is the computer\'s own full disk, not the line').toMatch(/space/i);
+    > 53 |     expect.soft(tempLeft, 'the failed downloads leave nothing in the temp folder').toEqual([]);
+         |                                                                                    ^
+      54 |   } finally { unmount(temp); keep('n6a', ev); }
+      55 |
+      56 |   evidence.step('RECOVERY: the temp folder has room again; a new backup and a restore');
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-n/tests/QA/failure-recovery/n6-agent-disk-full.spec.ts:53:84
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/attachments/server-log-795de848d7124346c18677dab266bd1b2b09f8fb.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-N6A-PC.log (text/plain) ───────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/attachments/agent-N6A-PC-log-66746c2d1989b095326933b1c1c3e847a5a98c0c.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: system.xml (application/xml) ────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/attachments/system-xml-949c149e2fce69cc74d391f3ac557ee451ee4636.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../agent-n-pw/n6/failure-recovery-n6-agent--6706c--restore-identical-SHA-256-/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[2/2] failure-recovery/n6-agent-disk-full.spec.ts:64:5 › N6b the set folder on the computer is full after the server committed → server and computer tell the truth → next run correct → restore identical (SHA-256)
+  2) failure-recovery/n6-agent-disk-full.spec.ts:64:5 › N6b the set folder on the computer is full after the server committed → server and computer tell the truth → next run correct → restore identical (SHA-256) 
+
+    Error: the computer and the server must tell the same outcome of one run
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Object {
+    -   "agentOk": true,
+    +   "agentOk": false,
+        "serverOk": true,
+      }
+
+      94 |     expect(runs.length, 'one record of the run').toBe(1);
+      95 |     // soft: the recovery below is checked too (NEEDS OWNER DECISION which of the two outcomes is the right one)
+    > 96 |     expect.soft({ agentOk, serverOk }, 'the computer and the server must tell the same outcome of one run').toEqual({ agentOk: serverOk, serverOk });
+         |                                                                                                             ^
+      97 |   } finally {
+      98 |     unmount(setDir);
+      99 |     fs.cpSync(keepAside, setDir, { recursive: true });    // the set folder as it was before the mount (the index was never saved)
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-n/tests/QA/failure-recovery/n6-agent-disk-full.spec.ts:96:109
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/attachments/server-log-a450e420eff8b378ab1e2337198e5e9b95b03331.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-N6B-PC.log (text/plain) ───────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/attachments/agent-N6B-PC-log-e9028cbffc93ef0d7a5fc55507df852bb466f2a9.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: system.xml (application/xml) ────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/attachments/system-xml-87e2cab93dca2c840650ceebe25780b7fbae1181.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../agent-n-pw/n6/failure-recovery-n6-agent--cbf03--restore-identical-SHA-256-/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    failure-recovery/n6-agent-disk-full.spec.ts:15:5 › N6a agent temp folder full → backup still correct; restore through the full temp fails truthfully, no half file → temp freed → restore identical (SHA-256) 
+    failure-recovery/n6-agent-disk-full.spec.ts:64:5 › N6b the set folder on the computer is full after the server committed → server and computer tell the truth → next run correct → restore identical (SHA-256) 
+exit=1

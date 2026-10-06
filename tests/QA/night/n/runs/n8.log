@@ -1,0 +1,7 @@
+
+Running 2 tests using 1 worker
+
+[1/2] failure-recovery/n8-source-unavailable.spec.ts:22:5 › N8a source folder renamed away DURING backup 2 → not a plain success, nothing deleted, newest point holds every file → folder back → backup 3 → restore identical (SHA-256)
+[2/2] failure-recovery/n8-source-unavailable.spec.ts:65:5 › N8b source folder gone BEFORE backup 2 → failure (BK-05), nothing deleted, newest point = point 1 → folder back → backup 3 → restore identical (SHA-256)
+  2 passed (52.6s)
+exit=0

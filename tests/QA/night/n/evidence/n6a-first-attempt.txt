@@ -1,0 +1,1 @@
+first N6a attempt (19:36-19:49 UTC): restore with a full 2 MB temp folder still running after 715 s with no target folder created; 77 zero-byte *.obj files left in <home>/temp; strace: GET /api/sets/<id>/object... repeated; process idle between tries

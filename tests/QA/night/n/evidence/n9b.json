@@ -1,0 +1,37 @@
+{
+ "proof": {
+  "process": "GONE",
+  "port": "Error: connect ECONNREFUSED 127.0.0.1:40831"
+ },
+ "ms": 10173,
+ "run2": "error: No connection to the backup server: Connection refused 127.0.0.1:40831 (localhost:40831)\n",
+ "runsAfterRestart": [
+  {
+   "time": "1791317625629",
+   "login": "qa-n9b",
+   "set": "1791317622845",
+   "setName": "Files",
+   "computer": "N9B-PC",
+   "kind": "Backup",
+   "job": "2026-10-06-20-13-43",
+   "result": "BS_STOP_SUCCESS",
+   "new": "163",
+   "upd": "0",
+   "del": "0",
+   "bytes": "24198424",
+   "started": "1791317623148",
+   "log": "2026-10-06-20-13-43.log",
+   "status": "ok"
+  }
+ ],
+ "runsEnd": [
+  [
+   "2026-10-06-20-13-58",
+   "BS_STOP_SUCCESS"
+  ],
+  [
+   "2026-10-06-20-13-43",
+   "BS_STOP_SUCCESS"
+  ]
+ ]
+}

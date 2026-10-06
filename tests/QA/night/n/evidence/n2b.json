@@ -1,0 +1,50 @@
+{
+ "b2": {
+  "code": 0,
+  "out": "BS_STOP_SUCCESS new=1 upd=1 perm=0 del=5 bytes=1012\n"
+ },
+ "dupReplies": [
+  {
+   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "status": "HTTP/1.1 200 OK",
+   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"job\">2026-10-06-19-32-49</f><f n=\"repeat\">1</f></m>"
+  }
+ ],
+ "proxy": [
+  {
+   "t": "2026-10-06T19:32:48.326Z",
+   "ev": "commit-request",
+   "conn": 4,
+   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-45/commit",
+   "bytes": 17875,
+   "at": "2026-10-06T19:32:48.325Z",
+   "action": "forwarded"
+  },
+  {
+   "t": "2026-10-06T19:32:48.825Z",
+   "ev": "armed-dup-commit"
+  },
+  {
+   "t": "2026-10-06T19:32:49.168Z",
+   "ev": "commit-request",
+   "conn": 6,
+   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "bytes": 2045,
+   "at": "2026-10-06T19:32:49.168Z",
+   "action": "forwarded + duplicated"
+  },
+  {
+   "t": "2026-10-06T19:32:49.169Z",
+   "ev": "dup-sent",
+   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "bytes": 2045
+  },
+  {
+   "t": "2026-10-06T19:32:49.206Z",
+   "ev": "dup-reply",
+   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "status": "HTTP/1.1 200 OK",
+   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"job\">2026-10-06-19-32-49</f><f n=\"repeat\">1</f></m>"
+  }
+ ]
+}

@@ -121,11 +121,11 @@ namespace OnlineBackup.Agent
                 foreach (var o in objects)
                 {
                     var p = Path.Combine(temp, Guid.NewGuid().ToString("N") + ".obj");
+                    paths.Add(p);   // Agent N (N-3): kept for the clean-up before the download — a failed one left an empty file
                     var versioned = source as IVersionedRestoreSource;
                     if (versioned != null && !string.IsNullOrEmpty(o["job"])) versioned.Fetch(o["loc"], o["job"], p); else source.Fetch(o["loc"], p);
                     using (var fs = File.OpenRead(p))
                         if (Bytes.Sha256Hex(fs) != o["sha"]) throw new InvalidDataException("Downloaded object does not match the server checksum.");
-                    paths.Add(p);
                 }
                 // Map every chunk id → (object, offset) over the chain; the recipe of the last object is the file.
                 var streams = paths.Select(p => (Stream)File.OpenRead(p)).ToList();

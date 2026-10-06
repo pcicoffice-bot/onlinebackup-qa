@@ -264,6 +264,15 @@ namespace ObQa {
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetClassName(IntPtr h, StringBuilder s, int n);
     [StructLayout(LayoutKind.Sequential)] struct R { public int L, T, Ri, B; }
     [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out R r);
+    public static List<IntPtr> All(int[] pids) {
+      var l = new List<IntPtr>();
+      EnumWindows((h, x) => { uint p; GetWindowThreadProcessId(h, out p); if (Array.IndexOf(pids, (int)p) >= 0) l.Add(h); return true; }, IntPtr.Zero);
+      return l;
+    }
+    public static string Info(IntPtr h) {
+      var t = new StringBuilder(256); GetWindowText(h, t, 256); var c = new StringBuilder(256); GetClassName(h, c, 256); R r; GetWindowRect(h, out r);
+      return "0x" + h.ToString("x") + " '" + t + "' " + c + " visible=" + IsWindowVisible(h) + " " + (r.Ri - r.L) + "x" + (r.B - r.T);
+    }
     public static List<IntPtr> Of(int[] pids) {
       var l = new List<IntPtr>();
       EnumWindows((h, x) => { uint p; GetWindowThreadProcessId(h, out p); if (IsWindowVisible(h) && Array.IndexOf(pids, (int)p) >= 0) l.Add(h); return true; }, IntPtr.Zero);
@@ -298,9 +307,27 @@ function TopWindows([string]$processName) {
 }
 # every visible top-level window of the desktop (process, title, class, size) - the evidence when a window is not found
 function DesktopWindows { try { [ObQa.Top]::Describe() } catch { 'ERROR: ' + $_.Exception.Message } }
+# Q13 (W1 run 9): Windows listed the client's window (visible, 1044x719) yet the robot had no element for it. Every
+# window of the process, and what UI Automation answers for each - its element, or the exact error
+function UiaReport([string]$processName) {
+  $ids = @(Get-Process -Name $processName -ErrorAction SilentlyContinue | ForEach-Object { $_.Id })
+  if ($ids.Count -eq 0) { return "no process $processName" }
+  $out = @()
+  foreach ($h in [ObQa.Top]::All([int[]]$ids)) {
+    $line = [ObQa.Top]::Info($h)
+    try { $e = $AE::FromHandle($h); if ($e) { $line += (" -> UIA: '{0}' {1} pid {2} {3}" -f $e.Current.Name, $e.Current.ClassName, $e.Current.ProcessId, $e.Current.BoundingRectangle) } else { $line += ' -> UIA: null' } }
+    catch { $line += ' -> UIA ERROR: ' + $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
+    $out += $line
+  }
+  return ($out -join ' ;; ')
+}
 function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]$seconds = 60) {
   $until = (Get-Date).AddSeconds($seconds)
-  while ((Get-Date) -lt $until) { foreach ($w in (TopWindows $processName)) { if (& $match $w) { return $w } }; Start-Sleep -Milliseconds 400 }
+  $script:LastWaitError = $null
+  while ((Get-Date) -lt $until) {
+    try { foreach ($w in (TopWindows $processName)) { if (& $match $w) { return $w } } } catch { $script:LastWaitError = $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
+    Start-Sleep -Milliseconds 400
+  }
   return $null
 }
 function Texts($w) { try { (@($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | ForEach-Object { $_.Current.Name } | Where-Object { $_ }) -join ' | ' } catch { '' } }

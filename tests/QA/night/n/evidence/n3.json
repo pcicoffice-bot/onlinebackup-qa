@@ -1,0 +1,37 @@
+{
+ "rateBps": 51200,
+ "backup1Ms": 190010,
+ "bytesUpThrottled": 9647049,
+ "backup2Ms": 376,
+ "result1": "BS_STOP_SUCCESS",
+ "proxy": [
+  {
+   "t": "2026-10-06T19:58:28.720Z",
+   "ev": "rate",
+   "bps": 51200
+  },
+  {
+   "t": "2026-10-06T20:01:38.561Z",
+   "ev": "commit-request",
+   "conn": 4,
+   "path": "/api/sets/1791316708613/jobs/2026-10-06-19-58-29/commit",
+   "bytes": 17860,
+   "at": "2026-10-06T20:01:38.561Z",
+   "action": "forwarded"
+  },
+  {
+   "t": "2026-10-06T20:01:39.031Z",
+   "ev": "rate",
+   "bps": 0
+  },
+  {
+   "t": "2026-10-06T20:01:39.378Z",
+   "ev": "commit-request",
+   "conn": 8,
+   "path": "/api/sets/1791316708613/jobs/2026-10-06-20-01-39/commit",
+   "bytes": 1445,
+   "at": "2026-10-06T20:01:39.378Z",
+   "action": "forwarded"
+  }
+ ]
+}

@@ -53,9 +53,23 @@ namespace OnlineBackup.Server
         SqliteConnection Open()
         {
             var c = new SqliteConnection("Data Source=" + IndexPath + ";Pooling=False");
-            c.Open();
-            using (var cmd = c.CreateCommand()) { cmd.CommandText = "PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;"; cmd.ExecuteNonQuery(); }
-            return c;
+            try
+            {
+                c.Open();
+                using (var cmd = c.CreateCommand()) { cmd.CommandText = "PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;"; cmd.ExecuteNonQuery(); }
+                return c;
+            }
+            catch (SqliteException e) when ((e.SqliteErrorCode == 14 || e.SqliteErrorCode == 8) && File.Exists(IndexPath))
+            {
+                // Agent N (N-4): storage that went read-only (a disk remounted after an error) could not even be READ —
+                // every list of points and every restore answered 500. Read-only and immutable: the reads work, any write
+                // still fails (and says so)
+                c.Dispose();
+                var ro = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = "file:" + IndexPath + "?immutable=1", Mode = SqliteOpenMode.ReadOnly, Pooling = false }.ToString());
+                ro.Open();
+                SysLog.Write(null, "System", "warning: the index of " + SetId + " is read-only (" + e.Message + "): reads only");
+                return ro;
+            }
         }
 
         static void Schema(SqliteConnection c)

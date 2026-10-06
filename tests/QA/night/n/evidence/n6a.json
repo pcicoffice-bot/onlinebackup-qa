@@ -1,0 +1,8 @@
+{
+ "df": "2097152 2097152     0 100% /tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp",
+ "probe": "ERR 1 dd: error writing '/tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp/probe.bin': No space left on device\n1+0 records in\n0+0 records out\n0 bytes copied, 3.9606e-05 s, 0.0 kB/s",
+ "backup": "BS_STOP_SUCCESS new=163 upd=0 perm=0 del=0 bytes=24198424\n",
+ "restoreDuring": "restored=0 failed=2 skipped=0\n  1791317588037,err,/tmp/obqa-9iGvrY/restore-during/tmp/obqa-9iGvrY/data/Duplicates/b.txt,0,This computer cannot write /tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp/35e2ca1e56224576899e75450a06636b.obj: No space left on device : '/tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp/35e2ca1e56224576899e75450a06636b.obj',,,0\n  1791317588040,err,/tmp/obqa-9iGvrY/restore-during/tmp/obqa-9iGvrY/data/Duplicates/a.txt,0,This computer cannot write /tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp/bc75a515430347c6b02ebc7798b8c48d.obj: No space left on device : '/tmp/obqa-9iGvrY/agent-qa-n6a-N6A-PC/temp/bc75a515430347c6b02ebc7798b8c48d.obj',,,0\n",
+ "restoreMs": 425,
+ "tempLeftovers": []
+}

@@ -1,0 +1,73 @@
+{
+ "r1": {
+  "code": 0,
+  "result": "BS_STOP_SUCCESS_WITH_WARNING",
+  "ms": 27191
+ },
+ "cut": {
+  "down": true,
+  "rate": 0,
+  "dropReply": 0,
+  "dupCommit": 0,
+  "conns": 5,
+  "refused": 0,
+  "cutSockets": 2,
+  "c2s": 21164841,
+  "s2c": 55828,
+  "c2sWhileThrottled": 0,
+  "commits": [],
+  "droppedReplyBytes": 0,
+  "droppedReplyHead": "",
+  "dupReplies": []
+ },
+ "during": {
+  "down": true,
+  "rate": 0,
+  "dropReply": 0,
+  "dupCommit": 0,
+  "conns": 5,
+  "refused": 1,
+  "cutSockets": 2,
+  "c2s": 21164841,
+  "s2c": 55828,
+  "c2sWhileThrottled": 0,
+  "commits": [],
+  "droppedReplyBytes": 0,
+  "droppedReplyHead": "",
+  "dupReplies": []
+ },
+ "proxy": [
+  {
+   "t": "2026-10-06T19:30:35.067Z",
+   "ev": "cut",
+   "socketsDestroyed": 2
+  },
+  {
+   "t": "2026-10-06T19:30:37.934Z",
+   "ev": "refused",
+   "remote": 40834
+  },
+  {
+   "t": "2026-10-06T19:30:40.074Z",
+   "ev": "back"
+  },
+  {
+   "t": "2026-10-06T19:30:41.038Z",
+   "ev": "commit-request",
+   "conn": 6,
+   "path": "/api/sets/1791315013578/jobs/2026-10-06-19-30-14/commit",
+   "bytes": 18203,
+   "at": "2026-10-06T19:30:41.038Z",
+   "action": "forwarded"
+  },
+  {
+   "t": "2026-10-06T19:30:42.911Z",
+   "ev": "commit-request",
+   "conn": 9,
+   "path": "/api/sets/1791315013578/jobs/2026-10-06-19-30-42/commit",
+   "bytes": 1449,
+   "at": "2026-10-06T19:30:42.911Z",
+   "action": "forwarded"
+  }
+ ]
+}

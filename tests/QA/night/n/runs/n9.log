@@ -1,0 +1,259 @@
+
+Running 2 tests using 1 worker
+
+[1/2] failure-recovery/n9-repository-unavailable.spec.ts:18:5 › N9a the server's set folder read-only for a whole run → no false success, point 1 restorable during the fault → writable again → backup → restore identical (SHA-256)
+  1) failure-recovery/n9-repository-unavailable.spec.ts:18:5 › N9a the server's set folder read-only for a whole run → no false success, point 1 restorable during the fault → writable again → backup → restore identical (SHA-256) 
+
+    Error: the points of a read-only repository can be listed:
+    error: Server error. The details are in the system log.
+
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      53 |     expect(notWhole(v1, manifest(restoredPath(tf, src))), 'never a half file passing as whole').toEqual([]);
+      54 |     // soft: the recovery below is still checked. A read-only store holds every earlier point; reading it needs no write
+    > 55 |     expect.soft(pl.code, 'the points of a read-only repository can be listed:\n' + pl.out).toBe(0);
+         |                                                                                            ^
+      56 |     expect.soft(rf.code, 'point 1 of a read-only repository can be restored:\n' + rf.out).toBe(0);
+      57 |     expect.soft(compare(v1, manifest(restoredPath(tf, src)))).toEqual([]);
+      58 |   } finally { sh('umount -l "' + setFolder + '"'); keep('n9a', ev); }
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-n/tests/QA/failure-recovery/n9-repository-unavailable.spec.ts:55:92
+
+    Error: point 1 of a read-only repository can be restored:
+    error: Server error. The details are in the system log.
+
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 1
+
+      54 |     // soft: the recovery below is still checked. A read-only store holds every earlier point; reading it needs no write
+      55 |     expect.soft(pl.code, 'the points of a read-only repository can be listed:\n' + pl.out).toBe(0);
+    > 56 |     expect.soft(rf.code, 'point 1 of a read-only repository can be restored:\n' + rf.out).toBe(0);
+         |                                                                                           ^
+      57 |     expect.soft(compare(v1, manifest(restoredPath(tf, src)))).toEqual([]);
+      58 |   } finally { sh('umount -l "' + setFolder + '"'); keep('n9a', ev); }
+      59 |
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-n/tests/QA/failure-recovery/n9-repository-unavailable.spec.ts:56:91
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  -   1
+    + Received  + 165
+
+    - Array []
+    + Array [
+    +   "MISSING Binary/large.bin",
+    +   "MISSING Binary/random.bin",
+    +   "MISSING Deep/level/level/level/level/level/level/level/level/level/level/level/level/deep.txt",
+    +   "MISSING Documents/letter.txt",
+    +   "MISSING Duplicates/a.txt",
+    +   "MISSING Duplicates/b.txt",
+    +   "MISSING Empty/zero.bin",
+    +   "MISSING Folder with spaces/file with spaces.txt",
+    +   "MISSING Long/a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-a-very-long-file-name-.txt",
+    +   "MISSING Many/file-000.csv",
+    +   "MISSING Many/file-001.csv",
+    +   "MISSING Many/file-002.csv",
+    +   "MISSING Many/file-003.csv",
+    +   "MISSING Many/file-004.csv",
+    +   "MISSING Many/file-005.csv",
+    +   "MISSING Many/file-006.csv",
+    +   "MISSING Many/file-007.csv",
+    +   "MISSING Many/file-008.csv",
+    +   "MISSING Many/file-009.csv",
+    +   "MISSING Many/file-010.csv",
+    +   "MISSING Many/file-011.csv",
+    +   "MISSING Many/file-012.csv",
+    +   "MISSING Many/file-013.csv",
+    +   "MISSING Many/file-014.csv",
+    +   "MISSING Many/file-015.csv",
+    +   "MISSING Many/file-016.csv",
+    +   "MISSING Many/file-017.csv",
+    +   "MISSING Many/file-018.csv",
+    +   "MISSING Many/file-019.csv",
+    +   "MISSING Many/file-020.csv",
+    +   "MISSING Many/file-021.csv",
+    +   "MISSING Many/file-022.csv",
+    +   "MISSING Many/file-023.csv",
+    +   "MISSING Many/file-024.csv",
+    +   "MISSING Many/file-025.csv",
+    +   "MISSING Many/file-026.csv",
+    +   "MISSING Many/file-027.csv",
+    +   "MISSING Many/file-028.csv",
+    +   "MISSING Many/file-029.csv",
+    +   "MISSING Many/file-030.csv",
+    +   "MISSING Many/file-031.csv",
+    +   "MISSING Many/file-032.csv",
+    +   "MISSING Many/file-033.csv",
+    +   "MISSING Many/file-034.csv",
+    +   "MISSING Many/file-035.csv",
+    +   "MISSING Many/file-036.csv",
+    +   "MISSING Many/file-037.csv",
+    +   "MISSING Many/file-038.csv",
+    +   "MISSING Many/file-039.csv",
+    +   "MISSING Many/file-040.csv",
+    +   "MISSING Many/file-041.csv",
+    +   "MISSING Many/file-042.csv",
+    +   "MISSING Many/file-043.csv",
+    +   "MISSING Many/file-044.csv",
+    +   "MISSING Many/file-045.csv",
+    +   "MISSING Many/file-046.csv",
+    +   "MISSING Many/file-047.csv",
+    +   "MISSING Many/file-048.csv",
+    +   "MISSING Many/file-049.csv",
+    +   "MISSING Many/file-050.csv",
+    +   "MISSING Many/file-051.csv",
+    +   "MISSING Many/file-052.csv",
+    +   "MISSING Many/file-053.csv",
+    +   "MISSING Many/file-054.csv",
+    +   "MISSING Many/file-055.csv",
+    +   "MISSING Many/file-056.csv",
+    +   "MISSING Many/file-057.csv",
+    +   "MISSING Many/file-058.csv",
+    +   "MISSING Many/file-059.csv",
+    +   "MISSING Many/file-060.csv",
+    +   "MISSING Many/file-061.csv",
+    +   "MISSING Many/file-062.csv",
+    +   "MISSING Many/file-063.csv",
+    +   "MISSING Many/file-064.csv",
+    +   "MISSING Many/file-065.csv",
+    +   "MISSING Many/file-066.csv",
+    +   "MISSING Many/file-067.csv",
+    +   "MISSING Many/file-068.csv",
+    +   "MISSING Many/file-069.csv",
+    +   "MISSING Many/file-070.csv",
+    +   "MISSING Many/file-071.csv",
+    +   "MISSING Many/file-072.csv",
+    +   "MISSING Many/file-073.csv",
+    +   "MISSING Many/file-074.csv",
+    +   "MISSING Many/file-075.csv",
+    +   "MISSING Many/file-076.csv",
+    +   "MISSING Many/file-077.csv",
+    +   "MISSING Many/file-078.csv",
+    +   "MISSING Many/file-079.csv",
+    +   "MISSING Many/file-080.csv",
+    +   "MISSING Many/file-081.csv",
+    +   "MISSING Many/file-082.csv",
+    +   "MISSING Many/file-083.csv",
+    +   "MISSING Many/file-084.csv",
+    +   "MISSING Many/file-085.csv",
+    +   "MISSING Many/file-086.csv",
+    +   "MISSING Many/file-087.csv",
+    +   "MISSING Many/file-088.csv",
+    +   "MISSING Many/file-089.csv",
+    +   "MISSING Many/file-090.csv",
+    +   "MISSING Many/file-091.csv",
+    +   "MISSING Many/file-092.csv",
+    +   "MISSING Many/file-093.csv",
+    +   "MISSING Many/file-094.csv",
+    +   "MISSING Many/file-095.csv",
+    +   "MISSING Many/file-096.csv",
+    +   "MISSING Many/file-097.csv",
+    +   "MISSING Many/file-098.csv",
+    +   "MISSING Many/file-099.csv",
+    +   "MISSING Many/file-100.csv",
+    +   "MISSING Many/file-101.csv",
+    +   "MISSING Many/file-102.csv",
+    +   "MISSING Many/file-103.csv",
+    +   "MISSING Many/file-104.csv",
+    +   "MISSING Many/file-105.csv",
+    +   "MISSING Many/file-106.csv",
+    +   "MISSING Many/file-107.csv",
+    +   "MISSING Many/file-108.csv",
+    +   "MISSING Many/file-109.csv",
+    +   "MISSING Many/file-110.csv",
+    +   "MISSING Many/file-111.csv",
+    +   "MISSING Many/file-112.csv",
+    +   "MISSING Many/file-113.csv",
+    +   "MISSING Many/file-114.csv",
+    +   "MISSING Many/file-115.csv",
+    +   "MISSING Many/file-116.csv",
+    +   "MISSING Many/file-117.csv",
+    +   "MISSING Many/file-118.csv",
+    +   "MISSING Many/file-119.csv",
+    +   "MISSING Many/file-120.csv",
+    +   "MISSING Many/file-121.csv",
+    +   "MISSING Many/file-122.csv",
+    +   "MISSING Many/file-123.csv",
+    +   "MISSING Many/file-124.csv",
+    +   "MISSING Many/file-125.csv",
+    +   "MISSING Many/file-126.csv",
+    +   "MISSING Many/file-127.csv",
+    +   "MISSING Many/file-128.csv",
+    +   "MISSING Many/file-129.csv",
+    +   "MISSING Many/file-130.csv",
+    +   "MISSING Many/file-131.csv",
+    +   "MISSING Many/file-132.csv",
+    +   "MISSING Many/file-133.csv",
+    +   "MISSING Many/file-134.csv",
+    +   "MISSING Many/file-135.csv",
+    +   "MISSING Many/file-136.csv",
+    +   "MISSING Many/file-137.csv",
+    +   "MISSING Many/file-138.csv",
+    +   "MISSING Many/file-139.csv",
+    +   "MISSING Many/file-140.csv",
+    +   "MISSING Many/file-141.csv",
+    +   "MISSING Many/file-142.csv",
+    +   "MISSING Many/file-143.csv",
+    +   "MISSING Many/file-144.csv",
+    +   "MISSING Many/file-145.csv",
+    +   "MISSING Many/file-146.csv",
+    +   "MISSING Many/file-147.csv",
+    +   "MISSING Many/file-148.csv",
+    +   "MISSING Many/file-149.csv",
+    +   "MISSING Unicode/émoji 🎉 file.txt",
+    +   "MISSING Unicode/日本語 ファイル.txt",
+    +   "MISSING מסמכים/מכתב ללקוח.txt",
+    +   "MISSING מסמכים/תיקייה עם רווחים/דוח שנתי 2026.csv",
+    + ]
+
+      55 |     expect.soft(pl.code, 'the points of a read-only repository can be listed:\n' + pl.out).toBe(0);
+      56 |     expect.soft(rf.code, 'point 1 of a read-only repository can be restored:\n' + rf.out).toBe(0);
+    > 57 |     expect.soft(compare(v1, manifest(restoredPath(tf, src)))).toEqual([]);
+         |                                                               ^
+      58 |   } finally { sh('umount -l "' + setFolder + '"'); keep('n9a', ev); }
+      59 |
+      60 |   evidence.step('RECOVERY: writable again → backup 3');
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-n/tests/QA/failure-recovery/n9-repository-unavailable.spec.ts:57:63
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/attachments/server-log-bb04e9aecffbe5bef45282b6445b3fab2793543d.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-N9A-PC.log (text/plain) ───────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/attachments/agent-N9A-PC-log-f373db722d7531405e2a4b22fe77cd58d089f14f.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: system.xml (application/xml) ────────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/attachments/system-xml-241e7de9758f7da6b24956d87c0ecab653dc4433.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/trace.zip
+    Usage:
+
+        npx playwright show-trace ../../../agent-n-pw/n9/failure-recovery-n9-reposi-2e16b--restore-identical-SHA-256-/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[2/2] failure-recovery/n9-repository-unavailable.spec.ts:71:5 › N9b the server stopped for the whole run → the run fails at once (time measured), no false success → server back → no ghost → backup → restore identical (SHA-256)
+  1 failed
+    failure-recovery/n9-repository-unavailable.spec.ts:18:5 › N9a the server's set folder read-only for a whole run → no false success, point 1 restorable during the fault → writable again → backup → restore identical (SHA-256) 
+  1 passed (41.6s)
+exit=1

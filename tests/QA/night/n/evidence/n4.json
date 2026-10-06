@@ -1,0 +1,59 @@
+{
+ "cores": 4,
+ "baselineMs": 2545,
+ "loadBefore": "1.54 1.94 2.17 5/761 11172",
+ "cpu": {
+  "ms": 24147,
+  "hogsBefore": [
+   {
+    "state": "R",
+    "cpuTicks": 227
+   },
+   {
+    "state": "R",
+    "cpuTicks": 220
+   },
+   {
+    "state": "R",
+    "cpuTicks": 200
+   },
+   {
+    "state": "R",
+    "cpuTicks": 193
+   }
+  ],
+  "hogsAfter": [
+   {
+    "state": "R",
+    "cpuTicks": 1135
+   },
+   {
+    "state": "R",
+    "cpuTicks": 1070
+   },
+   {
+    "state": "R",
+    "cpuTicks": 1250
+   },
+   {
+    "state": "R",
+    "cpuTicks": 1151
+   }
+  ],
+  "loads": [
+   "3.04 2.24 2.27 17/905 11350",
+   "4.24 2.50 2.35 17/911 11378",
+   "5.02 2.69 2.42 29/929 11455",
+   "5.34 2.80 2.45 28/934 11498"
+  ]
+ },
+ "memory": {
+  "freeBefore": 5296508928,
+  "availBefore": 9950019584,
+  "held": 2118603571,
+  "hogRss": 2172968960,
+  "availDuring": 7820509184,
+  "ms": 3254,
+  "hogRssAfter": 2173194240
+ }
+}

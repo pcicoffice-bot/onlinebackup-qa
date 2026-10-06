@@ -1,0 +1,51 @@
+{
+ "b2": {
+  "code": 0,
+  "out": "BS_STOP_SUCCESS new=1 upd=1 perm=0 del=5 bytes=1012\n"
+ },
+ "proxy": [
+  {
+   "t": "2026-10-06T19:32:32.996Z",
+   "ev": "commit-request",
+   "conn": 4,
+   "path": "/api/sets/1791315150444/jobs/2026-10-06-19-32-30/commit",
+   "bytes": 17875,
+   "at": "2026-10-06T19:32:32.996Z",
+   "action": "forwarded"
+  },
+  {
+   "t": "2026-10-06T19:32:33.499Z",
+   "ev": "armed-drop-reply"
+  },
+  {
+   "t": "2026-10-06T19:32:33.795Z",
+   "ev": "commit-request",
+   "conn": 6,
+   "path": "/api/sets/1791315150444/jobs/2026-10-06-19-32-33/commit",
+   "bytes": 2045,
+   "at": "2026-10-06T19:32:33.795Z",
+   "action": "forwarded, reply will be dropped"
+  },
+  {
+   "t": "2026-10-06T19:32:33.819Z",
+   "ev": "reply-dropped",
+   "conn": 6,
+   "bytes": 269,
+   "head": "HTTP/1.1 200 OK\r\nContent-Type: application/xml; charset=utf-8\r\nServer: Microsoft-NetCore/2.0\r\nDate: Tue, 06 Oct 2026 19:32:33 GMT\r\nContent-Length: 115\r\n\r\n<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"ba"
+  },
+  {
+   "t": "2026-10-06T19:32:34.119Z",
+   "ev": "client-connection-closed-without-reply",
+   "conn": 6
+  },
+  {
+   "t": "2026-10-06T19:32:35.129Z",
+   "ev": "commit-request",
+   "conn": 7,
+   "path": "/api/sets/1791315150444/jobs/2026-10-06-19-32-33/commit",
+   "bytes": 2045,
+   "at": "2026-10-06T19:32:35.129Z",
+   "action": "forwarded"
+  }
+ ]
+}

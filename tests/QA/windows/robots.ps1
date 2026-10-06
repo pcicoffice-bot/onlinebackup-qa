@@ -114,7 +114,7 @@ function Open-Client([string]$installDir) {
   # a person opens it from the Start menu: the shortcut the installation made
   $lnk = @(Shortcuts '*OnlineBackup.Client.exe' | Where-Object { $_.args -notlike '*--tray*' }) | Select-Object -First 1
   if ($lnk) { Start-Process -FilePath $lnk.file | Out-Null } else { Start-Process -FilePath (Join-Path $installDir 'OnlineBackup.Client.exe') | Out-Null }
-  $w = ClientWindow 60; if ($w) { Front $w } else { Note 'The program window' ("not found; processes: " + (ClientProcesses) + " || desktop: " + (DesktopWindows)) }
+  $w = ClientWindow 60; if ($w) { Front $w } else { Note 'The program window' ("not found; processes: " + (ClientProcesses) + " || desktop: " + (DesktopWindows) + " || UIA per window: " + (UiaReport $script:ClientProc) + " || last error while waiting: " + $script:LastWaitError) }
   return $w
 }
 function Close-Client { foreach ($p in @(Get-Process -Name $script:ClientProc -ErrorAction SilentlyContinue)) { $p.CloseMainWindow() | Out-Null; Start-Sleep -Seconds 1; if (-not $p.HasExited) { $p.Kill() } } }

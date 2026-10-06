@@ -1,0 +1,6 @@
+
+Running 2 tests using 1 worker
+
+[1/2] failure-recovery/n1-network-breaks.spec.ts:15:5 › N1a line down 5 s mid-upload → proven by the proxy log → run resumes or fails truthfully → next backup + restore identical (SHA-256)
+[2/2] failure-recovery/n1-network-breaks.spec.ts:67:5 › N1b line down longer than every retry → the agent gives up (time measured) → no false success, server not left locked → next backup + restore identical
+  2 passed (2.0m)

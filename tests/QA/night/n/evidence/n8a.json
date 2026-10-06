@@ -1,0 +1,41 @@
+{
+ "statDuring": "ERR 1 stat: cannot statx '/tmp/obqa-4gdXGk/data': No such file or directory",
+ "aliveAtRename": true,
+ "run2": "BS_STOP_SUCCESS_WITH_ERROR new=1 upd=0 perm=0 del=0 bytes=20975183\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/מסמכים/תיקייה עם רווחים (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/מסמכים/תיקייה עם רווחים'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Unicode (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Unicode'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Many (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Many'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Long (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Long'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Folder with spaces (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Folder with spaces'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Empty folder (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Empty folder'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Empty (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Empty'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Duplicates (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Duplicates'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Documents (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Documents'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Deep (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Deep'.\nwarn:  Cannot list /tmp/obqa-4gdXGk/data/Binary (files kept): Could not find a part of the path '/tmp/obqa-4gdXGk/data/Binary'.\nerr: /tmp/obqa-4gdXGk/data/מסמכים/תיקייה עם רווחים Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Unicode Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Many Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Long Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Folder with spaces Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Empty folder Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Empty Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Duplicates Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Documents Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Deep Not backed up: this source could not be read now (its earlier backups are kept)\nerr: /tmp/obqa-4gdXGk/data/Binary Not backed up: this source could not be read now (its earlier backups are kept)\n",
+ "runs": [
+  {
+   "time": "1791316376348",
+   "login": "qa-n8a",
+   "set": "1791316351945",
+   "setName": "Files",
+   "computer": "N8A-PC",
+   "kind": "Backup",
+   "job": "2026-10-06-19-52-35",
+   "result": "BS_STOP_SUCCESS_WITH_ERROR",
+   "new": "1",
+   "upd": "0",
+   "del": "0",
+   "bytes": "20975183",
+   "started": "1791316355693",
+   "log": "2026-10-06-19-52-35.log",
+   "status": "bad"
+  },
+  {
+   "time": "1791316355019",
+   "login": "qa-n8a",
+   "set": "1791316351945",
+   "setName": "Files",
+   "computer": "N8A-PC",
+   "kind": "Backup",
+   "job": "2026-10-06-19-52-32",
+   "result": "BS_STOP_SUCCESS",
+   "new": "163",
+   "upd": "0",
+   "del": "0",
+   "bytes": "24198424",
+   "started": "1791316352312",
+   "log": "2026-10-06-19-52-32.log",
+   "status": "ok"
+  }
+ ]
+}

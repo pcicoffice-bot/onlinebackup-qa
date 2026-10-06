@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+[1/1] failure-recovery/n7-permission-denied-and-locked.spec.ts:18:5 › N7 unreadable folder, unreadable file, exclusively locked file → success WITH ERROR naming each, nothing deleted, old versions kept → fault removed → BS_STOP_SUCCESS → restore identical (SHA-256)
+  1 passed (15.9s)
+exit=0
