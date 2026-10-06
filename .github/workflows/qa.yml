@@ -73,8 +73,11 @@ jobs:
       - name: The scripts are ASCII (Windows PowerShell 5.1 reads them as ANSI)
         shell: pwsh
         run: |
-          $bad = Get-ChildItem tests/QA/windows -Filter *.ps1 | Where-Object { [IO.File]::ReadAllBytes($_.FullName) | Where-Object { $_ -gt 127 } | Select-Object -First 1 }
+          $bad = Get-ChildItem tests/QA/windows -Recurse -Filter *.ps1 | Where-Object { [IO.File]::ReadAllBytes($_.FullName) | Where-Object { $_ -gt 127 } | Select-Object -First 1 }
           if ($bad) { Write-Error "non-ASCII: $($bad.Name -join ', ')"; exit 1 }
+      - name: Every check is written safely (the comma binds tighter than -and in PowerShell; tests/QA/windows/lint.py)
+        shell: pwsh
+        run: python tests/QA/windows/lint.py (Get-ChildItem tests/QA/windows -Recurse -Filter *.ps1).FullName
       - name: Windows journeys (Windows PowerShell 5.1, as on any customer's Windows)
         shell: powershell
         run: |
@@ -84,18 +87,67 @@ jobs:
         if: always()
         with: { name: qa-windows-evidence, path: win-out/, retention-days: 30 }
 
+  windows-reboot:
+    # a REAL restart: Windows 11 Pro in a virtual machine (KVM on the Linux runner; a hosted Windows runner cannot
+    # restart). Clean Windows -> the server package -> the installer window -> sign in -> backup -> delete -> restore
+    # (SHA-256) -> restart (125%) -> backup + restore -> restart (150%) -> backup + restore. tests/QA/windows/vm
+    needs: package
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: qa-package, path: pkg }
+      - name: The machine (KVM, disk, memory)
+        run: |
+          ls -l /dev/kvm && sudo chmod 666 /dev/kvm
+          df -h / /mnt; free -g; nproc
+          sudo mkdir -p /mnt/win && sudo chmod 777 /mnt/win
+      - name: The VM's files (the QA scripts and the two packages, copied into Windows at its installation)
+        run: |
+          mkdir -p vm/oem/qa vm/oem/pkg vm/shared
+          cp tests/QA/windows/*.ps1 vm/oem/qa/ && cp -r tests/QA/windows/vm vm/oem/qa/ && cp tests/QA/windows/vm/install.bat vm/oem/
+          cp pkg/OnlineBackup-Server-*.zip vm/oem/pkg/
+          chmod -R 777 vm/shared
+      - name: Windows 11 Pro (downloaded from Microsoft, unattended installation)
+        run: |
+          docker run -d --name win -e VERSION=11 -e RAM_SIZE=10G -e CPU_CORES=4 -e DISK_SIZE=64G -e USERNAME=Docker -e PASSWORD=admin \
+            --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN -p 8006:8006 \
+            -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" --stop-timeout 120 docker.io/dockurr/windows
+      - name: Installation, the journeys and two real restarts (the driver reports to the shared folder)
+        run: |
+          end=$((SECONDS + 300*60)); last=""
+          while [ $SECONDS -lt $end ]; do
+            [ -f vm/shared/done.txt ] && { echo "done"; break; }
+            s=$(tail -n 1 vm/shared/status.log 2>/dev/null); [ "$s" != "$last" ] && { echo "VM: $s"; last="$s"; }
+            docker ps -q -f name=win | grep -q . || { echo "the VM container stopped"; break; }
+            sleep 30
+          done
+          cat vm/shared/status.log 2>/dev/null || echo "no status from Windows (it never reached the QA driver)"
+      - name: Keep the container's log
+        if: always()
+        run: docker logs win > vm/shared/container.log 2>&1 || true; docker stop win || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: qa-windows-vm-evidence, path: vm/shared/, retention-days: 30 }
+
   windows-report:
     # the contact sheet: every journey's screens in order, FUNCTIONAL / VISUAL / UX apart; kept in the branch
     # "qa-evidence" so the screens can be opened without downloading anything
-    needs: windows
+    needs: [windows, windows-reboot]
     if: ${{ always() && !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions: { contents: write }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
+        continue-on-error: true
         with: { name: qa-windows-evidence, path: win-out }
-      - run: python3 tests/QA/windows/contact-sheet.py win-out
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with: { name: qa-windows-vm-evidence, path: win-out/vm }
+      - run: mkdir -p win-out && python3 tests/QA/windows/contact-sheet.py win-out
       - uses: actions/upload-artifact@v4
         with: { name: qa-windows-contact-sheet, path: win-out/, retention-days: 30 }
       - name: Keep the evidence in the branch qa-evidence (runs/<run id>)

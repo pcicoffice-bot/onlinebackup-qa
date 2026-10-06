@@ -14,10 +14,20 @@ def load(p, default=None):
     except Exception: return default
 
 def main(root):
-    phases = [load(os.path.join(root, f)) for f in sorted(os.listdir(root)) if f.startswith('windows-') and f.endswith('.json')]
-    phases = [p for p in phases if p]
-    facts = [p.get('facts', {}) for p in phases]
-    rows = [j for p in phases for j in (p.get('journeys') or [])]
+    # every phase's summary, at the top and in sub-folders (the VM's phases: before and after each restart)
+    phases = []
+    for dp, dn, fn in sorted(os.walk(root)):
+        for f in sorted(fn):
+            if f.startswith('windows-') and f.endswith('.json'):
+                d = load(os.path.join(dp, f))
+                if d: phases.append((os.path.relpath(dp, root), d))
+    facts = [p.get('facts', {}) for _, p in phases]
+    rows = []
+    for rel, p in phases:
+        for j in p.get('journeys') or []:
+            j = dict(j); pre = '' if rel == '.' else rel.replace(os.sep, '/') + '/'
+            j['path'] = pre + j['id']; j['anchor'] = (pre + j['id']).replace('/', '-'); j['label'] = (pre.rstrip('/').split('/')[-1] + ' ' if pre else '') + j['id']
+            rows.append(j)
     E = html.escape
     badge = lambda v: '<span class="b %s">%s</span>' % ({'PASS': 'ok', 'FAIL': 'bad'}.get(v, 'nt'), E(v or 'NOT TESTED'))
     out = ['<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Windows QA</title>',
@@ -32,33 +42,33 @@ def main(root):
     out.append('<p class="small">FUNCTIONAL: the action worked, proven from outside the product (Windows, the server, SHA-256). VISUAL: no visual finding of severity Medium or High on its screens. UX: every written flow check passed. A screenshot never proves a backup: only the SHA-256 comparison does.</p>')
     out.append('<table><tr><th>Journey</th><th>FUNCTIONAL</th><th>VISUAL</th><th>UX</th><th>Why not PASS</th></tr>')
     for r in rows:
-        out.append('<tr><td><a href="#%s">%s %s</a></td><td>%s</td><td>%s</td><td>%s</td><td class="actual">%s</td></tr>' % (E(r['id']), E(r['id']), E(r['title']), badge(r.get('functional')), badge(r.get('visual')), badge(r.get('ux')), E((r.get('reason') or '')[:600])))
+        out.append('<tr><td><a href="#%s">%s %s</a></td><td>%s</td><td>%s</td><td>%s</td><td class="actual">%s</td></tr>' % (E(r['anchor']), E(r['label']), E(r['title']), badge(r.get('functional')), badge(r.get('visual')), badge(r.get('ux')), E((r.get('reason') or '')[:600])))
     out.append('</table>')
     allf = []
     for r in rows:
-        d = os.path.join(root, r['id']); j = load(os.path.join(d, 'journey.json'), {}) or {}
-        out.append('<h2 id="%s">%s %s &nbsp; %s %s %s</h2>' % (E(r['id']), E(r['id']), E(r['title']), badge(r.get('functional')), badge(r.get('visual')), badge(r.get('ux'))))
+        d = os.path.join(root, r['path']); j = load(os.path.join(d, 'journey.json'), {}) or {}
+        out.append('<h2 id="%s">%s %s &nbsp; %s %s %s</h2>' % (E(r['anchor']), E(r['label']), E(r['title']), badge(r.get('functional')), badge(r.get('visual')), badge(r.get('ux'))))
         shots = sorted(f for f in (os.listdir(d) if os.path.isdir(d) else []) if f.endswith('.png') and not f.endswith('.window.png'))
         if shots:
             out.append('<div class="strip">')
             for i, s in enumerate(shots):
                 win = s[:-4] + '.window.png'
-                link = '%s/%s' % (r['id'], win if os.path.exists(os.path.join(d, win)) else s)
+                link = '%s/%s' % (r['path'], win if os.path.exists(os.path.join(d, win)) else s)
                 if i: out.append('<span class="arrow">&rarr;</span>')
-                out.append('<figure><a href="%s/%s"><img loading="lazy" src="%s"></a><figcaption>%s<br><a href="%s">window only</a></figcaption></figure>' % (E(r['id']), E(s), E(link), E(s[:-4]), E(link)))
+                out.append('<figure><a href="%s/%s"><img loading="lazy" src="%s"></a><figcaption>%s<br><a href="%s">window only</a></figcaption></figure>' % (E(r['path']), E(s), E(link), E(s[:-4]), E(link)))
             out.append('</div>')
         steps = j.get('steps') or []
         if steps:
             out.append('<table><tr><th>Step</th><th>Result</th><th>Expected</th><th>Actual (what the oracle saw)</th><th>Screen</th></tr>')
             for s in steps:
                 shot = s.get('screenshot') or ''
-                out.append('<tr><td>%s</td><td>%s</td><td>%s</td><td class="actual">%s</td><td>%s</td></tr>' % (E(s.get('step', '')), badge(s.get('result')) if s.get('result') != 'INFO' else 'info', E(s.get('expected', '')), E(str(s.get('actual', ''))[:1500]), ('<a href="%s/%s">%s</a>' % (E(r['id']), E(shot), E(shot))) if shot.endswith('.png') else ''))
+                out.append('<tr><td>%s</td><td>%s</td><td>%s</td><td class="actual">%s</td><td>%s</td></tr>' % (E(s.get('step', '')), badge(s.get('result')) if s.get('result') != 'INFO' else 'info', E(s.get('expected', '')), E(str(s.get('actual', ''))[:1500]), ('<a href="%s/%s">%s</a>' % (E(r['path']), E(shot), E(shot))) if shot.endswith('.png') else ''))
             for s in j.get('ux') or []:
                 out.append('<tr><td>%s</td><td>%s</td><td>%s</td><td class="actual">%s</td><td></td></tr>' % (E(s.get('step', '')), badge(s.get('result')), E(s.get('expected', '')), E(str(s.get('actual', ''))[:800])))
             out.append('</table>')
-        allf += [dict(f, journey=r['id']) for f in (j.get('visual') or [])]
+        allf += [dict(f, journey=r['path']) for f in (j.get('visual') or [])]
         ev = [x for x in ('windows-state.json', 'event-log.txt', 'service-events.txt', 'install-server.txt') if os.path.exists(os.path.join(d, x))] + [x for x in ('agent-logs', 'server-logs') if os.path.isdir(os.path.join(d, x))] + sorted(x for x in os.listdir(d) if x.endswith(('.sha256', 'differences.txt'))) if os.path.isdir(d) else []
-        if ev: out.append('<p class="small">Evidence: %s</p>' % ' &middot; '.join('<a href="%s/%s">%s</a>' % (E(r['id']), E(x), E(x)) for x in ev))
+        if ev: out.append('<p class="small">Evidence: %s</p>' % ' &middot; '.join('<a href="%s/%s">%s</a>' % (E(r['path']), E(x), E(x)) for x in ev))
     out.append('<h2 id="findings">Visual and UX findings (%d)</h2>' % len(allf))
     out.append('<p class="small">Findings are for a person to judge with the screenshot. A change of the screens\' flow needs the owner\'s approval first.</p>')
     out.append('<table><tr><th>Journey</th><th>Kind</th><th>Severity</th><th>Screen</th><th>Problem</th><th>Expected</th><th>Actual</th><th>Recommendation</th><th>Screenshot</th></tr>')

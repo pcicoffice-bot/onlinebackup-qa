@@ -5,7 +5,10 @@
 # Every PASS here comes from an oracle outside the product: Windows UI Automation (what is on the screen), the Windows
 # service manager, the process list, the registry's installed-programs list, files on disk, SHA-256 of every file.
 
-Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, System.Drawing, System.Windows.Forms
+Add-Type -AssemblyName UIAutomationClient, UIAutomationTypes, UIAutomationClientsideProviders, System.Drawing, System.Windows.Forms
+# The client-side providers tell UI Automation what a classic Windows control is (a button, a check box, an edit field).
+# Without them (W1 run 1) every WinForms control came back as a "Pane": names readable, types and patterns not.
+[System.Windows.Automation.ClientSettings]::RegisterClientSideProviderAssembly([UIAutomationClientsideProviders.UIAutomationClientSideProviders].Assembly.GetName())
 Add-Type -Namespace ObQa -Name Win -MemberDefinition @'
 [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr w, IntPtr l);
 [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr hWnd);
@@ -52,7 +55,14 @@ function Note([string]$what, [string]$text) {
   Write-Host "[INFO] $what -- $text"
 }
 # The journey's verdict: PASS only when every step ran and passed; a journey stopped early is FAIL with its reason.
+$script:Holders = New-Object System.Collections.ArrayList
+function Hold([string]$file, [int]$seconds = 1200) {
+  $p = Start-Process powershell -ArgumentList '-NoProfile', '-Command', "`$f = [IO.File]::Open('$file', 'Open', 'ReadWrite', 'None'); Start-Sleep $seconds" -PassThru -WindowStyle Hidden
+  [void]$script:Holders.Add($p); Start-Sleep 3; return $p
+}
+function Release-Holders { foreach ($p in @($script:Holders)) { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue }; $script:Holders.Clear() }
 function Close-Journey([string]$notTested = '') {
+  Release-Holders
   $j = $script:Journey
   if ($notTested) { $j.result = 'NOT TESTED'; $j.reason = $notTested }
   else {
@@ -198,8 +208,16 @@ function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]
   return $null
 }
 function Texts($w) { try { (@($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | ForEach-Object { $_.Current.Name } | Where-Object { $_ }) -join ' | ' } catch { '' } }
+# the window class of each kind of WinForms control (a second way to find them, if the type is not reported)
+$script:ClassOf = @{ 'Button' = 'BUTTON'; 'CheckBox' = 'BUTTON'; 'RadioButton' = 'BUTTON'; 'Edit' = 'EDIT'; 'ComboBox' = 'COMBOBOX'; 'Tree' = 'SysTreeView32'; 'ProgressBar' = 'msctls_progress32'; 'List' = 'SysListView32' }
 function Find($w, $type, [string]$name = $null, [switch]$Like) {
-  $all = @($w.FindAll($TS::Descendants, (New-Object $PC($AE::ControlTypeProperty, $type))))
+  $all = @($w.FindAll($TS::Descendants, ($PC::new($AE::ControlTypeProperty, $type))))
+  $short = $type.ProgrammaticName -replace 'ControlType\.', ''
+  if ($all.Count -eq 0 -and $script:ClassOf.ContainsKey($short)) {
+    $cls = $script:ClassOf[$short]
+    $all = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $_.Current.ClassName -like "*.$cls.*" -or $_.Current.ClassName -eq $cls })
+    if ($cls -eq 'BUTTON' -and $all.Count -gt 0) { Write-Host "[robot] $short found by window class (UI Automation reported no type)" }
+  }
   if ($name) { if ($Like) { $all = @($all | Where-Object { $_.Current.Name -like $name }) } else { $all = @($all | Where-Object { $_.Current.Name -eq $name }) } }
   return ,$all
 }

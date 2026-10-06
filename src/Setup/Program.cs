@@ -66,16 +66,18 @@ namespace OnlineBackup.Setup
         [MethodImpl(MethodImplOptions.NoInlining)]
         static int Start(string packageDir) { return OnlineBackup.Agent.SetupForm.Run(packageDir); }
 
-        /// <summary>The files after the program (the end: their length, then OBSETUP1) → a new folder under %TEMP%; null when there are none.</summary>
+        /// <summary>The files after the program (the end: their length, then OBSETUP1) → a new folder under %TEMP%; null when there are none; an exception when the file is cut off.</summary>
         static string Unpack()
         {
             var self = Assembly.GetExecutingAssembly().Location;
             using (var f = File.OpenRead(self))
             {
-                if (f.Length < 16) return null;
+                // WIN-QA W02: a download cut off has no mark at the end — it is damaged, not "the program of an unzipped package"
+                var state = SetupPayload.Inspect(f);
+                if (state == SetupPayload.State.None) return null;
+                if (state == SetupPayload.State.Cut) throw new InvalidDataException("the file is incomplete");
                 f.Seek(-16, SeekOrigin.End);
                 var tail = new byte[16]; Read(f, tail);
-                if (Encoding.ASCII.GetString(tail, 8, 8) != "OBSETUP1") return null;
                 var len = BitConverter.ToInt64(tail, 0);
                 if (len <= 0 || len > f.Length - 16) throw new InvalidDataException("length");
                 f.Seek(f.Length - 16 - len, SeekOrigin.Begin);

@@ -18,36 +18,36 @@ function Install-ViaUi([string]$setup, [switch]$Launch) {
   $w = SetupWindow 120
   if (-not (Step 'Setup.exe opens its window' 'the setup window within 120 s' { @([bool]$w, $(if ($w) { $w.Current.Name } else { 'no window' })) } -NoShot)) { Look $null 'Launch' | Out-Null; return $false }
   Front $w; Start-Sleep -Seconds 1
-  $okW = StepLook 'Installer 01 - Welcome' 'Welcome, the product, Next and Cancel' $w { $t = Texts $w; @(($t -like '*Welcome*') -and ($t -like '*Next*') -and ($t -like '*Cancel*'), $t) } $lang $script:SetupProc
+  $okW = StepLook 'Installer 01 - Welcome' 'Welcome, the product, Next and Cancel' $w { $t = Texts $w; @((($t -like '*Welcome*') -and ($t -like '*Next*') -and ($t -like '*Cancel*')), $t) } $lang $script:SetupProc
   UxCheck 'Installer: the first page says what will be installed' 'the product name and what it does' ((Texts $w) -like '*installs*') (Texts $w)
   Click (Button $w 'Next')
   Start-Sleep -Seconds 1
   $lic = StepLook 'Installer 02 - License agreement' 'the license text and an accept box' $w { $t = Texts $w; $box = @(Find $w $CT::CheckBox); @(($box.Count -ge 1), $t) } $lang $script:SetupProc
   $install = Button $w 'Install'
-  Step 'Install is disabled before the license is accepted' 'not enabled' { @(-not $install.Current.IsEnabled, 'enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
+  Step 'Install is disabled before the license is accepted' 'not enabled' { @((-not $install.Current.IsEnabled), 'enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
   UxCheck 'Installer: a license agreement must be accepted before installing' 'Install disabled until accepted' (-not $install.Current.IsEnabled) ('enabled=' + $install.Current.IsEnabled) 'High'
   if ($true) {
-    Step 'Back returns to Welcome, Next comes back' 'Welcome, then the license again' { Click (Button $w 'Back'); $t = Texts $w; $ok = $t -like '*Welcome*'; Click (Button $w 'Next'); @($ok -and ((Texts $w) -like '*License*'), $t) } -NoShot | Out-Null
+    Step 'Back returns to Welcome, Next comes back' 'Welcome, then the license again' { Click (Button $w 'Back'); $t = Texts $w; $ok = $t -like '*Welcome*'; Click (Button $w 'Next'); @(($ok -and ((Texts $w) -like '*License*')), $t) } -NoShot | Out-Null
   }
   $box = @(Find $w $CT::CheckBox) | Select-Object -First 1
-  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true; @($ok -and $install.Current.IsEnabled, 'ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
+  Step 'Accept the license (tick the box)' 'ticked, Install enabled' { $ok = SetCheck $box $true; @(($ok -and $install.Current.IsEnabled), 'ticked=' + (IsOn $box) + ' install enabled=' + $install.Current.IsEnabled) } -NoShot | Out-Null
   Look $w 'Installer 03 - License accepted' $lang $script:SetupProc | Out-Null
   Note 'Installer pages that exist' 'Welcome -> License agreement -> Installation (progress) -> Finish. There is no configuration page (folder, options) and no "Ready to install" page in the current installer.'
   UxCheck 'Installer: a "Ready to install" summary before installing' 'a page listing what will be installed and where' $false 'the license page''s button installs at once (no configuration or ready page)' 'Low' 'Proposal only - the owner decides (the UX spec is not approved yet)'
   Click $install
   Start-Sleep -Milliseconds 600
-  $prog = StepLook 'Installer 04 - Installing (progress)' 'an "Installing" page with a progress bar' $w { $t = Texts $w; $bar = @(Find $w $CT::ProgressBar); @(($bar.Count -ge 1) -or ($t -like '*installed*'), $t) } $lang $script:SetupProc
+  $prog = StepLook 'Installer 04 - Installing (progress)' 'an "Installing" page with a progress bar' $w { $t = Texts $w; $bar = @(Find $w $CT::ProgressBar); @((($bar.Count -ge 1) -or ($t -like '*installed*')), $t) } $lang $script:SetupProc
   UxCheck 'Installer: progress is visible while installing' 'a progress bar and what is being done' ($prog) 'see the screenshot'
   $until = (Get-Date).AddMinutes(5); $fin = $null
   while ((Get-Date) -lt $until) { $f = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -eq 'Finish' } | Select-Object -First 1; if ($f) { $fin = $f; break }; Start-Sleep -Milliseconds 700 }
   $text = Texts $w
-  $ok = StepLook 'Installer 05 - Finish' 'the Finish page says it is installed' $w { @([bool]$fin -and ($text -notlike '*did not finish*'), $text) } $lang $script:SetupProc
+  $ok = StepLook 'Installer 05 - Finish' 'the Finish page says it is installed' $w { @(([bool]$fin -and ($text -notlike '*did not finish*')), $text) } $lang $script:SetupProc
   UxCheck 'Installer: the last page says the result and what to do next' 'installed + how to sign in' (($text -like '*installed*') -and ($text -like '*sign in*')) $text
   $open = @(Find $w $CT::CheckBox) | Select-Object -First 1
   if ($open) { [void](SetCheck $open ([bool]$Launch)) }
   if ($fin) { Click $fin }
   Start-Sleep -Seconds 3
-  Step 'The setup window closes after Finish' 'no setup window' { $left = TopWindows $script:SetupProc; @($left.Count -eq 0, "$($left.Count) window(s) left") } -NoShot | Out-Null
+  Step 'The setup window closes after Finish' 'no setup window' { $left = TopWindows $script:SetupProc; @(($left.Count -eq 0), "$($left.Count) window(s) left") } -NoShot | Out-Null
   return $ok
 }
 
@@ -56,7 +56,7 @@ function Choose-Language($w, [string]$lang) {
   if (-not $combo) { throw 'no language list' }
   $want = $(if ($lang -eq 'he') { U @(0x5E2, 0x5D1, 0x5E8, 0x5D9, 0x5EA) } else { $lang })
   try { ($combo.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)).Expand(); Start-Sleep -Milliseconds 500 } catch { }
-  $item = @($combo.FindAll($TS::Descendants, (New-Object $PC($AE::ControlTypeProperty, $CT::ListItem)))) | Where-Object { $_.Current.Name -eq $want } | Select-Object -First 1
+  $item = @($combo.FindAll($TS::Descendants, ($PC::new($AE::ControlTypeProperty, $CT::ListItem)))) | Where-Object { $_.Current.Name -eq $want } | Select-Object -First 1
   if (-not $item) { throw "no '$want' in the language list" }
   ($item.GetCurrentPattern([System.Windows.Automation.SelectionItemPattern]::Pattern)).Select()
   try { ($combo.GetCurrentPattern([System.Windows.Automation.ExpandCollapsePattern]::Pattern)).Collapse() } catch { }
@@ -87,7 +87,7 @@ function Maintain-ViaUi([string]$setup, [ValidateSet('repair', 'remove', 'update
   while ((Get-Date) -lt $until) { $fin = @(Find $w $CT::Button 'Finish') | Select-Object -First 1; if ($fin) { break }; Start-Sleep -Milliseconds 700 }
   $text = Texts $w
   $want = $(if ($action -eq 'remove') { '*was removed*' } else { '*is installed*' })
-  $ok = StepLook "Maintenance - $action finished" "the Finish page ($want)" $w { @([bool]$fin -and ($text -like $want), $text) } 'en' $script:SetupProc
+  $ok = StepLook "Maintenance - $action finished" "the Finish page ($want)" $w { @(([bool]$fin -and ($text -like $want)), $text) } 'en' $script:SetupProc
   $open = @(Find $w $CT::CheckBox) | Select-Object -First 1; if ($open) { [void](SetCheck $open $false) }
   if ($fin) { Click $fin }
   Start-Sleep -Seconds 3
@@ -148,7 +148,7 @@ function Answer-Dialogs($main, [string]$password, [string]$screen, [int]$seconds
 
 # First run: the sign-in page -> user name, password -> Sign in -> (the server's certificate, the agreement) -> connected
 function Connect-ViaUi($w, [string]$login, [string]$password) {
-  StepLook 'Client 01 - First run: the sign-in page' 'Sign in, the server, user name and password' $w { $t = Texts $w; @(($t -like '*Sign in*') -and ($t -like '*User name*'), $t) } 'en' $script:ClientProc | Out-Null
+  StepLook 'Client 01 - First run: the sign-in page' 'Sign in, the server, user name and password' $w { $t = Texts $w; @((($t -like '*Sign in*') -and ($t -like '*User name*')), $t) } 'en' $script:ClientProc | Out-Null
   UxCheck 'Client: the first screen asks only for what the customer received' 'server (pre-filled), user name, password' ((Texts $w) -like '*Backup server*') (Texts $w)
   TypeInto (Edit $w 'User name') $login
   TypeInto (Edit $w 'Password') $password
@@ -159,7 +159,7 @@ function Connect-ViaUi($w, [string]$login, [string]$password) {
   $until = (Get-Date).AddSeconds(60)
   while ((Get-Date) -lt $until -and (Texts $w) -like '*User name*') { Start-Sleep -Seconds 1 }
   $t = Texts $w
-  $ok = StepLook 'Client 04 - Connected: the program asks what to back up' 'the "New backup" page' $w { @(($t -like '*New backup*') -and ($t -notlike '*User name*'), $t) } 'en' $script:ClientProc
+  $ok = StepLook 'Client 04 - Connected: the program asks what to back up' 'the "New backup" page' $w { @((($t -like '*New backup*') -and ($t -notlike '*User name*')), $t) } 'en' $script:ClientProc
   UxCheck 'Client: after signing in the program says the computer is connected and what to do next' 'a confirmation and the next step' (($msgs -join ' ') -like '*connected*') ($msgs -join ' || ')
   return $ok
 }
@@ -171,7 +171,7 @@ function TreePath($tree, [string]$path) {
     $name = $(if ($i -eq 0) { $parts[0] + '\' } else { $parts[$i] })
     $until = (Get-Date).AddSeconds(15); $node = $null
     while (-not $node -and (Get-Date) -lt $until) {
-      $node = @($scope.FindAll($TS::Children, (New-Object $PC($AE::ControlTypeProperty, $CT::TreeItem)))) | Where-Object { $_.Current.Name -eq $name -or $_.Current.Name -eq $parts[$i] } | Select-Object -First 1
+      $node = @($scope.FindAll($TS::Children, ($PC::new($AE::ControlTypeProperty, $CT::TreeItem)))) | Where-Object { $_.Current.Name -eq $name -or $_.Current.Name -eq $parts[$i] } | Select-Object -First 1
       if (-not $node) { Start-Sleep -Milliseconds 500 }
     }
     if (-not $node) { throw "no '$name' in the folder tree under '$($parts[0..([Math]::Max(0,$i-1))] -join '\')'" }
@@ -191,7 +191,7 @@ function Key($el, [int]$vk) { $h = [IntPtr]$el.Current.NativeWindowHandle; [void
 function Tick($tree, $node) { Select-Node $node; Key $tree 0x20; return 'space bar' }
 function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
   Nav $w 'New backup'
-  StepLook 'Client 05 - New backup page' 'type, name, the folder tree, time, the button' $w { $t = Texts $w; @(($t -like '*Folders to back up*') -and ($t -like '*Backup name*'), $t) } 'en' $script:ClientProc | Out-Null
+  StepLook 'Client 05 - New backup page' 'type, name, the folder tree, time, the button' $w { $t = Texts $w; @((($t -like '*Folders to back up*') -and ($t -like '*Backup name*')), $t) } 'en' $script:ClientProc | Out-Null
   TypeInto (Edit $w 'Backup name') $name
   $tree = @(Find $w $CT::Tree) | Select-Object -First 1
   $node = TreePath $tree $folder
@@ -204,7 +204,7 @@ function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
   Note 'Messages when adding the backup' ($msgs -join ' || ')
   Start-Sleep -Seconds 2
   $t = Texts $w
-  return (StepLook 'Client 08 - The backup is listed on the status page' "a card '$name' with Back up now" $w { @(($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*'), $t + ' || ' + ($msgs -join ' || ')) } 'en' $script:ClientProc)
+  return (StepLook 'Client 08 - The backup is listed on the status page' "a card '$name' with Back up now" $w { @((($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*')), $t + ' || ' + ($msgs -join ' || ')) } 'en' $script:ClientProc)
 }
 function BackupNow-ViaUi($w, [string]$screen) {
   Nav $w 'Backup status'
@@ -223,7 +223,7 @@ function WaitIdle-Client($w, [int]$minutes = 15) {
 function Restore-ViaUi($w, [string]$target, [string]$password, [string]$screen) {
   Nav $w 'Restore'
   Start-Sleep -Seconds 3
-  StepLook "$screen - Restore page" 'the backup, the latest point, the files, the folder' $w { $t = Texts $w; @(($t -like '*Restore point*') -and ($t -like '*Latest*'), $t) } 'en' $script:ClientProc | Out-Null
+  StepLook "$screen - Restore page" 'the backup, the latest point, the files, the folder' $w { $t = Texts $w; @((($t -like '*Restore point*') -and ($t -like '*Latest*')), $t) } 'en' $script:ClientProc | Out-Null
   TypeInto (Edit $w 'Restore to folder') $target
   Look $w "$screen - Restore selection" 'en' $script:ClientProc | Out-Null
   Click (PageButton $w 'Restore')
