@@ -1,0 +1,14 @@
+﻿{
+    "phase":  "main",
+    "windows":  "Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100",
+    "computer":  "runnervmfi6oq",
+    "package":  "OnlineBackup-Server-0.1.13.zip",
+    "commit":  "aec548289afaf4d14d8165814c7f5aa6b3f342df",
+    "run":  "37523219377",
+    "started":  "2026-10-06T20:06:15.9593034+00:00",
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "powershell":  "5.1.26100.33438",
+    "interactive":  true,
+    "user":  "runnervmfi6oq\\runneradmin"
+}
