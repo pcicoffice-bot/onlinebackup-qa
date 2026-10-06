@@ -873,7 +873,15 @@ namespace OnlineBackup.Agent
         public Stacker(Control parent, int x, int y, int width, bool rtl) { this.parent = parent; x0 = x; y0 = y; Width = width; this.rtl = rtl; }
         RightToLeft Dir { get { return rtl ? RightToLeft.Yes : RightToLeft.No; } }
 
-        public Control Add(Control c) { if (c.Margin == new Padding(3)) c.Margin = new Padding(0, 6, 0, 2); c.RightToLeft = Dir; rows.Add(c); parent.Controls.Add(c); return c; }
+        // WIN-QA: a field is named by the caption above it (screen readers and Windows UI Automation read the name;
+        // without it every field was only "edit")
+        string caption;
+        public Control Add(Control c)
+        {
+            if (c.Margin == new Padding(3)) c.Margin = new Padding(0, 6, 0, 2); c.RightToLeft = Dir;
+            if (!(c is Label || c is ButtonBase) && caption != null) { if (string.IsNullOrEmpty(c.AccessibleName)) c.AccessibleName = caption; caption = null; }
+            rows.Add(c); parent.Controls.Add(c); return c;
+        }
 
         public Label Text(string s, float size = 10f, bool bold = false, Color? color = null)
         {
@@ -881,7 +889,7 @@ namespace OnlineBackup.Agent
             var h = TextRenderer.MeasureText(string.IsNullOrEmpty(s) ? " " : s, font, new Size(Width, 0), TextFormatFlags.WordBreak).Height + 2;
             var l = new Label { Text = s, AutoSize = false, Width = Width, Height = h, Font = font, TextAlign = ContentAlignment.TopLeft, Margin = new Padding(0, 6, 0, 2), Tag = "full" };
             if (color.HasValue) l.ForeColor = color.Value;
-            Add(l); return l;
+            Add(l); if (bold) caption = s; return l;
         }
         public TextBox Box(bool password, bool ltr = false)
         {

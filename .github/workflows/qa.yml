@@ -47,30 +47,62 @@ jobs:
   package:
     if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
-      - run: VERSION=0.1.${{ github.run_number }} OUT=out bash build-package.sh
+      - name: Two real packages (the second, newer one is the update the agent receives)
+        run: |
+          VERSION=0.1.${{ github.run_number }} OUT=out bash build-package.sh
+          VERSION=0.2.${{ github.run_number }} OUT=out bash build-package.sh
       - uses: actions/upload-artifact@v4
         with: { name: qa-package, path: out/OnlineBackup-Server-*.zip, retention-days: 7 }
 
   windows:
-    # real Windows: the installation package as a customer gets it
+    # real Windows (an interactive desktop session): the installation package as a customer gets it, the installer and
+    # the program window used through Windows UI Automation, every screen kept and looked at (Visual QA)
     needs: package
     if: ${{ !github.event.repository.private }}
     runs-on: windows-latest
-    timeout-minutes: 60
+    timeout-minutes: 180
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { name: qa-package, path: pkg }
-      - name: Real Windows E2E — server, installer robot, backup, restore (SHA-256), service killed, uninstall, reinstall
+      - name: The scripts are ASCII (Windows PowerShell 5.1 reads them as ANSI)
         shell: pwsh
         run: |
-          $zip = (Get-ChildItem pkg\OnlineBackup-Server-*.zip | Select-Object -First 1).FullName
-          ./tests/QA/windows/win-e2e.ps1 -Package $zip -Out "$PWD\win-out"
+          $bad = Get-ChildItem tests/QA/windows -Filter *.ps1 | Where-Object { [IO.File]::ReadAllBytes($_.FullName) | Where-Object { $_ -gt 127 } | Select-Object -First 1 }
+          if ($bad) { Write-Error "non-ASCII: $($bad.Name -join ', ')"; exit 1 }
+      - name: Windows journeys (Windows PowerShell 5.1, as on any customer's Windows)
+        shell: powershell
+        run: |
+          $z = Get-ChildItem pkg\OnlineBackup-Server-*.zip | Sort-Object { [version]($_.BaseName -replace '^OnlineBackup-Server-', '') }
+          .\tests\QA\windows\win-e2e.ps1 -Package $z[0].FullName -Package2 $z[-1].FullName -Out "$PWD\win-out" -Phase main
       - uses: actions/upload-artifact@v4
         if: always()
         with: { name: qa-windows-evidence, path: win-out/, retention-days: 30 }
+
+  windows-report:
+    # the contact sheet: every journey's screens in order, FUNCTIONAL / VISUAL / UX apart; kept in the branch
+    # "qa-evidence" so the screens can be opened without downloading anything
+    needs: windows
+    if: ${{ always() && !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    permissions: { contents: write }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: qa-windows-evidence, path: win-out }
+      - run: python3 tests/QA/windows/contact-sheet.py win-out
+      - uses: actions/upload-artifact@v4
+        with: { name: qa-windows-contact-sheet, path: win-out/, retention-days: 30 }
+      - name: Keep the evidence in the branch qa-evidence (runs/<run id>)
+        run: |
+          git config user.name "qa-bot"; git config user.email "qa-bot@users.noreply.github.com"
+          git fetch origin qa-evidence || true
+          if git rev-parse --verify origin/qa-evidence >/dev/null 2>&1; then git checkout -B qa-evidence origin/qa-evidence; else git checkout --orphan qa-evidence; git rm -rfq .; fi
+          mkdir -p runs && rm -rf "runs/${{ github.run_id }}" && cp -r win-out "runs/${{ github.run_id }}"
+          ls -1t runs | tail -n +11 | while read d; do git rm -rfq "runs/$d"; done
+          git add runs && git commit -qm "Windows QA evidence, run ${{ github.run_id }} (${{ github.sha }})" && git push -q origin qa-evidence

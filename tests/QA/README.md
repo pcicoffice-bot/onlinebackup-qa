@@ -14,7 +14,7 @@
 | `journeys/` | מסעות משתמש (L5): J1 כניסה וניווט, J2 עריכת סט מהאתר, J3 "גבה עכשיו" ושחזור, J4 אובדן מידע ושחזור, J5 הריגת הסוכן באמצע גיבוי |
 | `failure-recovery/` | ניסיונות לשבור (L6): F1 נפילת שרת, F2 ניתוק רשת, F3 שני גיבויים במקביל, F4 שחזור שנקטע, F5 תיקייה שנעלמה |
 | `regression/`, `e2e/`, `web/` | בדיקות שה-Generator יוצר לפי רמה |
-| `windows/` | Windows אמיתי: `setup-robot.ps1` (רובוט ההתקנה, UI Automation), `win-e2e.ps1` (כל השרשרת מחבילת ההתקנה האמיתית) |
+| `windows/` | Windows אמיתי: `lib.ps1` (UI Automation, Visual QA, אורקלים של Windows), `robots.ps1` (רובוט ההתקנה ורובוט חלון התוכנה), `win-e2e.ps1` (המסעות W01–W19), `contact-sheet.py` (דף הצילומים) |
 | `plans/` | תוכניות בדיקה של ה-Planner |
 | `lib/` | `world.ts` — השרת, הסוכן, ה-dataset וה-SHA-256; `fixtures.ts` — עולם נקי לכל בדיקה וראיות לכל כישלון; `ui.ts` — פעולות באתר |
 | `runner/` | `qa.mjs` — הרצה מלאה, רמות, שער שחרור ודוח; `mcp-session.mjs` — סשן MCP קבוע; `netproxy.mjs` — "קו הרשת" שאפשר לנתק |
