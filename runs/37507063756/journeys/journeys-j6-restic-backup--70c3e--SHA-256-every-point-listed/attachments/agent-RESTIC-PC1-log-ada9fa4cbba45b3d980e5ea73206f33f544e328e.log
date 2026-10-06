@@ -1,0 +1,9 @@
+$ agent register --server http://localhost:43599/ --login qa-restic --password Customer-Pass-1 --computer RESTIC-PC1
+registered RESTIC-PC1
+
+$ agent addset --password Customer-Pass-1 --name Restic files --source /tmp/obqa-puzBR0/data --keytype PASSWORD --engine RESTIC
+1791310205813
+
+customer screen on 127.0.0.1:18200 (address with its key in ui.txt, root only)
+2026-10-06T18:11:11 Restic files: BS_STOP_SUCCESS
+2026-10-06T18:11:12 Restic files restore test: 1/1
