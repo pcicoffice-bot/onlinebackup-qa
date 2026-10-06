@@ -213,7 +213,7 @@ Journey 'W03' 'Client installation through the installer window, proven by Windo
   Step 'The settings folder (ProgramData) belongs to SYSTEM and Administrators only' 'no Users / Everyone access' { $a = (Get-Acl $S.dataDir).Access | ForEach-Object { "$($_.IdentityReference):$($_.FileSystemRights)" }; @((($a -join ' ') -notmatch 'Users|Everyone|Authenticated'), ($a -join '; ')) } -NoShot | Out-Null
   Step 'Start menu shortcut and start with Windows' 'a shortcut to the program, and one with --tray in Startup' { $l = @(Shortcuts '*OnlineBackup.Client.exe'); @((($l.Count -ge 2) -and (@($l | Where-Object { $_.args -like '*--tray*' }).Count -ge 1)), (($l | ForEach-Object { $_.file + ' ' + $_.args }) -join '; ')) } -NoShot | Out-Null
   $w = ClientWindow 60
-  StepLook 'Finish with "Open now" opens the program window' 'the program window' $w { @([bool]$w, $(if ($w) { $w.Current.Name } else { 'no window in 60 s' })) } 'en' $ClientProc | Out-Null
+  StepLook 'Finish with "Open now" opens the program window' 'the program window' $w { @([bool]$w, $(if ($w) { $w.Current.Name } else { 'no window in 60 s; desktop: ' + (DesktopWindows) })) } 'en' $ClientProc | Out-Null
 }
 
 Journey 'W04' 'First run: sign in through the window, the agent connects to the server' {

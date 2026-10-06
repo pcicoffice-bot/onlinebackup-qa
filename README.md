@@ -1,3 +1,3 @@
 # OnlineBackup — QA mirror
-A snapshot of the OnlineBackup source (commit 4c6deea of the private repository) for automated QA on real Windows.
+A snapshot of the OnlineBackup source (commit d28b90e of the private repository) for automated QA on real Windows.
 Development happens in the private repository; this mirror only runs `.github/workflows/qa.yml`.

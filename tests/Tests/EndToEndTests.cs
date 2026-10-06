@@ -384,14 +384,14 @@ namespace OnlineBackup.Tests
                 session.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(setup["secret"], DateTime.UtcNow)));
                 var noCode = Assert.Throws<AgentException>(() => app.Interactive("Customer-Pass-1", null));
                 Assert.Equal("OTP_REQUIRED", noCode.Code);
-                Assert.NotNull(app.Interactive("Customer-Pass-1", Totp.Code(setup["secret"], DateTime.UtcNow)).Session);
+                Assert.NotNull(app.Interactive("Customer-Pass-1", TestAuth.Fresh("e2e|sec2026", setup["secret"]))   /* H-02: each sign-in takes the next code, as a person does */.Session);
                 var backupCode = setup.List("codes")[0]["code"];
                 Assert.NotNull(app.Interactive("Customer-Pass-1", backupCode).Session);
                 Assert.Throws<AgentException>(() => app.Interactive("Customer-Pass-1", backupCode));   // one-time
 
                 var src = env.Dir("src");
                 File.WriteAllText(Path.Combine(src, "a.txt"), "x");
-                var set = app.CreateSet(app.Interactive("Customer-Pass-1", Totp.Code(setup["secret"], DateTime.UtcNow)), "Customer-Pass-1", new BackupSetInfo { Name = "F", Sources = { src } });
+                var set = app.CreateSet(app.Interactive("Customer-Pass-1", TestAuth.Fresh("e2e|sec2026", setup["secret"]))   /* H-02: each sign-in takes the next code, as a person does */, "Customer-Pass-1", new BackupSetInfo { Name = "F", Sources = { src } });
                 Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);   // scheduled run: device token, no code
                 var profile = File.ReadAllText(Path.Combine(env.HomeA, "sec2026", "db", "Profile.xml"));
                 Assert.DoesNotContain("Customer-Pass-1", profile);

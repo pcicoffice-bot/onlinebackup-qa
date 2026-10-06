@@ -22,7 +22,7 @@ namespace OnlineBackup.Tests
         // every option of a set → the test that proves what it does ("Class.Method"), or why it does nothing of its own
         static readonly Dictionary<string, string> Proof = new Dictionary<string, string>
         {
-            { "Id", "-the set's number, given by the server" }, { "Name", "SetControlTests.Admin_ChangesSettings_KeyTypeEngineKept_AgentSeesThem" },
+            { "Id", "-the set's number, given by the server" }, { "Device", "-the registration that made the set (D-4, bug 66): kept by the server like Computer; Playwright failure-recovery/f12" }, { "Name", "SetControlTests.Admin_ChangesSettings_KeyTypeEngineKept_AgentSeesThem" },
             { "Type", "SetControlTests.Admin_ChangesSettings_KeyTypeEngineKept_AgentSeesThem" }, { "Computer", "SetControlTests.SetCopiedToAnotherComputer_OwnPathsAndSettings_SharedKey" },
             { "Sources", "OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore" }, { "Deselected", "OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore" },
             { "Filters", "OptionsTests.SkippedFoldersAndFilters_AreMissingFromTheRestore" },
@@ -89,7 +89,7 @@ namespace OnlineBackup.Tests
                 var admin = env.Admin();
                 var s = BackupSetInfo.FromXml(XElement.Parse(admin.Call("GET", "/api/admin/users/opts/sets/" + set.Id)["set"]));
                 // the server keeps these on purpose (changing them would orphan the backups) or writes them itself
-                var kept = new HashSet<string> { "Id", "Type", "Engine", "Computer", "Parent", "KeyType", "KeyCheck", "KeySalt", "RunRequest", "StopRequest", "DestMode", "LocalCopy", "LocalCopyPath" };
+                var kept = new HashSet<string> { "Id", "Type", "Engine", "Computer", "Device", "Parent", "KeyType", "KeyCheck", "KeySalt", "RunRequest", "StopRequest", "DestMode", "LocalCopy", "LocalCopyPath" };
                 var changed = new List<string>();
                 foreach (var f in typeof(BackupSetInfo).GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !kept.Contains(f.Name)))
                 {

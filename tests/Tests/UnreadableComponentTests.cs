@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Linq;
@@ -91,7 +92,10 @@ namespace OnlineBackup.Tests
                 Assert.Equal("BS_STOP_SUCCESS", r3.Result);
                 Assert.DoesNotContain(rig.Server.Of("object"), q => q.Job == r3.Job);  // nothing sent again
                 Assert.Equal(want, rig.Restored("r3"));
-                Assert.Equal(stateBefore.Split('\n').Skip(1).OrderBy(x => x), File.ReadAllText(rig.StateFile).Split('\n').Skip(1).OrderBy(x => x));
+                // the file entries of the index, as before (the header lines — "#v2", "#last", "#lastlocal", "#end" — name the run)
+                Func<string, IEnumerable<string>> entries = t => t.Split('\n').Where(x => x.Length > 0 && !x.StartsWith("#", StringComparison.Ordinal)).OrderBy(x => x);
+                Assert.Equal(entries(stateBefore), entries(File.ReadAllText(rig.StateFile)));
+                Assert.Equal(3, entries(stateBefore).Count());
             }
         }
 

@@ -39,5 +39,39 @@ namespace OnlineBackup.Tests
                 Assert.Equal(Bytes.Hex(Bytes.Sha256(report)), Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(src, "report.txt")))));
             }
         }
+
+        /// <summary>
+        /// Bug 78 (Agent K's code reading): a restore killed while writing (power, kill) leaves its own temporary file
+        /// "&lt;name&gt;.&lt;8 hex&gt;.ob-restoring" beside the customer's file; nothing removed it, and each cut restore left one more.
+        /// The kill itself is not repeated here: the leftover is planted exactly as the product names it (its existence is
+        /// checked first). The next restore of that file removes the product's own leftovers — and never a customer's file
+        /// that merely ends the same way.
+        /// </summary>
+        [Fact]
+        public void TheLeftoverOfACutRestore_IsRemovedByTheNextRestore_ACustomersLookalikeIsKept()
+        {
+            using (var env = new Env())
+            {
+                env.CreateUser("leftover", "Customer-Pass-1");
+                var app = env.Agent("leftover", "Customer-Pass-1");
+                var src = env.Dir("src");
+                File.WriteAllText(Path.Combine(src, "report.txt"), "the report");
+                var set = app.CreateSet(app.Interactive("Customer-Pass-1", null), "Customer-Pass-1", new BackupSetInfo { Name = "T", Sources = { src }, Vss = false });
+                Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);
+
+                var target = env.Dir("restore"); var dir = Path.Combine(target, Env.Rel(src)); Directory.CreateDirectory(dir);
+                var leftover = Path.Combine(dir, "report.txt.0a1b2c3d.ob-restoring");
+                var lookalike = Path.Combine(dir, "report.txt.notours.ob-restoring");
+                File.WriteAllText(leftover, "half a report"); File.WriteAllText(lookalike, "the customer's");
+                Assert.True(File.Exists(leftover));
+
+                var rs = app.RestoreFor(app.Interactive("Customer-Pass-1", null), set.Id);
+                rs.Run(null, target, null, false);
+                Assert.Equal(1, rs.Restored);
+                Assert.False(File.Exists(leftover), "the leftover of a cut restore is still there");
+                Assert.Equal("the customer's", File.ReadAllText(lookalike));
+                Assert.Equal("the report", File.ReadAllText(Path.Combine(dir, "report.txt")));
+            }
+        }
     }
 }

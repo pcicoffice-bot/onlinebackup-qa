@@ -248,11 +248,56 @@ function WaitNewRun([string]$login, [string]$kind, $mark, [int]$minutes = 10, [s
 function LiveRuns([string]$set) { if (-not $set) { throw 'no backup set id (the set was never found on the server): a live view of no set is always empty' }; @(Items (Api 'GET' 'live') 'live' | Where-Object { $_['set'] -eq $set }) }
 
 # ------------------------------------------------------------------ Windows UI Automation: what a person sees and does
+# Q12 (W1 run 8): the client's window was on the screen (the screenshot shows its sign-in page) but UI Automation's list
+# of the desktop's children did not return it - every client journey stopped. A second way, from Windows itself: every
+# visible top-level window of the process (EnumWindows), taken by its handle.
+if (-not ('ObQa.Top' -as [type])) {
+  Add-Type -TypeDefinition @'
+using System; using System.Collections.Generic; using System.Runtime.InteropServices; using System.Text;
+namespace ObQa {
+  public static class Top {
+    delegate bool EnumProc(IntPtr h, IntPtr l);
+    [DllImport("user32.dll")] static extern bool EnumWindows(EnumProc f, IntPtr l);
+    [DllImport("user32.dll")] static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+    [DllImport("user32.dll")] static extern bool IsWindowVisible(IntPtr h);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] static extern int GetClassName(IntPtr h, StringBuilder s, int n);
+    [StructLayout(LayoutKind.Sequential)] struct R { public int L, T, Ri, B; }
+    [DllImport("user32.dll")] static extern bool GetWindowRect(IntPtr h, out R r);
+    public static List<IntPtr> Of(int[] pids) {
+      var l = new List<IntPtr>();
+      EnumWindows((h, x) => { uint p; GetWindowThreadProcessId(h, out p); if (IsWindowVisible(h) && Array.IndexOf(pids, (int)p) >= 0) l.Add(h); return true; }, IntPtr.Zero);
+      return l;
+    }
+    public static string Describe() {
+      var sb = new StringBuilder();
+      EnumWindows((h, x) => {
+        if (!IsWindowVisible(h)) return true;
+        uint p; GetWindowThreadProcessId(h, out p); var t = new StringBuilder(256); GetWindowText(h, t, 256); var c = new StringBuilder(256); GetClassName(h, c, 256); R r; GetWindowRect(h, out r);
+        string name = "?"; try { name = System.Diagnostics.Process.GetProcessById((int)p).ProcessName; } catch (Exception) { }
+        if (r.Ri - r.L > 100) sb.Append(name + "(" + p + ") '" + t + "' " + c + " " + (r.Ri - r.L) + "x" + (r.B - r.T) + "; ");
+        return true; }, IntPtr.Zero);
+      return sb.ToString();
+    }
+  }
+}
+'@
+}
 function TopWindows([string]$processName) {
   $ids = @(Get-Process -Name $processName -ErrorAction SilentlyContinue | ForEach-Object { $_.Id })
   if ($ids.Count -eq 0) { return @() }
-  @($AE::RootElement.FindAll($TS::Children, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $ids -contains $_.Current.ProcessId })
+  $found = @($AE::RootElement.FindAll($TS::Children, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $ids -contains $_.Current.ProcessId })
+  # the union with Windows' own list: an owned window (a message box over the installer) is top-level for Windows but a
+  # child of its owner for UI Automation - the removal's Yes/No question was "not there" (W15, run 8)
+  $seen = @{}; foreach ($f in $found) { $seen[[int64]$f.Current.NativeWindowHandle] = 1 }
+  foreach ($h in [ObQa.Top]::Of([int[]]$ids)) {
+    if ($seen.ContainsKey([int64]$h)) { continue }
+    try { $e = $AE::FromHandle($h); if ($e) { $found += $e; $seen[[int64]$h] = 1 } } catch { }
+  }
+  return $found
 }
+# every visible top-level window of the desktop (process, title, class, size) - the evidence when a window is not found
+function DesktopWindows { try { [ObQa.Top]::Describe() } catch { 'ERROR: ' + $_.Exception.Message } }
 function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]$seconds = 60) {
   $until = (Get-Date).AddSeconds($seconds)
   while ((Get-Date) -lt $until) { foreach ($w in (TopWindows $processName)) { if (& $match $w) { return $w } }; Start-Sleep -Milliseconds 400 }

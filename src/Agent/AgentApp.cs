@@ -426,6 +426,40 @@ namespace OnlineBackup.Agent
             return null;
         }
 
+        /// <summary>A local wall time as a real instant; a time that does not exist (inside a spring-forward gap) is the
+        /// first minute after the gap.</summary>
+        static DateTime UtcOf(DateTime local)
+        {
+            var x = DateTime.SpecifyKind(local, DateTimeKind.Unspecified);
+            for (int i = 0; i < 180 && TimeZoneInfo.Local.IsInvalidTime(x); i++) x = x.AddMinutes(1).AddSeconds(-x.Second);
+            return TimeZoneInfo.ConvertTimeToUtc(x, TimeZoneInfo.Local);
+        }
+
+        /// <summary>Agent M (M-4): the service runs the sets one after another — a slot that came while it was busy with
+        /// another set's backup was not missed (the computer was on), and runs as soon as the service is free, whatever
+        /// "run missed backups" says. Known from the other sets' own records: a run that started before the slot and ended
+        /// after it.</summary>
+        bool BusyWithAnotherSet(BackupSetInfo s, DateTime slotUtc)
+        {
+            try
+            {
+                var sets = Path.GetDirectoryName(Home.SetDir(s.Id));
+                if (sets == null || !Directory.Exists(sets)) return false;
+                foreach (var dir in Directory.GetDirectories(sets))
+                {
+                    if (Path.GetFileName(dir) == s.Id) continue;
+                    var st = new LocalState(dir);
+                    var la = Path.Combine(dir, "last-attempt.txt");
+                    DateTime end;
+                    if (st.LastSuccessLocalMs <= 0 || !File.Exists(la) || !RunId.TryParse(File.ReadAllText(la).Split('\t')[0], out end)) continue;
+                    var start = RunId.FromUnixMs(st.LastSuccessLocalMs);
+                    if (start <= slotUtc && end >= slotUtc) return true;
+                }
+            }
+            catch (Exception) { }
+            return false;
+        }
+
         public bool Due(BackupSetInfo s, DateTime nowLocal)
         {
             var slot = LastSlot(s, nowLocal);
@@ -450,13 +484,16 @@ namespace OnlineBackup.Agent
             // MISS-020: the slot came while the internet was down, or the run was cut off by it — as soon as it is back
             bool cutOff = attemptResult == "NETWORK" && attempt >= slot.Value;
             bool missedOffline = off != null && slot.Value >= off.Item1.AddMinutes(-1) && slot.Value <= off.Item2;
-            if (cutOff || (missedOffline && (nowLocal - slot.Value).TotalMinutes > 15))
+            // Agent M (M-3): lateness in real time — on a spring-forward night a slot inside the gap (02:30 that does not
+            // exist) looked 30+ minutes late at 03:00 and, with "run missed" off, never ran although the computer was on
+            var late = (UtcOf(nowLocal) - UtcOf(slot.Value)).TotalMinutes;
+            if (cutOff || (missedOffline && late > 15))
             {
                 if (!s.RunMissedNet) return false;
                 if (cutOff && off != null && off.Item2 > attempt) return true;           // back since the run was cut off: now
                 if (!cutOff && attempt < off.Item2) return true;                          // missed while offline: when back
             }
-            else if ((nowLocal - slot.Value).TotalMinutes > 15)
+            else if (late > 15 && !BusyWithAnotherSet(s, UtcOf(slot.Value)))
             {
                 if (!s.RunMissed) return false;
                 if (s.MissedMinHours > 0 && lastOk > nowLocal.AddHours(-s.MissedMinHours)) return false;
@@ -512,11 +549,15 @@ namespace OnlineBackup.Agent
         {
             try
             {
-                var mark = Path.Combine(Home.SetDir(s.Id), "last-attempt.txt");
-                DateTime last;
-                if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Split('\t')[0], out last) && SystemClock.UtcNow - last < TimeSpan.FromHours(20)) return;
+                // Agent M (M-5): the once-a-day limit used last-attempt.txt, which every normal run writes too — the first run that
+                // could not start after a successful one the same day never reached the server. The report has its own mark;
+                // the attempt is still noted every time (the schedule's retry pace reads it)
                 Directory.CreateDirectory(Home.SetDir(s.Id));
-                File.WriteAllText(mark, RunId.From(SystemClock.UtcNow) + "\tBS_STOP_BY_SYSTEM_ERROR");
+                File.WriteAllText(Path.Combine(Home.SetDir(s.Id), "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\tBS_STOP_BY_SYSTEM_ERROR");
+                var mark = Path.Combine(Home.SetDir(s.Id), "cannot-run-reported.txt");
+                DateTime last;
+                if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Trim(), out last) && SystemClock.UtcNow - last < TimeSpan.FromHours(20)) return;
+                File.WriteAllText(mark, RunId.From(SystemClock.UtcNow));
                 var c = DeviceClient(); var key = Guid.NewGuid().ToString("N");
                 var job = c.Call("POST", "/api/sets/" + s.Id + "/begin?key=" + key)["job"];
                 var m = new Msg().Set("result", "BS_STOP_BY_SYSTEM_ERROR");

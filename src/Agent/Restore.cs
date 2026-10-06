@@ -13,6 +13,9 @@ namespace OnlineBackup.Agent
     /// temporary name and rename, then set the file time. Requires an interactive sign-in (password + 2FA).
     /// </summary>
     /// <summary>Where a restore reads from: the backup server, or the local copy (no internet needed).</summary>
+    /// <summary>M-2: a source that can fetch the exact version a run made, wherever a later commit moved it.</summary>
+    public interface IVersionedRestoreSource { void Fetch(string loc, string job, string toFile); }
+
     public interface IRestoreSource
     {
         List<string> Points();
@@ -21,8 +24,9 @@ namespace OnlineBackup.Agent
         void Report(Msg log);
     }
 
-    public sealed class ServerSource : IRestoreSource
+    public sealed class ServerSource : IRestoreSource, IVersionedRestoreSource
     {
+        public void Fetch(string loc, string job, string toFile) { client.Download("/api/sets/" + setId + "/object?loc=" + Client.Url(loc) + "&job=" + Client.Url(job) + (test ? "&test=1" : ""), toFile); }
         readonly Client client; readonly string setId; readonly bool test;
         public ServerSource(Client client, string setId, bool test = false) { this.client = client; this.setId = setId; this.test = test; }
         public List<string> Points() { return client.Call("GET", "/api/sets/" + setId + "/points").List("points").Select(p => p["id"]).ToList(); }
@@ -117,7 +121,8 @@ namespace OnlineBackup.Agent
                 foreach (var o in objects)
                 {
                     var p = Path.Combine(temp, Guid.NewGuid().ToString("N") + ".obj");
-                    source.Fetch(o["loc"], p);
+                    var versioned = source as IVersionedRestoreSource;
+                    if (versioned != null && !string.IsNullOrEmpty(o["job"])) versioned.Fetch(o["loc"], o["job"], p); else source.Fetch(o["loc"], p);
                     using (var fs = File.OpenRead(p))
                         if (Bytes.Sha256Hex(fs) != o["sha"]) throw new InvalidDataException("Downloaded object does not match the server checksum.");
                     paths.Add(p);
@@ -138,6 +143,11 @@ namespace OnlineBackup.Agent
                     // Bug 74 (RS-02, Agent B note): "<name>.restoring" with FileMode.Create overwrote, then moved away, a customer's
                     // own file of exactly that name. A name that cannot exist yet, created new (never over a file)
                     var tmp = dest + "." + Guid.NewGuid().ToString("N").Substring(0, 8) + ".ob-restoring";
+                    // Bug 78: a restore killed while writing leaves its own temporary file; the next restore of the file removes
+                    // the product's leftovers (exactly "<name>.<8 hex>.ob-restoring"), never anything else
+                    var folder = Path.GetDirectoryName(Path.GetFullPath(dest)); var mine = new System.Text.RegularExpressions.Regex("^" + System.Text.RegularExpressions.Regex.Escape(Path.GetFileName(dest)) + "\\.[0-9a-f]{8}\\.ob-restoring$");
+                    foreach (var old in Directory.GetFiles(folder, Path.GetFileName(dest) + ".*.ob-restoring"))
+                        if (mine.IsMatch(Path.GetFileName(old))) try { File.Delete(old); } catch (IOException) { } catch (UnauthorizedAccessException) { }
                     long total = 0;
                     // Bug 30: a chunk that failed its check (or a full disk) in the middle left "<name>.restoring" in the
                     // customer's folder — any failure while writing removes the half file

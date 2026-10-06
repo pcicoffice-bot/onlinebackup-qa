@@ -607,19 +607,29 @@ namespace OnlineBackup.Server
                     if ((string)items[0][2] != "F") continue;   // a chain without its full copy is not restorable (reported by verify)
                     var last = items[items.Count - 1];
                     var f = new Msg().Set("rel", g.Key).Set("enc", last[9]).Set("orig", last[6]).Set("mtime", last[7]).Set("perm", last[10]);
-                    foreach (var r in items) f.Add("objects", new Msg().Set("loc", r[4]).Set("seq", r[1]).Set("kind", r[2]).Set("size", r[5]).Set("sha", r[8]));
+                    foreach (var r in items) f.Add("objects", new Msg().Set("loc", r[4]).Set("seq", r[1]).Set("kind", r[2]).Set("size", r[5]).Set("sha", r[8]).Set("job", r[3]));
                     m.Add("files", f);
                 }
             }
             return m;
         }
 
-        public string ObjectPath(string loc)
+        /// <param name="job">Agent M (M-2): the run that made the version the restore listed. A backup that commits while a
+        /// restore of the latest point runs moves that version away and puts the new one at the same place — the restore
+        /// got the new bytes (refused by their checksum) or nothing, for every changed file. With the run, the version is
+        /// found where it is now.</param>
+        public string ObjectPath(string loc, string job = null)
         {
             if (loc == null || loc.Contains("..") || loc.Contains("\\")) throw new ApiException(400, "BAD_PATH", "Invalid path.");
-            using (var c = Open())
-                if (Query(c, "SELECT 1 FROM objects WHERE loc=$0", loc).Count == 0) throw new ApiException(404, "NO_OBJECT", "The object was not found.");
-            return Abs(loc);
+            if (job != null && !RunId.TryParse(job, out _)) throw new ApiException(400, "BAD_JOB", "Invalid run.");
+            lock (Gate)
+                using (var c = Open())
+                {
+                    var here = Query(c, "SELECT job FROM objects WHERE loc=$0", loc);
+                    if (here.Count > 0 && (job == null || (string)here[0][0] == job)) return Abs(loc);
+                    if (job != null) { var moved = Locate(loc, job); if (moved != null) return Abs(moved); }
+                }
+            throw new ApiException(404, "NO_OBJECT", "The object was not found.");
         }
 
         public List<string> Resend()
@@ -659,7 +669,7 @@ namespace OnlineBackup.Server
 
         Msg VerifyRows(SqliteConnection c, List<object[]> rows)
         {
-            int ok = 0, bad = 0, unreadable = 0;
+            int ok = 0, bad = 0, unreadable = 0, changed = 0;
             foreach (var r in rows)
             {
                 string loc = (string)r[0], rel = (string)r[1], sha = (string)r[2];
@@ -678,6 +688,16 @@ namespace OnlineBackup.Server
                 }
                 catch (UnauthorizedAccessException e) { unreadable++; SysLog.Write(null, "System", "warning: object not checked (" + e.Message + ") " + SetId + "/" + loc); continue; }
                 if (actual == sha) { ok++; continue; }
+                // Agent M (M-1): the rows were read before hashing, without the set's lock — a commit meanwhile moves the old
+                // version away and puts the new one at the same place: its new bytes were taken for damage and the new restore
+                // point lost every changed file. A mismatch is confirmed under the lock: the row as it is now, read again.
+                lock (Gate)
+                {
+                    var now = Query(c, "SELECT sha FROM objects WHERE loc=$0", loc);
+                    if (now.Count == 0 || (string)now[0][0] != sha) { changed++; continue; }   // moved or replaced by a commit: not this check's object
+                    try { using (var fs = File.OpenRead(p)) actual = Bytes.Sha256Hex(fs); } catch (FileNotFoundException) { actual = null; } catch (DirectoryNotFoundException) { actual = null; }
+                    catch (IOException) { unreadable++; continue; } catch (UnauthorizedAccessException) { unreadable++; continue; }
+                    if (actual == sha) { ok++; continue; }
                 bad++;
                 Quarantine(loc);
                 // Agent B (B-4): the version this object belonged to is remembered as lost — the restore points that held it
@@ -687,8 +707,9 @@ namespace OnlineBackup.Server
                 // Self-healing: the agent sends a full copy of this file from the source in its next run.
                 Exec(c, null, "INSERT OR REPLACE INTO resend(rel, reason) VALUES($0,$1)", rel, "damaged object " + loc);
                 SysLog.Write(null, "System", "error: damaged object quarantined " + SetId + "/" + loc);
+                }
             }
-            return new Msg().Set("checked", ok + bad).Set("ok", ok).Set("bad", bad).Set("unreadable", unreadable);
+            return new Msg().Set("checked", ok + bad).Set("ok", ok).Set("bad", bad).Set("unreadable", unreadable).Set("changed", changed);
         }
 
         void Quarantine(string loc)

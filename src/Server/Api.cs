@@ -488,7 +488,7 @@ namespace OnlineBackup.Server
                             SysLog.Write(ip, "Access", "restore-test download " + login + "/" + setId);
                         }
                         else requireInteractive();
-                        StreamFile(ctx, store.ObjectPath(Q(ctx, "loc")));
+                        StreamFile(ctx, store.ObjectPath(Q(ctx, "loc"), Q(ctx, "job")));
                         return;
                     case "restoretest":
                         {
@@ -1992,12 +1992,15 @@ namespace OnlineBackup.Server
             if (ts.MissedHours > 0 && (nowUtc - since).TotalHours >= ts.MissedHours)
                 TicketSafe(() => Calls.Auto("missed", login, s.Id, s.Name, s.Computer, "Backup did not run — " + s.Name, "no completed backup since " + since.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) + " UTC", p));
             if ((nowUtc - since).TotalHours < 48) return;
-            long alerted; long.TryParse((string)e.Attribute("LAST_MISSED_ALERT") ?? "0", out alerted);
-            if (alerted > 0 && (nowUtc - RunId.FromUnixMs(alerted)).TotalHours < 24) return;
+            // Agent M (M-6): two maintenance runs at once (the daily timer and an administrator's button) both read the old
+            // mark and both alerted. The mark is checked and set in one step, on the profile as it is now
             lock (users.ProfileLock)
             {
                 var fresh = users.LoadProfile(login);
-                fresh.FindSet(s.Id).SetAttributeValue("LAST_MISSED_ALERT", RunId.UnixMs(nowUtc));
+                var fe = fresh.FindSet(s.Id); if (fe == null) return;
+                long alerted; long.TryParse((string)fe.Attribute("LAST_MISSED_ALERT") ?? "0", out alerted);
+                if (alerted > 0 && (nowUtc - RunId.FromUnixMs(alerted)).TotalHours < 24) return;
+                fe.SetAttributeValue("LAST_MISSED_ALERT", RunId.UnixMs(nowUtc));
                 users.SaveProfile(login, fresh);
             }
             SysLog.Write(null, "BackupErrors", login + "\t" + s.Id + "\t-\tMISSED BACKUP: no completed backup since " + since.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture));

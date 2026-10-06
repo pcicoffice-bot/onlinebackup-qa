@@ -42,5 +42,7 @@ function Api { '<m><l n="tasks"><i><f n="time">1000</f><f n="login">qa-win</f><f
 Expect 'an earlier run recorded late (started before the action) is not the new run' @(NewRuns 'qa-win' 'Backup' $mark '1000001').Count 0
 $e = ''; try { WaitNewRun 'qa-win' 'Backup' 1 1 | Out-Null } catch { $e = $_.Exception.Message }
 Expect 'WaitNewRun refuses a count' ([bool]$e) $true
+# Q12: the second way to find windows (Windows' own list) works on this machine
+Expect 'the desktop window list can be read' ((DesktopWindows) -notlike 'ERROR*') $true
 Write-Host "selftest: $bad failed"
 exit $(if ($bad -gt 0) { 1 } else { 0 })
