@@ -1,0 +1,209 @@
+﻿{
+    "screen":  "Maintenance - remove chosen",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  5,
+                 "w":  786,
+                 "h":  709,
+                 "x":  119
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  155,
+                                      "w":  780,
+                                      "h":  492,
+                                      "x":  122
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  173,
+                                      "w":  691,
+                                      "h":  249,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "ITSguard Server Online is already installed on this computer",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  179,
+                                      "w":  691,
+                                      "h":  30,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Installed version: 0.1.12",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  217,
+                                      "w":  691,
+                                      "h":  21,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "What would you like to do?",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  254,
+                                      "w":  691,
+                                      "h":  21,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Repair   —   Install it again over the present one — the backups and settings are kept",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  285,
+                                      "w":  691,
+                                      "h":  28,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Remove   —   Remove ITSguard Server Online from this computer",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  323,
+                                      "w":  691,
+                                      "h":  28,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Also remove this computer\u0027s settings (the backups on the server are kept)",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  357,
+                                      "w":  691,
+                                      "h":  28,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Your backups stay on the server. To restore them later, install again and sign in with your user name and password.",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  393,
+                                      "w":  691,
+                                      "h":  19,
+                                      "x":  158
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  109,
+                                      "w":  780,
+                                      "h":  46,
+                                      "x":  122
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  31,
+                                      "w":  780,
+                                      "h":  78,
+                                      "x":  122
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  58,
+                                      "w":  130,
+                                      "h":  23,
+                                      "x":  752
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  647,
+                                      "w":  780,
+                                      "h":  64,
+                                      "x":  122
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Remove",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  660,
+                                      "w":  120,
+                                      "h":  38,
+                                      "x":  758
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Cancel",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  660,
+                                      "w":  120,
+                                      "h":  38,
+                                      "x":  146
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}
