@@ -1,0 +1,29 @@
+﻿{
+    "id":  "W17",
+    "title":  "System State backup (Windows Server Backup)",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W17",
+    "started":  "2026-10-06T16:03:11.1152773+00:00",
+    "result":  "FAIL",
+    "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+    "steps":  [
+                  {
+                      "step":  "Windows Server Backup feature",
+                      "expected":  "installed",
+                      "actual":  "Success restart=No",
+                      "result":  "PASS",
+                      "seconds":  189,
+                      "screenshot":  "",
+                      "at":  "16:06:20"
+                  },
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "You cannot call a method on a null-valued expression. @ line 218",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "01-stopped.png",
+                      "at":  "16:07:23"
+                  }
+              ],
+    "ended":  "2026-10-06T16:07:23.6589160+00:00"
+}

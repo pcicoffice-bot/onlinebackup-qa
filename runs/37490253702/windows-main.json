@@ -1,0 +1,198 @@
+﻿{
+    "facts":  {
+                  "phase":  "main",
+                  "windows":  "Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100",
+                  "computer":  "runnervmfi6oq",
+                  "package":  "OnlineBackup-Server-0.1.7.zip",
+                  "commit":  "7efa2f4db62d5b6f6895827504281649753df337",
+                  "run":  "37490253702",
+                  "started":  "2026-10-06T15:50:10.2733247+00:00",
+                  "resolution":  "1024x768",
+                  "dpi":  100,
+                  "powershell":  "5.1.26100.33438",
+                  "interactive":  true,
+                  "user":  "runnervmfi6oq\\runneradmin"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W01",
+                         "title":  "Server: install from the real package (Windows service) and sign in",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W02",
+                         "title":  "Installer failure: a damaged Setup.exe installs nothing and says so",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "PASS",
+                         "ux":  "FAIL",
+                         "visualFindings":  0,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W03",
+                         "title":  "Client installation through the installer window, proven by Windows",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot convert the \"System.Object[]\" value of type \"System.Object[]\" to type \"System.IntPtr\". @ line 238",
+                         "visual":  "PASS",
+                         "ux":  "FAIL",
+                         "visualFindings":  0,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W04",
+                         "title":  "First run: sign in through the window, the agent connects to the server",
+                         "functional":  "FAIL",
+                         "reason":  "Client 01 - First run: the sign-in page:  || the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "FAIL",
+                         "visualFindings":  1,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W05",
+                         "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W06",
+                         "title":  "Service restart: Windows restarts the backup service, then backup and restore again",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W07",
+                         "title":  "Agent crash mid-backup: the process is killed; Windows brings it back; no ghost run; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W08",
+                         "title":  "Service stopped mid-backup: the run ends cleanly; start; backup and restore identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W09",
+                         "title":  "Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W10",
+                         "title":  "VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W11",
+                         "title":  "VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W12",
+                         "title":  "Permission denied: a folder the service may not read is an error, not a deletion; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W13",
+                         "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 319",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W14",
+                         "title":  "Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 334",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W15",
+                         "title":  "Uninstall through the installer window, reinstall, sign in again, backup and restore",
+                         "functional":  "FAIL",
+                         "reason":  "Maintenance - Setup sees the installation (remove): ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish || Removed: no service, no entry in the installed programs, no program files: ERROR: Cannot bind argument to parameter \u0027Path\u0027 because it is null. @ line 364 || Removed: the backups are still on the server: 0 runs || Installer 01 - Welcome: ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish || the journey stopped: no button \u0027Next\u0027 (on screen: ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish) @ line 232",
+                         "visual":  "PASS",
+                         "ux":  "FAIL",
+                         "visualFindings":  0,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W16",
+                         "title":  "Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  2,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W17",
+                         "title":  "System State backup (Windows Server Backup)",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 218",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W18",
+                         "title":  "Reboot",
+                         "functional":  "NOT TESTED",
+                         "reason":  "a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

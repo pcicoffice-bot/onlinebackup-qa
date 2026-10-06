@@ -1,0 +1,82 @@
+﻿
+
+TimeCreated      : 10/6/2026 3:57:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:56:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:55:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:54:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:53:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/6/2026 3:53:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:53:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/6/2026 3:52:47 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:51:47 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:50:47 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/6/2026 3:50:47 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/6/2026 3:50:25 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/6/2026 3:50:24 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+
+

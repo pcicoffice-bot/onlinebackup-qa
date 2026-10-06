@@ -1,0 +1,47 @@
+﻿{
+    "agent":  {
+                  "exists":  true,
+                  "state":  "Stopped",
+                  "start":  "Auto",
+                  "account":  "LocalSystem",
+                  "path":  "\"C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe\" service --home \"C:\\ProgramData\\ITSguard Server Online\"",
+                  "pid":  0,
+                  "process":  ""
+              },
+    "server":  {
+                   "exists":  true,
+                   "state":  "Running",
+                   "start":  "Auto",
+                   "account":  "LocalSystem",
+                   "path":  "\"C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe\" run --system-home \"C:\\obqa\\sys\" --prefix https://+:8443/",
+                   "pid":  10224,
+                   "process":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe"
+               },
+    "shadows":  0,
+    "processes":  [
+                      {
+                          "name":  "OnlineBackup.Server",
+                          "pid":  10224,
+                          "path":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe",
+                          "started":  "\/Date(1791301825138)\/"
+                      },
+                      {
+                          "name":  "Setup",
+                          "pid":  2112,
+                          "path":  "C:\\obqa\\Setup.exe",
+                          "started":  "\/Date(1791302452345)\/"
+                      },
+                      {
+                          "name":  "Setup",
+                          "pid":  6404,
+                          "path":  "C:\\obqa\\Setup.exe",
+                          "started":  "\/Date(1791301838737)\/"
+                      },
+                      {
+                          "name":  "Setup",
+                          "pid":  8380,
+                          "path":  "C:\\obqa\\Setup.exe",
+                          "started":  "\/Date(1791302452846)\/"
+                      }
+                  ]
+}
