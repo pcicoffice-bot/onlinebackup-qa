@@ -5,46 +5,46 @@
  },
  "dupReplies": [
   {
-   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "path": "/api/sets/1791321637328/jobs/2026-10-06-21-20-40/commit",
    "status": "HTTP/1.1 200 OK",
-   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"job\">2026-10-06-19-32-49</f><f n=\"repeat\">1</f></m>"
+   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"changed\">0</f><f n=\"job\">2026-10-06-21-20-40</f><f n=\"repeat\">1</f></m>"
   }
  ],
  "proxy": [
   {
-   "t": "2026-10-06T19:32:48.326Z",
+   "t": "2026-10-06T21:20:40.059Z",
    "ev": "commit-request",
    "conn": 4,
-   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-45/commit",
+   "path": "/api/sets/1791321637328/jobs/2026-10-06-21-20-37/commit",
    "bytes": 17875,
-   "at": "2026-10-06T19:32:48.325Z",
+   "at": "2026-10-06T21:20:40.058Z",
    "action": "forwarded"
   },
   {
-   "t": "2026-10-06T19:32:48.825Z",
+   "t": "2026-10-06T21:20:40.441Z",
    "ev": "armed-dup-commit"
   },
   {
-   "t": "2026-10-06T19:32:49.168Z",
+   "t": "2026-10-06T21:20:40.678Z",
    "ev": "commit-request",
    "conn": 6,
-   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "path": "/api/sets/1791321637328/jobs/2026-10-06-21-20-40/commit",
    "bytes": 2045,
-   "at": "2026-10-06T19:32:49.168Z",
+   "at": "2026-10-06T21:20:40.678Z",
    "action": "forwarded + duplicated"
   },
   {
-   "t": "2026-10-06T19:32:49.169Z",
+   "t": "2026-10-06T21:20:40.679Z",
    "ev": "dup-sent",
-   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "path": "/api/sets/1791321637328/jobs/2026-10-06-21-20-40/commit",
    "bytes": 2045
   },
   {
-   "t": "2026-10-06T19:32:49.206Z",
+   "t": "2026-10-06T21:20:40.709Z",
    "ev": "dup-reply",
-   "path": "/api/sets/1791315165511/jobs/2026-10-06-19-32-49/commit",
+   "path": "/api/sets/1791321637328/jobs/2026-10-06-21-20-40/commit",
    "status": "HTTP/1.1 200 OK",
-   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"job\">2026-10-06-19-32-49</f><f n=\"repeat\">1</f></m>"
+   "body": "<m><f n=\"checked\">2</f><f n=\"ok\">2</f><f n=\"bad\">0</f><f n=\"unreadable\">0</f><f n=\"changed\">0</f><f n=\"job\">2026-10-06-21-20-40</f><f n=\"repeat\">1</f></m>"
   }
  ]
 }

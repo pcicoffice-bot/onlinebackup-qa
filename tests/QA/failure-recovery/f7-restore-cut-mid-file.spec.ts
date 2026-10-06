@@ -3,6 +3,7 @@
 import { test, expect } from '../lib/fixtures';
 import { goldenDataset, manifest, compare, restoredPath, CUSTOMER_PASSWORD } from '../lib/world';
 import { spawn } from 'child_process';
+import { TEMP_NAME } from '../lib/fault';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -21,7 +22,7 @@ test('F7 restore killed in the middle of a large file → restore again without 
   const until = Date.now() + 120000; let caught = false;
   while (Date.now() < until && !caught) {
     const all = fs.existsSync(target) ? fs.readdirSync(target, { recursive: true }).map(String) : [];
-    caught = all.some((f) => /huge\.bin\.restoring$/.test(f));
+    caught = all.some((f) => /huge\.bin\.[0-9a-f]{8}\.ob-restoring$/.test(f));   // the name the restore writes under (bug 78)
     if (!caught) await new Promise((r) => setTimeout(r, 20));
   }
   expect(caught, 'the large file was being written when the restore was killed').toBe(true);
@@ -30,7 +31,7 @@ test('F7 restore killed in the middle of a large file → restore again without 
   const r = ag.restore(id, target);
   expect(r.code, r.out).toBe(0);
   const got = manifest(target);
-  const leftovers = [...got.keys()].filter((k) => /\.restoring$|\.part$|\.tmp$/.test(k));
+  const leftovers = [...got.keys()].filter((k) => TEMP_NAME.test(k));
   expect(leftovers, 'half-written files left in the customer\'s folder').toEqual([]);
   expect(compare(want, manifest(restoredPath(target, src)))).toEqual([]);
 });

@@ -4,24 +4,64 @@ Written during the night and updated at each check-in. Rules: NOT TESTED is neve
 when its restore matches an independent SHA-256 manifest; an agent's word is not evidence.
 
 ## 1. Snapshot under test
-- Commit `4c6deea` (branch `online-backup`; public mirror commit `2014d2b`). Every heavy run tonight is on this commit
-  unless a later snapshot is named below (with the reason and what was re-run).
+- First snapshot `4c6deea` (mirror `2014d2b`). Product fixes during the night made two more product snapshots:
+  `d28b90e` (bugs 78-84, Agent M) and `26368b0` (bugs 85-87, Agent N). **The product code (src/) has not changed since
+  `26368b0`**; later commits (up to `0767bd4`) change only tests, the QA counting and the Windows robot.
+- What ran on which snapshot: xUnit full on 4c6deea and d28b90e; Playwright full on 26368b0; Windows runs 8 (4c6deea),
+  9 (d28b90e), 10 (26368b0), 11 (product = 26368b0, robot Q14 fix).
 
 ## 2. Hours of QA
 _(filled at the end)_
 
 ## 3–4. Tests per layer and results
-_(filled as runs finish)_
+| Layer | Run | Total | PASS | FAIL | SKIPPED / NOT TESTED |
+|---|---|---|---|---|---|
+| xUnit (component + integration), full | 4c6deea, 42 m 40 s | 351 | 345 | 4 (test-side, fixed) | 2 (76/77, owner decision) |
+| xUnit, full | d28b90e, 43 m 59 s | 407 | 405 | 0 | 2 (76/77) |
+| Playwright E2E, full (journeys + failure/recovery) | 26368b0 | _running_ | | | |
+
+Caveats (true for every number above):
+- **65 xUnit tests start with a precondition guard** (`if (no restic / not Linux / no mount) return;`): xUnit reports them
+  Passed when they return at once. Since 7c9ec45 the ledger counts a guarded test that "passed" in under 50 ms as NOT TESTED.
+  On this machine (Linux, root, restic present) only a few return at once (LoadTests without OB_LOAD, the disk-full test
+  without OB_ALLOW_MOUNT, "subfolder not readable" as root, the two mono/net40 tests without a net40 build).
+- **Q15:** until 0767bd4 the Playwright "no half-written file left" oracle could not see the restore's temporary names (bug 78
+  renamed them). Every PASS of that check before 0767bd4 (F7-F11, F15, N5, N6 in the full run) is not evidence for it;
+  those scenarios are being run again with the corrected oracle.
 
 ## 5. Windows runs
-_(run ids, phases, results)_
+| Run | Snapshot | Main phase (hosted Windows Server 2025) | VM (real restarts) |
+|---|---|---|---|
+| 8 (37518574168) | 4c6deea | W01 PASS, W02 PASS, W03-W17 FAIL (robot could not find the client window), W18 NOT TESTED | cancelled by the next push |
+| 9 (37523219377) | d28b90e | same as run 8 | cancelled by the next push |
+| 10 (37527328252) | 26368b0 | same; the new diagnostics proved UI Automation HAD the window → robot defect Q14 | cancelled (Q14 made it worthless) |
+| 11 (37531433128) | product 26368b0, robot Q14 fixed | _running_ | _running_ |
+
+**Q14 (robot, not product):** the robot's window matchers were written with `$_` but called with an empty `$_`, so the
+client's window and the removal's Yes/No question were never matched. Runs 8-10 therefore measured nothing about the client
+(W03-W17): those FAILs are NOT TESTED for the product, not product failures.
 
 ## 6. C1 (client lifecycle on one Windows, one build, one run): _pending_
 ## 7. C2 (crash / recovery): _pending_
 ## 8. Consecutive passing runs: _pending_
 
 ## 9–12. New bugs, severity, fixes, regression test each
-_(see also docs/R1-BUGLOG.md)_
+Product bugs fixed tonight (full rows in docs/R1-BUGLOG.md): 73-75, 78-87 (13) — see the table there for severity, root cause
+and the regression test of each. Reverted pending owner decision: 76, 77.
+
+QA-system defects found tonight (each one could make a test PASS without testing, or fail without the product failing):
+| Id | Severity | What | Fixed in | Proof |
+|---|---|---|---|---|
+| L-1 | High | 65 guarded xUnit tests counted PASS when they returned at once | 7c9ec45 | counting_proof case 1 now NOT PROVEN (UI-09 integration = NONE) |
+| L-2 | High | one Playwright file with several tests: the last result won | 7c9ec45 | counting_proof case 2 → Failed |
+| L-3 | High | RestoreInterruptedMidway never killed restic (staged restore) | 5eee5ac | new asserts: kill hit a live restore; PASS 11 s |
+| L-4 | Medium | an environment variable could mark any test Passed | 7c9ec45 | removed; case 3 not proven |
+| L-5/L-6 | Low | prefix credit f1→f10-19; 16 test ids in the wrong class | 7c9ec45 | ledger refuses wrong ids |
+| M20 | Medium | upload stored-copy check protected by no test | 8ffcd50 | 2 tests; both FAIL with the check removed |
+| M15 | Medium | restore temp-name test used the old name | 59ea986 | FAILS with a fixed temp name |
+| Q14 | Critical (for Windows evidence) | robot never matched the client window / Yes-No dialog | 5d651c3 | self-test, run 11 |
+| Q15 | High | leftover oracle blind to the restore's temp names since bug 78; F7 could not inject its fault | 0767bd4 | regex proven on 6 names; F7 etc. re-run |
+| lint | Low | robot lint did not refuse non-ASCII (PS 5.1) | ccec504 | probe file → exit 1 |
 
 ## 13. Open
 ## 14. NEEDS OWNER DECISION

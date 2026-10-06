@@ -15,7 +15,13 @@ export function agentProcess(ag: Agent, args: string[], wrap: string[] = []): Ch
   const out = fs.openSync(ag.log, 'a');
   fs.appendFileSync(ag.log, '$ ' + [...wrap, 'agent', ...args].join(' ') + ' (process)\n');
   const cmd = [...wrap, 'dotnet', AGENT_DLL, args[0], '--home', ag.home, ...args.slice(1)];
-  return spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env }, stdio: ['ignore', out, out] });
+  // Q16 (night): a wrapper such as faketime forks the agent and does not pass a signal on — killing the wrapper left the
+  // agent running (F13 left three agent services per run, hours later; its 2nd and 3rd phase ran beside the 1st).
+  // The process gets its own group, and kill() signals the whole group.
+  const p = spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env }, stdio: ['ignore', out, out], detached: true });
+  const own = p.kill.bind(p);
+  p.kill = (sig?: NodeJS.Signals | number) => { try { process.kill(-p.pid!, sig ?? 'SIGTERM'); return true; } catch { return own(sig); } };
+  return p;
 }
 
 /** The agent command line, waited for; `wrap` goes in front. */
@@ -53,7 +59,10 @@ export function notWhole(expected: Manifest, actual: Manifest): string[] {
 }
 
 /** Leftover temporary names of a restore in the customer's folder. */
-export function leftovers(m: Manifest) { return [...m.keys()].filter((k) => /\.restoring$|\.part$|\.tmp$|\.obj$/.test(k)); }
+// the restore's own temporary names: "<name>.<8 hex>.ob-restoring" (native, bug 78), the stage folder ".ob-restoring-<id>"
+// (restic, bug 48) and the older "<name>.restoring" — since bug 78 the old pattern alone saw none of them (night QA)
+export const TEMP_NAME = /\.ob-restoring$|(^|[\/\\])\.ob-restoring-|\.restoring$|\.part$|\.tmp$|\.obj$/;
+export function leftovers(m: Manifest) { return [...m.keys()].filter((k) => TEMP_NAME.test(k)); }
 
 /** Large files of random content (so each must really travel): makes a restore last long enough to be interrupted. */
 export function bigFiles(root: string, count: number, mb: number) {

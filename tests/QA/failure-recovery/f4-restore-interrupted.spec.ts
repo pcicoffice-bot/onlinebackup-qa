@@ -2,6 +2,7 @@
 import { test, expect } from '../lib/fixtures';
 import { goldenDataset, manifest, compare, restoredPath, CUSTOMER_PASSWORD } from '../lib/world';
 import { spawn } from 'child_process';
+import { TEMP_NAME } from '../lib/fault';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -21,6 +22,6 @@ test('F4 restore killed mid-way → restore again into the same folder → every
   evidence.step('restore again into the same folder');
   const r = ag.restore(id, target, ['--overwrite']); expect(r.code, r.out).toBe(0);
   expect(compare(data, manifest(restoredPath(target, src)))).toEqual([]);
-  const leftovers = [...manifest(target).keys()].filter((k) => /\.part$|\.tmp$|~$/.test(k));
+  const leftovers = [...manifest(target).keys()].filter((k) => TEMP_NAME.test(k) || /~$/.test(k));
   expect(leftovers, 'no half-written files left').toEqual([]);
 });

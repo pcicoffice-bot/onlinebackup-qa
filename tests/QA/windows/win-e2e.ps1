@@ -69,12 +69,12 @@ function SignInAdmin {
   $r = Http 'POST' "$Url/api/admin/login" (Msg @{ login = 'admin'; password = $AdminPass; otp = (Totp $Secret) })
   $script:Ses = F $r[1] 'session'; return @([bool]$script:Ses, "HTTP $($r[0])")
 }
-function AgentFacts { $s = ServiceFacts 'OnlineBackupAgent'; if ($s.exists) { $S.agentExe = ($s.path -replace '^"([^"]+)".*$', '$1'); $S.installDir = Split-Path $S.agentExe; $S.dataDir = ($s.path -replace '^.*--home "([^"]+)".*$', '$1'); SaveState }; return $s }
+function AgentFacts { $svc = ServiceFacts 'OnlineBackupAgent'; if ($svc.exists) { $S.agentExe = ($svc.path -replace '^"([^"]+)".*$', '$1'); $S.installDir = Split-Path $S.agentExe; $S.dataDir = ($svc.path -replace '^.*--home "([^"]+)".*$', '$1'); SaveState }; return $svc }
 # the customer's backup sets as the server lists them
 function SetsOf([string]$login) {
-  $x = [xml](Api 'GET' 'users'); $out = @()
-  foreach ($i in @($x.SelectNodes("//l[@n='users']/i[f[@n='login']='$login']/l[@n='sets']/i"))) { $h = @{}; foreach ($f in @($i.f)) { $h[$f.n] = $f.'#text' }; $out += $h }
-  return $out   # the items one by one (callers wrap in @())
+  $x = [xml](Api 'GET' 'users'); $list = @()
+  foreach ($i in @($x.SelectNodes("//l[@n='users']/i[f[@n='login']='$login']/l[@n='sets']/i"))) { $h = @{}; foreach ($f in @($i.f)) { $h[$f.n] = $f.'#text' }; $list += $h }
+  return $list   # the items one by one (callers wrap in @())
 }
 # the schedules of the customer's sets, as the server stores them (its own profile file)
 function ScheduleText { (Get-ChildItem "$Q\users\$Login" -Recurse -File -Include *.xml -ErrorAction SilentlyContinue | ForEach-Object { [regex]::Matches((Get-Content $_.FullName -Raw), '<(DAILY|WEEKLY)_SCHEDULE[^>]*>') | ForEach-Object { $_.Value } } | Sort-Object -Unique) -join "`n" }
@@ -124,7 +124,7 @@ function RestoreChecked([string]$label, $want, [switch]$KeepSource) {
   if (-not $KeepSource) { if (Test-Path -LiteralPath $Data) { Remove-Tree $Data }; Move-Item -LiteralPath $aside -Destination $Data }   # the source as it was
   return $ok
 }
-function BigFile([int]$mb) { $f = Join-Path $Data 'Big\video.bin'; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random 11; $s = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $s.Write($b, 0, $b.Length) }; $s.Close() }
+function BigFile([int]$mb) { $f = Join-Path $Data 'Big\video.bin'; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random 11; $svc = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $svc.Write($b, 0, $b.Length) }; $svc.Close() }
 # the job id of the set's live run right now ('' when nothing is live): the run a kill / stop really interrupted
 function LiveJob { $l = @(LiveRuns $S.setId) | Select-Object -First 1; if ($l) { return [string]$l['job'] }; return '' }
 # the history's record of one run (by its job id), waiting for it; $null when it never comes
@@ -185,7 +185,7 @@ Journey 'W01' 'Server: install from the real package (Windows service) and sign 
   (Get-Content $sx -Raw -Encoding UTF8) -replace '<LICENSE KEY="" />', "<LICENSE KEY=`"$lic`" />" | Set-Content $sx -Encoding UTF8 -NoNewline
   Start-Service OnlineBackupServer
   Step 'The server service starts again with the licence' 'Running' { $st = WaitService OnlineBackupServer 'Running' 90; @(($st -eq 'Running'), $st) } -NoShot | Out-Null
-  Step 'Server service: automatic start, restarts after a failure' 'StartMode Auto, failure actions = restart' { $s = ServiceFacts 'OnlineBackupServer'; $f = (& sc.exe qfailure OnlineBackupServer | Out-String); @((($s.start -eq 'Auto') -and ($f -match 'RESTART')), "$($s.start); $(($f -split "`n" | Where-Object { $_ -match 'RESTART|RESET' }) -join ' ')") } -NoShot | Out-Null
+  Step 'Server service: automatic start, restarts after a failure' 'StartMode Auto, failure actions = restart' { $svc = ServiceFacts 'OnlineBackupServer'; $f = (& sc.exe qfailure OnlineBackupServer | Out-String); @((($svc.start -eq 'Auto') -and ($f -match 'RESTART')), "$($svc.start); $(($f -split "`n" | Where-Object { $_ -match 'RESTART|RESET' }) -join ' ')") } -NoShot | Out-Null
   Step 'Admin sign-in over HTTPS (password + authenticator)' 'a session' { $tcp = New-Object Net.Sockets.TcpClient('localhost', 8443); $ssl = New-Object Net.Security.SslStream($tcp.GetStream(), $false, { $true }); $ssl.AuthenticateAsClient('localhost')
     $S.pin = ([Security.Cryptography.SHA256]::Create().ComputeHash($ssl.RemoteCertificate.GetRawCertData()) | ForEach-Object { $_.ToString('x2') }) -join ''; $ssl.Dispose(); $tcp.Dispose(); [ObQa.Trust]::Pin = $S.pin; SaveState
     SignInAdmin } -NoShot | Out-Null
@@ -203,13 +203,13 @@ Journey 'W02' 'Installer failure: a damaged Setup.exe installs nothing and says 
   StepLook 'The damaged file says it is damaged' 'a message: damaged, download again' $d { @(($said -like '*damaged*'), $said) } 'en' 'Setup-damaged' | Out-Null
   if ($d) { try { Click (Button $d 'OK') } catch { } }
   Start-Sleep -Seconds 2; Get-Process 'Setup-damaged' -ErrorAction SilentlyContinue | Stop-Process -Force
-  Step 'Nothing was installed (Windows service manager, installed programs)' 'no service, no entry' { $s = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); @(((-not $s) -and $u.Count -eq 0), "service: $([bool]$s); entries: $($u.Count)") } -NoShot | Out-Null
+  Step 'Nothing was installed (Windows service manager, installed programs)' 'no service, no entry' { $svc = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); @(((-not $svc) -and $u.Count -eq 0), "service: $([bool]$svc); entries: $($u.Count)") } -NoShot | Out-Null
   UxCheck 'Installer: a damaged download tells the customer what to do' 'download it again' ($said -like '*Download it again*') $said
 }
 
 Journey 'W03' 'Client installation through the installer window, proven by Windows' {
   $ok = Install-ViaUi $S.setup -Launch
-  $s = AgentFacts
+  $svc = AgentFacts
   Step 'Windows service manager: the backup service exists, starts automatically and is Running' 'OnlineBackupAgent Running, Auto' { $st = WaitService OnlineBackupAgent 'Running' 60; $s2 = ServiceFacts 'OnlineBackupAgent'; @((($st -eq 'Running') -and ($s2.start -eq 'Auto')), "$st $($s2.start) as $($s2.account)") } -NoShot | Out-Null
   Step 'Its process runs from the installed program' 'the service PID is OnlineBackup.Agent.exe in the install folder' { $s2 = ServiceFacts 'OnlineBackupAgent'; @((($s2.pid -gt 0) -and ($s2.process -eq $S.agentExe)), "pid $($s2.pid) $($s2.process)") } -NoShot | Out-Null
   Step 'Installed programs list (Apps / Programs and Features)' 'one entry with a name, version and an uninstall command' { $u = @(UninstallEntries '*OnlineBackup.Agent*'); @(($u.Count -eq 1), (($u | ForEach-Object { "$($_.DisplayName) $($_.DisplayVersion) [$($_.Publisher)] $($_.InstallLocation)" }) -join '; ')) } -NoShot | Out-Null
@@ -318,10 +318,10 @@ Journey 'W10' 'VSS: a file locked by another program is backed up through the sh
 Journey 'W11' 'VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery' {
   $locked = Join-Path $Data 'Documents\locked.pst'; if (-not (Test-Path $locked)) { $b = New-Object byte[] (5MB); (New-Object Random 5).NextBytes($b); [IO.File]::WriteAllBytes($locked, $b) }
   $holder = Hold $locked
-  Step 'Disable the Volume Shadow Copy service' 'VSS disabled and stopped' { Stop-Service VSS -Force -ErrorAction SilentlyContinue; Set-Service VSS -StartupType Disabled; $s = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($s.StartMode -eq 'Disabled'), "$($s.State) $($s.StartMode)") } -NoShot | Out-Null
+  Step 'Disable the Volume Shadow Copy service' 'VSS disabled and stopped' { Stop-Service VSS -Force -ErrorAction SilentlyContinue; Set-Service VSS -StartupType Disabled; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Disabled'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   $run = BackupChecked 'Backup without VSS' 'not-ok'
   Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = Get-ChildItem (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Raw -ErrorAction SilentlyContinue; @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
-  Step 'Recovery: enable VSS again' 'Manual' { Set-Service VSS -StartupType Manual; $s = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($s.StartMode -eq 'Manual'), "$($s.State) $($s.StartMode)") } -NoShot | Out-Null
+  Step 'Recovery: enable VSS again' 'Manual' { Set-Service VSS -StartupType Manual; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Manual'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
   $want = Manifest $Data
   BackupChecked 'Backup with VSS back' | Out-Null
@@ -388,7 +388,7 @@ Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update i
 Journey 'W15' 'Uninstall through the installer window, reinstall, sign in again, backup and restore' {
   Close-Client
   Maintain-ViaUi $S.setup 'remove' | Out-Null
-  Step 'Removed: no service, no entry in the installed programs, no program files' 'all gone' { $s = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); $f = Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'); @(((-not $s) -and ($u.Count -eq 0) -and (-not $f)), "service $([bool]$s); entries $($u.Count); files $f") } -NoShot | Out-Null
+  Step 'Removed: no service, no entry in the installed programs, no program files' 'all gone' { $svc = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); $f = Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'); @(((-not $svc) -and ($u.Count -eq 0) -and (-not $f)), "service $([bool]$svc); entries $($u.Count); files $f") } -NoShot | Out-Null
   Step 'Removed: the backups are still on the server' 'the set and its runs are on the server' { $r = @(Runs $Login 'Backup'); @(($r.Count -gt 0), "$($r.Count) runs") } -NoShot | Out-Null
   Install-ViaUi $S.setup -Launch | Out-Null
   AgentFacts | Out-Null
@@ -438,7 +438,7 @@ if ($Phase -eq 'after-reboot') {
   [ObQa.Trust]::Pin = $S.pin
   Journey 'W19' 'After a real Windows restart: services back, agent connected, no ghost run, no lock, schedule kept, backup and restore' {
     Step 'Windows really restarted' 'boot time after the journey started' { $b = (Get-CimInstance Win32_OperatingSystem).LastBootUpTime; @(($b -gt [datetime]$S.rebootAt), "boot $b; asked $($S.rebootAt)") } -NoShot | Out-Null
-    Step 'Both services came back by themselves' 'Running, Running' { $a = WaitService OnlineBackupAgent 'Running' 300; $s = WaitService OnlineBackupServer 'Running' 300; @((($a -eq 'Running') -and ($s -eq 'Running')), "agent $a, server $s") } -NoShot | Out-Null
+    Step 'Both services came back by themselves' 'Running, Running' { $a = WaitService OnlineBackupAgent 'Running' 300; $svc = WaitService OnlineBackupServer 'Running' 300; @((($a -eq 'Running') -and ($svc -eq 'Running')), "agent $a, server $svc") } -NoShot | Out-Null
     Start-Sleep 20; [void](SignInAdmin)
     Step 'The agent is connected again (server view)' 'connected, seen after the restart' { $c = @(Connected | Where-Object { $_['name'] -eq $env:COMPUTERNAME }); @((($c.Count -eq 1) -and ($c[0]['connected'] -eq '1')), (($c | ForEach-Object { "connected=$($_['connected']) seen=$($_['lastSeen'])" }) -join ';')) } -NoShot | Out-Null
     # the live view is memory (empty after any restart, it cannot fail here); the lock is on disk: a run still open is a
@@ -459,7 +459,7 @@ if ($Phase -eq 'after-reboot') {
       Close-Client
       $kept = ServerKept
       Maintain-ViaUi $S.setup 'remove' | Out-Null
-      Step 'Removed: no service, no entry in the installed programs, no program files' 'all gone' { $s = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); $f = Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'); @(((-not $s) -and ($u.Count -eq 0) -and (-not $f)), "service $([bool]$s); entries $($u.Count); files $f") } -NoShot | Out-Null
+      Step 'Removed: no service, no entry in the installed programs, no program files' 'all gone' { $svc = Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue; $u = @(UninstallEntries '*OnlineBackup.Agent*'); $f = Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'); @(((-not $svc) -and ($u.Count -eq 0) -and (-not $f)), "service $([bool]$svc); entries $($u.Count); files $f") } -NoShot | Out-Null
       # Agent L: a history row is not a backup - the finished runs AND the set's data on the server's disk, unchanged by the uninstall
       Step 'The backups are still on the server' 'the same finished runs and the same data bytes as before the uninstall, not zero' { $now = ServerKept; @((($kept.runs -gt 0) -and ($kept.bytes -gt 0) -and ($now.runs -eq $kept.runs) -and ($now.bytes -eq $kept.bytes)), "before: $($kept.runs) finished runs, $($kept.bytes) bytes; after: $($now.runs) runs, $($now.bytes) bytes in $($now.dir)") } -NoShot | Out-Null
     }

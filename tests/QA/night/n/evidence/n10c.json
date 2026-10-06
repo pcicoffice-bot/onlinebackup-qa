@@ -1,23 +1,23 @@
 {
- "hungState": "PID  PPID STAT ELAPSED COMMAND\n10183  9994 SN         0 sleep 987653",
+ "hungState": "PID  PPID STAT ELAPSED COMMAND\n 2818  2561 SN         0 sleep 987653",
  "out": "BS_STOP_BY_SYSTEM_ERROR new=0 upd=0 perm=0 del=0 bytes=0\nerr:  restic backup exit -1: restic stopped answering for 30 min and was stopped\n",
- "ms": 18180,
+ "ms": 18452,
  "runs": [
   {
-   "time": "1791316598506",
+   "time": "1791321608139",
    "login": "qa-n10c",
-   "set": "1791316580287",
+   "set": "1791321589620",
    "setName": "Files",
    "computer": "N10C-PC",
    "kind": "Backup",
-   "job": "2026-10-06-19-56-48",
+   "job": "2026-10-06-21-20-21",
    "result": "BS_STOP_BY_SYSTEM_ERROR",
    "new": "0",
    "upd": "0",
    "del": "0",
    "bytes": "0",
-   "started": "1791316608865",
-   "log": "2026-10-06-19-56-48.log",
+   "started": "1791321621768",
+   "log": "2026-10-06-21-20-21.log",
    "status": "bad"
   }
  ]

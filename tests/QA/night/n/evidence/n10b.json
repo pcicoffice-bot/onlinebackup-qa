@@ -1,9 +1,9 @@
 {
  "after70s": {
-  "hung": "PID  PPID STAT ELAPSED COMMAND\n 9041  9024 SN        70 /bin/sh -c sleep 987652",
+  "hung": "PID  PPID STAT ELAPSED COMMAND\n 2212  2187 SN        70 /bin/sh -c sleep 987652",
   "live": [],
   "runs": []
  },
- "leftAfterKill": "9041\n9042",
- "leftState": "PID  PPID STAT ELAPSED COMMAND\n 9041     1 SN        72 /bin/sh -c sleep 987652"
+ "leftAfterKill": "2212\n2213",
+ "leftState": "PID  PPID STAT ELAPSED COMMAND\n 2212     1 SN        72 /bin/sh -c sleep 987652"
 }

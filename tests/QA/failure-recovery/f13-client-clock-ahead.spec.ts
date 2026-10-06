@@ -25,7 +25,10 @@ test('F13 client clock 3 h ahead of the server → the daily slot runs once, not
     svc = agentProcess(ag, ['service'], ['faketime', '-f', offset]);
     const until = Date.now() + ms;
     while (Date.now() < until && (await backups()).length < waitForRuns) await new Promise((r) => setTimeout(r, 3000));
-    svc.kill('SIGTERM'); await new Promise((r) => svc!.on('exit', r)); svc = undefined;
+    const pid = svc.pid!; svc.kill('SIGTERM'); await new Promise((r) => svc!.on('exit', r)); svc = undefined;
+    // Q16: no agent of this phase may live on into the next one (the phases are "the computer restarted")
+    let left = ''; for (let i = 0; i < 50; i++) { try { process.kill(-pid, 0); left = 'alive'; await new Promise((r) => setTimeout(r, 200)); } catch { left = ''; break; } }
+    expect(left, 'the agent service of phase ' + offset + ' is gone before the next phase').toBe('');
   };
   try {
     evidence.step('the service runs with the computer clock at +3 h: the slot is due');

@@ -97,10 +97,25 @@ if __name__ == '__main__':
         for n, l in enumerate(s.splitlines(), 1):
             if any(ord(c) > 127 for c in l):
                 bad += 1; print('%s:%d: a non-ASCII character (PowerShell 5.1 reads this file as ANSI):\n  %s' % (p, n, l.strip()[:200]))
+        # Q17 (W1 run 11): PowerShell names are not case-sensitive - "$s = ServiceFacts ..." inside AgentFacts was the SAME
+        # name as the script's state $S: the install folder was written into the local and never kept (W13-W15 "Path is
+        # null"). A script-level variable (assigned at the start of a line, or a script parameter) is never assigned
+        # again inside a function or a block, in any case.
+        top = set(m.group(1).lower() for m in re.finditer(r'^\$(\w+)\s*=(?!=)', s, re.M))
+        pm = re.search(r'^param\((.*?)\)\s*$', s, re.M | re.S)
+        if pm: top |= set(x.lower() for x in re.findall(r'\$(\w+)', pm.group(1)))
+        top -= {'erroractionpreference', 'bad', 'facts'}
+        pend = s[:pm.end()].count('\n') + 1 if pm else 0
+        for n, l in enumerate(s.splitlines(), 1):
+            if n <= pend: continue   # the param block itself
+            if not l.startswith((' ', '\t')) and not l.startswith('function'): continue
+            for m in re.finditer(r'(?:\$(\w+)\s*=(?!=)|foreach\s*\(\s*\$(\w+)\s+in)', l):
+                v = (m.group(1) or m.group(2)).lower()
+                if v in top: bad += 1; print('%s:%d: $%s is a script-level variable (names are not case-sensitive): a local of that name hides it:\n  %s' % (p, n, m.group(1) or m.group(2), l.strip()[:200]))
         if t != s:
             bad += 1
             if '--fix' in sys.argv: open(p, 'w', encoding='utf-8').write(t); print(p, 'fixed')
             else:
                 for n, (a, b) in enumerate(zip(s.splitlines(), t.splitlines()), 1):
                     if a != b: print('%s:%d: a check whose first or second element is not one parenthesised group:\n  %s' % (p, n, a.strip()[:200]))
-    sys.exit(1 if bad and ('--fix' not in sys.argv or any(any(ord(c) > 127 for c in open(p, encoding='utf-8').read()) for p in args) or any(unwrapped(open(p, encoding='utf-8').read()) for p in args)) else 0)
+    sys.exit(1 if bad and ('--fix' not in sys.argv or True or any(any(ord(c) > 127 for c in open(p, encoding='utf-8').read()) for p in args) or any(unwrapped(open(p, encoding='utf-8').read()) for p in args)) else 0)

@@ -100,8 +100,8 @@ function Close-Journey([string]$notTested = '') {
 # ------------------------------------------------------------------ Windows facts (the oracles)
 function WaitService([string]$name, [string]$state, [int]$seconds = 90) {
   $until = (Get-Date).AddSeconds($seconds)
-  do { $s = Get-Service $name -ErrorAction SilentlyContinue; if ($s -and [string]$s.Status -eq $state) { return [string]$s.Status }; Start-Sleep -Milliseconds 500 } while ((Get-Date) -lt $until)
-  if ($s) { return [string]$s.Status } else { return 'no service' }
+  do { $svc = Get-Service $name -ErrorAction SilentlyContinue; if ($svc -and [string]$svc.Status -eq $state) { return [string]$svc.Status }; Start-Sleep -Milliseconds 500 } while ((Get-Date) -lt $until)
+  if ($svc) { return [string]$svc.Status } else { return 'no service' }
 }
 function ServiceFacts([string]$name) {
   $c = Get-CimInstance Win32_Service -Filter "Name='$name'" -ErrorAction SilentlyContinue
@@ -184,7 +184,7 @@ function Http([string]$method, [string]$url, [string]$body = $null, [hashtable]$
   [ObQa.Trust]::Use()
   $r = [Net.HttpWebRequest]::Create($url); $r.Method = $method; $r.Timeout = $timeoutMs; $r.ReadWriteTimeout = $timeoutMs; $r.Proxy = $null
   foreach ($k in $headers.Keys) { $r.Headers[$k] = $headers[$k] }
-  if ($body -ne $null -and $method -ne 'GET') { $bytes = [Text.Encoding]::UTF8.GetBytes($body); $r.ContentType = 'application/xml'; $r.ContentLength = $bytes.Length; $s = $r.GetRequestStream(); $s.Write($bytes, 0, $bytes.Length); $s.Close() }
+  if ($body -ne $null -and $method -ne 'GET') { $bytes = [Text.Encoding]::UTF8.GetBytes($body); $r.ContentType = 'application/xml'; $r.ContentLength = $bytes.Length; $svc = $r.GetRequestStream(); $svc.Write($bytes, 0, $bytes.Length); $svc.Close() }
   try { $w = $r.GetResponse() } catch [Net.WebException] { $w = $_.Exception.InnerException.Response; if (-not $w) { $w = $_.Exception.Response }; if (-not $w) { throw } }
   $code = [int]$w.StatusCode; $st = $w.GetResponseStream()
   if ($outFile) { $f = [IO.File]::Create($outFile); $st.CopyTo($f); $f.Close(); $text = '' } else { $text = (New-Object IO.StreamReader($st, [Text.Encoding]::UTF8)).ReadToEnd() }
@@ -206,8 +206,8 @@ function Items([string]$xml, [string]$list) {
 # H-02: the server takes each code once - a second sign-in takes the next step's code (the next step is accepted for
 # clock drift), and waits for a new step when both are used, as a person waits for the phone's next code
 $script:TotpLast = -1
-function Totp([string]$s) {
-  $A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ($s.ToCharArray() | ForEach-Object { [Convert]::ToString($A.IndexOf($_), 2).PadLeft(5, '0') }) -join ''
+function Totp([string]$svc) {
+  $A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'; $bits = ($svc.ToCharArray() | ForEach-Object { [Convert]::ToString($A.IndexOf($_), 2).PadLeft(5, '0') }) -join ''
   $key = [byte[]]@(for ($i = 0; $i + 8 -le $bits.Length; $i += 8) { [Convert]::ToByte($bits.Substring($i, 8), 2) })
   while ($true) {
     $now = [long][Math]::Floor(([DateTime]::UtcNow - [DateTime]'1970-01-01').TotalSeconds / 30)
@@ -377,9 +377,22 @@ function SetCheck($el, [bool]$on, $known = $null) {
 function Named($w, [string]$pattern) {
   @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition) | Where-Object { $_.Current.Name -like $pattern -and -not $_.Current.IsOffscreen }) | Select-Object -First 1
 }
+# W1 run 11: the program's text fields have no name of their own in UI Automation (fields: '', '', ''); a person finds a
+# field by the label written above it. The field under a label: the first field whose top is within 40 px below the
+# label's bottom and that overlaps it horizontally (either reading direction).
+function FieldUnder($label, $fields) {
+  $lr = $label.Current.BoundingRectangle
+  @($fields | Where-Object { $r = $_.Current.BoundingRectangle; ($r.Top -ge ($lr.Bottom - 2)) -and ($r.Top -le ($lr.Bottom + 40)) -and ($r.Left -lt $lr.Right) -and ($r.Right -gt $lr.Left) } | Sort-Object { $_.Current.BoundingRectangle.Top }) | Select-Object -First 1
+}
 function Edit($w, [string]$name) {
   $e = @(Find $w $CT::Edit $name) | Select-Object -First 1
-  if (-not $e) { throw "no field '$name' (fields: $((@(Find $w $CT::Edit) | ForEach-Object { $_.Current.Name }) -join ', '))" }
+  if (-not $e) {
+    $label = @(Find $w $CT::Text $name) + @(Find $w $CT::Text ($name + '*') -Like) | Where-Object { -not $_.Current.IsOffscreen } | Select-Object -First 1
+    if ($label) { $e = FieldUnder $label @(Find $w $CT::Edit | Where-Object { -not $_.Current.IsOffscreen })
+      # an accessibility finding, never silent: the program sets the caption as the field's name, yet UI Automation reads none
+      if ($e -and $script:Journey) { Note 'Accessibility' "the field '$name' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label" } }
+  }
+  if (-not $e) { throw "no field '$name' (fields: $((@(Find $w $CT::Edit) | ForEach-Object { $_.Current.Name }) -join ', '); labels: $((@(Find $w $CT::Text) | ForEach-Object { $_.Current.Name }) -join ' | '))" }
   return $e
 }
 # types into a field: the value pattern (WM_SETTEXT, which the program sees as typing); a password field refuses to be

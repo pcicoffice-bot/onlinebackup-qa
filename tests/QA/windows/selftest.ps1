@@ -34,6 +34,12 @@ Expect 'a wide program window matches the client matcher' (WindowMatches $fakeWi
 Expect 'a dialog does not match the client matcher' (WindowMatches $fakeDlg { $_.Current.ClassName -ne '#32770' -and $_.Current.BoundingRectangle.Width -gt 300 }) $false
 Expect 'a dialog matches the dialog matcher' (WindowMatches $fakeDlg { $_.Current.ClassName -eq '#32770' }) $true
 Expect 'a program window does not match the dialog matcher' (WindowMatches $fakeWin { $_.Current.ClassName -eq '#32770' }) $false
+# W1 run 11: a field without a name is found under its label (the sign-in page's geometry, from the run's control tree)
+function FakeEl($top, $left = 36, $w = 520, $h = 27) { [pscustomobject]@{ Current = [pscustomobject]@{ BoundingRectangle = [pscustomobject]@{ Top = $top; Bottom = $top + $h; Left = $left; Right = $left + $w } } } }
+$userField = FakeEl 434; $passField = FakeEl 498; $codeField = FakeEl 562
+Expect 'the field under "User name" is the user name field' ((FieldUnder (FakeEl 409 36 520 21) @($codeField, $passField, $userField)).Current.BoundingRectangle.Top) 434
+Expect 'the field under "Password" is the password field' ((FieldUnder (FakeEl 473 36 520 21) @($userField, $passField, $codeField)).Current.BoundingRectangle.Top) 498
+Expect 'no field far under a label is taken' ([bool](FieldUnder (FakeEl 300 36 520 21) @($userField))) $false
 Expect 'a check that returns one string is a FAIL' (CheckResult 'False; x')[0] $false
 Expect 'a check whose first item is not a bool is a FAIL' (CheckResult @('False', 'x'))[0] $false
 Expect 'a check with stray output before its result is a FAIL' (CheckResult @((Get-Item $PSScriptRoot), $false, 'x'))[0] $false
