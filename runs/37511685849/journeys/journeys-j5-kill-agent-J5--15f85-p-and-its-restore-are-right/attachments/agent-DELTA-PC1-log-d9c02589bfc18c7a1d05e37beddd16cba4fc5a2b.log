@@ -1,9 +1,0 @@
-$ agent register --server http://localhost:42379/ --login qa-delta --password Customer-Pass-1 --computer DELTA-PC1
-registered DELTA-PC1
-
-$ agent addset --password Customer-Pass-1 --name Server files --source /tmp/obqa-Ul07zW/data --keytype PASSWORD
-1791311973740
-
-customer screen on 127.0.0.1:18200 (address with its key in ui.txt, root only)
-customer screen on 127.0.0.1:18200 (address with its key in ui.txt, root only)
-2026-10-06T18:40:35 Server files: the previous backup was interrupted — reported

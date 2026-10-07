@@ -1,0 +1,300 @@
+﻿{
+    "screen":  "Tour 1024x768 en page 5 Help",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  0,
+                 "w":  1044,
+                 "h":  719,
+                 "x":  0
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  808,
+                                      "h":  608,
+                                      "x":  228
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  123,
+                                      "w":  752,
+                                      "h":  575,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Help",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  129,
+                                      "w":  752,
+                                      "h":  30,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Contact support.",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Subject",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  200,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  225,
+                                      "w":  752,
+                                      "h":  27,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Description",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  264,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  289,
+                                      "w":  752,
+                                      "h":  110,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Send",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  407,
+                                      "w":  110,
+                                      "h":  36,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "My calls",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  463,
+                                      "w":  752,
+                                      "h":  23,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "List",
+                         "name":  "",
+                         "cls":  "WindowsForms10.SysListView32.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  496,
+                                      "w":  752,
+                                      "h":  180,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "SysHeader32",
+                         "rect":  {
+                                      "y":  498,
+                                      "w":  748,
+                                      "h":  24,
+                                      "x":  258
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  220,
+                                      "h":  608,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Backup status",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  119,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Restore",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "New backup",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Security",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  263,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Help",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  311,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Version 0.2.22  ·  Check for updates",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  623,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  663,
+                                      "w":  196,
+                                      "h":  23,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Powered by ITSguard Server Online",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  647,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  31,
+                                      "w":  1028,
+                                      "h":  72,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

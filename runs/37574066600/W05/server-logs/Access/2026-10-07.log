@@ -1,0 +1,7 @@
+2026-10-07 05:03:23	::1	admin login ok admin
+2026-10-07 05:04:01	::1	login ok qa-win
+2026-10-07 05:04:01	::1	device registered qa-win computer=runnervmfi6oq
+2026-10-07 05:04:01	::1	login ok qa-win
+2026-10-07 05:04:36	::1	encryption key saved for recovery qa-win/1791349475674
+2026-10-07 05:04:56	::1	backup started qa-win/1791349475674 2026-10-07-05-04-56
+2026-10-07 05:05:04	::1	backup committed qa-win/1791349475674 2026-10-07-05-04-56 bad=0

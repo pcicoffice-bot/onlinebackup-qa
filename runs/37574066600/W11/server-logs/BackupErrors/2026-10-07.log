@@ -1,0 +1,11 @@
+2026-10-07 05:05:23	-	qa-win	1791349475674	2026-10-07-05-05-23	1791349523099,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:06:22	-	qa-win	1791349475674	2026-10-07-05-06-22	1791349582693,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:08:07	-	qa-win	1791349475674	2026-10-07-05-06-52	1791349687172,err,,0,"The backup was interrupted and did not finish: the backup program stopped in the middle of the run (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 05:08:07	-	qa-win	1791349475674	2026-10-07-05-06-52	1791349687172,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 05:09:10	-	qa-win	1791349475674	2026-10-07-05-09-09	1791349749965,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:12:33	-	qa-win	1791349475674	2026-10-07-05-12-33	1791349953744,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:16:52	-	qa-win	1791349475674	2026-10-07-05-16-52	1791350212697,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:17:47	-	qa-win	1791349475674	2026-10-07-05-17-47	1791350267585,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 05:18:08	-	qa-win	1791349475674	2026-10-07-05-18-08	1791350288067,warn,,0,"Shadow Copy of C: could not be created: ERR=  Invoke-CimMethod : Initialization failure   At line:1 char:6  + $r = Invoke-CimMethod -ClassName Win32_ShadowCopy -MethodName Create  ...  +      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      + CategoryInfo          : NotSpecified: (root\\cimv2:Win32_ShadowCopy:String) [Invoke-CimMethod], CimException      + FullyQualifiedErrorId : HRESULT 0x80041014,Microsoft.Management.Infrastructure.CimCmdlets.InvokeCimMethodCommand",,,0
+2026-10-07 05:18:08	-	qa-win	1791349475674	2026-10-07-05-18-08	1791350288109,end,,0,BS_STOP_SUCCESS_WITH_WARNING,,,0
+2026-10-07 05:19:06	-	qa-win	1791349475674	2026-10-07-05-19-06	1791350346573,end,,0,RESTORE_STOP_SUCCESS,,,0

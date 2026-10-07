@@ -1,0 +1,5 @@
+2026-10-07 05:03:17	-	server started https://+:8443/
+2026-10-07 05:03:18	-	server started https://+:8443/
+2026-10-07 05:07:06	::1	error: PUT /api/sets/1791349475674/jobs/2026-10-07-05-06-52/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request.
+2026-10-07 05:16:10	-	server started https://+:8443/
+2026-10-07 05:24:35	-	server started https://+:8443/
