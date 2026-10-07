@@ -1,2 +1,3 @@
 10:47:59 start W01 Server: install from the real package (Windows service) and sign in
 10:48:22 end W01 PASS 
+10:48:24 start W02 Installer failure: a damaged Setup.exe installs nothing and says so
