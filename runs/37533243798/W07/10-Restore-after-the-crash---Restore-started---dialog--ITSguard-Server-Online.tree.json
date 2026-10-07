@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "Restore after the crash - Restore started - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  333,
+                 "w":  384,
+                 "h":  149,
+                 "x":  345
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  447,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  636
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  382,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  369
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "Wrong key: open the screen from the desktop shortcut.",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  392,
+                                      "w":  288,
+                                      "h":  15,
+                                      "x":  410
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}
