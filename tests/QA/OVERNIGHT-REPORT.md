@@ -62,7 +62,8 @@ Caveats (true for every number above):
 | 15 (37574066600) | cf39637 (mirror e600bdd), robot Q22/Q23 | **W01-W07 PASS** - incl. restore after a service restart (W06) and agent killed mid-backup -> Windows restarts it -> no ghost -> identical restore (W07); W08/W09 FAIL = robot Q28 (the backup finished in 2 s, nothing to interrupt: NOT TESTED); W10+ running | running |
 | 16 (37584263969) | 16f5d78 (bug 94, Q28/Q29) | NOT RUN: stopped at the robot lint (Q33, my own false-clean lint) | running (first one with screen pictures) |
 | 17 (37587620470) | 018cd6e / a9e213c | **W01-W12 PASS in one run on one build** - incl. W08 service stopped mid-backup and W09 server killed mid-backup (first real runs after Q28), W11 VSS failure (Q29), W12 permission denied; W16 PASS; W13 owner decision -> W14/W15 robot cascade (Q34); W17: the set is now made (bug 94 fixed on Windows) but the backup failed -> **bug 95** (wbadmin refuses a target on the system volume) | running |
-| 18 (37594320802) | eb0ac52 / 7649d15 (93b, 94, 95, Q34, Q35) | running - the C1 candidate on the final build | running |
+| 18 (37594320802) | eb0ac52 / 7649d15 (93b, 94, 95, Q34, Q35) | **W01-W12 PASS again; W15 PASS (uninstall through the installer window -> reinstall -> sign in -> backup -> restore SHA-256)**; W16 PASS; W14: update in the window PASS (0.1.25 -> 0.2.25, restore 116/116) but the interrupted-update step never started (Q36, robot); W13 owner decision; W17: bug 95 fixed (wbadmin runs) but wbadmin then failed - cause not collected (95b, open) | running |
+| 19 (37602630116) | af105ec / 1c27c6a (same product as 18; robot Q36 + wbadmin logs) | running | running |
 
 **Q14 (robot, not product):** the robot's window matchers were written with `$_` but called with an empty `$_`, so the
 client's window and the removal's Yes/No question were never matched. Runs 8-10 therefore measured nothing about the client

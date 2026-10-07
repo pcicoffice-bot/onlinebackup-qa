@@ -208,7 +208,10 @@ namespace OnlineBackup.Tests
                     catch (Exception e) { errors.Add(e); }
                 })).ToList();
                 threads.ForEach(t => t.Start()); Thread.Sleep(300); go.Set(); threads.ForEach(t => t.Join(60000));
-                Assert.Empty(errors);
+                // the gate's Windows job: several calls answered 500 - the server's own log says why (Windows-only so far)
+                var sys = Path.Combine(env.SystemHome, "logs", "System");
+                if (!errors.IsEmpty) Assert.Fail(errors.Count + " of 16 calls failed: " + errors.First().Message + "\nserver System log:\n" +
+                    (Directory.Exists(sys) ? string.Join("\n", Directory.GetFiles(sys).SelectMany(File.ReadAllLines).Where(l => l.Contains("error:"))) : "(none)"));
                 var rows = env.Api.Runs.Since(DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddHours(1)).Where(m => m["set"] == set.Id && m["job"] == job).ToList();
                 Assert.Single(rows);
                 Assert.Equal("bad", rows[0]["status"]);

@@ -114,6 +114,14 @@ namespace OnlineBackup.Server
             return new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1);
         }
 
+        /// <summary>The first frame of the product's own code in an exception (the system log line of a server error).</summary>
+        static string Where(Exception e)
+        {
+            var st = e.StackTrace ?? "";
+            foreach (var l in st.Split('\n')) if (l.Contains("OnlineBackup.")) return l.Trim();
+            return st.Split('\n')[0].Trim();
+        }
+
         void RecordInterrupted(string login, string setId, string job, long startedMs, string why)
         {
             if (!RunId.TryParse(job ?? "", out _)) return;
@@ -257,7 +265,7 @@ namespace OnlineBackup.Server
             }
             catch (Exception e)
             {
-                SysLog.Write(ip, "System", "error: " + ctx.Request.HttpMethod + " " + ctx.Request.Url.AbsolutePath + ": " + e.GetType().Name + " " + e.Message);
+                SysLog.Write(ip, "System", "error: " + ctx.Request.HttpMethod + " " + ctx.Request.Url.AbsolutePath + ": " + e.GetType().Name + " " + e.Message + " @ " + Where(e));   // where, so a 500 can be traced (run 37594312039)
                 Reply(ctx, 500, new Msg().Set("error", "SERVER").Set("message", "Server error. The details are in the system log."));
             }
         }
