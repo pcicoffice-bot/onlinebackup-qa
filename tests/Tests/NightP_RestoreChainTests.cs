@@ -536,7 +536,7 @@ namespace OnlineBackup.Tests
                     if (mine < 0) continue;
                     var target = Path.Combine(root, "restore-" + i);
                     new ResticRunner(app, set, key).RestoreMany(id, target, null, new List<string>());
-                    var d = Diff(manifests[mine].Value, Manifest(Path.Combine(target, src.TrimStart('/'))));
+                    var d = Diff(manifests[mine].Value, Manifest(AgentRig.Under(target, src)));
                     if (d.Count > 0) bad.Add("snapshot " + id + " (run " + mine + "): " + string.Join("; ", d.Take(6)));
                     Directory.Delete(target, true);
                 }

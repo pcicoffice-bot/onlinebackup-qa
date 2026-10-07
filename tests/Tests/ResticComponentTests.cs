@@ -61,7 +61,7 @@ namespace OnlineBackup.Tests
                 Assert.Equal(1, rig.Runner().Check("100%").Int("ok"));
                 var target = Path.Combine(rig.Root, "restore");
                 rig.Runner().RestoreMany(null, target, null, new List<string>());
-                var restored = Path.Combine(target, rig.Src.TrimStart('/'));
+                var restored = AgentRig.Under(target, rig.Src);
                 Assert.Equal(Manifest(rig.Src).OrderBy(x => x.Key), Manifest(restored).OrderBy(x => x.Key));
                 Assert.True(Directory.Exists(Path.Combine(restored, "empty-folder")));
                 // nothing changed: no file is new or changed and no file data is sent again (restic writes only the new
@@ -84,7 +84,7 @@ namespace OnlineBackup.Tests
                 var other = rig.Runner(KeySet.Random());
                 Assert.Throws<AgentException>(() => other.SnapshotList());
                 Assert.Throws<AgentException>(() => other.RestoreMany(null, Path.Combine(rig.Root, "r2"), null, new List<string>()));
-                Assert.False(Directory.Exists(Path.Combine(rig.Root, "r2", rig.Src.TrimStart('/'))));
+                Assert.False(Directory.Exists(AgentRig.Under(Path.Combine(rig.Root, "r2"), rig.Src)));
             }
         }
 
@@ -123,7 +123,7 @@ namespace OnlineBackup.Tests
                 Assert.StartsWith("BS_STOP_SUCCESS", r.Result);
                 var target = Path.Combine(rig.Root, "restore");
                 rig.Runner().RestoreMany(null, target, null, new List<string>());
-                Assert.Equal(Manifest(rig.Src).OrderBy(x => x.Key), Manifest(Path.Combine(target, rig.Src.TrimStart('/'))).OrderBy(x => x.Key));
+                Assert.Equal(Manifest(rig.Src).OrderBy(x => x.Key), Manifest(AgentRig.Under(target, rig.Src)).OrderBy(x => x.Key));
             }
         }
     }

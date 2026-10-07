@@ -326,8 +326,26 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
                 fs.Write(data, 0, data.Length);
                 fs.Flush(true);
             }
-            if (File.Exists(path)) File.Replace(tmp, path, null); else File.Move(tmp, path);
+            // Windows refuses to replace a file another program has open at that moment (a reader, an antivirus, the indexer),
+            // and two writers can both see "no file yet": the CI Windows job failed here with "being used by another process".
+            // Linux never refuses. So: try again for a while; if it still fails, leave no temporary file behind.
+            for (int attempt = 1; ; attempt++)
+            {
+                try
+                {
+                    if (File.Exists(path)) File.Replace(tmp, path, null); else File.Move(tmp, path);
+                    return;
+                }
+                catch (Exception e) when ((e is IOException || e is UnauthorizedAccessException) && attempt < ReplaceAttempts && File.Exists(tmp))
+                {
+                    System.Threading.Thread.Sleep(Math.Min(20 * attempt, 200));
+                }
+                catch (Exception) { try { File.Delete(tmp); } catch (Exception) { } throw; }
+            }
         }
+
+        /// <summary>How often a refused replace is tried (about 5 seconds in all).</summary>
+        public static int ReplaceAttempts = 40;
 
         /// <summary>Reads a file that may be written at the same moment (a log): on Windows a plain read is refused then.</summary>
         public static string ReadShared(string path)

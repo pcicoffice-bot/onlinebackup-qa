@@ -194,7 +194,16 @@ namespace OnlineBackup.Tests
         {
             var target = Path.Combine(Root, name);
             var r = new Restore(Server.Point(Key), Key, Path.Combine(Root, "rtmp")); r.Run(null, target, null, false);
-            return Tree(Path.Combine(target, Src.TrimStart('/')));
+            return Tree(Under(target, Src));
+        }
+        /// <summary>Where a restore into target puts the source folder src (C:\x -> target\C\x, /x -> target/x). Refuses a path
+        /// outside target: Path.Combine(target, "C:\x") is "C:\x" itself, so on Windows the tests compared the SOURCE with itself (Q25).</summary>
+        public static string Under(string target, string src)
+        {
+            var p = Path.GetFullPath(Path.Combine(target, Env.Rel(src)));
+            var t = Path.GetFullPath(target).TrimEnd(Path.DirectorySeparatorChar) + Path.DirectorySeparatorChar;
+            if (!p.StartsWith(t, StringComparison.Ordinal)) throw new InvalidOperationException("restored path " + p + " is not under the restore folder " + t);
+            return p;
         }
         public void Dispose() { Server.Dispose(); try { Directory.Delete(Root, true); } catch (Exception) { } }
     }

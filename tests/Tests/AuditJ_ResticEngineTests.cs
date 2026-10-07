@@ -197,7 +197,7 @@ namespace OnlineBackup.Tests
                 Assert.Equal(new[] { lastSnap }, ids);
                 var target = Path.Combine(rig.Root, "restore");
                 rig.Runner().RestoreMany(null, target, null, new List<string>());
-                Assert.Equal(Sha(f), Sha(Path.Combine(target, rig.Src.TrimStart('/'), "doc.txt")));
+                Assert.Equal(Sha(f), Sha(Path.Combine(AgentRig.Under(target, rig.Src), "doc.txt")));
             }
         }
 
@@ -253,7 +253,7 @@ namespace OnlineBackup.Tests
                 Assert.Equal("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
                 var all = Path.Combine(rig.Root, "r-all");
                 rig.Runner().RestoreMany(null, all, null, new List<string>());
-                Assert.Equal(Manifest(rig.Src).OrderBy(x => x.Key, StringComparer.Ordinal), Manifest(Path.Combine(all, rig.Src.TrimStart('/'))).OrderBy(x => x.Key, StringComparer.Ordinal));
+                Assert.Equal(Manifest(rig.Src).OrderBy(x => x.Key, StringComparer.Ordinal), Manifest(AgentRig.Under(all, rig.Src)).OrderBy(x => x.Key, StringComparer.Ordinal));
 
                 var one = Path.Combine(rig.Root, "r-one");
                 var path = rig.Runner().Ls(null).Select(x => x["path"]).Single(p => p.EndsWith(longName, StringComparison.Ordinal));
