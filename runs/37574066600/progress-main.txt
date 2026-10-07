@@ -27,3 +27,4 @@
 05:17:02   waiting up to 20 min for a new Restore run
 05:17:04 end W09 FAIL The backup is running: live=False || Kill the server process: pid 8604; live job '' || No ghost run after the server came back: live 0; job '': never closed (an open run left behind)
 05:17:05 start W10 VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind
+05:17:28   waiting up to 20 min for a new Backup run
