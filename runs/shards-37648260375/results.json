@@ -1,0 +1,246 @@
+{
+ "title": "QA shards run 37648260375 (5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8; windows-latest, select 'InterruptedRunReportedByManyPathsAtOnce AtomicSharedReadComponentTests AStateFile_IsNeverSeenHalfWritten', 3 shards x 3, serial control)",
+ "counts": {
+  "PASS": 3,
+  "FAIL": 2,
+  "NOT TESTED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "FAIL",
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": "FAIL",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.9506613,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9232269,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 0.9370175,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0278073,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.023039,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 0.0254046,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7822646,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.7111628,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "FAIL",
+    "sec": 0.9831735,
+    "note": "files left in the folder: state.txt (1048576 bytes), state.txt~RF3d1e8.TMP (1048576 bytes)"
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 19.9785952,
+    "note": "System.IO.IOException : The process cannot access the file because it is being used by another process."
+   },
+   {
+    "job": "s02-r02",
+    "status": "FAIL",
+    "sec": 9.5664719,
+    "note": "System.IO.IOException : The process cannot access the file because it is being used by another process."
+   },
+   {
+    "job": "s02-r03",
+    "status": "FAIL",
+    "sec": 7.1016455,
+    "note": "System.IO.IOException : The process cannot access the file because it is being used by another process."
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 2.3191202,
+    "note": ""
+   },
+   {
+    "job": "s03-r02",
+    "status": "PASS",
+    "sec": 1.9722395,
+    "note": ""
+   },
+   {
+    "job": "s03-r03",
+    "status": "PASS",
+    "sec": 1.7370709,
+    "note": ""
+   }
+  ]
+ },
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001343",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001341",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s01-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r03",
+    "runner": "GitHub Actions 1000001342",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001340",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r02",
+    "runner": "GitHub Actions 1000001349",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r03",
+    "runner": "GitHub Actions 1000001350",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000001351",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s03-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r02",
+    "runner": "GitHub Actions 1000001352",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s03-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r03",
+    "runner": "GitHub Actions 1000001353",
+    "os": "Windows",
+    "sha": "5f8d9cfcb76524c4b7a8bd090d33e12e344f9ba8",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  }
+ ],
+ "control": {
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "FAIL",
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": "FAIL",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "FAIL"
+ },
+ "control_differences": [
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce"
+ ]
+}
