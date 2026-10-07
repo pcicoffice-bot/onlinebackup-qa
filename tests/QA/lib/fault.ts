@@ -42,12 +42,59 @@ export function restoreProcess(ag: Agent, setId: string, target: string, more: s
   return { p, done };
 }
 
-/** A small disk mounted at `dir` (needs root / CAP_SYS_ADMIN); false when this machine does not allow it. */
+// Mounting needs root (CAP_SYS_ADMIN). The CI runner is the non-root user "runner" with passwordless sudo: there only the
+// mount / umount commands go through `sudo -n`, and the mount is given to the current user (uid, gid, the mode the
+// folder had), so the product — still running as that normal user — writes there exactly as it would on a real disk.
+// Neither root nor passwordless sudo: null, and the caller skips with its NOT TESTED reason.
+const IS_ROOT = !!process.getuid && process.getuid() === 0;
+let privCache: string[] | null | undefined;
+/** The command prefix that may mount: [] as root, ['sudo', '-n'] with passwordless sudo, null when neither. */
+export function mountPrivilege(): string[] | null {
+  if (privCache === undefined) privCache = IS_ROOT ? [] : spawnSync('sudo', ['-n', 'true'], { stdio: 'ignore' }).status === 0 ? ['sudo', '-n'] : null;
+  return privCache;
+}
+function privileged(cmd: string[]) {
+  const pre = mountPrivilege() ?? [];
+  const r = spawnSync([...pre, ...cmd][0], [...pre, ...cmd].slice(1), { encoding: 'utf8' });
+  return { ok: r.status === 0, err: ((r.stderr || '') + (r.stdout || '') + (r.error ? String(r.error) : '')).trim() || 'exit ' + r.status };
+}
+function isMountPoint(dir: string) { return spawnSync('mountpoint', ['-q', dir]).status === 0; }
+
+/** A small disk mounted at `dir` (root, or passwordless sudo: then owned by the current user); false when not allowed. */
 export function smallDisk(dir: string, mb: number): boolean {
   fs.mkdirSync(dir, { recursive: true });
-  try { execSync('mount -t tmpfs -o size=' + mb + 'm tmpfs "' + dir + '"', { stdio: 'pipe' }); return true; } catch { return false; }
+  if (mountPrivilege() === null) return false;
+  let opts = 'size=' + mb + 'm';
+  if (!IS_ROOT) opts += ',uid=' + process.getuid!() + ',gid=' + process.getgid!() + ',mode=' + (fs.statSync(dir).mode & 0o7777).toString(8).padStart(4, '0');
+  return privileged(['mount', '-t', 'tmpfs', '-o', opts, 'tmpfs', dir]).ok;
 }
-export function unmount(dir: string) { try { execSync('umount -l "' + dir + '"', { stdio: 'pipe' }); } catch { } }
+/** A read-only bind mount of `dir` over itself; 'OK' or the reason it could not be made. */
+export function readOnlyBind(dir: string): string {
+  if (mountPrivilege() === null) return 'neither root nor passwordless sudo';
+  const a = privileged(['mount', '--bind', dir, dir]); if (!a.ok) return a.err;
+  const b = privileged(['mount', '-o', 'remount,bind,ro', dir]); if (!b.ok) { unmount(dir); return b.err; }
+  return 'OK';
+}
+/** Unmounts every mount stacked at `dir` (lazily, so an open file cannot keep it). */
+export function unmount(dir: string) {
+  for (let i = 0; i < 5 && isMountPoint(dir); i++) privileged(['umount', '-l', dir]);
+  if (!isMountPoint(dir)) return;
+  try { execSync('umount -l "' + dir + '"', { stdio: 'pipe' }); } catch { }
+}
+
+/** The wrapper that runs a command in its own private mount namespace with `disk` seen at `at` (F14). As root: unshare
+ *  as before. Not root with passwordless sudo: the namespace is made by root, then the command is run as the current
+ *  user again (setpriv --reuid/--regid/--init-groups) — the product never runs as root. null when neither. */
+export function privateView(disk: string, at: string): string[] | null {
+  const pre = mountPrivilege(); if (pre === null || !hasProgram('unshare')) return null;
+  if (IS_ROOT) return spawnSync('unshare', ['-m', 'true']).status === 0 ? ['unshare', '-m', '--', 'sh', '-c', 'mount --bind "$0" "$1" && shift && exec "$@"', disk, at] : null;
+  if (!hasProgram('setpriv')) return null;
+  const back = 'setpriv --reuid=' + process.getuid!() + ' --regid=' + process.getgid!() + ' --init-groups --';
+  // sudo -E keeps the environment (the product's settings); PATH is given again since sudo replaces it (secure_path)
+  const wrap = ['sudo', '-n', '-E', 'env', 'PATH=' + (process.env.PATH || ''), 'unshare', '-m', '--propagation', 'private', '--', 'sh', '-c', 'mount --bind "$0" "$1" && shift && exec ' + back + ' "$@"', disk, at];
+  const probe = spawnSync(wrap[0], [...wrap.slice(1), 'sh', '-c', 'test "$(id -u)" = ' + process.getuid!()]);
+  return probe.status === 0 ? wrap : null;
+}
 
 export function hasProgram(name: string) { return spawnSync('sh', ['-c', 'command -v ' + name]).status === 0; }
 

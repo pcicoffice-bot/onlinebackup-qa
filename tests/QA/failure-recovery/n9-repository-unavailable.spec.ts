@@ -10,7 +10,7 @@
 import { test, expect } from '../lib/fixtures';
 import { goldenDataset, manifest, compare, restoredPath } from '../lib/world';
 import { result, setRuns, points, sh, keep } from '../lib/nfault';
-import { notWhole } from '../lib/fault';
+import { notWhole, readOnlyBind, unmount } from '../lib/fault';
 import * as fs from 'fs';
 import * as net from 'net';
 import * as path from 'path';
@@ -24,7 +24,7 @@ test('N9a the server\'s set folder read-only for a whole run → no false succes
   const p1 = points(ag, id)[0];
   const setFolder = path.join(world.usersDir, 'qa-n9a', 'files', id);
   expect(fs.existsSync(setFolder), 'the set\'s folder on the server: ' + setFolder).toBe(true);
-  const mounted = sh('mount --bind "' + setFolder + '" "' + setFolder + '" && mount -o remount,bind,ro "' + setFolder + '" && echo OK');
+  const mounted = readOnlyBind(setFolder);
   test.skip(mounted !== 'OK', 'NOT TESTED: this machine does not allow a read-only bind mount: ' + mounted);
   const ev: Record<string, unknown> = {};
   try {
@@ -55,7 +55,7 @@ test('N9a the server\'s set folder read-only for a whole run → no false succes
     expect.soft(pl.code, 'the points of a read-only repository can be listed:\n' + pl.out).toBe(0);
     expect.soft(rf.code, 'point 1 of a read-only repository can be restored:\n' + rf.out).toBe(0);
     expect.soft(compare(v1, manifest(restoredPath(tf, src)))).toEqual([]);
-  } finally { sh('umount -l "' + setFolder + '"'); keep('n9a', ev); }
+  } finally { unmount(setFolder); keep('n9a', ev); }
 
   evidence.step('RECOVERY: writable again → backup 3');
   const v3 = manifest(src);

@@ -7,7 +7,7 @@ import { spawn, spawnSync, ChildProcess, execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { World, Agent, CUSTOMER_PASSWORD, goldenDataset, Manifest } from './world';
-import { AGENT_DLL } from './fault';
+import { AGENT_DLL, smallDisk } from './fault';
 
 export class Line {
   url = ''; ctlUrl = ''; log: string; private p?: ChildProcess;
@@ -75,8 +75,8 @@ export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 /** Waits until fn() is true (polling), or the time is up; returns whether it happened. */
 export async function until(fn: () => boolean | Promise<boolean>, ms: number, every = 250) { const end = Date.now() + ms; while (Date.now() < end) { if (await fn()) return true; await sleep(every); } return false; }
 
-/** Mounts a fresh tmpfs of `mb` MB at dir (false when not allowed). */
-export function tmpfs(dir: string, mb: number) { fs.mkdirSync(dir, { recursive: true }); try { execSync('mount -t tmpfs -o size=' + mb + 'm tmpfs "' + dir + '"', { stdio: 'pipe' }); return true; } catch { return false; } }
+/** Mounts a fresh tmpfs of `mb` MB at dir (false when not allowed; root or passwordless sudo — see smallDisk). */
+export function tmpfs(dir: string, mb: number) { return smallDisk(dir, mb); }
 /** Fills the file system of dir to the last byte with a filler file; returns its path. */
 export function fill(dir: string, name = 'filler.bin') {
   const f = path.join(dir, name); spawnSync('sh', ['-c', 'dd if=/dev/zero of="' + f + '" bs=1M 2>/dev/null; dd if=/dev/zero of="' + f + '" bs=4k oflag=append conv=notrunc 2>/dev/null; true']); return f;

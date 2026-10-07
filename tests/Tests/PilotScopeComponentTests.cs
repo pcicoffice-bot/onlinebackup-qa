@@ -42,8 +42,8 @@ namespace OnlineBackup.Tests
         public void TheRefusal_IsTranslated_ToHebrew_WithItsReason()
         {
             var he = L.Tr("he", Scope.Refused("The restic engine"));
-            Assert.StartsWith("The restic engine ", he);
-            Assert.Contains("אינו נתמך בגרסה זו", he);
+            // UI-07 (pilot found English reasons on Hebrew screens): the reason is translated too, not only the sentence around it
+            Assert.Equal("מנוע restic אינו נתמך בגרסה זו (גיבוי קבצים של Windows).", he);
         }
 
         [Fact]

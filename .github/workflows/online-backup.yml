@@ -177,6 +177,16 @@ jobs:
       - name: QA tools (Playwright 1.63 + Chromium)
         working-directory: tests/QA
         run: npm ci && npx playwright install --with-deps chromium
+      - name: Fault tools (libfaketime for F13 / N10; small disks and mount namespaces go through sudo -n, the product stays the runner user)
+        run: |
+          for i in 1 2 3; do
+            command -v faketime >/dev/null && break
+            timeout 300 sudo apt-get install -y faketime || { sleep 15; timeout 300 sudo apt-get update || true; }
+          done
+          command -v faketime >/dev/null || { echo "::error::faketime could not be installed after 3 tries: F13 and N10 cannot run"; exit 1; }
+          faketime -f '+1d' date
+          sudo -n true || { echo "::error::no passwordless sudo: the small-disk / read-only / private-namespace scenarios cannot run"; exit 1; }
+          id
       - name: Every journey and failure / recovery scenario, in the browser — none may be skipped
         working-directory: tests/QA
         run: |

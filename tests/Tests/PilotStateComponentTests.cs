@@ -58,9 +58,9 @@ namespace OnlineBackup.Tests
             Assert.All(rows, r => Assert.Equal("acme2026", r["login"]));
 
             var keep = new RunLog(cfg);
-            Assert.Equal(0, keep.Purge(new DateTime(2026, 10, 5, 0, 0, 0, DateTimeKind.Utc).AddDays(400)));   // exactly 400 days: kept
+            Assert.Equal(0, keep.Purge(new DateTime(2026, 10, 5, 23, 50, 0, DateTimeKind.Utc).AddDays(400)));   // the oldest run (23:50) exactly 400 days old: kept (bug 108: counted from the run, not from the start of its day)
             Assert.Equal(3, keep.Since(t.AddHours(-1), t.AddHours(2)).Count);
-            Assert.Equal(1, keep.Purge(new DateTime(2026, 10, 5, 0, 0, 0, DateTimeKind.Utc).AddDays(400).AddSeconds(1)));   // the older day file only
+            Assert.Equal(1, keep.Purge(new DateTime(2026, 10, 5, 23, 50, 0, DateTimeKind.Utc).AddDays(400).AddSeconds(1)));   // one second older: that run goes, and with it its (now empty) day file
             Assert.Equal(new[] { "2026-10-06-00-30-00", "2026-10-06-00-10-00" }, keep.Since(t.AddHours(-1), t.AddHours(2)).Select(r => r["job"]).ToArray());
         }
 

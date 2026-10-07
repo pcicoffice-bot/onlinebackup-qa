@@ -78,7 +78,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ServerDiskFull_MidObject_NoHalfObjectLeft_EarlierPointsUnchanged_TheSameObjectIsAcceptedOnceSpaceIsBack()
         {
-            if (!File.Exists("/dev/full")) throw new InvalidOperationException("this test needs /dev/full (Linux) to make the kernel answer ENOSPC");
+            if (!File.Exists("/dev/full")) throw NotTested.Because("this test needs /dev/full (Linux) to make the kernel answer ENOSPC");
             string files1; var st = WithOnePoint(out files1);
             var before = Stored(st);
             var j2 = st.BeginJob(DateTime.UtcNow);

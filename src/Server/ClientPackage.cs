@@ -249,12 +249,18 @@ namespace OnlineBackup.Server
             {
                 var head = OnlineBackup.Core.Atomic.ReadAllBytes(stub); ms.Write(head, 0, head.Length);
                 long start = ms.Position;
-                using (var gz = new System.IO.Compression.GZipStream(ms, CompressionLevel.Optimal, true))
-                using (var w = new BinaryWriter(gz, Encoding.UTF8, true))
+                // bug 109: the entries, then the SHA-256 of exactly those bytes - GZipStream does not check its CRC, so without it a
+                // changed byte near the end could give a shorter connection.xml and no error
+                byte[] raw;
+                using (var r = new MemoryStream())
+                using (var w = new BinaryWriter(r, Encoding.UTF8, true))
                 {
                     w.Write(files.Count);
                     foreach (var kv in files) { var nb = Encoding.UTF8.GetBytes(kv.Key); w.Write(nb.Length); w.Write(nb); w.Write((long)kv.Value.Length); w.Write(kv.Value); }
+                    w.Flush(); raw = r.ToArray();
                 }
+                byte[] sum; using (var h = System.Security.Cryptography.SHA256.Create()) sum = h.ComputeHash(raw);
+                using (var gz = new System.IO.Compression.GZipStream(ms, CompressionLevel.Optimal, true)) { gz.Write(raw, 0, raw.Length); gz.Write(sum, 0, sum.Length); }
                 long len = ms.Position - start;
                 var tail = new BinaryWriter(ms, Encoding.ASCII, true); tail.Write(len); tail.Write(Encoding.ASCII.GetBytes(PayloadMark)); tail.Flush();
                 return ms.ToArray();
@@ -273,10 +279,28 @@ namespace OnlineBackup.Server
             using (var gz = new System.IO.Compression.GZipStream(new MemoryStream(exe, (int)(exe.Length - 16 - len), (int)len), CompressionMode.Decompress))
             using (var br = new BinaryReader(gz, Encoding.UTF8))
             {
-                var n = br.ReadInt32();
-                for (int i = 0; i < n; i++) { var name = Encoding.UTF8.GetString(br.ReadBytes(br.ReadInt32())); var size = br.ReadInt64(); r[name] = br.ReadBytes((int)size); }
+                var raw = new MemoryStream(); var rw = new BinaryWriter(raw, Encoding.UTF8);
+                var n = br.ReadInt32(); rw.Write(n);
+                for (int i = 0; i < n; i++)
+                {
+                    var nb = Exact(br, br.ReadInt32()); var size = br.ReadInt64(); var data = Exact(br, size);
+                    rw.Write(nb.Length); rw.Write(nb); rw.Write(size); rw.Write(data); r[Encoding.UTF8.GetString(nb)] = data;
+                }
+                rw.Flush();
+                byte[] sum; using (var h = System.Security.Cryptography.SHA256.Create()) sum = h.ComputeHash(raw.ToArray());
+                var stored = Exact(br, 32);
+                for (int i = 0; i < 32; i++) if (stored[i] != sum[i]) throw new InvalidDataException("damaged setup payload (its SHA-256 does not match)");
             }
             return r;
+        }
+
+        /// <summary>Bug 109: exactly n bytes - a payload cut short (ReadBytes returns fewer at the end) is damaged, never a shorter file.</summary>
+        static byte[] Exact(BinaryReader br, long n)
+        {
+            if (n < 0 || n > int.MaxValue) throw new InvalidDataException("damaged setup payload (a length of " + n + ")");
+            var b = br.ReadBytes((int)n);
+            if (b.Length != n) throw new InvalidDataException("damaged setup payload (" + b.Length + " of " + n + " bytes)");
+            return b;
         }
 
         public static string FileNameExe(Pack p) { return p.Folder.Replace(' ', '-') + "-Setup.exe"; }
