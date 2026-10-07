@@ -1,0 +1,248 @@
+{
+ "title": "windows-latest, select 'UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit Restic_LongChain_EverySnapshotRestoresIdentical', 2 shards x 5 - run 37669719831 (cc5889740cf233dc3521155169a96f770a0f4cae)",
+ "mode": "strict",
+ "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+ "counts": {
+  "PASS": 2,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1364.9566404,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1372.1655174,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1336.421652,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1360.2381426,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1371.7502092,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 93.8908457,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 82.5986782,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 82.0988373,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 84.3504081,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 82.5545134,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001481",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 23
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001479",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 24
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r03",
+    "runner": "GitHub Actions 1000001477",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 23
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r04",
+    "runner": "GitHub Actions 1000001480",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 23
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r05",
+    "runner": "GitHub Actions 1000001478",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 24
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001490",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r02",
+    "runner": "GitHub Actions 1000001491",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r03",
+    "runner": "GitHub Actions 1000001492",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r04",
+    "runner": "GitHub Actions 1000001493",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r05",
+    "runner": "GitHub Actions 1000001494",
+    "os": "Windows",
+    "sha": "cc5889740cf233dc3521155169a96f770a0f4cae",
+    "build_sha": "fb1f70e616fe37d894f76b60514a0f2f14c42bc1d54fa14dcb42a232f21016be",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
