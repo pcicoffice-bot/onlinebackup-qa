@@ -1,0 +1,25 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)"
+ ],
+ "s02-r01": [
+  "OnlineBackup.Tests.AiTests.WebRestoreSearch_ByKeywords_AndInPlainWords_SendsNoFileNames"
+ ],
+ "s03-r01": [
+  "OnlineBackup.Tests.NightS_Part2Tests.WebRestoreDownload_PointValue_CannotInjectAResponseHeader"
+ ],
+ "s04-r01": [
+  "OnlineBackup.Tests.ProcessTests.HungWebRestore_IsStopped_WithAClearTimeout",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+ ]
+}
