@@ -1,5 +1,0 @@
-2026-10-07 01:41:19	-	server started https://+:8443/
-2026-10-07 01:41:21	-	server started https://+:8443/
-2026-10-07 02:04:42	::1	error: PUT /api/sets/1791337346913/jobs/2026-10-07-02-04-25/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request.
-2026-10-07 02:26:48	::1	error: GET /api/profile: IOException The process cannot access the file 'C:\obqa\users\qa-win\db\Profile.xml' because it is being used by another process.
-2026-10-07 02:41:21	-	settings backup config-20261007-024121.zip
