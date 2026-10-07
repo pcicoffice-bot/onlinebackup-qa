@@ -1,6 +1,6 @@
 ❯ Starting Windows for Docker v6.06...
 ❯ For support visit https://github.com/dockur/windows
-❯ CPU: AMD EPYC 9V45 | RAM: 15/16 GB | DISK: 85 GB (ext4) | KERNEL: 6.17.0-1022-azure
+❯ CPU: AMD EPYC 7763 | RAM: 15/16 GB | DISK: 85 GB (ext4) | KERNEL: 6.17.0-1022-azure
 
 [1;34m❯ [1;36mRequesting Windows 11 from the Microsoft servers...[0m
 [1;34m❯ [1;36mDownloading Windows 11...[0m
@@ -12,8 +12,8 @@
 [1;34m❯ [1;36mWriting overlay image...[0m
 [1;34m❯ [1;36mCreating a 64 GB growable disk image in raw format...[0m
 
-❯ Host: 172.17.0.2/16 (87486991daf2)  |  DNS: 168.63.129.16
-❯ Guest: 172.30.0.2 (Windows)  |  Mode: NAT  |  MAC: 02:05:19:4E:FF:9D
+❯ Host: 172.17.0.2/16 (7c6c12c368a2)  |  DNS: 168.63.129.16
+❯ Guest: 172.30.0.2 (Windows)  |  Mode: NAT  |  MAC: 02:88:35:C1:15:F1
 
 [1;34m❯ [1;36mBooting Windows using QEMU v11.1.1...[0m
 
@@ -23,7 +23,7 @@ BdsDxe: starting Boot0002 "UEFI QEMU DVD-ROM QM00013 " from PciRoot(0x0)/Pci(0x5
 
 [1;34m❯ [1;36mWindows started successfully, visit http://127.0.0.1:8006/ to view the screen...[0m
 
-BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,D85975FB-C581-4F8C-991A-57107400C7AD,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
-BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,D85975FB-C581-4F8C-991A-57107400C7AD,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
-BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,D85975FB-C581-4F8C-991A-57107400C7AD,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
-BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,D85975FB-C581-4F8C-991A-57107400C7AD,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,273F409C-5F2A-4C0F-B782-88A256FFDFD6,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,273F409C-5F2A-4C0F-B782-88A256FFDFD6,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,273F409C-5F2A-4C0F-B782-88A256FFDFD6,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,273F409C-5F2A-4C0F-B782-88A256FFDFD6,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
