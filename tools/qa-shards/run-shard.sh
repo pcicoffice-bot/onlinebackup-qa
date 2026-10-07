@@ -24,6 +24,8 @@ rc=0
 dotnet test $TARGET ${NOBUILD:-} ${NOLOGO:-} --filter "$F" --logger "trx;LogFileName=$ID.trx" \
   --logger "console;verbosity=normal" --results-directory "$OUT" > "$OUT/console.log" 2>&1 || rc=$?
 end=$(date +%s)
-grep -E "^\s+(Failed|Skipped) |^(Passed|Failed)!|Test Run Aborted|NOT TESTED" "$OUT/console.log" | head -n 80
+# the job log keeps every failure WITH its message and the first lines of its stack (the .trx holds the whole of it)
+awk '/^  Failed /{on=1; n=0} /^  (Passed|Skipped) /{on=0} on && n<25 {print; n++}' "$OUT/console.log" | head -n 600
+grep -E "^\s+Skipped |^Total tests|^\s+(Passed|Failed|Skipped): |Test Run Aborted" "$OUT/console.log" | head -n 40
 meta "$got" "ok" "$rc" "$(( (end - start + 59) / 60 ))"
 exit $rc
