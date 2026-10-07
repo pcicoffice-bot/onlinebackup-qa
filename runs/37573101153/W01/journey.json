@@ -1,0 +1,65 @@
+﻿{
+    "id":  "W01",
+    "title":  "Server: install from the real package (Windows service) and sign in",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W01",
+    "started":  "2026-10-07T04:51:04.6350995+00:00",
+    "result":  "PASS",
+    "reason":  "",
+    "steps":  [
+                  {
+                      "step":  "install-server.ps1 in Windows PowerShell (as the README says)",
+                      "expected":  "exit 0, service OnlineBackupServer Running",
+                      "actual":  "exit 0; Running",
+                      "result":  "PASS",
+                      "seconds":  8,
+                      "screenshot":  "",
+                      "at":  "04:51:17"
+                  },
+                  {
+                      "step":  "The server service starts again with the licence",
+                      "expected":  "Running",
+                      "actual":  "Running",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "04:51:18"
+                  },
+                  {
+                      "step":  "Server service: automatic start, restarts after a failure",
+                      "expected":  "StartMode Auto, failure actions = restart",
+                      "actual":  "Auto;         RESET_PERIOD (in seconds)    : 86400\r         FAILURE_ACTIONS              : RESTART -- Delay = 60000 milliseconds.\r                                        RESTART -- Delay = 60000 milliseconds.\r                                        RESTART -- Delay = 300000 milliseconds.\r",
+                      "result":  "PASS",
+                      "seconds":  2,
+                      "screenshot":  "",
+                      "at":  "04:51:20"
+                  },
+                  {
+                      "step":  "Admin sign-in over HTTPS (password + authenticator)",
+                      "expected":  "a session",
+                      "actual":  "HTTP 200",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "04:51:21"
+                  },
+                  {
+                      "step":  "A customer account for this computer",
+                      "expected":  "user qa-win",
+                      "actual":  "1 users",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "04:51:21"
+                  },
+                  {
+                      "step":  "Download the client Setup.exe from the server (what the IT company hands out)",
+                      "expected":  "a signed-size program",
+                      "actual":  "HTTP 200, 13894243 bytes",
+                      "result":  "PASS",
+                      "seconds":  1,
+                      "screenshot":  "",
+                      "at":  "04:51:22"
+                  }
+              ],
+    "ended":  "2026-10-07T04:51:22.8471341+00:00"
+}

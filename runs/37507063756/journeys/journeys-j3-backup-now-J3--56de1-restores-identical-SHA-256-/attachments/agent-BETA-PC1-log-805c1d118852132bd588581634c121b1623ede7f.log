@@ -1,9 +1,0 @@
-$ agent register --server http://localhost:46651/ --login qa-beta --password Customer-Pass-1 --computer BETA-PC1
-registered BETA-PC1
-
-$ agent addset --password Customer-Pass-1 --name Office files --source /tmp/obqa-Q8dqNm/data --keytype PASSWORD
-1791309620435
-
-customer screen on 127.0.0.1:18200 (address with its key in ui.txt, root only)
-2026-10-06T18:01:22 Office files: BS_STOP_SUCCESS
-2026-10-06T18:01:22 Office files restore test: 5/5
