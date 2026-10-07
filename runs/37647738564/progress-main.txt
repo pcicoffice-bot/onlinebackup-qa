@@ -54,3 +54,5 @@
 16:51:17 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
 16:52:20 end W16 PASS 
 16:52:22 start W17 System State backup (Windows Server Backup)
+16:56:29   waiting up to 45 min for a new Backup run
+17:11:30 end W17 FAIL The System State backup finishes successfully (server record): BS_STOP_BY_SYSTEM_ERROR bytes 0
