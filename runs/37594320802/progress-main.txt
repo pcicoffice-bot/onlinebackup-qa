@@ -56,3 +56,4 @@
 09:22:13 start W17 System State backup (Windows Server Backup)
 09:26:16   waiting up to 45 min for a new Backup run
 09:37:15 end W17 FAIL The System State backup finishes successfully (server record): BS_STOP_BY_SYSTEM_ERROR bytes 0
+09:37:17 start W18 Reboot
