@@ -29,3 +29,4 @@
 10:04:01 start W10 VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind
 10:04:26   waiting up to 20 min for a new Backup run
 10:04:54   waiting up to 20 min for a new Restore run
+10:05:02 end W10 PASS 
