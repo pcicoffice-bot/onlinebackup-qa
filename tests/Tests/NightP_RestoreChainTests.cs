@@ -538,11 +538,32 @@ namespace OnlineBackup.Tests
                     new ResticRunner(app, set, key).RestoreMany(id, target, null, new List<string>());
                     var d = Diff(manifests[mine].Value, Manifest(AgentRig.Under(target, src)));
                     if (d.Count > 0) bad.Add("snapshot " + id + " (run " + mine + "): " + string.Join("; ", d.Take(6)));
-                    Directory.Delete(target, true);
+                    RemoveRestored(target);
                 }
                 Assert.True(bad.Count == 0, string.Join("\n", bad));
             }
             finally { try { Directory.Delete(root, true); } catch (Exception) { } }
+        }
+
+        /// <summary>T-4 (QA shards, hosted Windows with restic): removing a restore failed at restore-0 - "Access to the path
+        /// ...\restore-0\C\Users is denied" - so the other 30 snapshots were never compared there. The restore and its
+        /// comparison had already run; what restic put on the folders above the backed-up one (attributes, permissions) is
+        /// printed here as evidence for T-4 (open), then the attributes are cleared so the chain goes on.</summary>
+        void RemoveRestored(string target)
+        {
+            try { Directory.Delete(target, true); return; }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) { output.WriteLine("T-4 the restore could not be removed: " + e.Message); }
+            foreach (var dir in new[] { target }.Concat(Directory.GetDirectories(target, "*", SearchOption.AllDirectories)).Take(8))
+                output.WriteLine("T-4 " + (dir == target ? "." : Path.GetRelativePath(target, dir)) + ": " + File.GetAttributes(dir));
+            if (OperatingSystem.IsWindows())
+                foreach (var dir in Directory.GetDirectories(target).Take(2))
+                {
+                    var p = System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo("icacls", "\"" + dir + "\" /T /C") { RedirectStandardOutput = true, UseShellExecute = false });
+                    output.WriteLine("T-4 icacls: " + string.Join(" | ", p.StandardOutput.ReadToEnd().Split('\n').Take(12).Select(x => x.Trim())));
+                    p.WaitForExit(30000);
+                }
+            foreach (var f in Directory.GetFileSystemEntries(target, "*", SearchOption.AllDirectories)) File.SetAttributes(f, FileAttributes.Normal);
+            Directory.Delete(target, true);
         }
     }
 }

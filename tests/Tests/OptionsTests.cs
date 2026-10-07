@@ -167,19 +167,23 @@ namespace OnlineBackup.Tests
                     Random(Path.Combine(src, "a.bin"), 64 * 1024, 1);
                     Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);          // the repository exists: only the data is timed below
 
+                    // T-3 (QA shards, Windows, 10 of 10 runs): restic on Windows costs ~5-6 s per run whatever the data (start,
+                    // Defender's scan of restic.exe); with 1.5 MB that fixed cost decided the ratio below. 6 MB keeps both
+                    // checks exactly as they were (the same 75 % of the theoretical time, the same "under half") with the fixed
+                    // cost small beside the data's time.
                     Change(env, "bwlimit", set.Id, s => { s.BandwidthKbps = 256; s.Compression = "NONE"; });
-                    Random(Path.Combine(src, "b.bin"), 1536 * 1024, 2);
+                    Random(Path.Combine(src, "b.bin"), 6 * 1024 * 1024, 2);
                     var sw = Stopwatch.StartNew();
                     var r = app.Backup(set.Id);
                     var limited = sw.Elapsed.TotalSeconds;
                     Assert.True(r.Result == "BS_STOP_SUCCESS", string.Join("\n", r.LogLines));
-                    Assert.True(limited >= 4.5, engine + ": 1.5 MB at 256 KB/s took only " + limited.ToString("0.0") + " s — the limit does not work");
+                    Assert.True(limited >= 18, engine + ": 6 MB at 256 KB/s took only " + limited.ToString("0.0") + " s — the limit does not work");
 
                     Change(env, "bwlimit", set.Id, s => s.BandwidthKbps = 0);
-                    Random(Path.Combine(src, "c.bin"), 1536 * 1024, 3);
+                    Random(Path.Combine(src, "c.bin"), 6 * 1024 * 1024, 3);
                     sw.Restart();
                     Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);
-                    Assert.True(sw.Elapsed.TotalSeconds < limited / 2, engine + ": without the limit it took " + sw.Elapsed.TotalSeconds.ToString("0.0") + " s");
+                    Assert.True(sw.Elapsed.TotalSeconds < limited / 2, engine + ": without the limit it took " + sw.Elapsed.TotalSeconds.ToString("0.0") + " s, with it " + limited.ToString("0.0") + " s");
                 }
         }
 
