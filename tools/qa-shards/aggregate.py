@@ -51,6 +51,21 @@ def read_trx(folder):
             if prev is None or RANK[v[0]] > RANK[prev[0]]: out[name] = (v[0], seconds(r.get('duration') or '0:0:0'), v[1], v[2])
     return out
 
+EVIDENCE = __import__('re').compile(r'^\s*((T|Q|CI)-\d+[a-z]?|EVIDENCE)\b.*')
+
+def evidence(folder):
+    """Lines a test wrote as evidence for an open finding ("T-4 ...", "EVIDENCE ...") - kept even when the test passed
+    (xUnit shows a passed test's output nowhere else)."""
+    out = []
+    for f in sorted(glob.glob(os.path.join(folder, '**', '*.trx'), recursive=True)):
+        try: root = ET.parse(f).getroot()
+        except ET.ParseError: continue
+        for r in root.iter(NS + 'UnitTestResult'):
+            for so in r.iter(NS + 'StdOut'):
+                for line in (so.text or '').split('\n'):
+                    if EVIDENCE.match(line): out.append((r.get('testName'), line.strip()[:600]))
+    return out
+
 def meta(folder):
     try: return json.load(open(os.path.join(folder, 'meta.json')))
     except Exception: return {}
@@ -97,6 +112,9 @@ def main():
         per_test['DISAPPEARED ' + t] = [{'job': '-', 'status': 'DISAPPEARED', 'sec': 0, 'kind': 'missing',
                                          'note': 'in tools/qa-shards/known-tests.txt but no longer in this build - a test removed on purpose is removed from that file in the same commit'}]
     new = load(os.path.join(o.plan, 'new.json'), []) if o.plan else []
+    ev = []
+    for jid in sorted(set(k.partition('/')[0] for k in expected)):
+        ev += [(jid, t, l) for t, l in evidence(os.path.join(o.results, 'shard-' + jid))]
     verdict = {t: max(runs, key=lambda r: RANK[r['status']])['status'] for t, runs in per_test.items()}
     missing = [t for t, runs in per_test.items() if any(r['status'] in ('NOT TESTED', 'DISAPPEARED') and r['kind'] == 'missing' for r in runs)]
     control = None
@@ -138,6 +156,9 @@ def main():
             notes = '; '.join(sorted(set(r['job'] + ': ' + (('[' + r['kind'] + '] ') if r['kind'] else '') + r['note'][:160] for r in runs if r['status'] != 'PASS')))[:700]
             L.append('| %s | %s | %s - %s |' % (t, verdict[t], tally, notes.replace('|', '/').replace('\n', ' ')))
     if new: L += ['', '%d test(s) of this build are not yet in tools/qa-shards/known-tests.txt (add them so that a later disappearance is caught): %s' % (len(new), ', '.join(new[:20]) + (' ...' if len(new) > 20 else ''))]
+    if ev:
+        L += ['', '## Evidence written by the tests (open findings)', '']
+        for jid, t, l in ev[:80]: L.append('- %s, %s: `%s`' % (jid, t.split('.')[-1][:60], l.replace('`', "'")))
     if reps > 1:
         L += ['', '## Repetitions', '', '| test | PASS | FAIL | NOT TESTED |', '|---|---|---|---|']
         for t, runs in per_test.items():
