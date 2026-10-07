@@ -352,6 +352,7 @@ Journey 'W13' 'Service that does not start: its program file is missing (as afte
   Stop-Service OnlineBackupAgent; [void](WaitService OnlineBackupAgent 'Stopped' 120)
   Close-Client
   Move-Item (Join-Path $S.installDir 'OnlineBackup.Agent.exe') "$Q\OnlineBackup.Agent.exe.moved" -Force
+  try {
   Step 'The service cannot start (Windows says so)' 'Start-Service fails or the service stops again' { $e = ''; try { Start-Service OnlineBackupAgent -ErrorAction Stop } catch { $e = $_.Exception.Message }; Start-Sleep 8; $st = (Get-Service OnlineBackupAgent).Status; @((($e -ne '') -or ($st -ne 'Running')), "error: $e; state $st") } -NoShot | Out-Null
   $w = Open-Client $S.installDir
   Look $w 'The program window while the service cannot start' 'en' $ClientProc | Out-Null
@@ -362,6 +363,14 @@ Journey 'W13' 'Service that does not start: its program file is missing (as afte
   Step 'After Repair: the file is back and the service runs' 'OnlineBackup.Agent.exe present, Running' { $st = WaitService OnlineBackupAgent 'Running' 90; @(((Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe')) -and ($st -eq 'Running')), $st) } -NoShot | Out-Null
   BackupChecked 'Backup after Repair' | Out-Null
   RestoreChecked 'Restore after Repair' $want | Out-Null
+  } finally {
+    # Q34: whatever W13 found, the next journeys get a working installation (run 15: Setup did not offer Repair, the program
+    # file stayed missing and W14 / W15 - update, UNINSTALL - failed on that broken machine instead of testing their own thing)
+    Get-Process Setup -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    $exe = Join-Path $S.installDir 'OnlineBackup.Agent.exe'
+    if (-not (Test-Path $exe) -and (Test-Path "$Q\OnlineBackup.Agent.exe.moved")) { Move-Item "$Q\OnlineBackup.Agent.exe.moved" $exe -Force; Note 'W13 cleanup' 'the robot put the program file back (Repair had not): the next journeys start from a working installation' }
+    if ((Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue).Status -ne 'Running') { Start-Service OnlineBackupAgent -ErrorAction SilentlyContinue; [void](WaitService OnlineBackupAgent 'Running' 90) }
+  }
 }
 
 Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after' {

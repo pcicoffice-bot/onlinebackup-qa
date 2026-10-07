@@ -289,6 +289,7 @@ namespace OnlineBackup.Agent
                 {
                     var target = System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp)).TrimEnd('\\');
                     info("[System State Backup] wbadmin to " + target);
+                    AllowTargetOnSystemVolume(RegGet, RegSet, info);
                     Exec("wbadmin", "start systemstatebackup -backupTarget:" + target + " -quiet");
                     var root = System.IO.Path.Combine(target + "\\", "WindowsImageBackup");
                     foreach (var f in new DirectoryInfo(root).GetFiles("*", SearchOption.AllDirectories))
@@ -311,5 +312,20 @@ namespace OnlineBackup.Agent
         {
             ProcessRunner.Check(new ProcessStartInfo(exe, args), Limits.SystemState);   // R1: stopped at the limit, an error if it fails
         }
+
+        /// <summary>Bug 95 (Windows run 17, W17): wbadmin refuses a System State backup to a volume that is part of the system
+        /// state ("You cannot use a volume that is included in the backup as a storage location") unless Windows' documented
+        /// setting AllowSSBToAnyVolume=1 is present - so on a server with one disk (C:) every System State backup failed. The
+        /// setting is made once, and said in the log.</summary>
+        public const string WbengineKey = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wbengine\SystemStateBackup";
+        public static void AllowTargetOnSystemVolume(Func<string, object> get, Action<string, object> set, Action<string> info)
+        {
+            object v = null; try { v = get("AllowSSBToAnyVolume"); } catch (Exception) { }
+            if (v is int && (int)v == 1) return;
+            set("AllowSSBToAnyVolume", 1);
+            info("[System State Backup] Windows setting AllowSSBToAnyVolume=1 made (wbadmin may then keep the System State on the system disk)");
+        }
+        static object RegGet(string name) { return Microsoft.Win32.Registry.GetValue(WbengineKey, name, null); }
+        static void RegSet(string name, object value) { Microsoft.Win32.Registry.SetValue(WbengineKey, name, value, Microsoft.Win32.RegistryValueKind.DWord); }
     }
 }

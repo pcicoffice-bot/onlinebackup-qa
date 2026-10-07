@@ -146,7 +146,7 @@ namespace OnlineBackup.Tests
             using (var proxy = new ShaFlipProxy(port, 0))
             {
                 for (int i = 0; i < 2; i++) using (var c = new TcpClient()) { c.Connect(IPAddress.Loopback, proxy.Port); Thread.Sleep(300); }
-                var until = DateTime.UtcNow.AddSeconds(5);
+                var until = DateTime.UtcNow.AddSeconds(60);   // Q35: Windows retries a refused connect ~2 s per address (localhost = ::1 and 127.0.0.1): 5 s saw only one
                 while (proxy.Refused < 2 && DateTime.UtcNow < until) Thread.Sleep(50);
                 Assert.Equal(2, proxy.Refused);                                             // the second one was still accepted
             }
