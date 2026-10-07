@@ -1,0 +1,1059 @@
+{
+ "title": "QA shards run 37652912466 (13f0cc00486fd046dd6fb3c2642ba95b64a9c739; windows-latest, select 'AtomicSharedReadComponentTests AtomicReplaceRefused CoreFormatsTests InterruptionTests', 4 shards x 5, serial control)",
+ "counts": {
+  "PASS": 23,
+  "FAIL": 0,
+  "NOT TESTED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.AMessage_ReadsBackExactly": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.ATemporaryFile_IsKnownByItsName_NeverByItsPath": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatEnds_TheWriteWaitsAndSucceeds": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatNeverEnds_FailsLoudly_AndLeavesNoTemporaryFile": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.8307192,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 7.1564332,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 7.5833722,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 8.5816483,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 8.7787932,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 38.5228628,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 53.7958781,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 25.6934195,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 53.2232703,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 27.6993405,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.5057643,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.406137,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 3.1374169,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 4.4277273,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 4.2043048,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.0373362,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 12.6613395,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 7.2188122,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 9.4532212,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 8.9983715,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.8842983,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.789358,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.084134,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1.265848,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.3050332,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.9441256,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9369293,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.1645153,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 7.2492638,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.3958256,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.9319835,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.8402609,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.2127503,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 3.6322862,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.3963071,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.2243134,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.720874,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.4680793,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1.6077678,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.7856448,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 19.0981608,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 20.3925367,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 18.745633,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 21.8938928,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 19.6325318,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.4700095,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.477093,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.3475254,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1.6456825,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.6396578,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.5457342,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3919464,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.1371764,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1.1538304,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.6173939,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 121.2831061,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 125.0262289,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 120.7111777,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 123.7254232,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 122.3437529,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.9905478,
+    "note": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.491293,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.1428507,
+    "note": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "PASS",
+    "sec": 1.4317473,
+    "note": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 1.5068127,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.3223897,
+    "note": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.320797,
+    "note": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 0.6434709,
+    "note": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 0.6184663,
+    "note": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 0.3181494,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0214118,
+    "note": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.029223,
+    "note": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 0.0251831,
+    "note": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 0.0174543,
+    "note": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 0.0216269,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0241224,
+    "note": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.0282039,
+    "note": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 0.0303584,
+    "note": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 0.0183636,
+    "note": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 0.027196,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.6298239,
+    "note": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.82428,
+    "note": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 2.0139889,
+    "note": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 2.3961199,
+    "note": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 1.5981505,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.5163486,
+    "note": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.6898938,
+    "note": ""
+   },
+   {
+    "job": "s02-r03",
+    "status": "PASS",
+    "sec": 0.6498289,
+    "note": ""
+   },
+   {
+    "job": "s02-r04",
+    "status": "PASS",
+    "sec": 1.4115568,
+    "note": ""
+   },
+   {
+    "job": "s02-r05",
+    "status": "PASS",
+    "sec": 0.673432,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.AMessage_ReadsBackExactly": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0334476,
+    "note": ""
+   },
+   {
+    "job": "s03-r02",
+    "status": "PASS",
+    "sec": 0.036623,
+    "note": ""
+   },
+   {
+    "job": "s03-r03",
+    "status": "PASS",
+    "sec": 0.0327993,
+    "note": ""
+   },
+   {
+    "job": "s03-r04",
+    "status": "PASS",
+    "sec": 0.030798,
+    "note": ""
+   },
+   {
+    "job": "s03-r05",
+    "status": "PASS",
+    "sec": 0.0256787,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 8.6006743,
+    "note": ""
+   },
+   {
+    "job": "s03-r02",
+    "status": "PASS",
+    "sec": 14.6390321,
+    "note": ""
+   },
+   {
+    "job": "s03-r03",
+    "status": "PASS",
+    "sec": 20.2476495,
+    "note": ""
+   },
+   {
+    "job": "s03-r04",
+    "status": "PASS",
+    "sec": 15.7955228,
+    "note": ""
+   },
+   {
+    "job": "s03-r05",
+    "status": "PASS",
+    "sec": 13.6523922,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.ATemporaryFile_IsKnownByItsName_NeverByItsPath": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0101156,
+    "note": ""
+   },
+   {
+    "job": "s03-r02",
+    "status": "PASS",
+    "sec": 0.0126269,
+    "note": ""
+   },
+   {
+    "job": "s03-r03",
+    "status": "PASS",
+    "sec": 0.0082564,
+    "note": ""
+   },
+   {
+    "job": "s03-r04",
+    "status": "PASS",
+    "sec": 0.0074122,
+    "note": ""
+   },
+   {
+    "job": "s03-r05",
+    "status": "PASS",
+    "sec": 0.0085765,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatEnds_TheWriteWaitsAndSucceeds": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.1899789,
+    "note": ""
+   },
+   {
+    "job": "s04-r02",
+    "status": "PASS",
+    "sec": 0.1728318,
+    "note": ""
+   },
+   {
+    "job": "s04-r03",
+    "status": "PASS",
+    "sec": 0.1677969,
+    "note": ""
+   },
+   {
+    "job": "s04-r04",
+    "status": "PASS",
+    "sec": 0.1837841,
+    "note": ""
+   },
+   {
+    "job": "s04-r05",
+    "status": "PASS",
+    "sec": 0.1884504,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatNeverEnds_FailsLoudly_AndLeavesNoTemporaryFile": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0240928,
+    "note": ""
+   },
+   {
+    "job": "s04-r02",
+    "status": "PASS",
+    "sec": 0.0155037,
+    "note": ""
+   },
+   {
+    "job": "s04-r03",
+    "status": "PASS",
+    "sec": 0.0297222,
+    "note": ""
+   },
+   {
+    "job": "s04-r04",
+    "status": "PASS",
+    "sec": 0.0304817,
+    "note": ""
+   },
+   {
+    "job": "s04-r05",
+    "status": "PASS",
+    "sec": 0.0278852,
+    "note": ""
+   }
+  ]
+ },
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001387",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 13
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001383",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 5
+   },
+   "tests": 13
+  },
+  {
+   "job": "s01-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r03",
+    "runner": "GitHub Actions 1000001386",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 13
+  },
+  {
+   "job": "s01-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r04",
+    "runner": "GitHub Actions 1000001391",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 5
+   },
+   "tests": 13
+  },
+  {
+   "job": "s01-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r05",
+    "runner": "GitHub Actions 1000001388",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 13
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001385",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 5
+  },
+  {
+   "job": "s02-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r02",
+    "runner": "GitHub Actions 1000001390",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 5
+  },
+  {
+   "job": "s02-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r03",
+    "runner": "GitHub Actions 1000001382",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 5
+  },
+  {
+   "job": "s02-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r04",
+    "runner": "GitHub Actions 1000001389",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 5
+  },
+  {
+   "job": "s02-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r05",
+    "runner": "GitHub Actions 1000001384",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 5
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000001392",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s03-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r02",
+    "runner": "GitHub Actions 1000001393",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s03-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r03",
+    "runner": "GitHub Actions 1000001394",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s03-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r04",
+    "runner": "GitHub Actions 1000001395",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s03-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r05",
+    "runner": "GitHub Actions 1000001396",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000001397",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s04-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r02",
+    "runner": "GitHub Actions 1000001398",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s04-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r03",
+    "runner": "GitHub Actions 1000001399",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s04-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r04",
+    "runner": "GitHub Actions 1000001400",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s04-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r05",
+    "runner": "GitHub Actions 1000001401",
+    "os": "Windows",
+    "sha": "13f0cc00486fd046dd6fb3c2642ba95b64a9c739",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  }
+ ],
+ "control": {
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.AMessage_ReadsBackExactly": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.ATemporaryFile_IsKnownByItsName_NeverByItsPath": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatEnds_TheWriteWaitsAndSucceeds": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatNeverEnds_FailsLoudly_AndLeavesNoTemporaryFile": "PASS"
+ },
+ "control_differences": []
+}

@@ -1,0 +1,6 @@
+{
+ "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests": 0.2,
+ "OnlineBackup.Tests.AtomicSharedReadComponentTests": 4.4,
+ "OnlineBackup.Tests.CoreFormatsTests": 20.2,
+ "OnlineBackup.Tests.InterruptionTests": 246.1
+}
