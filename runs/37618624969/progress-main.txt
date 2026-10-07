@@ -35,3 +35,4 @@
 12:32:27   waiting up to 20 min for a new Backup run
 12:33:12   waiting up to 20 min for a new Restore run
 12:33:25 end W11 PASS 
+12:33:27 start W12 Permission denied: a folder the service may not read is an error, not a deletion; recovery
