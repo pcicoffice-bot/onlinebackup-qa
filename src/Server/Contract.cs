@@ -109,7 +109,7 @@ namespace OnlineBackup.Server
 
         static readonly Dictionary<string, List<DateTime>> attempts = new Dictionary<string, List<DateTime>>();
 
-        public static bool SignupOpen(SystemConfig cfg) { var s = cfg.Doc.Root.Element("SIGNUP"); return s == null || (string)s.Attribute("OPEN") != "N"; }
+        public static bool SignupOpen(SystemConfig cfg) { if (cfg.Pilot) return false; var s = cfg.Doc.Root.Element("SIGNUP"); return s == null || (string)s.Attribute("OPEN") != "N"; }
 
         /// <summary>
         /// SIGNUP-010: a new customer from the client software — the company, an e-mail, a sign-in name and a password (8+ with
@@ -117,6 +117,7 @@ namespace OnlineBackup.Server
         /// </summary>
         public static Profile Signup(Users users, SystemConfig cfg, Msg b, string ip, DateTime nowUtc)
         {
+            PilotScope.Check(cfg, PilotScope.Signup);   // PILOT-010 / AU-03
             if (!SignupOpen(cfg)) throw new ApiException(403, "SIGNUP_CLOSED", "New customers are opened by your IT provider. Contact them for a user name.");
             var key = cfg.SystemHome + "|" + ip;   // new customers made from this address in the last hour (a typo does not count)
             lock (attempts)

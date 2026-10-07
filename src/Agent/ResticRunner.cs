@@ -403,7 +403,7 @@ namespace OnlineBackup.Agent
                 log.Add(AhsayLog.Info(Clock(), "Restored to Google Workspace: mail " + back.Mail + ", files " + back.Files + ", failed " + back.Failed));
                 return back;
             }
-            finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(tmp); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The temporary restore folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         /// <summary>M365-050: chosen items of a point back into Microsoft 365 ("Restored &lt;date&gt;" folders).</summary>
@@ -426,7 +426,7 @@ namespace OnlineBackup.Agent
                 log.Add(AhsayLog.Info(Clock(), "Restored to Microsoft 365: mail " + back.Mail + ", files " + back.Files + ", contacts " + back.Contacts + ", events " + back.Events + ", failed " + back.Failed));
                 return back;
             }
-            finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(tmp); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The temporary restore folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         string RunningFlag { get { return Path.Combine(app.Home.SetDir(set.Id), "restic-running.txt"); } }
@@ -532,7 +532,7 @@ namespace OnlineBackup.Agent
             EnsureAccess();
             Directory.CreateDirectory(target);
             foreach (var old in Directory.GetDirectories(target, StagePrefix + "*"))
-                try { Directory.Delete(old, true); } catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + old + " (" + e.Message + ")")); }
+            { var why = OnlineBackup.Core.TempDirs.Remove(old); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             var stage = Path.Combine(target, StagePrefix + Guid.NewGuid().ToString("N").Substring(0, 12));
             Directory.CreateDirectory(stage);
             try
@@ -547,7 +547,7 @@ namespace OnlineBackup.Agent
                 if (c[0] + c[1] + c[2] == 0) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
                 log.Add(AhsayLog.Info(Clock(), "Restored: " + c[0] + " new, " + c[2] + " replaced, " + c[1] + " kept (already there" + (overwrite ? "" : "; 'Replace existing files' was not chosen") + ")"));
             }
-            finally { try { if (Directory.Exists(stage)) Directory.Delete(stage, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(stage); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The restore's staging folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         const string StagePrefix = ".ob-restoring-";

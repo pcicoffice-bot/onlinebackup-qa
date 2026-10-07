@@ -41,12 +41,13 @@ namespace OnlineBackup.Server
         /// The set as the admin site shows it. Like Ahsay OBM, a set belongs to one computer and has its own paths; "related"
         /// lists the sets copied from the same set to other computers (they share its key, nothing else).
         /// </summary>
-        public static Msg Detail(Users users, string login, string id) { lock (users.ProfileLock) return Detail(users.LoadProfile(login), id); }
+        public static Msg Detail(Users users, string login, string id) { lock (users.ProfileLock) return Detail(users.LoadProfile(login), id, users.Config.Pilot); }
 
-        public static Msg Detail(Profile p, string id)
+        public static Msg Detail(Profile p, string id, bool pilot = false)
         {
             var e = Find(p, id);
             var m = new Msg().Set("set", e.ToString(SaveOptions.DisableFormatting)).Set("version", Version(e)).Set("head", (string)Family(p, id)[0].Attribute("ID")).Set("computer", (string)e.Attribute("SCHEDULE_HOST"));
+            if (pilot) m.Set("scope", Scope.Refusal(BackupSetInfo.FromXml(e)));   // PILOT-010: why the set is kept as it is (not run, not changed)
             m.Add("computers", new Msg().Set("id", id).Set("computer", (string)e.Attribute("SCHEDULE_HOST")).Set("detached", (string)e.Attribute("DETACHED") == "Y" ? 1 : 0)
                 .Set("lastBackup", (string)e.Attribute("LAST_BACKUP_COMPLETE")).Set("size", (string)e.Attribute("TOTAL_BSET_SIZE")));
             foreach (var x in Family(p, id).Where(x => x != e))
@@ -89,6 +90,8 @@ namespace OnlineBackup.Server
                 var cur = BackupSetInfo.FromXml(e);
                 inc.Id = cur.Id; inc.Type = cur.Type; inc.Engine = cur.Engine; inc.Computer = cur.Computer; inc.Device = cur.Device; inc.Parent = cur.Parent;
                 inc.KeyType = cur.KeyType; inc.KeyCheck = cur.KeyCheck; inc.KeySalt = cur.KeySalt;
+                // PILOT-010: the set as it would be saved must be inside the pilot (an option outside it may be removed, never added)
+                PilotScope.CheckSet(users.Config, inc);
                 inc.ToXml(e);
                 users.SaveProfile(login, p);
             }
@@ -104,6 +107,7 @@ namespace OnlineBackup.Server
             {
                 var p = users.LoadProfile(login);
                 var e = Find(p, id);
+                if (run) PilotScope.CheckSet(users.Config, BackupSetInfo.FromXml(e));   // PILOT-010: "stop" is always allowed
                 if ((string)e.Attribute("DETACHED") != "Y") { e.SetAttributeValue(run ? "RUN_REQUEST" : "STOP_REQUEST", RunId.UnixMs(nowUtc)); n++; }
                 users.SaveProfile(login, p);
             }
@@ -124,6 +128,7 @@ namespace OnlineBackup.Server
             {
                 var p = users.LoadProfile(login);
                 var fam = Family(p, id);
+                PilotScope.CheckSet(users.Config, BackupSetInfo.FromXml(fam[0]));   // PILOT-010: a set outside the pilot is not copied to more computers
                 var same = fam.FirstOrDefault(x => string.Equals((string)x.Attribute("SCHEDULE_HOST"), computer, StringComparison.OrdinalIgnoreCase));
                 if (same != null && (string)same.Attribute("DETACHED") != "Y") throw new ApiException(409, "COMPUTER", "The set already runs on this computer.");
                 if (string.IsNullOrEmpty((string)fam[0].Attribute("SCHEDULE_HOST"))) throw new ApiException(400, "COMPUTER", "Choose the set's first computer before adding another.");

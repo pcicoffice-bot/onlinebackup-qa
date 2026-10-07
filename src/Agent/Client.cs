@@ -32,7 +32,9 @@ namespace OnlineBackup.Agent
 
         Dictionary<string, string> AuthHeaders()
         {
-            var h = new Dictionary<string, string>();
+            // PILOT-010 / AG-08: the agent always says what it runs on — also on Windows XP / 2003, whose requests go this way
+            // (built-in TLS) and said nothing, and before it has a device token (registration, sign-in)
+            var h = new Dictionary<string, string> { { "X-Agent", AgentInfo } };
             if (Device != null) h["X-Device"] = Device;
             if (Session != null) h["X-Session"] = Session;
             return h;
@@ -113,7 +115,8 @@ namespace OnlineBackup.Agent
             r.Method = method;
             r.Timeout = TimeoutMs; r.ReadWriteTimeout = TimeoutMs;
             r.KeepAlive = true;
-            if (Device != null) { r.Headers["X-Device"] = Device; r.Headers["X-Agent"] = AgentInfo; }
+            r.Headers["X-Agent"] = AgentInfo;
+            if (Device != null) r.Headers["X-Device"] = Device;
             if (Session != null) r.Headers["X-Session"] = Session;
             return r;
         }
@@ -190,7 +193,10 @@ namespace OnlineBackup.Agent
             try
             {
                 using (var s = r.GetRequestStream()) write(new NetStream(s));
-                return ReadResponse(r);
+                // bug 104: the object is sent; a connection cut while its answer comes back is the network's too (it was
+                // reported as "Cannot read file" of the customer's source and never sent again)
+                try { return ReadResponse(r); }
+                catch (IOException e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke while it answered: " + e.Message); }
             }
             catch (WebException e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.Message); }
             catch (NetStream.Failure e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.InnerException.Message); }

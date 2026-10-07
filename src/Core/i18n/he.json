@@ -422,6 +422,8 @@
   "✗ Backup report — {0} — {1}": "✗ דוח גיבוי — {0} — {1}",
   "You have reached the number of computers in the licence ({0}). To upgrade, contact the software vendor.": "הגעתם למספר המחשבים ברישיון ({0}). לשדרוג פנו לספק התוכנה.",
   "Maximum number of backup sets reached ({0}).": "הגעת למספר הסטים המקסימלי ({0}).",
+  "{0} is not supported in this version (Windows file backup).": "{0} אינו נתמך בגרסה זו (גיבוי קבצים של Windows).",
+  "The set and its backups are kept as they are; it does not run.": "הסט והגיבויים שלו נשמרים כפי שהם; הוא אינו רץ.",
   "The server's licence does not include {0} backup ({1}).": "הרישיון של השרת לא כולל גיבוי {0} ({1}).",
   "You have reached the number of users in your plan ({0}).": "הגעתם למספר המשתמשים ברישיון ({0}).",
   "The reseller's total quota is used up ({0} GB).": "המכסה הכוללת של הספק נוצלה ({0} GB).",

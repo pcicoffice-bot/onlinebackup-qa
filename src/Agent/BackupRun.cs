@@ -325,7 +325,7 @@ namespace OnlineBackup.Agent
                 if (Job != null && endConfirmed) ClearMarker(home, set.Id);
                 Commands.Run(set.PostCommands, "post", Info, Warn);
                 if (snapshot != null) { snapshot.Dispose(); Info("Deleting Shadow Copy snapshot"); }
-                try { var dumps = Path.Combine(tmp, "mssql"); if (Directory.Exists(dumps)) Directory.Delete(dumps, true); } catch (Exception) { }
+                { var why = OnlineBackup.Core.TempDirs.Remove(Path.Combine(tmp, "mssql")); if (why != null) Warn("The database dump folder stays: " + why); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             }
         }
 

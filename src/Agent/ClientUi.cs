@@ -275,7 +275,7 @@ namespace OnlineBackup.Agent
                 var pr = app.DeviceClient().Call("GET", "/api/profile");
                 var rights = pr.List("rights").FirstOrDefault() ?? new Msg();
                 m.Set("canAdd", rights["can_add_sets"] ?? "1").Set("canSources", rights["can_edit_sources"] ?? "1").Set("canSchedule", rights["can_edit_schedule"] ?? "1");
-                foreach (var s in Core.Profile.Parse(pr["profile"]).Sets)
+                foreach (var s in app.Remember(Core.Profile.Parse(pr["profile"])).Sets)
                 {
                     var la = Path.Combine(app.Home.SetDir(s.Id), "last-attempt.txt");
                     string last = "", result = "";
@@ -284,10 +284,13 @@ namespace OnlineBackup.Agent
                     m.Add("sets", new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
                         .Set("computer", s.Computer).Set("mine", mine ? 1 : 0).Set("src", string.Join("\n", s.Sources.ToArray())).Set("skip", string.Join("\n", s.Deselected.ToArray()))
                         .Set("hh", s.Hour).Set("mm", s.Minute)
-                        .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result));
+                        .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result)
+                        .Set("blocked", app.Pilot ? Scope.Refusal(s) : null));   // PILOT-010: kept, not run — and why
                 }
             }
             catch (AgentException e) { m.Set("offline", e.Message); }
+            // PILOT-010: the pilot "Windows File Backup" — the window offers only files and folders with the own engine
+            if (app.Pilot) m.Set("pilot", 1).Set("restic", 0);
             return m;
         }
 
@@ -434,7 +437,9 @@ namespace OnlineBackup.Agent
             if (sources.Count == 0 && !all) throw new AgentException(400, "NO_SOURCE", "Choose at least one folder.");
             int hour; if (!int.TryParse(b["hour"] ?? "22", out hour) || hour < 0 || hour > 23) hour = 22;
             int minute; if (!int.TryParse(b["minute"] ?? "0", out minute) || minute < 0 || minute > 59) minute = 0;
-            var s = new BackupSetInfo { Name = string.IsNullOrEmpty(b["name"]) ? "Files" : b["name"], Sources = sources, Deselected = Lines(b["exclude"]), Hour = hour, Minute = minute, Engine = ResticSupported ? "RESTIC" : "" };
+            app.Profile();   // PILOT-010: the server's scope as it is now
+            var s = new BackupSetInfo { Name = string.IsNullOrEmpty(b["name"]) ? "Files" : b["name"], Sources = sources, Deselected = Lines(b["exclude"]), Hour = hour, Minute = minute, Engine = ResticSupported && !app.Pilot ? "RESTIC" : "" };
+            if (app.Pilot && (b["type"] ?? "FILE") != "FILE") app.CheckScope(new BackupSetInfo { Type = b["type"] });
             if (b["type"] == "M365")
             {
                 // CLI-075: Microsoft 365 — the folder is the local mirror; the application secret stays on this computer

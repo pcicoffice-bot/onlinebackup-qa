@@ -88,6 +88,9 @@ namespace OnlineBackup.Server
         }
         public void ResetLicense() { licenseCache = null; }
 
+        /// <summary>PILOT-010: the pilot "Windows File Backup" (SYSTEM/@SCOPE="PILOT"): what is outside it is refused (PilotScope).</summary>
+        public bool Pilot { get { return Scope.IsPilot((string)Doc.Root.Attribute("SCOPE")); } }
+
         /// <summary>First-run setup: administrator, address and at least one user home.</summary>
         public static SystemConfig Init(string systemHome, string admin, string password, string hostName, IEnumerable<string> userHomes)
         {

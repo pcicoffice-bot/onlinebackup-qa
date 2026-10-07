@@ -29,7 +29,8 @@ namespace OnlineBackup.Server
         public Replicator(SystemConfig cfg, Users users) { this.cfg = cfg; this.users = users; }
 
         XElement Conf { get { return cfg.Doc.Root.Element("REPLICATION"); } }
-        public bool Enabled { get { return Conf != null && (string)Conf.Attribute("ENABLED") == "Y" && !string.IsNullOrEmpty((string)Conf.Attribute("URL")); } }
+        /// <summary>PILOT-010 / ST-07: never with the pilot switch — nothing is queued or sent; a queue left from before is kept.</summary>
+        public bool Enabled { get { return !cfg.Pilot && Conf != null && (string)Conf.Attribute("ENABLED") == "Y" && !string.IsNullOrEmpty((string)Conf.Attribute("URL")); } }
 
         public void Start() { timer = new Timer(_ => { try { RunOnce(); } catch (Exception e) { SysLog.Write(null, "System", "error: replication " + e.Message); } }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(60)); }
         public void Stop() { if (timer != null) timer.Dispose(); }

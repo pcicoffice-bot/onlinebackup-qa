@@ -65,7 +65,47 @@ namespace OnlineBackup.Agent
             return c;
         }
 
-        public Profile Profile() { return Core.Profile.Parse(DeviceClient().Call("GET", "/api/profile")["profile"]); }
+        public Profile Profile() { return Remember(Core.Profile.Parse(DeviceClient().Call("GET", "/api/profile")["profile"])); }
+
+        // ---------------------------------------------------------------- PILOT-010: the pilot "Windows File Backup"
+
+        string scope;
+        string ScopeFile { get { return Path.Combine(Home.Dir, "server-scope.txt"); } }
+
+        /// <summary>The server's scope, told in every profile it sends (ROOT/@SERVER_SCOPE) and kept on this computer, so an
+        /// agent that starts without reaching the server still knows it.</summary>
+        public string ServerScope
+        {
+            get
+            {
+                if (scope == null) { try { scope = File.Exists(ScopeFile) ? OnlineBackup.Core.Atomic.ReadAllText(ScopeFile).Trim() : ""; } catch (IOException) { scope = ""; } }
+                return scope;
+            }
+        }
+
+        public bool Pilot { get { return Scope.IsPilot(ServerScope); } }
+
+        /// <summary>Notes the scope of a profile from the server (written down only when it changes).</summary>
+        public Profile Remember(Profile p)
+        {
+            var now = (string)p.Root.Attribute("SERVER_SCOPE") ?? "";
+            if (now != ServerScope)
+            {
+                try { if (now.Length == 0) File.Delete(ScopeFile); else { Directory.CreateDirectory(Home.Dir); File.WriteAllText(ScopeFile, now); } } catch (IOException) { } catch (UnauthorizedAccessException) { }
+                scope = now;
+            }
+            return p;
+        }
+
+        /// <summary>PILOT-010: a set outside the pilot is never run here — backup, restore, restore test — even when one reaches
+        /// this computer; nor does anything run on Windows XP / 2003 with the pilot (AG-08).</summary>
+        public void CheckScope(BackupSetInfo s)
+        {
+            if (!Pilot) return;
+            var why = Scope.Refusal(s);
+            if (why != null) throw new AgentException(403, Scope.Code, why);
+            if (NeedsBuiltinTls) throw new AgentException(403, Scope.Code, Scope.OldWindowsMessage);
+        }
 
         public List<BackupSetInfo> Sets() { return Profile().Sets; }
 
@@ -133,6 +173,7 @@ namespace OnlineBackup.Agent
         {
             var s = Sets().FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);   // PILOT-010: before anything runs (commands, a local copy, restic, the server's begin)
             // one run per set at a time (the schedule and "back up now" share the service process)
             object gate;
             lock (running) { if (!running.TryGetValue(s.Id, out gate)) running[s.Id] = gate = new object(); }
@@ -297,7 +338,7 @@ namespace OnlineBackup.Agent
         /// <summary>Tests: adjusts every restic runner this app makes (a stand-in program, short limits).</summary>
         public Action<ResticRunner> ResticSetup;
 
-        public ResticRunner Restic(BackupSetInfo s, string secret = null) { var r = new ResticRunner(this, s, Key(s, secret)); var f = ResticSetup; if (f != null) f(r); return r; }
+        public ResticRunner Restic(BackupSetInfo s, string secret = null) { CheckScope(s); var r = new ResticRunner(this, s, Key(s, secret)); var f = ResticSetup; if (f != null) f(r); return r; }
 
         public bool RestoreTestDue(BackupSetInfo s, DateTime utc)
         {
@@ -335,14 +376,16 @@ namespace OnlineBackup.Agent
 
         public Restore RestoreFor(Client session, string setId, string secret = null, byte[] recoveredKey = null)
         {
-            var s = Core.Profile.Parse(session.Call("GET", "/api/profile")["profile"]).Sets.FirstOrDefault(x => x.Id == setId);
+            var s = Remember(Core.Profile.Parse(session.Call("GET", "/api/profile")["profile"])).Sets.FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);
             return new Restore(session, s, Key(s, secret, recoveredKey), Path.Combine(Home.Dir, "temp"));
         }
 
         /// <summary>Restore from the local copy (no internet): the key from this computer or from the password.</summary>
         public Restore RestoreLocal(BackupSetInfo s, string secret = null, byte[] recoveredKey = null)
         {
+            CheckScope(s);
             return new Restore(new LocalSource(new LocalRepo(s.LocalCopyPath, Home.Login, s.Id)), Key(s, secret, recoveredKey), Path.Combine(Home.Dir, "temp"));
         }
 
@@ -355,6 +398,7 @@ namespace OnlineBackup.Agent
         {
             var s = Sets().FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);
             if (s.Engine == "RESTIC")
             {
                 // restic check reading 5% of the data: every byte read is authenticated with the set's key
@@ -394,7 +438,7 @@ namespace OnlineBackup.Agent
                     catch (Exception e) { failed++; log.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "err", kv.Key, message: "restore test failed: " + e.Message))); }
                 }
             }
-            finally { try { Directory.Delete(dir, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(dir); if (why != null) log.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "warn", message: "The restore test's folder stays: " + why))); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             log.Set("checked", ok + failed).Set("ok", ok).Set("failed", failed).Set("candidates", candidates.Count);
             client.Call("POST", "/api/sets/" + s.Id + "/restoretest", log);
             RestoreTestDone(s.Id);   // bug 102: only once the server took the result
@@ -618,6 +662,7 @@ namespace OnlineBackup.Agent
                         }
                         catch (AgentException e) when (e.Code == "NETWORK") { throw; }
                         catch (AgentException e) when (e.Code == "BUSY") { say(s.Name + ": " + e.Message); }
+                        catch (AgentException e) when (e.Code == Scope.Code) { say(s.Name + ": not run: " + e.Message); }   // PILOT-010: kept, not run (no failed run reported)
                         catch (Exception e)
                         {
                             say(s.Name + ": cannot run: " + e.Message);

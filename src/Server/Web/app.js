@@ -241,13 +241,15 @@
     ['Settings', [['defaults', '✚', 'Defaults for new customers'], ['policies', '⚙', 'Policies and templates'], ['notify', '✉', 'E-mails and alerts'], ['admins', '👥', 'Administrators'], ['tset', '🎫', 'Service call settings'], ['security', '🔒', 'Security and sign-in'], ['time', '◷', 'Clock and time zone'], ['integr', '⇄', 'Integrations'], ['client', '⬇', 'Client software'], ['contract', '✍', 'Contract and sign-up'], ['brand', '◐', 'Branding']]]];
   const NAV_VENDOR = [['', [['dash', '◧', 'Dashboard'], ['cust', '▦', 'My customers', 'core'], ['tasks', '✓', 'Tasks — 24 hours'], ['live', '⟳', 'Active backups'], ['tickets', '🎫', 'Service calls'], ['ai', '✦', 'Insights (AI)', 'ai'], ['brand', '◐', 'Branding']]]];
   const PAGES = {};
+  // PILOT-010: the pilot "Windows File Backup" (the server's switch) — what is outside it is not offered (the server refuses it too)
+  const PILOT = () => !!(S.me && S.me.scope === 'PILOT');
   function go(patch) {
     Object.assign(S, patch);
     try { sessionStorage.setItem('obNav', JSON.stringify({ page: S.page, login: S.login, ctab: S.ctab, set: S.set, stab: S.stab, tck: S.tck, tv: S.tv, adm: S.adm })); } catch (e) { }
     render(); window.scrollTo(0, 0);
   }
   async function render() {
-    const nav = S.vendor ? NAV_VENDOR : NAV_SYSTEM;
+    const nav = (S.vendor ? NAV_VENDOR : NAV_SYSTEM).map(([g, items]) => [g, items.filter((i) => !(PILOT() && i[0] === 'ai'))]).filter(([, items]) => items.length);
     const known = nav.flatMap(([, items]) => items.map((i) => i[0])).concat(['customer']);
     if (!known.includes(S.page)) S.page = 'dash';
     const rail = h('nav', { class: 'rail', 'aria-label': t('Menu') });
@@ -263,6 +265,7 @@
   async function start() {
     try { S.me = await api('GET', 'me'); } catch (x) { return; }
     S.vendor = S.me.vendor || '';
+    if (PILOT()) delete WIDGETS.ai;   // UI-08: no AI in the pilot
     brand(S.me);
     if (S.me.enroll === '1') { enrollPage(); return; }
     checkUpdate(false); if (!S.updTimer) S.updTimer = setInterval(() => checkUpdate(false), 6 * 3600 * 1000);
@@ -432,7 +435,7 @@
       return h('div', { class: 'inline' }, pc.connected === '1' ? btn(t('Disconnect'), async () => {
         if (!await confirmBox(t('Disconnect {0}? It stops backing up; its backups are kept and the licence place is freed.', pc.name))) return;
         await api('POST', 'users/' + enc(u.login) + '/computers/disconnect', { computer: pc.name }); toast(t('Disconnected')); render(); }, 'sm') : null,
-        Number(pc.sets) > 0 && others.length ? move : null);
+        Number(pc.sets) > 0 && others.length && !PILOT() ? move : null);   // SH-06: not in the pilot
     };
     return card(t('Computers ({0})', pcs.length), h('span', { class: 'muted small' }, t('A computer is added when the client software is installed and signed in.')),
       table([t('Computer'), t('Backup sets'), t('Last backup'), t('Last connection'), t('Version'), t('Status'), ''], pcs.map((pc) => [h('b', {}, ltr(pc.name)), pc.setNames || '—', N(when(pc.lastBackup)),
@@ -500,7 +503,10 @@
     const collectors = [];   // each tab's "write my fields back into the XML"
     const done = () => go({ set: null });
 
-    const tabs = [['general', 'General'], ['src', 'What to back up'], ['sched', 'Schedule'], ['method', 'Backup method'], ['dest', 'Destination'], ['ret', 'Versions kept'], ['filter', 'Filters'], ['enc', 'Encryption and compression'], ['perf', 'Resources'], ['cmd', 'Commands'], ['rep', 'Reports'], ['maint', 'Maintenance']];
+    // PILOT-010: the destination (local copy, BK-10) and the commands (BK-09) only to remove what a set already has
+    const lc0 = kids('EXTRA_LOCAL_BACKUP')[0], hasLocal = A('DEST_MODE', 'SERVER') !== 'SERVER' || (lc0 && lc0.getAttribute('ENABLED') === 'Y'), hasCmd = kids('PRE_CMD').length + kids('POST_CMD').length > 0;
+    const tabs = [['general', 'General'], ['src', 'What to back up'], ['sched', 'Schedule'], ['method', 'Backup method'], ['dest', 'Destination'], ['ret', 'Versions kept'], ['filter', 'Filters'], ['enc', 'Encryption and compression'], ['perf', 'Resources'], ['cmd', 'Commands'], ['rep', 'Reports'], ['maint', 'Maintenance']]
+      .filter(([k]) => !PILOT() || (k !== 'dest' || hasLocal) && (k !== 'cmd' || hasCmd));
     const panes = {};
     const body = h('div', {});
     const tabBar = h('div', { class: 'tabs', role: 'tablist' });
@@ -728,7 +734,8 @@
     };
     const wrapper = h('div', {}, h('div', { class: 'crumbs' }, h('button', { type: 'button', onclick: done }, t('Backup sets')), '‹', A('NAME', '')),
       h('div', { class: 'head' }, h('div', { class: 't' }, h('h1', {}, A('NAME', '')), h('p', {}, (TYPES[type] ? t(TYPES[type]) : type) + ' · ' + list(d.computers).filter((c) => c.detached !== '1').map((c) => c.computer).join(', '))),
-        h('div', { class: 'acts' }, btn('▶ ' + t('Back up now'), async () => { await api('POST', path + '/run'); toast(t('The backup was started on the customer\'s computer')); }), btn('■ ' + t('Stop'), async () => { await api('POST', path + '/stop'); toast(t('A stop request was sent')); }))),
+        h('div', { class: 'acts' }, d.scope ? null : btn('▶ ' + t('Back up now'), async () => { await api('POST', path + '/run'); toast(t('The backup was started on the customer\'s computer')); }), btn('■ ' + t('Stop'), async () => { await api('POST', path + '/stop'); toast(t('A stop request was sent')); }))),
+      d.scope ? h('div', { class: 'note warn' }, '⚠', h('span', {}, tr(d.scope) + ' ' + t('The set and its backups are kept as they are; it does not run.'))) : null,
       tabBar, h('section', { class: 'card' }, h('div', { class: 'cb' }, body), savebar(save, done, t('A change of the settings reaches the computer within a minute.'))));
     show(tabs.some(([k]) => k === S.stab) ? S.stab : 'general');
     return wrapper;
@@ -879,6 +886,7 @@
   };
   // AI-020: the explanation of a failed run, written by the AI from its log
   function aiExplain(x) {
+    if (PILOT()) return null;   // UI-08
     const box = h('section', { class: 'ai-panel' }, h('div', { class: 'cb' }, h('div', { class: 'inline' }, pill('ai', '✦ AI'), btn(t('Explain with AI'), async () => {
       box.querySelector('.cb').replaceChildren(h('p', { class: 'muted' }, t('The AI is reading the log…')));
       const d = await api('POST', 'users/' + enc(x.login) + '/aidiagnose', { set: x.set, cat: x.kind === 'Backup' ? 'Backup' : 'Restore', file: x.log, lang: I18N.lang });
@@ -1132,7 +1140,7 @@
       card(t('Drives for backups'), null, table([t('Folder'), t('Customers'), t('Used'), t('Free')], homes.map((x) => [ltr(x.path), N(x.users || '0'), N(size(x.allocated || x.used)), N(size(x.free))])),
         h('div', { class: 'inline' }, newPath, btn('+ ' + t('Add a drive'), async () => { if (!newPath.value.trim()) throw new Error(t('Write the folder path first.')); await api('POST', 'settings', { homesSet: 1, homes: homes.map((x) => ({ path: x.path, maxQps: x.maxQps })).concat([{ path: newPath.value.trim() }]) }); toast(t('Saved')); render(); }, 'sm')),
         h('p', { class: 'muted small' }, t('A new customer is created on the drive with the most room.'))),
-      h('section', { class: 'card' }, h('div', { class: 'ch' }, h('h2', {}, t('A copy on a second server'))), h('div', { class: 'cb' }, h('div', { class: 'form' }, fr(t('Disaster recovery'), null, repOn), fr(t('Address of the second server'), null, repUrl), fr(t('Access token'), null, repTok),
+      PILOT() ? null : h('section', { class: 'card' }, h('div', { class: 'ch' }, h('h2', {}, t('A copy on a second server'))), h('div', { class: 'cb' }, h('div', { class: 'form' }, fr(t('Disaster recovery'), null, repOn), fr(t('Address of the second server'), null, repUrl), fr(t('Access token'), null, repTok),
         fr(t('Waiting to copy'), null, N(s.replicationPending || '0')))), savebar(async () => { await api('POST', 'settings', { replicationOn: repOn.input.checked ? 1 : 0, replicationUrl: repUrl.value, replicationToken: repTok.value || undefined }); }, () => go({ page: 'dash' }))),
       cfgCard,
       card(t('Deletions waiting for approval'), h('span', { class: 'muted small' }, t('Another administrator approves — a stolen password alone cannot wipe a customer.')),
@@ -1180,7 +1188,7 @@
     const r = await api('GET', 'templates');
     const edit = (tp) => {
       const s = tp ? new DOMParser().parseFromString(tp.set, 'application/xml').documentElement : null;
-      const name = inp(tp ? tp.name : ''), type = sel(Object.entries(TYPES).map(([k, l]) => [k, t(l)]), tp ? tp.type : 'FILE');
+      const name = inp(tp ? tp.name : ''), type = sel(Object.entries(TYPES).filter(([k]) => !PILOT() || k === 'FILE').map(([k, l]) => [k, t(l)]), tp ? tp.type : 'FILE');
       const sch = s && (s.querySelector('DAILY_SCHEDULE') || s.querySelector('WEEKLY_SCHEDULE'));
       const hh = sel(Array.from({ length: 24 }, (_, i) => [String(i), String(i).padStart(2, '0')]), sch ? sch.getAttribute('HOUR') : '22'), mm = sel(Array.from({ length: 12 }, (_, i) => [String(i * 5), String(i * 5).padStart(2, '0')]), sch ? sch.getAttribute('MINUTE') : '0');
       const rp = s && s.querySelector('RETENTION_POLICY'); const unit = sel([['DAYS', t('Days')], ['JOBS', t('Backups')]], rp ? rp.getAttribute('UNIT') : 'DAYS'), period = num(rp ? rp.getAttribute('PERIOD') : 30, { min: 1 });
@@ -1307,13 +1315,13 @@
     const tUrl = inp(s.aiTicketUrl, { class: 'ltr', placeholder: 'https://helpdesk.example.com/api/tickets' }), tTok = h('input', { type: 'password', placeholder: s.aiHasTicketToken === '1' ? t('(saved — empty = no change)') : '' });
     const exP = inp(s.exportProfiles, { class: 'ltr' }), exL = inp(s.exportLogs, { class: 'ltr' });
     return h('div', { class: 'stack' }, head(t('Integrations'), t('Outside connections — none is required. The service calls are built into the system.')),
-      card(t('Client software'), null, h('p', { class: 'muted' }, t('With your name, logo and the server address inside.')), h('div', { class: 'inline' }, btn('⬇ Windows', () => downloadClient(), 'pri'), btn('⬇ Linux', () => downloadClient('linux')), btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))),
+      card(t('Client software'), null, h('p', { class: 'muted' }, t('With your name, logo and the server address inside.')), h('div', { class: 'inline' }, btn('⬇ Windows', () => downloadClient(), 'pri'), PILOT() ? null : btn('⬇ Linux', () => downloadClient('linux')), PILOT() ? null : btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))),
       h('section', { class: 'card' }, h('div', { class: 'cb' }, h('div', { class: 'form' },
-        fr(t('AI assistant'), t('Explains failures and finds files in plain words. It reads only logs, never files.'), aiOn, aiAuto, aiSearch),
-        fr(t('API key'), null, aiKey), fr(t('Model'), null, aiModel),
-        fr(t('Outside service-call system'), t('Optional: a ticket is also sent there (HaloPSA, ConnectWise, Autotask, a webhook)'), tUrl, tTok),
+        PILOT() ? null : fr(t('AI assistant'), t('Explains failures and finds files in plain words. It reads only logs, never files.'), aiOn, aiAuto, aiSearch),
+        PILOT() ? null : fr(t('API key'), null, aiKey), PILOT() ? null : fr(t('Model'), null, aiModel),
+        PILOT() ? null : fr(t('Outside service-call system'), t('Optional: a ticket is also sent there (HaloPSA, ConnectWise, Autotask, a webhook)'), tUrl, tTok),
         fr(t('Export to ITSguard'), t('Folders ITSguard reads reports from'), exP, exL))),
-        savebar(async () => { await api('POST', 'settings', { aiOn: aiOn.input.checked ? 1 : 0, aiKey: aiKey.value || undefined, aiModel: aiModel.value, aiAutoDiagnose: aiAuto.input.checked ? 1 : 0, aiSearch: aiSearch.input.checked ? 1 : 0, aiTicketUrl: tUrl.value, aiTicketToken: tTok.value || undefined, exportProfiles: exP.value, exportLogs: exL.value }); }, () => go({ page: 'dash' }))));
+        savebar(async () => { await api('POST', 'settings', Object.assign(PILOT() ? {} : { aiOn: aiOn.input.checked ? 1 : 0, aiKey: aiKey.value || undefined, aiModel: aiModel.value, aiAutoDiagnose: aiAuto.input.checked ? 1 : 0, aiSearch: aiSearch.input.checked ? 1 : 0, aiTicketUrl: tUrl.value, aiTicketToken: tTok.value || undefined }, { exportProfiles: exP.value, exportLogs: exL.value })); }, () => go({ page: 'dash' }))));
   };
 
   // ------------------------------------------------------------------ client software (SETUP-C80): everything the customer's installation carries, on one page
@@ -1339,17 +1347,17 @@
     const open = togRow(c.signupOpen === '1', t('New customers can open an account from the program'));
     return h('div', { class: 'stack' }, head(t('Client software'), t('What your customers install: your name and logo, your server address and your contract. Change it here, then download the installation.')),
       card(t('1. Download the installation'), null, h('p', { class: 'muted' }, t('One file: the customer double-clicks it — welcome, license agreement, installation, then the program opens to sign in.')),
-        h('div', { class: 'inline' }, btn('⬇ Windows (Setup.exe)', () => downloadClient(), 'pri'), btn('⬇ Linux', () => downloadClient('linux')), btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))),
+        h('div', { class: 'inline' }, btn('⬇ Windows (Setup.exe)', () => downloadClient(), 'pri'), PILOT() ? null : btn('⬇ Linux', () => downloadClient('linux')), PILOT() ? null : btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))),
       h('section', { class: 'card' }, h('div', { class: 'cb' }, h('div', { class: 'form' },
         h('h3', {}, t('2. The server the program connects to')),
         warn, fr(t('Server address for customers'), t('Filled in for the customer; it can still type another one'), url), fr(t('Certificate fingerprint (for a self-signed certificate)'), null, pin),
         h('h3', {}, t('3. Your contract (the license agreement of the installation)')),
         fr(t('Language'), t('The customer sees the contract in its language (else English)'), lang), fr(t('Text of the contract'), t('A changed text is a new version; every version is kept'), area),
         fr(t('Version'), null, h('span', {}, c.version && c.version !== '0' ? t('Version {0} from {1}', c.version, c.date) : t('No contract yet'))),
-        fr(t('Where it is shown'), null, inst), fr(t('Sign-up'), null, open))),
+        fr(t('Where it is shown'), null, inst), PILOT() ? null : fr(t('Sign-up'), null, open))),   // AU-03: not in the pilot
         savebar(async () => {
           await api('POST', 'settings', { publicUrl: url.value, certPin: pin.value });
-          await api('POST', 'contract', { install: inst.input.checked ? 1 : 0, signupOpen: open.input.checked ? 1 : 0, texts: Object.entries(texts).map(([l, x]) => ({ lang: l, text: x })) });
+          await api('POST', 'contract', { install: inst.input.checked ? 1 : 0, signupOpen: PILOT() ? undefined : open.input.checked ? 1 : 0, texts: Object.entries(texts).map(([l, x]) => ({ lang: l, text: x })) });
           toast(t('Saved. Download the installation again so it carries the changes.'));
         }, () => go({ page: 'dash' }))));
   };
@@ -1371,8 +1379,8 @@
       h('section', { class: 'card' }, h('div', { class: 'cb' }, h('div', { class: 'form' },
         fr(t('Language'), t('The customer sees the contract in its language (else English)'), lang), fr(t('Text of the contract'), t('A changed text is a new version; every version is kept'), area),
         fr(t('Version'), null, h('span', {}, c.version && c.version !== '0' ? t('Version {0} from {1}', c.version, c.date) : t('No contract yet'))),
-        fr(t('Where it is shown'), null, inst, sup, re), fr(t('Sign-up'), t('New customers are opened from the client software only'), open))),
-        savebar(async () => { await api('POST', 'contract', { install: inst.input.checked ? 1 : 0, signup: sup.input.checked ? 1 : 0, reaccept: re.input.checked ? 1 : 0, signupOpen: open.input.checked ? 1 : 0, texts: Object.entries(texts).map(([l, x]) => ({ lang: l, text: x })) }); }, () => go({ page: 'dash' }))));
+        fr(t('Where it is shown'), null, inst, sup, re), PILOT() ? null : fr(t('Sign-up'), t('New customers are opened from the client software only'), open))),
+        savebar(async () => { await api('POST', 'contract', { install: inst.input.checked ? 1 : 0, signup: sup.input.checked ? 1 : 0, reaccept: re.input.checked ? 1 : 0, signupOpen: PILOT() ? undefined : open.input.checked ? 1 : 0, texts: Object.entries(texts).map(([l, x]) => ({ lang: l, text: x })) }); }, () => go({ page: 'dash' }))));
   };
 
   // ------------------------------------------------------------------ branding (BRAND-010)
@@ -1385,7 +1393,7 @@
       h('section', { class: 'card' }, h('div', { class: 'cb' }, h('div', { class: 'form' }, BRAND.map(([, l], i) => fr(t(l), null, b[i])), fr(t('Logo'), t('PNG or JPEG, up to 200 KB'), logo),
         url ? fr(t('Server address for customers'), null, url) : null, pin ? fr(t('Certificate fingerprint (for a self-signed certificate)'), null, pin) : null)),
         savebar(async () => { const body = { brandLOGO: logo.value }; BRAND.forEach(([k], i) => { body['brand' + k] = b[i].value; }); if (url) { body.publicUrl = url.value; body.certPin = pin.value; } await api('POST', S.vendor ? 'brand' : 'settings', body); const me = await api('GET', 'me'); brand(me); }, () => go({ page: 'dash' }))),
-      card(t('Client software'), null, h('div', { class: 'inline' }, btn('⬇ Windows', () => downloadClient(), 'pri'), btn('⬇ Linux', () => downloadClient('linux')), btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))));
+      card(t('Client software'), null, h('div', { class: 'inline' }, btn('⬇ Windows', () => downloadClient(), 'pri'), PILOT() ? null : btn('⬇ Linux', () => downloadClient('linux')), PILOT() ? null : btn('⬇ Mac', () => downloadClient('mac')), btn('⬇ ZIP', () => downloadClient('zip')))));
   };
 
   // ------------------------------------------------------------------ start

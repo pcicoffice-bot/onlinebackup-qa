@@ -492,10 +492,11 @@ namespace OnlineBackup.Agent
                 var cs = new Stacker(card, Rtl ? 18 + 260 : 18, 12, card.Width - 36 - 260, Rtl);   // the text on the reading side, the buttons on the other
                 cs.Text(s["name"], 12f, true);
                 cs.Text(s["sources"], 9f, false, Muted);
-                cs.Text(running != null ? (running["kind"] == "restore" ? T("Restoring…") : T("Backing up now…")) : T("Automatic backup every day at {0}", s["hour"]) + "  ·  " + T("last backup: {0}", s["last"] == "" ? T("Not yet") : When(s["last"])) + "  ·  " + ResultText(res), 9.5f, false, color);
+                if (!string.IsNullOrEmpty(s["blocked"])) cs.Text(L.Tr(lang, s["blocked"]) + " " + T("The set and its backups are kept as they are; it does not run."), 9.5f, false, Warn);   // PILOT-010
+                else cs.Text(running != null ? (running["kind"] == "restore" ? T("Restoring…") : T("Backing up now…")) : T("Automatic backup every day at {0}", s["hour"]) + "  ·  " + T("last backup: {0}", s["last"] == "" ? T("Not yet") : When(s["last"])) + "  ·  " + ResultText(res), 9.5f, false, color);
                 cs.Done();
                 card.Height = Math.Max(92, cs.Height + 24);
-                var now = Btn(T("Back up now"), true); now.Enabled = running == null;
+                var now = Btn(T("Back up now"), true); now.Enabled = running == null && string.IsNullOrEmpty(s["blocked"]);
                 var id = s["id"];
                 now.Click += (o, e) => Do(() => api.Call("backup", new Msg().Set("set", id), null), T("The backup has started"));
                 var ch = Btn(T("Change"), false);
@@ -607,6 +608,7 @@ namespace OnlineBackup.Agent
             if (state["canAdd"] == "0") { st.Text(T("Your IT provider adds new backups — contact {0}.", Support()), 10f, false, Muted); return; }
             st.Text(T("Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe."), 9.5f, false, Muted);
             var types = new[] { new[] { "FILE", "Files and folders" }, new[] { "MSSQL", "Microsoft SQL Server" }, new[] { "SYSTEMSTATE", "Windows System State" }, new[] { "BAREMETAL", "Whole computer (bare-metal image)" } };
+            if (state["pilot"] == "1") types = types.Take(1).ToArray();   // PILOT-010: files and folders only
             st.Text(T("Backup type"), 10f, true).Margin = new Padding(0, 10, 0, 2);
             var type = st.Combo(types.Select(x => T(x[1])).ToArray(), 0);
             st.Text(T("Backup name"), 10f, true).Margin = new Padding(0, 10, 0, 2);

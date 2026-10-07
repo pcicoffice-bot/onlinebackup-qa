@@ -280,7 +280,7 @@ namespace OnlineBackup.Agent
                             if (vmw && one("datastore") != null)
                             {
                                 VMware.Restore(xs, app.Home.LoadSecret(xs.Id + "-sql"), folder, one("datastore"), one("name") ?? (one("vm") + "-restored-" + SystemClock.Now.ToString("yyyyMMdd-HHmm", System.Globalization.CultureInfo.InvariantCulture)), Console.WriteLine);
-                                try { Directory.Delete(target, true); } catch (Exception) { }
+                                var why = OnlineBackup.Core.TempDirs.Remove(target); if (why != null) Console.WriteLine("Warning: the temporary restore folder stays: " + why);   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
                             }
                             else Console.WriteLine(folder + (vmw ? "" : "   (see RESTORE-README.txt)"));
                             return 0;

@@ -24,6 +24,7 @@ namespace OnlineBackup.Server
             var req = ctx.Request; var res = ctx.Response;
             try
             {
+                PilotScope.Check(cfg, PilotScope.Restic);   // PILOT-010 / RS-03: the repositories are kept, not served
                 if (seg.Length < 3) throw new ApiException(404, "NOT_FOUND", "not found");
                 var login = Uri.UnescapeDataString(seg[1]); var setId = seg[2];
                 ResticAuth(req, login, setId, ip);

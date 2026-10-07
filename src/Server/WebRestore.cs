@@ -120,7 +120,7 @@ namespace OnlineBackup.Server
                     }
                 return n;
             }
-            finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(tmp); if (why != null) SysLog.Write(null, "System", "error: web restore - decrypted files left on the server: " + why); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         /// <summary>

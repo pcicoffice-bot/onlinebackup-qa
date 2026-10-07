@@ -25,6 +25,7 @@ namespace OnlineBackup.Server
         public sealed class Session { public string Login; public string Account; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; }
 
         public Users(SystemConfig cfg) { this.cfg = cfg; }
+        public SystemConfig Config { get { return cfg; } }
 
         /// <summary>Every read-modify-write of a Profile.xml takes this lock (sign-in counters, statistics, settings).</summary>
         public object ProfileLock { get { return gate; } }
@@ -542,6 +543,7 @@ namespace OnlineBackup.Server
             {
                 var p = LoadProfile(login);
                 int max = (int)Math.Max(1, p.GetLong("MAX_BACKUP_SET"));
+                PilotScope.CheckSet(cfg, s);   // PILOT-010: only files and folders, own engine, no commands, no local copy
                 if (p.SetElements.Count() >= max) throw new ApiException(409, "SET_LIMIT", "Maximum number of backup sets reached (" + max + ").");
                 if (s.Type != "FILE" && s.Type != "MSSQL" && s.Type != "SYSTEMSTATE" && s.Type != "BAREMETAL" && s.Type != "M365" && s.Type != "MYSQL" && s.Type != "POSTGRESQL" && s.Type != "HYPERV" && s.Type != "GWS" && s.Type != "VMWARE" && s.Type != "ORACLE" && s.Type != "DOMINO")
                     throw new ApiException(400, "SET_TYPE", "Unsupported backup set type (files, MSSQL, MySQL, PostgreSQL, Oracle, Domino, System State, whole computer, Hyper-V, VMware, Microsoft 365, Google Workspace).");
@@ -563,6 +565,7 @@ namespace OnlineBackup.Server
                 while (p.FindSet(id.ToString(CultureInfo.InvariantCulture)) != null) id++;
                 s.Id = id.ToString(CultureInfo.InvariantCulture);
                 NewDefaults.ApplyToNewSet(pol, s);   // DEF-010
+                PilotScope.CheckSet(cfg, s);
                 foreach (var gf in pol.Elements("GLOBAL_FILTER"))
                     s.Filters.Add(new FilterRule { Type = (string)gf.Attribute("TYPE"), ApplyDir = (string)gf.Attribute("APPLY_DIR") == "Y", ApplyFile = (string)gf.Attribute("APPLY_FILE") == "Y", Patterns = gf.Elements("PATTERN").Select(x => x.Value).ToList() });
                 p.Root.Add(s.ToXml());

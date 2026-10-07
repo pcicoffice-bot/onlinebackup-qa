@@ -169,8 +169,9 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
       const run = jobs.find((j) => j.set === s.id && j.state === 'running');
       return h('div', { class: 'card st-' + ((RESULT[s.result] || [0, s.result ? 'bad' : 'none'])[1]) },
         h('div', { class: 'grow' }, h('div', { class: 'n' }, s.name), h('div', { class: 's ltr' }, s.sources),
-          h('div', { class: 's' }, t('Automatic backup every day at {0}', s.hour) + ' · ' + t('last backup: {0}', when(s.last)) + ' · ', result(s.result))),
-        run ? h('span', { class: 'warn' }, '⏳ ' + (run.kind === 'backup' ? t('Backing up now…') : t('Restoring…')))
+          s.blocked ? h('div', { class: 's warn' }, '⚠ ' + tr(s.blocked) + ' ' + t('The set and its backups are kept as they are; it does not run.'))   // PILOT-010
+            : h('div', { class: 's' }, t('Automatic backup every day at {0}', s.hour) + ' · ' + t('last backup: {0}', when(s.last)) + ' · ', result(s.result))),
+        s.blocked ? null : run ? h('span', { class: 'warn' }, '⏳ ' + (run.kind === 'backup' ? t('Backing up now…') : t('Restoring…')))
             : h('button', { class: 'primary', onclick: wrap(async () => { await api('backup', { set: s.id }); toast(t('The backup has started')); setTimeout(refresh, 800); }) }, t('Back up now')),
         (ST.canSources !== '0' && s.type === 'FILE') || ST.canSchedule !== '0' ? h('button', { class: 'sec', onclick: () => { EDIT = s; show('edit'); } }, t('Change')) : null);
     });
@@ -362,6 +363,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
       h('option', { value: 'MSSQL' }, 'Microsoft SQL Server'), h('option', { value: 'MYSQL' }, 'MySQL / MariaDB'), h('option', { value: 'POSTGRESQL' }, 'PostgreSQL'), h('option', { value: 'HYPERV' }, t('Hyper-V virtual machines')),
       h('option', { value: 'VMWARE' }, t('VMware virtual machines (ESXi / vCenter)')), h('option', { value: 'ORACLE' }, 'Oracle (RMAN)'), h('option', { value: 'DOMINO' }, 'HCL Domino (Lotus Notes)'),
       h('option', { value: 'SYSTEMSTATE' }, t('Windows System State')), h('option', { value: 'BAREMETAL' }, t('Whole computer (bare-metal image)')));
+    if (ST.pilot === '1') Array.from(kind.options).filter((o) => o.value !== 'FILE').forEach((o) => o.remove());   // PILOT-010: files and folders only
     const vmDc = h('input', { class: 'ltr', placeholder: t('Empty = automatic') }), vmThumb = h('input', { class: 'ltr', placeholder: t('SHA-256 of the server certificate (for a self-signed certificate)') });
     const vmExtra = h('div', { hidden: true }, h('label', {}, 'Datacenter'), vmDc, h('label', {}, t('Certificate fingerprint')), vmThumb,
       h('p', { class: 'muted' }, t('A licensed ESXi (the free ESXi API is read-only). Each run reads the disks in full; only changed parts are sent.')));

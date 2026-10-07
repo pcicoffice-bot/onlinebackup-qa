@@ -343,6 +343,7 @@ namespace OnlineBackup.Server
         /// </summary>
         public Msg Auto(string kind, string login, string setId, string setName, string computer, string subject, string detail, Profile customer = null)
         {
+            if (cfg.Pilot) return null;   // PILOT-010 / SH-04: no call from backup results (a call opened by hand still works)
             var st = Read(customer);
             if (!Enabled(st, kind)) return null;
             Msg open;
@@ -374,6 +375,7 @@ namespace OnlineBackup.Server
         /// </summary>
         public Msg BackupResult(string login, string setId, string setName, string computer, string result, ref int fails, ref int warns, string detail, Profile customer = null, bool byDuration = false)
         {
+            if (cfg.Pilot) return null;   // PILOT-010 / SH-04: results neither open nor close calls; the calls from before stay as they are
             var st = Read(customer);
             // bug 103: a run cut at its maximum duration is now "stopped" - it still counts as before (as a warning): a set that
             // never finishes within its window must not go quiet
