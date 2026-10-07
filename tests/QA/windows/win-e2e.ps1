@@ -32,6 +32,7 @@ Write-Host ($facts | ConvertTo-Json)
 function Journey([string]$__id, [string]$__title, [scriptblock]$__body) {
   if ($Only -and $__id -notmatch $Only) { return }
   New-Journey $__id $__title $Out | Out-Null
+  Progress ("start " + $__id + " " + $__title)
   $__nt = ''
   try { $__r = @(& $__body); $__last = $(if ($__r.Count) { $__r[-1] } else { $null }); if ($__last -is [string] -and $__last -like 'NOT TESTED:*') { $__nt = $__last.Substring(11).Trim() } }
   catch { [void]$script:Journey.steps.Add([ordered]@{ step = 'the journey stopped'; expected = 'no error'; actual = $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber; result = 'FAIL'; seconds = 0; screenshot = (Shot 'stopped'); at = (Get-Date).ToString('HH:mm:ss') }); Write-Host "[FAIL] stopped: $($_.Exception.Message) @ $($_.InvocationInfo.ScriptLineNumber)" }
@@ -44,6 +45,7 @@ function Journey([string]$__id, [string]$__title, [scriptblock]$__body) {
     ux = $(if ($ux.Count -eq 0) { 'NOT TESTED' } elseif (@($ux | Where-Object { $_.result -eq 'FAIL' }).Count -gt 0) { 'FAIL' } else { 'PASS' })
     visualFindings = @($vis | Where-Object { $_.kind -eq 'VISUAL' }).Count; uxFindings = @($vis | Where-Object { $_.kind -eq 'UX' }).Count }
   [void]$Results.Add($row)
+  Progress ("end " + $j.id + " " + $j.result + " " + $j.reason)
   WriteSummary
 }
 function WriteSummary {
@@ -88,7 +90,9 @@ function BackupChecked([string]$label, [string]$want = 'ok') {
   $w = Open-Client $S.installDir
   $before = RunMark $Login 'Backup'
   $msgs = BackupNow-ViaUi $w $label
-  $run = WaitNewRun $Login 'Backup' $before 20 $S.setId
+  # Q22 (W1 runs 12-14): when the window never said the backup started, waiting 20 minutes for a run only burnt the job's
+  # time (W06-W09 took 26-44 min each with no step over 2 min; run 14 ran into the job limit). Then 2 minutes are enough.
+  $run = WaitNewRun $Login 'Backup' $before $(if (($msgs -join ' ') -like '*started*') { 20 } else { 2 }) $S.setId
   $okUi = WaitIdle-Client $w 5
   Start-Sleep -Seconds 5
   $t = Texts $w
@@ -112,7 +116,7 @@ function RestoreChecked([string]$label, $want, [switch]$KeepSource) {
   $target = "$Q\restore-$($S.restoreNo)"
   $before = RunMark $Login 'Restore'
   $msgs = Restore-ViaUi $w $target $CustPass $label
-  $run = WaitNewRun $Login 'Restore' $before 20 $S.setId
+  $run = WaitNewRun $Login 'Restore' $before $(if (($msgs -join ' ') -like '*started*') { 20 } else { 2 }) $S.setId   # Q22
   WaitIdle-Client $w 5 | Out-Null
   Look $w "$label - restore result in the window" 'en' $ClientProc | Out-Null
   $got = Manifest (Join-Path $target ($Data.Replace(':', '')))
@@ -320,7 +324,7 @@ Journey 'W11' 'VSS failure: the shadow copy service is disabled; the locked file
   $holder = Hold $locked
   Step 'Disable the Volume Shadow Copy service' 'VSS disabled and stopped' { Stop-Service VSS -Force -ErrorAction SilentlyContinue; Set-Service VSS -StartupType Disabled; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Disabled'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   $run = BackupChecked 'Backup without VSS' 'not-ok'
-  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = Get-ChildItem (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Raw -ErrorAction SilentlyContinue; @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
+  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = Get-ChildItem (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Raw -ErrorAction SilentlyContinue; $log = [string]$log; $run = $(if ($run) { $run } else { @{} }); @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
   Step 'Recovery: enable VSS again' 'Manual' { Set-Service VSS -StartupType Manual; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Manual'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
   $want = Manifest $Data

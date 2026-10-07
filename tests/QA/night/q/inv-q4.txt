@@ -1,0 +1,54 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q4.spec.ts:28:5 › INVERTED q4 — Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back
+  1) e2e/zz-inv-q4.spec.ts:28:5 › INVERTED q4 — Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back 
+
+    Error: expect(received).not.toEqual(expected) // deep equality
+
+    Expected: not []
+
+
+      59 |     const t1 = path.join(B.dir, 'restore-1');
+      60 |     const r1 = dr1.restore(id, t1); expect(r1.code, r1.out).toBe(0);
+    > 61 |     expect(compare(v1, manifest(restoredPath(t1, src)))).not.toEqual([]);
+         |                                                              ^
+      62 |
+      63 |     evidence.step('FAULT: the second server is down; the first one goes on backing up');
+      64 |     B.killServer();
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q4.spec.ts:61:62
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/attachments/server-log-96325cc26c2160b6bc98dc3a1dd41ee7ae0e93c5.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-REP-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/attachments/agent-REP-PC1-log-39233c7455709629502010ad756532c955eb572c.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/attachments/system-xml-50884fd40c423f2e169e3d6d2172cfb77b66d0c4.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q4-INVERTED-q4--94820-ond-server-down-behind-back/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q4.spec.ts:28:5 › INVERTED q4 — Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back 
+EXIT 1

@@ -1,0 +1,73 @@
+MUTATION bug89
+FILTER FullyQualifiedName~ClientAfterServiceRestartComponentTests
+diff --git a/src/Agent/LocalApi.cs b/src/Agent/LocalApi.cs
+index aa0b9a5..c027932 100644
+--- a/src/Agent/LocalApi.cs
++++ b/src/Agent/LocalApi.cs
+@@ -31,7 +31,7 @@ namespace OnlineBackup.Agent
+         public Msg Call(string op, Msg body, IDictionary<string, string> query)
+         {
+             try { return Send(op, body, query); }
+-            catch (AgentException e) when ((e.Code == "KEY" || e.Code == "NOT_LISTENING") && reread != null)
++            catch (AgentException e) when (false && (e.Code == "KEY" || e.Code == "NOT_LISTENING") && reread != null)
+             {
+                 string now;
+                 try { now = (reread() ?? "").Trim(); } catch (Exception) { throw e; }
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.25]   Discovered:  Tests
+[xUnit.net 00:00:00.26]   Starting:    Tests
+[xUnit.net 00:00:01.57]       the open window after the service restarted: Wrong key: open the screen from the desktop shortcut.
+[xUnit.net 00:00:01.57]       Stack Trace:
+[xUnit.net 00:00:01.57]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs(48,0): at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post)
+[xUnit.net 00:00:01.57]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:01.57]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:02.46]       the open window after the service restarted: The backup service on this computer does not answer.
+[xUnit.net 00:00:02.46]       Stack Trace:
+[xUnit.net 00:00:02.46]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs(48,0): at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post)
+[xUnit.net 00:00:02.46]            at InvokeStub_ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Object, Span`1)
+[xUnit.net 00:00:02.46]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Failed OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: False, post: False) [1 s]
+  Error Message:
+   the open window after the service restarted: Wrong key: open the screen from the desktop shortcut.
+  Stack Trace:
+     at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs:line 48
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Failed OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: True, post: True) [882 ms]
+  Error Message:
+   the open window after the service restarted: The backup service on this computer does not answer.
+  Stack Trace:
+     at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs:line 48
+   at InvokeStub_ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:03.35]       the open window after the service restarted: The backup service on this computer does not answer.
+[xUnit.net 00:00:03.35]       Stack Trace:
+[xUnit.net 00:00:03.35]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs(48,0): at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post)
+[xUnit.net 00:00:03.35]            at InvokeStub_ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Object, Span`1)
+[xUnit.net 00:00:03.35]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:04.23]   Finished:    Tests
+  Failed OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: True, post: False) [890 ms]
+  Error Message:
+   the open window after the service restarted: The backup service on this computer does not answer.
+  Stack Trace:
+     at OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Boolean newPort, Boolean post) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ClientAfterServiceRestartComponentTests.cs:line 48
+   at InvokeStub_ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Passed OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.AWrongKeyThatStaysWrong_IsStillRefused_NoLoop [871 ms]
+
+Total tests: 4
+     Passed: 1
+     Failed: 3
+ Total time: 4.8076 Seconds
+[xUnit.net 00:00:01.57]     OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: False, post: False) [FAIL]
+[xUnit.net 00:00:02.46]     OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: True, post: True) [FAIL]
+[xUnit.net 00:00:03.35]     OnlineBackup.Tests.ClientAfterServiceRestartComponentTests.TheOpenWindow_KeepsWorking_AfterTheServiceRestarts(newPort: True, post: False) [FAIL]
+Test Run Failed.

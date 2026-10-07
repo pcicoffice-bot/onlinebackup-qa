@@ -69,6 +69,22 @@ function Step([string]$__what, [string]$__expected, [scriptblock]$__check, [swit
   if (-not $__ok) { $__a = ('{0}: {1}' -f $__what, $__actual) -replace '[\r\n]+', ' '; Write-Host ('::warning title=Windows QA step FAIL::' + $__a.Substring(0, [Math]::Min(900, $__a.Length))) }
   return $__ok
 }
+# Q22: the job's own log cannot be read while it runs - after every journey (and at each long wait) a line goes to the
+# qa-evidence branch (runs/<run id>/progress-<phase>.txt), so it is visible during the run which journey runs and since when
+$script:ProgressLines = New-Object System.Collections.ArrayList
+function Progress([string]$text) {
+  [void]$script:ProgressLines.Add(((Get-Date).ToUniversalTime().ToString('HH:mm:ss') + ' ' + $text))
+  $tok = $env:QA_PROGRESS_TOKEN; $repo = $env:QA_PROGRESS_REPO; $run = $env:QA_RUN
+  if (-not $tok -or -not $repo -or -not $run) { return }
+  try {
+    $url = "https://api.github.com/repos/$repo/contents/runs/$run/progress-$($env:QA_PHASE).txt"
+    $h = @{ Authorization = "Bearer $tok"; 'User-Agent' = 'obqa'; Accept = 'application/vnd.github+json' }
+    $sha = $null; try { $sha = (Invoke-RestMethod -Uri ($url + '?ref=qa-evidence') -Headers $h -TimeoutSec 20).sha } catch { }
+    $body = @{ message = "progress $run"; branch = 'qa-evidence'; content = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes(($script:ProgressLines -join "`n") + "`n")) }
+    if ($sha) { $body.sha = $sha }
+    Invoke-RestMethod -Method Put -Uri $url -Headers $h -Body ($body | ConvertTo-Json) -ContentType 'application/json' -TimeoutSec 30 | Out-Null
+  } catch { }
+}
 function Note([string]$what, [string]$text) {
   [void]$script:Journey.steps.Add([ordered]@{ step = $what; expected = ''; actual = $text; result = 'INFO'; seconds = 0; screenshot = ''; at = (Get-Date).ToString('HH:mm:ss') })
   Write-Host "[INFO] $what -- $text"
@@ -241,6 +257,7 @@ function NewRuns([string]$login, [string]$kind, $mark, [string]$set = '') {
 function WaitNewRun([string]$login, [string]$kind, $mark, [int]$minutes = 10, [string]$set = '') {
   if (-not (($mark -is [hashtable]) -and $mark.ContainsKey('seen'))) { throw 'WaitNewRun needs a RunMark taken before the action (a count is reached by any other run too)' }
   $until = (Get-Date).AddMinutes($minutes)
+  if ($minutes -ge 5) { Progress ("  waiting up to $minutes min for a new $kind run") }
   while ((Get-Date) -lt $until) {
     try { $n = @(NewRuns $login $kind $mark $set); if ($n.Count -gt 0) { return $n[0] } } catch { Write-Host "[robot] the server's history could not be read: $($_.Exception.Message)" }
     Start-Sleep -Seconds 4

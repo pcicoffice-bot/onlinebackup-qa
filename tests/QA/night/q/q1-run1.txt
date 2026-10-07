@@ -1,0 +1,40 @@
+    > 114 |   expect(left, 'files of the erased set left anywhere in the customer\'s folder').toEqual([]);
+          |                                                                                   ^
+      115 |   await rail(page, 'dash'); await rail(page, 'storage');
+      116 |   await expect(page.getByText('The recycle bin is empty.')).toBeVisible();
+      117 | });
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/q1-recycle-bin.spec.ts:114:83
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/attachments/server-log-dbe0fad638e132574b9de3f4f7582dbd5ac61e62.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-RB-PC1.log (text/plain) ───────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/attachments/agent-RB-PC1-log-206357d59c18d7a46c86459e8e7b42da227dd14f.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/attachments/system-xml-1253bfd845489de727e878ac7b3ac62bd5a24ef2.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-q1-recycle-bin-Q1-ST-0-f8714-ys-the-bin-is-really-erased/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/q1-recycle-bin.spec.ts:14:5 › Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased 

@@ -22,7 +22,7 @@ namespace OnlineBackup.Server
         readonly object gate = new object();
         readonly ConcurrentDictionary<string, Session> sessions = new ConcurrentDictionary<string, Session>();
 
-        public sealed class Session { public string Login; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; }
+        public sealed class Session { public string Login; public string Account; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; }
 
         public Users(SystemConfig cfg) { this.cfg = cfg; }
 
@@ -112,6 +112,7 @@ namespace OnlineBackup.Server
                 long quota = quotaBytes ?? (long)(double.Parse((string)pol.Attribute("QUOTA_GB") ?? "50", CultureInfo.InvariantCulture) * 1024 * 1024 * 1024);
                 var home = AllocateHome(quota);
                 var p = Profile.Create(login, alias, PasswordHash.Create(password), (string)pol.Attribute("LANGUAGE"), (string)pol.Attribute("TIMEZONE"));
+                p.SetAttr("ACCOUNT_ID", Bytes.Hex(Bytes.Random(16)));   // R-01: this account, not just its name (a login can be reused)
                 p.SetAttr("QUOTA", quota);
                 p.SetAttr("QUOTA_TYPE", quotaType ?? (string)pol.Attribute("QUOTA_TYPE") ?? "COMPRESSED");
                 p.SetAttr("MAX_BACKUP_SET", (string)pol.Attribute("MAX_BACKUP_SET") ?? "10");
@@ -358,10 +359,22 @@ namespace OnlineBackup.Server
         /// <summary>System administrator → "" ; a vendor's administrator → the vendor id (VND-040). Throws when wrong.</summary>
         // ---------------------------------------------------------------- sessions and devices
 
+        /// <summary>The account's own id (R-01); an account made before it existed gets one at its next sign-in.</summary>
+        string AccountId(string login)
+        {
+            lock (gate)
+            {
+                var p = LoadProfile(login); var id = p.Get("ACCOUNT_ID");
+                if (string.IsNullOrEmpty(id)) { id = Bytes.Hex(Bytes.Random(16)); p.SetAttr("ACCOUNT_ID", id); SaveProfile(login, p); }
+                return id;
+            }
+        }
+
         public string NewSession(string login, bool admin, string device = null, string vendor = "")
         {
             var token = Bytes.Hex(Bytes.Random(24));
             var s = new Session { Login = login, Admin = admin, Device = device, Vendor = vendor ?? "", Expires = SystemClock.UtcNow.AddHours(admin ? 2 : 12) };
+            if (!admin) s.Account = AccountId(login);
             sessions[token] = s;
             // Agent D (D-6): a customer's sign-in (the window, a restore) outlives a server restart as an administrator's
             // does — a restore running across a restart failed on every remaining file and its record was refused
@@ -398,7 +411,7 @@ namespace OnlineBackup.Server
                     var doc = File.Exists(KeptPath) ? XDocument.Load(KeptPath) : new XDocument(new XElement("KEPT"));
                     var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow) || (string)e.Attribute("HASH") == h).Remove();
-                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N")));
+                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N"), new XAttribute("ACCOUNT", s.Account ?? "")));
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
                 catch (Exception) { }
@@ -415,7 +428,7 @@ namespace OnlineBackup.Server
                     if (e == null || (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow)) return null;
                     bool admin = (string)e.Attribute("ADMIN") != "N";
                     if (admin && Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
-                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
+                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Account = (string)e.Attribute("ACCOUNT"), Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
                 }
                 catch (Exception) { return null; }
         }
@@ -448,6 +461,13 @@ namespace OnlineBackup.Server
             {
                 var acc = Staff.Find(cfg, s.Login);
                 if (acc == null || (string)acc.El.Attribute("DISABLED") == "Y" || (acc.Vendor ?? "") != (s.Vendor ?? "")) { EndSession(token); return null; }
+            }
+            // QA round R (R-01, High): a customer's sign-in belonged to a NAME — after the customer was deleted and the name given
+            // to another customer (another reseller's), the old token opened the new account. It belongs to the account now.
+            if (!s.Admin)
+            {
+                string now; try { now = LoadProfile(s.Login).Get("ACCOUNT_ID") ?? ""; } catch (Exception) { now = null; }
+                if (now == null || string.IsNullOrEmpty(s.Account) || now != s.Account) { EndSession(token); return null; }
             }
             // SEC-130: in use → 2 more hours (written down at most every 10 minutes, so a restart keeps it)
             if (s.Admin && s.Sliding && s.Expires < SystemClock.UtcNow.AddMinutes(110)) { s.Expires = SystemClock.UtcNow.AddHours(2); Keep(token, s); }

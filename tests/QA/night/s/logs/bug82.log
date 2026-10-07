@@ -1,0 +1,74 @@
+MUTATION bug82
+FILTER FullyQualifiedName~NightM_ScheduleBoundaryTests.SpringForward
+diff --git a/src/Agent/AgentApp.cs b/src/Agent/AgentApp.cs
+index d1f6d18..120838c 100644
+--- a/src/Agent/AgentApp.cs
++++ b/src/Agent/AgentApp.cs
+@@ -486,7 +486,7 @@ namespace OnlineBackup.Agent
+             bool missedOffline = off != null && slot.Value >= off.Item1.AddMinutes(-1) && slot.Value <= off.Item2;
+             // Agent M (M-3): lateness in real time — on a spring-forward night a slot inside the gap (02:30 that does not
+             // exist) looked 30+ minutes late at 03:00 and, with "run missed" off, never ran although the computer was on
+-            var late = (UtcOf(nowLocal) - UtcOf(slot.Value)).TotalMinutes;
++            var late = (nowLocal - slot.Value).TotalMinutes;
+             if (cutOff || (missedOffline && late > 15))
+             {
+                 if (!s.RunMissedNet) return false;
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.16]   Discovering: Tests
+[xUnit.net 00:00:00.43]   Discovered:  Tests
+[xUnit.net 00:00:00.44]   Starting:    Tests
+[xUnit.net 00:00:00.87]       Asia/Jerusalem slot 2:30 runMissed=False: runs per local day 03-26=1, 03-27=0, 03-28=1 — runs at 2026-03-26 00:30Z, 2026-03-27 23:30Z
+[xUnit.net 00:00:00.87]       Stack Trace:
+[xUnit.net 00:00:00.87]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs(197,0): at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(String zoneId, Int32 month, Int32 day, Int32 h, Int32 m, Boolean runMissed)
+[xUnit.net 00:00:00.87]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.87]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:00.87]       Output:
+[xUnit.net 00:00:00.87]         runs (local): 03-26 02:30, 03-28 02:30
+  Failed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Asia/Jerusalem", month: 3, day: 27, h: 2, m: 30, runMissed: False) [357 ms]
+  Error Message:
+   Asia/Jerusalem slot 2:30 runMissed=False: runs per local day 03-26=1, 03-27=0, 03-28=1 — runs at 2026-03-26 00:30Z, 2026-03-27 23:30Z
+  Stack Trace:
+     at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(String zoneId, Int32 month, Int32 day, Int32 h, Int32 m, Boolean runMissed) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs:line 197
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ runs (local): 03-26 02:30, 03-28 02:30
+
+
+  Passed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Asia/Jerusalem", month: 3, day: 27, h: 2, m: 30, runMissed: True) [280 ms]
+[xUnit.net 00:00:01.55]       Europe/London slot 1:30 runMissed=False: runs per local day 03-28=1, 03-29=0, 03-30=1 — runs at 2026-03-28 01:30Z, 2026-03-30 00:30Z
+[xUnit.net 00:00:01.55]       Stack Trace:
+[xUnit.net 00:00:01.55]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs(197,0): at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(String zoneId, Int32 month, Int32 day, Int32 h, Int32 m, Boolean runMissed)
+[xUnit.net 00:00:01.55]            at InvokeStub_NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(Object, Span`1)
+[xUnit.net 00:00:01.55]            at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:01.55]       Output:
+[xUnit.net 00:00:01.55]         runs (local): 03-28 01:30, 03-30 01:30
+[xUnit.net 00:00:01.73]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Europe/London", month: 3, day: 29, h: 1, m: 30, runMissed: False) [392 ms]
+  Error Message:
+   Europe/London slot 1:30 runMissed=False: runs per local day 03-28=1, 03-29=0, 03-30=1 — runs at 2026-03-28 01:30Z, 2026-03-30 00:30Z
+  Stack Trace:
+     at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(String zoneId, Int32 month, Int32 day, Int32 h, Int32 m, Boolean runMissed) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs:line 197
+   at InvokeStub_NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithManyArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ runs (local): 03-28 01:30, 03-30 01:30
+
+
+  Passed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Asia/Jerusalem", month: 3, day: 27, h: 2, m: 50, runMissed: False) [78 ms]
+  Passed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Europe/London", month: 3, day: 29, h: 1, m: 30, runMissed: True) [88 ms]
+
+Total tests: 5
+     Passed: 3
+     Failed: 2
+ Total time: 2.5464 Seconds
+[xUnit.net 00:00:00.87]     OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Asia/Jerusalem", month: 3, day: 27, h: 2, m: 30, runMissed: False) [FAIL]
+[xUnit.net 00:00:01.55]     OnlineBackup.Tests.NightM_ScheduleBoundaryTests.SpringForward_ASlotThatDoesNotExistThatNight_RunsExactlyOnceThatDay(zoneId: "Europe/London", month: 3, day: 29, h: 1, m: 30, runMissed: False) [FAIL]
+Test Run Failed.

@@ -1,0 +1,108 @@
+MUTATION M4-restic-snapshot-list-not-reversed
+FILTER FullyQualifiedName~NightP_RestoreChainTests.Restic_
+diff --git a/src/Agent/ResticRunner.cs b/src/Agent/ResticRunner.cs
+index bd92390..36877a6 100644
+--- a/src/Agent/ResticRunner.cs
++++ b/src/Agent/ResticRunner.cs
+@@ -584,7 +584,6 @@ namespace OnlineBackup.Agent
+                 if (m.Groups[1].Value == "time") time = m.Groups[2].Value;
+                 else { list.Add(new Msg().Set("id", m.Groups[2].Value).Set("time", time ?? "")); time = null; }
+             }
+-            list.Reverse();
+             return list;
+         }
+ 
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.12]   Discovering: Tests
+[xUnit.net 00:00:00.26]   Discovered:  Tests
+[xUnit.net 00:00:00.27]   Starting:    Tests
+[xUnit.net 00:11:35.95]       list position 0 is snapshot 1df8c2c3 = run 0 (expected run 30)
+[xUnit.net 00:11:35.95]       list position 1 is snapshot 7baaaf70 = run 1 (expected run 29)
+[xUnit.net 00:11:35.95]       list position 2 is snapshot eeeff502 = run 2 (expected run 28)
+[xUnit.net 00:11:35.95]       list position 3 is snapshot 930faa46 = run 3 (expected run 27)
+[xUnit.net 00:11:35.95]       list position 4 is snapshot 6233e336 = run 4 (expected run 26)
+[xUnit.net 00:11:35.95]       list position 5 is snapshot 8b218414 = run 5 (expected run 25)
+[xUnit.net 00:11:35.95]       list position 6 is snapshot 4205b7f3 = run 6 (expected run 24)
+[xUnit.net 00:11:35.95]       list position 7 is snapshot 650d8abe = run 7 (expected run 23)
+[xUnit.net 00:11:35.95]       list position 8 is snapshot d8c725e3 = run 8 (expected run 22)
+[xUnit.net 00:11:35.95]       list position 9 is snapshot 81ad06db = run 9 (expected run 21)
+[xUnit.net 00:11:35.95]       list position 10 is snapshot 3075a9e0 = run 10 (expected run 20)
+[xUnit.net 00:11:35.95]       list position 11 is snapshot 02d5e96a = run 11 (expected run 19)
+[xUnit.net 00:11:35.95]       list position 12 is snapshot f84e9b96 = run 12 (expected run 18)
+[xUnit.net 00:11:35.95]       list position 13 is snapshot f280374b = run 13 (expected run 17)
+[xUnit.net 00:11:35.95]       list position 14 is snapshot 35ce7188 = run 14 (expected run 16)
+[xUnit.net 00:11:35.95]       list position 16 is snapshot 96b23022 = run 16 (expected run 14)
+[xUnit.net 00:11:35.95]       list position 17 is snapshot 5c11fecc = run 17 (expected run 13)
+[xUnit.net 00:11:35.95]       list position 18 is snapshot df51c9a9 = run 18 (expected run 12)
+[xUnit.net 00:11:35.95]       list position 19 is snapshot f32a7644 = run 19 (expected run 11)
+[xUnit.net 00:11:35.95]       list position 20 is snapshot 80600168 = run 20 (expected run 10)
+[xUnit.net 00:11:35.95]       list position 21 is snapshot 2e094efd = run 21 (expected run 9)
+[xUnit.net 00:11:35.95]       list position 22 is snapshot 1ed34515 = run 22 (expected run 8)
+[xUnit.net 00:11:35.95]       list position 23 is snapshot af1dda37 = run 23 (expected run 7)
+[xUnit.net 00:11:35.95]       list position 24 is snapshot c97e7039 = run 24 (expected run 6)
+[xUnit.net 00:11:35.95]       list position 25 is snapshot a9ef9981 = run 25 (expected run 5)
+[xUnit.net 00:11:35.95]       list position 26 is snapshot a7b9009f = run 26 (expected run 4)
+[xUnit.net 00:11:35.95]       list position 27 is snapshot c7779033 = run 27 (expected run 3)
+[xUnit.net 00:11:35.95]       list position 28 is snapshot 2f8a5210 = run 28 (expected run 2)
+[xUnit.net 00:11:35.95]       list position 29 is snapshot 6129d7d5 = run 29 (expected run 1)
+[xUnit.net 00:11:35.95]       list position 30 is snapshot 33d6a95e = run 30 (expected run 0)
+[xUnit.net 00:11:35.95]       Stack Trace:
+[xUnit.net 00:11:35.95]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(543,0): at OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical()
+[xUnit.net 00:11:35.95]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:11:35.95]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:11:35.95]       Output:
+[xUnit.net 00:11:35.95]         snapshots listed 31, runs 31
+[xUnit.net 00:11:35.96]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical [11 m 35 s]
+  Error Message:
+   list position 0 is snapshot 1df8c2c3 = run 0 (expected run 30)
+list position 1 is snapshot 7baaaf70 = run 1 (expected run 29)
+list position 2 is snapshot eeeff502 = run 2 (expected run 28)
+list position 3 is snapshot 930faa46 = run 3 (expected run 27)
+list position 4 is snapshot 6233e336 = run 4 (expected run 26)
+list position 5 is snapshot 8b218414 = run 5 (expected run 25)
+list position 6 is snapshot 4205b7f3 = run 6 (expected run 24)
+list position 7 is snapshot 650d8abe = run 7 (expected run 23)
+list position 8 is snapshot d8c725e3 = run 8 (expected run 22)
+list position 9 is snapshot 81ad06db = run 9 (expected run 21)
+list position 10 is snapshot 3075a9e0 = run 10 (expected run 20)
+list position 11 is snapshot 02d5e96a = run 11 (expected run 19)
+list position 12 is snapshot f84e9b96 = run 12 (expected run 18)
+list position 13 is snapshot f280374b = run 13 (expected run 17)
+list position 14 is snapshot 35ce7188 = run 14 (expected run 16)
+list position 16 is snapshot 96b23022 = run 16 (expected run 14)
+list position 17 is snapshot 5c11fecc = run 17 (expected run 13)
+list position 18 is snapshot df51c9a9 = run 18 (expected run 12)
+list position 19 is snapshot f32a7644 = run 19 (expected run 11)
+list position 20 is snapshot 80600168 = run 20 (expected run 10)
+list position 21 is snapshot 2e094efd = run 21 (expected run 9)
+list position 22 is snapshot 1ed34515 = run 22 (expected run 8)
+list position 23 is snapshot af1dda37 = run 23 (expected run 7)
+list position 24 is snapshot c97e7039 = run 24 (expected run 6)
+list position 25 is snapshot a9ef9981 = run 25 (expected run 5)
+list position 26 is snapshot a7b9009f = run 26 (expected run 4)
+list position 27 is snapshot c7779033 = run 27 (expected run 3)
+list position 28 is snapshot 2f8a5210 = run 28 (expected run 2)
+list position 29 is snapshot 6129d7d5 = run 29 (expected run 1)
+list position 30 is snapshot 33d6a95e = run 30 (expected run 0)
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 543
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ snapshots listed 31, runs 31
+
+
+
+Total tests: 1
+     Failed: 1
+ Total time: 11.6100 Minutes
+[xUnit.net 00:11:35.94]     OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical [FAIL]
+Test Run Failed.

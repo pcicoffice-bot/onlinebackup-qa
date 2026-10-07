@@ -254,6 +254,14 @@ function WaitIdle-Client($w, [int]$minutes = 15) {
 function Restore-ViaUi($w, [string]$target, [string]$password, [string]$screen) {
   Nav $w 'Restore'
   Start-Sleep -Seconds 3
+  # Q23 (W1 run 14): after the service restarted, opening the Restore page asks for the password at once (its restore points
+  # need a sign-in); the robot typed the folder and clicked Restore under that modal question - the click was lost, no
+  # restore ran (W06, W07, W10, W12). The question is answered first, then the page is waited for.
+  if (@(Dialogs $script:ClientProc $w).Count -gt 0) {
+    $pre = Answer-Dialogs $w $password "$screen - sign-in when the page opens" 20
+    Note "$screen - sign-in when the Restore page opened" ($pre -join ' || ')
+    $until = (Get-Date).AddSeconds(30); while ((Get-Date) -lt $until -and (Texts $w) -notlike '*Latest*') { Start-Sleep -Seconds 1 }
+  }
   StepLook "$screen - Restore page" 'the backup, the latest point, the files, the folder' $w { $t = Texts $w; @((($t -like '*Restore point*') -and ($t -like '*Latest*')), $t) } 'en' $script:ClientProc | Out-Null
   TypeInto (Edit $w 'Restore to folder') $target
   Look $w "$screen - Restore selection" 'en' $script:ClientProc | Out-Null

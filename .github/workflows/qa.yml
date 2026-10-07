@@ -76,7 +76,9 @@ jobs:
     needs: package
     if: ${{ !github.event.repository.private }}
     runs-on: windows-latest
-    timeout-minutes: 180
+    # Q22: W01-W21 with their failure-path waits did not fit in 180 min (run 14); 360 is the hosted runner's limit
+    timeout-minutes: 300
+    permissions: { contents: write }   # the robot's progress lines go to the qa-evidence branch while it runs
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -94,6 +96,7 @@ jobs:
         run: .\tests\QA\windows\selftest.ps1
       - name: Windows journeys (Windows PowerShell 5.1, as on any customer's Windows)
         shell: powershell
+        env: { QA_PROGRESS_TOKEN: '${{ secrets.GITHUB_TOKEN }}', QA_PROGRESS_REPO: '${{ github.repository }}', QA_RUN: '${{ github.run_id }}', QA_PHASE: main }
         run: |
           $z = Get-ChildItem pkg\OnlineBackup-Server-*.zip | Sort-Object { [version]($_.BaseName -replace '^OnlineBackup-Server-', '') }
           .\tests\QA\windows\win-e2e.ps1 -Package $z[0].FullName -Package2 $z[-1].FullName -Out "$PWD\win-out" -Phase main

@@ -370,7 +370,10 @@ namespace OnlineBackup.Agent
             var chunks = new List<KeyValuePair<string, int>>();
             long sent = Upload(rel, 0, "F", path, entry, permOnly, src, null, chunks);
             entry.Seq = 0; entry.DeltaBytes = 0;
-            if (entry.Size >= set.MinDeltaFileSize) { pending[rel] = chunks; if (set.DeltaType == "D") pendingBase[rel] = chunks; }
+            // QA round P (P-2, High): the last full copy's chunks were written down only while the set was differential — after
+            // differential → incremental (a new full copy) → differential, a delta trusted the OLD full copy's list: a chunk the
+            // current chain does not hold was skipped as "known", the run said success, and that point could not be restored
+            if (entry.Size >= set.MinDeltaFileSize) { pending[rel] = chunks; pendingBase[rel] = chunks; }
             return sent;
         }
 

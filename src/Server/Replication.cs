@@ -66,14 +66,33 @@ namespace OnlineBackup.Server
             }
         }
 
+        // QA round Q (Q-F1, High): a customer that existed before replication was switched on (or was made with `adduser`)
+        // had no "user" event: the second server answered "The user does not exist." to its first commit, the queue stops at
+        // the first failure — so nothing more was ever copied, for ANY customer. Before a customer's first event of this
+        // process the second server is asked to have the user (idempotent) and gets its settings (db).
+        readonly HashSet<string> ensured = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        void EnsureOnReplica(string login)
+        {
+            long quota = 0;
+            try { long.TryParse(users.LoadProfile(login).Get("QUOTA") ?? "0", NumberStyles.Integer, CultureInfo.InvariantCulture, out quota); } catch (Exception) { }
+            Call("POST", "/api/replica/user", new Msg().Set("login", login).Set("quota", quota));
+            ensured.Add(login);
+        }
+
         void Send(Msg ev)
         {
             var login = ev["login"];
+            if (ev["type"] != "user" && !string.IsNullOrEmpty(login) && !ensured.Contains(login))
+            {
+                EnsureOnReplica(login);
+                if (ev["type"] != "db") Send(new Msg().Set("type", "db").Set("login", login));
+            }
             var userDir = users.UserDir(login);
             switch (ev["type"])
             {
                 case "user":
                     Call("POST", "/api/replica/user", new Msg().Set("login", login).Set("quota", ev["quota"]));
+                    ensured.Add(login);
                     break;
                 case "db":
                     foreach (var f in Directory.GetFiles(Path.Combine(userDir, "db"), "*", SearchOption.AllDirectories).Where(x => !Atomic.IsTemp(x)))   // bug 35: by the file's name, never the path

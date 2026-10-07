@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q5-service-follows-the-site.spec.ts:26:5 › Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service
+  Slow test file: e2e/q5-service-follows-the-site.spec.ts (7.6m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (7.6m)
+EXIT 0

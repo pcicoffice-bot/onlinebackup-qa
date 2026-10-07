@@ -1,0 +1,54 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q2.spec.ts:17:5 › INVERTED q2 — Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical
+  1) e2e/zz-inv-q2.spec.ts:17:5 › INVERTED q2 — Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "3805f5f06b0f0c216546d7ad52ad5886c1b6845268abf8189eb6a7614ffa8bec"
+    Received: "404b83a7b1155200bb56a47142f5a7a7a5bb9fab022c652ea1dab03ba2f3febe"
+
+      52 |   const q = find(path.join(store, 'Quarantine'), new RegExp(rel.split(path.sep).join('/').replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$'));
+      53 |   expect(q.length, 'quarantined copies of ' + rel).toBe(1);
+    > 54 |   expect(sha(q[0])).toBe(good);
+         |                     ^
+      55 |
+      56 |   evidence.step('the agent\'s next backup (nothing changed at the source) sends the file again');
+      57 |   const b2 = ag.backup(id); expect(b2.out, b2.out).toMatch(/^BS_STOP_SUCCESS /m);
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q2.spec.ts:54:21
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/attachments/server-log-adfc53e9db1c2ebed4bd08a1800a0ecf085d5632.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-VER-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/attachments/agent-VER-PC1-log-c4877ceeaad551fac5433dbbc2f72a0d5a549f3c.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/attachments/system-xml-5aecd76f49dfca08156f3bf8000784b9c3f0025a.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q2-INVERTED-q2--e6903-e-next-restore-is-identical/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q2.spec.ts:17:5 › INVERTED q2 — Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical 
+EXIT 1

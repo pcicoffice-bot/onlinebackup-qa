@@ -1,0 +1,60 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q6.spec.ts:16:5 › INVERTED q6 — Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete
+  1) e2e/zz-inv-q6.spec.ts:16:5 › INVERTED q6 — Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete 
+
+    Error: BS_STOP_QUOTA_EXCEEDED new=0 upd=0 perm=0 del=0 bytes=0
+    err: /tmp/obqa-F6jc43/data/Binary/new-16mb.bin The user's quota was exceeded.
+
+
+    expect(received).toMatch(expected)
+
+    Expected pattern: /^BS_STOP_SUCCESS /m
+    Received string:  "BS_STOP_QUOTA_EXCEEDED new=0 upd=0 perm=0 del=0 bytes=0
+    err: /tmp/obqa-F6jc43/data/Binary/new-16mb.bin The user's quota was exceeded.
+    "
+
+      28 |   evidence.step('ORACLE (agent): the backup is not a success, and the computer says why (the quota)');
+      29 |   expect(b2.code, b2.out).not.toBe(0);
+    > 30 |   expect(b2.out, b2.out).toMatch(/^BS_STOP_SUCCESS /m);
+         |                          ^
+      31 |   expect(b2.out, b2.out).toMatch(/quota/i);
+      32 |   evidence.step('a further try is refused too (the quota is still full)');
+      33 |   const b3 = ag.backup(id);
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q6.spec.ts:30:26
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/attachments/server-log-f5626e15291bf3b259688889ae45f1b49526c84e.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-Q-PC1.log (text/plain) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/attachments/agent-Q-PC1-log-6c156f9bc1dfd708cfa8c2c397f2f02ed4495a0e.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/attachments/system-xml-49c6aace3acc2268c785d712ddf5ba2ece9b7011.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q6-INVERTED-q6--26184--lets-the-next-one-complete/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q6.spec.ts:16:5 › INVERTED q6 — Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete 
+EXIT 1
