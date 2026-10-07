@@ -1,0 +1,29 @@
+❯ Starting Windows for Docker v6.06...
+❯ For support visit https://github.com/dockur/windows
+❯ CPU: Intel Xeon 6973P C | RAM: 15/16 GB | DISK: 85 GB (ext4) | KERNEL: 6.17.0-1022-azure
+
+[1;34m❯ [1;36mRequesting Windows 11 from the Microsoft servers...[0m
+[1;34m❯ [1;36mDownloading Windows 11...[0m
+10% → 20% → 30% → 40% → 50% → 60% → 70% → 80% → 90% → 100%
+[1;34m❯ [1;36mCreating overlay image...[0m
+[1;34m❯ [1;36mAdding drivers to image...[0m
+[1;34m❯ [1;36mAdding OEM files to image...[0m
+[1;34m❯ [1;36mAdding win11x64.xml for automatic installation...[0m
+[1;34m❯ [1;36mWriting overlay image...[0m
+[1;34m❯ [1;36mCreating a 64 GB growable disk image in raw format...[0m
+
+❯ Host: 172.17.0.2/16 (a8b2188145aa)  |  DNS: 168.63.129.16
+❯ Guest: 172.30.0.2 (Windows)  |  Mode: NAT  |  MAC: 02:6F:1C:BD:66:9F
+
+[1;34m❯ [1;36mBooting Windows using QEMU v11.1.1...[0m
+
+BdsDxe: skipped Boot0003 "UEFI QEMU QEMU HARDDISK " from PciRoot(0x0)/Pci(0xA,0x0)/Scsi(0x0,0x0)
+BdsDxe: loading Boot0002 "UEFI QEMU DVD-ROM QM00013 " from PciRoot(0x0)/Pci(0x5,0x0)/Sata(0x0,0xFFFF,0x0)
+BdsDxe: starting Boot0002 "UEFI QEMU DVD-ROM QM00013 " from PciRoot(0x0)/Pci(0x5,0x0)/Sata(0x0,0xFFFF,0x0)
+
+[1;34m❯ [1;36mWindows started successfully, visit http://127.0.0.1:8006/ to view the screen...[0m
+
+BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,4EE9D13C-45DE-4B24-B847-0E1D3FD52BEE,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,4EE9D13C-45DE-4B24-B847-0E1D3FD52BEE,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: loading Boot0005 "Windows Boot Manager" from HD(1,GPT,4EE9D13C-45DE-4B24-B847-0E1D3FD52BEE,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
+BdsDxe: starting Boot0005 "Windows Boot Manager" from HD(1,GPT,4EE9D13C-45DE-4B24-B847-0E1D3FD52BEE,0x800,0x40000)/\EFI\Microsoft\Boot\bootmgfw.efi
