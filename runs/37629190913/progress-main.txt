@@ -57,3 +57,4 @@
 14:21:39   waiting up to 45 min for a new Backup run
 14:52:57 end W17 FAIL The System State backup finishes successfully (server record): BS_STOP_BY_SYSTEM_ERROR bytes 
 14:52:59 start W18 Reboot
+14:53:01 end W18 NOT TESTED a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).
