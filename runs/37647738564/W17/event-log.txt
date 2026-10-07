@@ -1,0 +1,107 @@
+﻿
+
+TimeCreated      : 10/7/2026 5:10:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:09:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:08:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:07:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:06:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:05:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:04:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:03:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:02:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 5:01:54 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Windows System State: A backup of this set is already running.
+
+TimeCreated      : 10/7/2026 4:48:26 PM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/7/2026 4:45:53 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 4:45:53 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 4:45:52 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : update 0.1.31 → 0.2.31: OnlineBackup.Agent.exe, OnlineBackup.Client.exe, OnlineBackup.Core.dll, 
+                   version.txt
+
+TimeCreated      : 10/7/2026 4:45:51 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 4:45:37 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 4:42:31 PM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+
+

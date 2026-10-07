@@ -1,0 +1,24 @@
+2026-10-07 16:00:03	-	qa-win	1791388755185	2026-10-07-16-00-03	1791388803117,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:01:05	-	qa-win	1791388755185	2026-10-07-16-01-05	1791388865044,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:02:51	-	qa-win	1791388755185	2026-10-07-16-01-33	1791388971209,err,,0,"The backup was interrupted and did not finish: the backup program stopped in the middle of the run (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 16:02:51	-	qa-win	1791388755185	2026-10-07-16-01-33	1791388971209,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 16:03:51	-	qa-win	1791388755185	2026-10-07-16-03-51	1791389031325,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:10:00	-	qa-win	1791388755185	2026-10-07-16-04-18	1791389400541,err,,0,"The backup was interrupted and did not finish: no sign of life from the computer for 5 minutes (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 16:10:00	-	qa-win	1791388755185	2026-10-07-16-04-18	1791389400541,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 16:11:08	-	qa-win	1791388755185	2026-10-07-16-11-08	1791389468449,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:12:48	-	qa-win	1791388755185	2026-10-07-16-11-34	1791389508076,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host.),,,0
+2026-10-07 16:12:48	-	qa-win	1791388755185	2026-10-07-16-11-34	1791389518153,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to connect to the remote server),,,0
+2026-10-07 16:12:48	-	qa-win	1791388755185	2026-10-07-16-11-34	1791389534264,err,C:\OnlineBackup-QA\Data\Big\video-w09.bin,0,The connection to the backup server broke: Unable to connect to the remote server,,,0
+2026-10-07 16:12:48	-	qa-win	1791388755185	2026-10-07-16-11-34	1791389568496,err,,0,No connection to the backup server: Unable to connect to the remote server,,,0
+2026-10-07 16:12:48	-	qa-win	1791388755185	2026-10-07-16-11-34	1791389568499,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 16:14:00	-	qa-win	1791388755185	2026-10-07-16-14-00	1791389640712,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:15:15	-	qa-win	1791388755185	2026-10-07-16-15-15	1791389715112,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:15:29	-	qa-win	1791388755185	2026-10-07-16-15-29	1791389729535,warn,,0,"Shadow Copy of C: could not be created: ERR=  Invoke-CimMethod : Initialization failure   At line:1 char:6  + $r = Invoke-CimMethod -ClassName Win32_ShadowCopy -MethodName Create  ...  +      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      + CategoryInfo          : NotSpecified: (root\\cimv2:Win32_ShadowCopy:String) [Invoke-CimMethod], CimException      + FullyQualifiedErrorId : HRESULT 0x80041014,Microsoft.Management.Infrastructure.CimCmdlets.InvokeCimMethodCommand",,,0
+2026-10-07 16:15:29	-	qa-win	1791388755185	2026-10-07-16-15-29	1791389729582,end,,0,BS_STOP_SUCCESS_WITH_WARNING,,,0
+2026-10-07 16:21:00	-	qa-win	1791388755185	2026-10-07-16-21-00	1791390060210,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:25:08	-	qa-win	1791388755185	2026-10-07-16-25-07	1791390307998,warn,,0,Cannot list C:\OnlineBackup-QA\Data\Documents (files kept): Access to the path 'C:\OnlineBackup-QA\Data\Documents' is denied.,,,0
+2026-10-07 16:25:08	-	qa-win	1791388755185	2026-10-07-16-25-07	1791390308000,err,C:\OnlineBackup-QA\Data\Documents,0,Not backed up: this source could not be read now (its earlier backups are kept),,,0
+2026-10-07 16:25:08	-	qa-win	1791388755185	2026-10-07-16-25-07	1791390308000,end,,0,BS_STOP_SUCCESS_WITH_ERROR,,,0
+2026-10-07 16:25:54	-	qa-win	1791388755185	2026-10-07-16-25-54	1791390354512,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:45:22	-	qa-win	1791388755185	2026-10-07-16-45-22	1791391522187,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 16:51:10	-	qa-win	1791388755185	2026-10-07-16-51-10	1791391870183,end,,0,RESTORE_STOP_SUCCESS,,,0

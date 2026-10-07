@@ -1,0 +1,556 @@
+﻿{
+    "id":  "W15",
+    "title":  "Uninstall through the installer window, reinstall, sign in again, backup and restore",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W15",
+    "started":  "2026-10-07T16:45:28.6596056+00:00",
+    "result":  "PASS",
+    "reason":  "",
+    "steps":  [
+                  {
+                      "step":  "Maintenance - Setup sees the installation (remove)",
+                      "expected":  "\"already installed\" with the choices",
+                      "actual":  "ITSguard Server Online is already installed on this computer | Installed version: 0.1.31 | What would you like to do? | Repair   —   Install it again over the present one — the backups and settings are kept | Remove   —   Remove ITSguard Server Online from this computer | English | Repair | Cancel",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "01-Maintenance---Setup-sees-the-installation--remove-.png",
+                      "at":  "16:45:34"
+                  },
+                  {
+                      "step":  "Choose remove",
+                      "expected":  "a \u0027remove\u0027 choice",
+                      "actual":  "Repair   —   Install it again over the present one — the backups and settings are kept / Remove   —   Remove ITSguard Server Online from this computer / Repair / Cancel",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:34"
+                  },
+                  {
+                      "step":  "Removal asks for confirmation",
+                      "expected":  "a Yes / No question in front",
+                      "actual":  "Remove ITSguard Server Online from this computer?",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "03-Removal-asks-for-confirmation.png",
+                      "at":  "16:45:36"
+                  },
+                  {
+                      "step":  "Maintenance - remove finished",
+                      "expected":  "the Finish page (*was removed*)",
+                      "actual":  "ITSguard Server Online was removed from this computer | Your backups stay on the server. | English | Finish",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "05-Maintenance---remove-finished.png",
+                      "at":  "16:45:39"
+                  },
+                  {
+                      "step":  "Removed: no service, no entry in the installed programs, no program files",
+                      "expected":  "all gone",
+                      "actual":  "service False; entries 0; files False",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:43"
+                  },
+                  {
+                      "step":  "Removed: the backups are still on the server",
+                      "expected":  "the set and its runs are on the server",
+                      "actual":  "15 runs",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:43"
+                  },
+                  {
+                      "step":  "Setup.exe opens its window",
+                      "expected":  "the setup window within 120 s",
+                      "actual":  "ITSguard Server Online",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:45"
+                  },
+                  {
+                      "step":  "Installer 01 - Welcome",
+                      "expected":  "Welcome, the product, Next and Cancel",
+                      "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "06-Installer-01---Welcome.png",
+                      "at":  "16:45:46"
+                  },
+                  {
+                      "step":  "Installer 02 - License agreement",
+                      "expected":  "the license text and an accept box",
+                      "actual":  "License agreement | Please read the license agreement. To continue, accept it. | ITSguard Server Online — license agreement\r\n\r\n1. This software is licensed, not sold, by support (the provider) to back up your computers to the provider\u0027s backup service.\r\n\r\n2. You may install it on the computers covered by your service agreement. You may not copy, change, decompile or resell it.\r\n\r\n3. Your files are encrypted on this computer before they are sent. Keep your password: without it, backups cannot be restored.\r\n\r\n4. The software sends the backup service what it needs to work: the computer\u0027s name, the backup status and logs. It checks for updates by itself.\r\n\r\n5. The software is provided as is, as far as the law allows. The provider is not liable for indirect damage or for lost data beyond what your service agreement says.\r\n\r\n6. Removing the software from this computer does not delete your backups on the server. | I accept the terms of the license agreement | English | Back | Install | Cancel",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "07-Installer-02---License-agreement.png",
+                      "at":  "16:45:48"
+                  },
+                  {
+                      "step":  "Install is disabled before the license is accepted",
+                      "expected":  "not enabled",
+                      "actual":  "enabled=False",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:48"
+                  },
+                  {
+                      "step":  "Back returns to Welcome, Next comes back",
+                      "expected":  "Welcome, then the license again",
+                      "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                      "result":  "PASS",
+                      "seconds":  2,
+                      "screenshot":  "",
+                      "at":  "16:45:49"
+                  },
+                  {
+                      "step":  "Accept the license (tick the box)",
+                      "expected":  "ticked, Install enabled",
+                      "actual":  "ticked= install enabled=True",
+                      "result":  "PASS",
+                      "seconds":  2,
+                      "screenshot":  "",
+                      "at":  "16:45:51"
+                  },
+                  {
+                      "step":  "Installer pages that exist",
+                      "expected":  "",
+                      "actual":  "Welcome -\u003e License agreement -\u003e Installation (progress) -\u003e Finish. There is no configuration page (folder, options) and no \"Ready to install\" page in the current installer.",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:51"
+                  },
+                  {
+                      "step":  "Installer 04 - Installing (progress)",
+                      "expected":  "an \"Installing\" page with a progress bar",
+                      "actual":  "Installing ITSguard Server Online… | Please wait. This takes about a minute. | •  ITSguard Server Online — https://localhost:8443 | •  Installed to C:\\Program Files\\ITSguard Server Online | •  [SC] CreateService SUCCESS\r\n[SC] ChangeServiceConfig2 SUCCESS\r\n\r\nSERVICE_NAME: OnlineBackupAgent \r\n        TYPE               : 10  WIN32_OWN_PROCESS  \r\n        STATE              : 2  START_PENDING \r\n                                (STOPPABLE, NOT_PAUSABLE, ACCEPTS_SHUTDOWN)\r\n        WIN32_EXIT_CODE    : 0  (0x0)\r\n        SERVICE_EXIT_CODE  : 0  (0x0)\r\n        CHECKPOINT         : 0x0\r\n        WAIT_HINT          : 0x0\r\n        PID                : 8152\r\n        FLAGS              : \r\n\nService OnlineBackupAgent: RUNNING | English | Cancel",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "10-Installer-04---Installing--progress-.png",
+                      "at":  "16:45:53"
+                  },
+                  {
+                      "step":  "Installer 05 - Finish",
+                      "expected":  "the Finish page says it is installed",
+                      "actual":  "ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "11-Installer-05---Finish.png",
+                      "at":  "16:45:53"
+                  },
+                  {
+                      "step":  "The setup window closes after Finish",
+                      "expected":  "no setup window",
+                      "actual":  "0 window(s) left",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:58"
+                  },
+                  {
+                      "step":  "After reinstall",
+                      "expected":  "",
+                      "actual":  "the program was still connected (settings kept), no sign-in asked",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:45:58"
+                  },
+                  {
+                      "step":  "After reinstall the backup set is there",
+                      "expected":  "\u0027QA files\u0027",
+                      "actual":  "This computer is protected | AI is watching every backup for ransomware | Change | Back up now | QA files | C:\\OnlineBackup-QA\\Data | Automatic backup every day at 22:00  ·  last backup: 2026-10-07-16-44-17  ·  Completed successfully | Backup status | Restore | New backup | Security | Help | Version 0.2.31  ·  Check for updates | English | Powered by ITSguard Server Online",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "12-After-reinstall-the-backup-set-is-there.png",
+                      "at":  "16:46:01"
+                  },
+                  {
+                      "step":  "Backup after reinstall - result",
+                      "expected":  "the server records a new run: ok; the window shows the result",
+                      "actual":  "server: BS_STOP_SUCCESS (new 0, bytes 0); window:  Automatic backup every day at 22:00  ·  last backup: 2026-10-07-16-50-07  ·  Completed successfully ; messages: ITSguard Server Online: The backup has started",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "15-Backup-after-reinstall---result.png",
+                      "at":  "16:50:27"
+                  },
+                  {
+                      "step":  "Restore after reinstall - the source folder is deleted",
+                      "expected":  "no source folder (moved out of the product\u0027s reach until the check is done)",
+                      "actual":  "C:\\OnlineBackup-QA\\Data (kept by the robot in C:\\obqa\\source-aside-10)",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:50:27"
+                  },
+                  {
+                      "step":  "Accessibility",
+                      "expected":  "",
+                      "actual":  "the field \u0027Password\u0027 has no name in UI Automation (a screen reader says only \u0027edit\u0027); the robot found it under its label",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:50:33"
+                  },
+                  {
+                      "step":  "Restore after reinstall - sign-in when the Restore page opened",
+                      "expected":  "",
+                      "actual":  "Sign in: Sign in Restoring and adding backups require your password. Password Verification code (if enabled)",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:50:43"
+                  },
+                  {
+                      "step":  "Restore after reinstall - Restore page",
+                      "expected":  "the backup, the latest point, the files, the folder",
+                      "actual":  "Restore | Backup | QA files | Restore point (date) | Latest — 2026-10-07-16-50-07 | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.2.31  ·  Check for updates | English | Powered by ITSguard Server Online",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                      "at":  "16:50:43"
+                  },
+                  {
+                      "step":  "Accessibility",
+                      "expected":  "",
+                      "actual":  "the field \u0027Restore to folder\u0027 has no name in UI Automation (a screen reader says only \u0027edit\u0027); the robot found it under its label",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:50:43"
+                  },
+                  {
+                      "step":  "Restore after reinstall - messages",
+                      "expected":  "",
+                      "actual":  "ITSguard Server Online: The restore has started — follow it in the \"Backup status\" tab",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:50:57"
+                  },
+                  {
+                      "step":  "Restore after reinstall - ORACLE: every restored file has the SHA-256 of the original",
+                      "expected":  "116 files identical, nothing missing or extra",
+                      "actual":  "server: RESTORE_STOP_SUCCESS; files 116/116; differences 0: ",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "16:51:15"
+                  }
+              ],
+    "ux":  [
+               {
+                   "step":  "UX: Installer: the first page says what will be installed",
+                   "expected":  "the product name and what it does",
+                   "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:45:46",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Installer: a license agreement must be accepted before installing",
+                   "expected":  "Install disabled until accepted",
+                   "actual":  "enabled=False",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:45:48",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Installer: a \"Ready to install\" summary before installing",
+                   "expected":  "a page listing what will be installed and where",
+                   "actual":  "the license page\u0027s button installs at once (no configuration or ready page)",
+                   "result":  "FAIL",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:45:51",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Installer: progress is visible while installing",
+                   "expected":  "a progress bar and what is being done",
+                   "actual":  "see the screenshot",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:45:53",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Installer: the last page says the result and what to do next",
+                   "expected":  "installed + how to sign in",
+                   "actual":  "ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:45:54",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Backup after reinstall - the window shows the result of the backup",
+                   "expected":  "the card says the result",
+                   "actual":  " Automatic backup every day at 22:00  ·  last backup: 2026-10-07-16-50-07  ·  Completed successfully ",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "16:50:27",
+                   "layer":  "UX"
+               }
+           ],
+    "visual":  [
+                   {
+                       "journey":  "W15",
+                       "screen":  "Installer: a \"Ready to install\" summary before installing",
+                       "screenshot":  "09-ux-Installer--a--Ready-to-install--summary-before-installing.png",
+                       "kind":  "UX",
+                       "problem":  "Installer: a \"Ready to install\" summary before installing",
+                       "expected":  "a page listing what will be installed and where",
+                       "actual":  "the license page\u0027s button installs at once (no configuration or ready page)",
+                       "severity":  "Low",
+                       "recommendation":  "Proposal only - the owner decides (the UX spec is not approved yet)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "After reinstall the backup set is there",
+                       "screenshot":  "12-After-reinstall-the-backup-set-is-there.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Backup after reinstall - running",
+                       "screenshot":  "14-Backup-after-reinstall---running.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Backup after reinstall - result",
+                       "screenshot":  "15-Backup-after-reinstall---result.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore page",
+                       "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore page",
+                       "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Pane is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 256,123 735x687; window 0,0 1044x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore page",
+                       "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Replace existing files\u0027 at 256,716 735x28; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore page",
+                       "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Restore\u0027 at 256,752 110x36; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore page",
+                       "screenshot":  "17-Restore-after-reinstall---Restore-page.png",
+                       "kind":  "VISUAL",
+                       "problem":  "Two controls on top of each other",
+                       "expected":  "controls side by side",
+                       "actual":  "\u0027C:\\Users\\runneradmin\\Desktop\\Restore\u0027 (Edit) and \u0027…\u0027 (Button) share 47%",
+                       "severity":  "Medium",
+                       "recommendation":  "Fix the layout of this screen",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore selection",
+                       "screenshot":  "18-Restore-after-reinstall---Restore-selection.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore selection",
+                       "screenshot":  "18-Restore-after-reinstall---Restore-selection.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Pane is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 256,123 735x687; window 0,0 1044x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore selection",
+                       "screenshot":  "18-Restore-after-reinstall---Restore-selection.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Replace existing files\u0027 at 256,716 735x28; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore selection",
+                       "screenshot":  "18-Restore-after-reinstall---Restore-selection.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Restore\u0027 at 256,752 110x36; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - Restore selection",
+                       "screenshot":  "18-Restore-after-reinstall---Restore-selection.png",
+                       "kind":  "VISUAL",
+                       "problem":  "Two controls on top of each other",
+                       "expected":  "controls side by side",
+                       "actual":  "\u0027C:\\obqa\\restore-10\u0027 (Edit) and \u0027…\u0027 (Button) share 47%",
+                       "severity":  "Medium",
+                       "recommendation":  "Fix the layout of this screen",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - restore result in the window",
+                       "screenshot":  "20-Restore-after-reinstall---restore-result-in-the-window.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - restore result in the window",
+                       "screenshot":  "20-Restore-after-reinstall---restore-result-in-the-window.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Pane is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 256,123 735x687; window 0,0 1044x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - restore result in the window",
+                       "screenshot":  "20-Restore-after-reinstall---restore-result-in-the-window.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Replace existing files\u0027 at 256,716 735x28; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - restore result in the window",
+                       "screenshot":  "20-Restore-after-reinstall---restore-result-in-the-window.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Button is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Restore\u0027 at 256,752 110x36; window 0,0 1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W15",
+                       "screen":  "Restore after reinstall - restore result in the window",
+                       "screenshot":  "20-Restore-after-reinstall---restore-result-in-the-window.png",
+                       "kind":  "VISUAL",
+                       "problem":  "Two controls on top of each other",
+                       "expected":  "controls side by side",
+                       "actual":  "\u0027C:\\Users\\runneradmin\\Desktop\\Restore\u0027 (Edit) and \u0027…\u0027 (Button) share 47%",
+                       "severity":  "Medium",
+                       "recommendation":  "Fix the layout of this screen",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   }
+               ],
+    "ended":  "2026-10-07T16:51:15.9540840+00:00"
+}
