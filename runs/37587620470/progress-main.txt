@@ -46,3 +46,4 @@
 08:04:33 end W14 FAIL the journey stopped: You cannot call a method on a null-valued expression. @ line 377
 08:04:34 start W15 Uninstall through the installer window, reinstall, sign in again, backup and restore
 08:07:17   waiting up to 20 min for a new Backup run
+08:07:55   waiting up to 20 min for a new Restore run
