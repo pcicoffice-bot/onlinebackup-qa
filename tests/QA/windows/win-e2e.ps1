@@ -426,6 +426,9 @@ Journey 'W16' 'Visual tour: every screen in English and Hebrew at 1920x1080, 136
 
 Journey 'W17' 'System State backup (Windows Server Backup)' {
   if (-not (Get-Command Install-WindowsFeature -ErrorAction SilentlyContinue)) { return 'NOT TESTED: this Windows is not a server edition (no Windows Server Backup feature)' }
+  # run 20: C: had 10.7 GB free and the System State filled it (1.0 GB after) - the earlier journeys' restore copies are
+  # removed first (they were checked already), so this journey tests the System State, not the runner's disk size
+  Get-ChildItem $Q -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'restore-*' -or $_.Name -like 'source-aside-*' } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
   Step 'Windows Server Backup feature' 'installed' { $r = Install-WindowsFeature Windows-Server-Backup; @($r.Success, "$($r.ExitCode) restart=$($r.RestartNeeded)") } -NoShot | Out-Null
   $w = Open-Client $S.installDir
   Nav $w 'New backup'

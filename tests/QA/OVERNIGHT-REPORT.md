@@ -63,7 +63,8 @@ Caveats (true for every number above):
 | 16 (37584263969) | 16f5d78 (bug 94, Q28/Q29) | NOT RUN: stopped at the robot lint (Q33, my own false-clean lint) | running (first one with screen pictures) |
 | 17 (37587620470) | 018cd6e / a9e213c | **W01-W12 PASS in one run on one build** - incl. W08 service stopped mid-backup and W09 server killed mid-backup (first real runs after Q28), W11 VSS failure (Q29), W12 permission denied; W16 PASS; W13 owner decision -> W14/W15 robot cascade (Q34); W17: the set is now made (bug 94 fixed on Windows) but the backup failed -> **bug 95** (wbadmin refuses a target on the system volume) | running |
 | 18 (37594320802) | eb0ac52 / 7649d15 (93b, 94, 95, Q34, Q35) | **W01-W12 PASS again; W15 PASS (uninstall through the installer window -> reinstall -> sign in -> backup -> restore SHA-256)**; W16 PASS; W14: update in the window PASS (0.1.25 -> 0.2.25, restore 116/116) but the interrupted-update step never started (Q36, robot); W13 owner decision; W17: bug 95 fixed (wbadmin runs) but wbadmin then failed - cause not collected (95b, open) | running |
-| 19 (37602630116) | af105ec / 1c27c6a (same product as 18; robot Q36 + wbadmin logs) | running | running |
+| 19 (37602630116) | af105ec / 1c27c6a (same product as 18; robot Q36 + wbadmin logs) | **W01-W12 PASS (3rd run in a row); W14 PASS: an update interrupted mid-copy rolls back (old version runs), then the update in the window works, restore identical; W15 PASS (uninstall, 2nd run in a row)**; W16 PASS; W13 owner decision; W17: wbadmin stopped mid-list after ~8.5 min with an EMPTY error log - cause not determined (95b) | running |
+| 20 (37609333555) | 97c404d / ff1b0e4 (same product; W17 records disk space + Windows backup event log) | running | running |
 
 **Q14 (robot, not product):** the robot's window matchers were written with `$_` but called with an empty `$_`, so the
 client's window and the removal's Yes/No question were never matched. Runs 8-10 therefore measured nothing about the client
@@ -86,9 +87,10 @@ null."), not reproduced in 6 kill-restart cycles (Medium, open; diagnostics adde
 Windows crash journeys (W07-W09: agent killed, service stopped, server killed mid-backup) have not yet run with a working
 robot: NOT TESTED on Windows.
 ## 8. Consecutive passing runs
-Snapshot 8b95455: two consecutive full runs (xUnit + Playwright). Both have the same single product FAIL (N6b, owner decision);
-r2 also had one test-defect FAIL (Q21). Strictly: 0 clean consecutive runs; 2 consecutive runs with identical product results.
-Not repeated on 35a995b yet.
+**Main Windows chain W01-W12: PASS in 3 consecutive runs (17, 18, 19), runs 18-19 on the same product build (7649d15/1c27c6a,
+product eb0ac52).** W14 (update incl. interrupted-update rollback) and W15 (uninstall -> reinstall -> restore) PASS in run 19
+(W15 also in 18). NOT met for the whole of C1: the real reboot (VM) has never run, W17 System State is not proven, W13 waits
+for an owner decision.
 
 ## 9–12. New bugs, severity, fixes, regression test each
 Product bugs fixed tonight (full rows in docs/R1-BUGLOG.md, each with root cause and its regression test): 73-75, 78-90

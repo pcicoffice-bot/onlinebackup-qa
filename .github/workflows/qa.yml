@@ -118,6 +118,7 @@ jobs:
         with: { name: qa-package, path: pkg }
       - name: The machine (KVM, disk, memory)
         run: |
+          pip install --quiet vncdotool || echo "vncdotool not installed: no screen pictures"
           ls -l /dev/kvm && sudo chmod 666 /dev/kvm
           df -h / /mnt; free -g; nproc
           sudo mkdir -p /mnt/win && sudo chmod 777 /mnt/win
@@ -130,8 +131,10 @@ jobs:
       - name: Windows 11 Pro (downloaded from Microsoft, unattended installation)
         run: |
           docker run -d --name win -e VERSION=11 -e RAM_SIZE=10G -e CPU_CORES=4 -e DISK_SIZE=64G -e USERNAME=Docker -e PASSWORD=admin \
-            --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN -p 8006:8006 \
-            -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" --stop-timeout 120 docker.io/dockurr/windows
+            --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN -p 8006:8006 -p 5900:5900 \
+            -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" -v "$PWD/vm/shared:/data" --stop-timeout 120 docker.io/dockurr/windows
+          # the host's shared folder (\\host.lan\Data) is /data in some image versions and /shared in others: both, so the
+          # QA driver can always report (runs 14-16: no status in 5 h - possibly the share was never visible to Windows)
       - name: Installation, the journeys and two real restarts (the driver reports to the shared folder)
         run: |
           set +e   # a missing status file is normal until Windows reaches the QA driver
@@ -142,7 +145,8 @@ jobs:
             docker ps -q -f name=win | grep -q . || { echo "the VM container stopped"; break; }
             # the VM's screen every 20 min (QEMU monitor screendump): run 14's VM never reached the QA driver in 5 h and nothing
             # showed where Windows stopped (installation, sign-in, the scheduled task, the shared folder)
-            if [ $(( SECONDS / 1200 )) != "${shot:-x}" ]; then shot=$(( SECONDS / 1200 )); docker exec win sh -c "echo 'screendump /shared/screen-$(date -u +%H%M).ppm' | nc -q 2 localhost 7100" >/dev/null 2>&1 || echo "no screen dump (monitor not reachable)"; fi
+            # (run 16: the QEMU monitor port was not open - 15 x "monitor not reachable"; the container's VNC port is)
+            if [ $(( SECONDS / 900 )) != "${shot:-x}" ]; then shot=$(( SECONDS / 900 )); timeout 90 vncdo -s 127.0.0.1::5900 capture "vm/shared/screen-$(date -u +%H%M).png" >/dev/null 2>&1 && echo "screen $(date -u +%H:%M) kept" || echo "no screen (VNC not reachable)"; fi
             sleep 30
           done
           cat vm/shared/status.log 2>/dev/null || echo "no status from Windows (it never reached the QA driver)"

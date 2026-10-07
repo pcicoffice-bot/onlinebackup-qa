@@ -41,5 +41,17 @@ namespace OnlineBackup.Tests
         {
             Assert.Equal(@"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wbengine\SystemStateBackup", SystemState.WbengineKey);
         }
+        [Fact]
+        public void AFailureOnANearlyFullDisk_SaysTheDiskRanOutOfSpace()   // bug 97
+        {
+            var note = SystemState.SpaceNote(@"C:\", 1L * 1024 * 1024 * 1024);
+            Assert.Contains("C:", note); Assert.Contains("1.0 GB free", note); Assert.Contains("ran out of space", note);
+        }
+
+        [Fact]
+        public void AFailureWithEnoughSpace_AddsNothing()
+        {
+            Assert.Equal("", SystemState.SpaceNote(@"C:\", 50L * 1024 * 1024 * 1024));
+        }
     }
 }

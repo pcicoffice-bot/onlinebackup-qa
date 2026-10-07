@@ -304,8 +304,23 @@ namespace OnlineBackup.Agent
                 }
                 info("[System State Backup] Found (" + items.Count + ") files.");
             }
-            catch (Exception e) { warn("System State backup failed: " + e.Message); unreachable.Add("System State"); }
+            catch (Exception e) { warn("System State backup failed: " + e.Message + SpaceNote(temp)); unreachable.Add("System State"); }
             return items;
+        }
+
+        /// <summary>Bug 97 (Windows run 20, W17): wbadmin filled C: (10.7 GB free before, 1.0 GB after) and the customer saw only
+        /// "wbadmin exit code -4". When the target volume is nearly full after a failure, the log says so in plain words.</summary>
+        public static string SpaceNote(string temp)
+        {
+            try { return SpaceNote(System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp)), new DriveInfo(System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp))).AvailableFreeSpace); }
+            catch (Exception) { return ""; }
+        }
+        public static string SpaceNote(string volume, long freeBytes)
+        {
+            const long low = 2L * 1024 * 1024 * 1024;
+            if (freeBytes >= low) return "";
+            return " - the disk " + volume.TrimEnd('\\') + " where Windows writes the System State has only " + (freeBytes / (1024.0 * 1024 * 1024)).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                " GB free: it probably ran out of space (a System State backup needs several GB; free space on that disk and run the backup again)";
         }
 
         static void Exec(string exe, string args)
