@@ -15,3 +15,4 @@
 08:38:29   waiting up to 20 min for a new Restore run
 08:38:31 end W06 PASS 
 08:38:32 start W07 Agent crash mid-backup: the process is killed; Windows brings it back; no ghost run; the next backup restores identical
+08:40:19   waiting up to 20 min for a new Backup run
