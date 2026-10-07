@@ -1,1 +1,1 @@
-{"os":"ubuntu-latest","select":"Restic","shards":4,"repeat":1,"max_parallel":6,"control":true}
+{"os":"windows-latest","select":"Restic_LongChain_EverySnapshotRestoresIdentical WebRestoreTests","shards":2,"repeat":1,"max_parallel":2,"control":false}
