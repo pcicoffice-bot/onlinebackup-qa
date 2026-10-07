@@ -1,2 +1,4 @@
 2026-10-07T09:08:45.0104085-07:00 signed in; phase ''; share 'Z:\'; Microsoft Windows 11 Pro
 2026-10-07T09:08:45.1834474-07:00 restarting Windows (next phase: start)
+2026-10-07T09:10:15.9675736-07:00 signed in; phase 'start'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
+2026-10-07T09:10:16.1550786-07:00 phase 1: the journeys before the restart
