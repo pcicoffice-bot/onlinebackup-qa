@@ -49,3 +49,4 @@
 09:16:48 end W14 FAIL Interrupted update: start it in the window: 
 09:16:49 start W15 Uninstall through the installer window, reinstall, sign in again, backup and restore
 09:20:19   waiting up to 20 min for a new Backup run
+09:20:58   waiting up to 20 min for a new Restore run
