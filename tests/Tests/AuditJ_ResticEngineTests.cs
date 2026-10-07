@@ -81,7 +81,7 @@ namespace OnlineBackup.Tests
         static string NoReadAllWrapper(string dir)
         {
             var w = Path.Combine(dir, "restic-noroot.sh");
-            File.WriteAllText(w, "#!/bin/sh\nexec setpriv --inh-caps=-dac_override,-dac_read_search --bounding-set=-dac_override,-dac_read_search \"" + Restic + "\" \"$@\"\n");
+            File.WriteAllText(w, "#!/bin/sh\n# Q31: only root has the read-anything capability to drop; elsewhere (the CI runner) setpriv refuses and restic never ran\n[ \"$(id -u)\" != 0 ] && exec \"" + Restic + "\" \"$@\"\nexec setpriv --inh-caps=-dac_override,-dac_read_search --bounding-set=-dac_override,-dac_read_search \"" + Restic + "\" \"$@\"\n");
             File.SetUnixFileMode(w, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
             return w;
         }

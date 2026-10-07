@@ -41,7 +41,7 @@ jobs:
     # 1b. the same tests on Windows Server — the system the server and most clients run on (paths, services,
     #     shadow copy, the Windows build of every program). Reported, not yet a gate: it starts as a look.
     runs-on: windows-latest
-    timeout-minutes: 90
+    timeout-minutes: 180   # 90 cut run 37574041012 at 1h30 while it still ran (tonight added the 46-run restore chains, ~40 min on Windows)
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4

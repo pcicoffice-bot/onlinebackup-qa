@@ -12,11 +12,21 @@ Product snapshots of the night (each product change made a new one; tests re-run
 | `26368b0` | bugs 85-87 (Agent N) | Playwright full (old + fixed harness); Windows runs 10, 11, 12 |
 | `8b95455` | bug 88 (schedule) | xUnit full ×2 (r1, r2); Playwright full ×2 (r1, r2) |
 | `8bf7dc3` | bug 89 (window after a service restart) + server start diagnostics | Windows runs 13, 14; rounds P, Q |
-| `35a995b` | bug 90 (customer session bound to the account) | auth/session/isolation classes (52 PASS); round S. **No full regression yet on this snapshot.** |
+| `35a995b` | bug 90 (customer session bound to the account) | auth/session/isolation classes (52 PASS); round S |
+| `17a4414` | bugs 91 (differential base), 92 (replication of a customer unknown to the second server) | xUnit full: 441 - 438 PASS, 1 FAIL (P-1, owner decision), 2 skipped (76/77); Playwright cut at Q4 by a container restart |
+| `cf39637` | bug 93 (Windows: state file write refused while open) | gate (Linux + hosted Windows xUnit) and Windows run 15 (mirror `e600bdd`); local full regression r2 running |
 Branch `online-backup` (private) carries all of them; the mirror runs the Windows jobs.
 
 ## 2. Hours of QA
-_(filled at the end)_
+Wall clock: 19:23 UTC (first full xUnit) to the end of this report, ~11.5 h. Machine time, measured, not estimated:
+- GitHub Actions jobs on the QA mirror since 17:00 UTC: **51.8 job-hours** — Windows (hosted main phase + the KVM VM with
+  real restarts) 29.5 h, Playwright journeys 13.5 h (two workflows), screen checker 4.5 h, Linux xUnit 3.3 h, packaging 1 h.
+  Much of the VM time is waiting for Windows to install and restart; much of the hosted-Windows time in runs 12-14 was the
+  robot waiting 20 min for runs that never started (Q22) — time spent, not coverage gained.
+- This machine: soak 8.0 h (agent O); xUnit full x6 (~43-60 min each; two more cut by container restarts); Playwright full
+  x3 (~55 min; one cut); rounds P, Q, R, S (one agent each, ~1-2 h each); the batched regression on the last snapshot.
+- Lost to the environment: 7 container restarts (each killed what ran locally); runs 13 (nightly schedule) and the first
+  run 15 (old build published) cancelled.
 
 ## 3–4. Tests per layer and results
 | Layer | Run | Total | PASS | FAIL | SKIPPED / NOT TESTED |
@@ -48,11 +58,16 @@ Caveats (true for every number above):
 | 11 (37531433128) | 26368b0, robot Q14 | W01-W03, W16 PASS (installer chain through the UI); W04 FAIL: text fields without UI Automation names (Q18) → W05-W12, W17 not signed in; W13-W15 robot Q17 | cancelled by push |
 | 12 (37533243798) | 26368b0, robot Q17/Q18 | W01-W03 PASS; **W05 PASS: sign-in, new set, backup (112 files), delete, restore through the window, SHA-256 112/112**; W04/W05 step FAILs robot Q19; W06-W09 FAIL: after a SERVICE RESTART the open window refused every action → **product bug 89**; main job hit its 3 h limit | cancelled by push |
 | 13 (37552591713) | 8bf7dc3 (bug 89 fixed) | W01-W05 PASS; W06: backup after the service restart PASS (bug 89 fixed on real Windows); restore after the restart FAIL — robot typed no password into the sign-in question (Q20); then the nightly schedule cancelled the run (qa.yml, fixed) | cancelled |
-| 14 (37557981704) | 8bf7dc3, robot Q20 | _running_ | _running_ |
+| 14 (37557981704) | 8bf7dc3, robot Q20 | W01-W05 PASS; W06/W07/W10-W12 restores FAIL - robot Q23 (the sign-in question on the Restore page after a service restart); W08/W09 robot Q28; W11 robot null; W13 NEEDS OWNER DECISION (installer with a quarantined program file offers a fresh install); W14 null; main job hit 3 h (Q22 waits) | still running at 05:20 (ends by 06:41) |
+| 15 (37574066600) | cf39637 (mirror e600bdd), robot Q22/Q23 | **W01-W07 PASS** - incl. restore after a service restart (W06) and agent killed mid-backup -> Windows restarts it -> no ghost -> identical restore (W07); W08/W09 FAIL = robot Q28 (the backup finished in 2 s, nothing to interrupt: NOT TESTED); W10+ running | running |
 
 **Q14 (robot, not product):** the robot's window matchers were written with `$_` but called with an empty `$_`, so the
 client's window and the removal's Yes/No question were never matched. Runs 8-10 therefore measured nothing about the client
 (W03-W17): those FAILs are NOT TESTED for the product, not product failures.
+
+**Q28 (robot, not product):** W08/W09 appended 1 MB to the 600 MB file W07 had already sent; the product correctly sent only
+the change (496 KB, screenshot in run 14 W08) and the run ended in ~2 s, before it could be stopped/killed. Fixed (44d1c48)
+for run 16; service-stop and server-kill mid-backup on Windows remain NOT TESTED until then.
 
 ## 6. C1 (client lifecycle on one Windows, one build, one run): **NOT VERIFIED** (so far)
 Proven on real Windows in one run so far: install through the installer window (W03), sign-in (W04), new set, backup,
@@ -77,6 +92,11 @@ Product bugs fixed tonight (full rows in docs/R1-BUGLOG.md, each with root cause
 - 88 (Medium) a schedule slot after a successful run waited up to 15 minutes — found by the soak.
 - 89 (High) after the backup service restarted, the open window/tray icon refused every action until closed — found on real Windows.
 - 90 (High, security) a deleted customer's sign-in opened a new account given the same name (another reseller's) — round R.
+- 91 (High) the differential base list was not written on a full copy: later differentials grew without limit — round P.
+- 92 (High) one customer unknown to the second server stopped replication for every customer for ever — round Q.
+- 93 (Medium, Windows) a state/settings file write gave up when another program had the file open for a moment (File.Replace
+  refused) — found by the CI gate's hosted-Windows xUnit job, which nobody had read before tonight (25 FAILs there:
+  19 Q26, 3 Q25, 2 environment - no restic, no /dev/full - and this one).
 
 QA-system defects found tonight (each one could make a test PASS without testing, or fail without the product failing):
 | Id | Severity | What | Fixed in | Proof |
@@ -98,12 +118,22 @@ QA-system defects found tonight (each one could make a test PASS without testing
 | Q20 | Medium | sign-in question answered with an empty password; nightly schedule cancelled a run | 8bf7dc3 | run 14 |
 | Q21 | Low | race test read a file that exists only after a run ends | 5cbc2b8 | 5/5 |
 | CI | Low | N7 (setpriv) and N9b (AggregateError) on the non-root runner | 39ed5e5 | CI run 14: both PASS |
+| Q22 | Medium | robot waited 20 min for a run that never started (every failure path) -> run 14 hit 3 h | 3dfbb20 | run 15 timings |
+| Q23 | High (Windows evidence) | Restore page asks for the password after a service restart; the robot clicked under the question | 3dd343e | run 15 W06/W07 PASS |
+| Q24 | **Critical (CI evidence)** | a test proxy's connect threw on a background thread: the CI gate's Linux test job ABORTED after 7 tests in 3 runs - no gate result at all | 9d23667 | reproduced (host crash) -> 18/18 PASS; same pattern fixed in 3 more files |
+| Q25 | **High (false PASS on Windows)** | AgentRig.Restored() read the SOURCE on Windows (Path.Combine with a rooted C:\ path): those tests compared the source with itself | cf39637 | one helper that refuses a path outside the restore folder; 3 tests; 64/65 of the affected classes PASS (65th = P-1) |
+| Q26 | Low | 19 schedule tests inject the zone with TZ, which Windows ignores | cf39637 | they now say "NOT TESTED on Windows" |
+| Q27 | Medium | screen checker (ui-check) crashes after 2 languages in the gate: 11 languages' layout NOT TESTED there | open | – |
+| Q28 | High (Windows evidence) | W08/W09 interrupted a backup that had already ended (see section 5) | 44d1c48 | run 16 |
+| pub | Medium | a worktree symlink committed in 17a4414 stopped the public snapshot: run 15 first ran the OLD build | ac742fe | snapshot verified before dispatch |
 
 ## 13. Open
 - C1 not verified (Windows run 14 running); Windows crash journeys W07-W09, real reboot (VM), uninstall: NOT TESTED.
 - A-1 accessibility: the client's text fields have no name for screen readers although the code sets one (Windows only).
 - Server's first start after the container kill failed once ("Value cannot be null."), not reproduced (Medium).
-- No full regression on the latest snapshot 35a995b (bug 90); only the affected classes (52 PASS).
+- Full regression on the latest snapshot cf39637: running (container restarts killed two attempts; xUnit on 17a4414 complete).
+- Hosted Windows xUnit: until Q25 its restore comparisons proved nothing; the gate on cf39637 is the first honest run.
+- Hebrew admin sign-in on phone/tablet: text '123 456' at 9.5 px (screen checker, Low, UX - not changed).
 - Rounds P, Q, S running; their areas stay NOT TESTED until they report and the evidence is checked.
 - Hosted CI runner: root/mount scenarios skip there (the new skipped==0 gate makes that job red, truthfully).
 ## 14. NEEDS OWNER DECISION
@@ -184,3 +214,12 @@ Each round is separate, in its own worktree on snapshot 8bf7dc3, results below a
 | S | mutation testing of tonight's product fixes (bugs 78-90); R's NOT TESTED items | done (tests/QA/night/s) | 12/12 mutants KILLED (85, 86 only by 2 new xUnit tests — their own regression was Playwright-only); orchestrator re-checked bug 90's mutant: KILLED, src clean. Web-restore header injection: not possible (point validated + HttpListener refuses CR/LF); restic object routes: no read/write outside the repository (11 hostile paths, sentinel intact). No product defect. NOT TESTED: bug 80's mutant; 85/86 against their Playwright test |
 
 ## 20. Release verdict
+**NOT READY — and this report does not claim more than the evidence.** (Final wording after runs 15/16; draft at 06:30.)
+- C1 (one Windows, one build, install -> ... -> uninstall): NOT VERIFIED. Run 15 proved W01-W07 in one run (install
+  through the installer window, sign-in, backup -> delete -> restore SHA-256, service restart, agent killed mid-backup);
+  the real reboot (VM), stop/kill mid-backup (Q28) and uninstall (W13 cascade) are not yet proven in the same run.
+- Tonight found 8 product bugs on top of the evening's (88-94), three of them only on real Windows or the CI gate's Windows
+  job (89, 93, 94). Each one says the same thing: what has not run on real Windows is not known to work there.
+- Several QA defects tonight could make a PASS prove nothing (Q14, Q15, Q24, Q25, Q28, R-1) — all found and fixed, but they
+  mean every PASS older than its fix is weaker evidence than it looks.
+- Open owner decisions (section 14) include data-loss and retention questions; a release should not wait on QA alone.

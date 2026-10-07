@@ -140,6 +140,9 @@ jobs:
             [ -f vm/shared/done.txt ] && { echo "done"; break; }
             s=$(tail -n 1 vm/shared/status.log 2>/dev/null); [ "$s" != "$last" ] && { echo "VM: $s"; last="$s"; }
             docker ps -q -f name=win | grep -q . || { echo "the VM container stopped"; break; }
+            # the VM's screen every 20 min (QEMU monitor screendump): run 14's VM never reached the QA driver in 5 h and nothing
+            # showed where Windows stopped (installation, sign-in, the scheduled task, the shared folder)
+            if [ $(( SECONDS / 1200 )) != "${shot:-x}" ]; then shot=$(( SECONDS / 1200 )); docker exec win sh -c "echo 'screendump /shared/screen-$(date -u +%H%M).ppm' | nc -q 2 localhost 7100" >/dev/null 2>&1 || echo "no screen dump (monitor not reachable)"; fi
             sleep 30
           done
           cat vm/shared/status.log 2>/dev/null || echo "no status from Windows (it never reached the QA driver)"

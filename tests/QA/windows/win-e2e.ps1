@@ -128,7 +128,7 @@ function RestoreChecked([string]$label, $want, [switch]$KeepSource) {
   if (-not $KeepSource) { if (Test-Path -LiteralPath $Data) { Remove-Tree $Data }; Move-Item -LiteralPath $aside -Destination $Data }   # the source as it was
   return $ok
 }
-function BigFile([int]$mb) { $f = Join-Path $Data 'Big\video.bin'; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random 11; $svc = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $svc.Write($b, 0, $b.Length) }; $svc.Close() }
+function BigFile([int]$mb, [string]$name = 'video.bin', [int]$seed = 11) { $f = Join-Path $Data "Big\$name"; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random $seed; $svc = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $svc.Write($b, 0, $b.Length) }; $svc.Close() }
 # the job id of the set's live run right now ('' when nothing is live): the run a kill / stop really interrupted
 function LiveJob { $l = @(LiveRuns $S.setId) | Select-Object -First 1; if ($l) { return [string]$l['job'] }; return '' }
 # the history's record of one run (by its job id), waiting for it; $null when it never comes
@@ -272,7 +272,8 @@ Journey 'W07' 'Agent crash mid-backup: the process is killed; Windows brings it 
 }
 
 Journey 'W08' 'Service stopped mid-backup: the run ends cleanly; start; backup and restore identical' {
-  Add-Content (Join-Path $Data 'Big\video.bin') ('y' * 1MB) -NoNewline; $want = Manifest $Data
+  # Q28: a NEW 600 MB file (W07's is already on the server: appending to it made a 2-second run that ended before the stop)
+  BigFile 600 'video-w08.bin' 808; $want = Manifest $Data
   $w = Open-Client $S.installDir
   BackupNow-ViaUi $w 'Backup to be stopped' | Out-Null
   Step 'The backup is running' 'a live run' { $l = WaitLive 120; @($l, "live=$l") } -NoShot | Out-Null
@@ -286,7 +287,7 @@ Journey 'W08' 'Service stopped mid-backup: the run ends cleanly; start; backup a
 }
 
 Journey 'W09' 'Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical' {
-  Add-Content (Join-Path $Data 'Big\video.bin') ('z' * 1MB) -NoNewline; $want = Manifest $Data
+  BigFile 600 'video-w09.bin' 909; $want = Manifest $Data   # Q28: a new file, so the backup is still running when the server is killed
   $w = Open-Client $S.installDir
   BackupNow-ViaUi $w 'Backup when the server dies' | Out-Null
   Step 'The backup is running' 'a live run' { $l = WaitLive 120; @($l, "live=$l") } -NoShot | Out-Null
@@ -324,7 +325,8 @@ Journey 'W11' 'VSS failure: the shadow copy service is disabled; the locked file
   $holder = Hold $locked
   Step 'Disable the Volume Shadow Copy service' 'VSS disabled and stopped' { Stop-Service VSS -Force -ErrorAction SilentlyContinue; Set-Service VSS -StartupType Disabled; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Disabled'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   $run = BackupChecked 'Backup without VSS' 'not-ok'
-  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = Get-ChildItem (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Raw -ErrorAction SilentlyContinue; $log = [string]$log; $run = $(if ($run) { $run } else { @{} }); @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
+  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = (@(Get-ChildItem (Join-Path $S.dataDir 'logs'), "$Q\sys\logs\BackupErrors" -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 4 | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName -ErrorAction SilentlyContinue }) -join "`n"); $log = [string]$log;   # Q29: the run's warning is in the server's BackupErrors log (run 15: 'Shadow Copy of C: could not be created'); the newest client file alone missed it
+  $run = $(if ($run) { $run } else { @{} }); @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
   Step 'Recovery: enable VSS again' 'Manual' { Set-Service VSS -StartupType Manual; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Manual'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
   $want = Manifest $Data

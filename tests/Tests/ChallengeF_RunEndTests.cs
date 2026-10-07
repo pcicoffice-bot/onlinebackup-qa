@@ -40,7 +40,7 @@ namespace OnlineBackup.Tests
                     {
                         TcpClient a; try { a = l.AcceptTcpClient(); } catch (Exception) { return; }
                         var b = new TcpClient();   // a late connection after the server is gone must not end the test process
-                        try { b.Connect(IPAddress.Loopback, target); } catch (Exception) { try { a.Close(); b.Close(); } catch (Exception) { } continue; }
+                        try { b.Connect("localhost", target); } catch (Exception) { try { a.Close(); b.Close(); } catch (Exception) { } continue; }
                         lock (open) { open.Add(a); open.Add(b); }
                         Pump(a, b, true); Pump(b, a, false);
                     }

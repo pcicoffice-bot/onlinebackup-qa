@@ -109,7 +109,7 @@ namespace OnlineBackup.Tests
                 var locked = Path.Combine(src, "ledger-locked.db");
                 File.WriteAllText(locked, "locked"); File.SetUnixFileMode(locked, UnixFileMode.None);
                 var w = Path.Combine(env.Root, "restic-noroot.sh");
-                File.WriteAllText(w, "#!/bin/sh\nexec setpriv --inh-caps=-dac_override,-dac_read_search --bounding-set=-dac_override,-dac_read_search \"" + ResticExe + "\" \"$@\"\n");
+                File.WriteAllText(w, "#!/bin/sh\n# Q31: only root has the read-anything capability to drop; elsewhere (the CI runner) setpriv refuses and restic never ran\n[ \"$(id -u)\" != 0 ] && exec \"" + ResticExe + "\" \"$@\"\nexec setpriv --inh-caps=-dac_override,-dac_read_search --bounding-set=-dac_override,-dac_read_search \"" + ResticExe + "\" \"$@\"\n");
                 File.SetUnixFileMode(w, UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute);
                 app.ResticSetup = r => r.ExePath = w;
                 var set = app.CreateSet(app.Interactive("Customer-Pass-1", null), "Customer-Pass-1", new BackupSetInfo { Name = "P", Engine = "RESTIC", Sources = { src } });

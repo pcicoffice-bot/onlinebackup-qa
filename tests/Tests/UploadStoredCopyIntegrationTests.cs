@@ -41,7 +41,7 @@ namespace OnlineBackup.Tests
                         // a late connection after the server is gone must not throw on this thread: an unhandled exception
                         // in a background thread ends the whole test process (CI gate run 37557981765: aborted after 7 tests)
                         var b = new TcpClient();
-                        try { b.Connect(IPAddress.Loopback, target); }
+                        try { b.Connect("localhost", target); }   // every address of localhost: on the CI runner the server is not on 127.0.0.1 (Q30)
                         catch (Exception) { Interlocked.Increment(ref refused); try { a.Close(); b.Close(); } catch (Exception) { } continue; }
                         lock (open) { open.Add(a); open.Add(b); }
                         Pump(a, b, true); Pump(b, a, false);

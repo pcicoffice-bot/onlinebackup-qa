@@ -553,7 +553,9 @@ namespace OnlineBackup.Server
                 if (s.DestMode == "LOCAL" && s.Engine != "RESTIC") throw new ApiException(400, "DEST", "A local-only backup needs the restic engine (Windows 10 / Server 2016 or later, Linux, Mac).");
                 if ((s.DestMode == "BOTH" || s.DestMode == "LOCAL") && string.IsNullOrWhiteSpace(s.LocalCopyPath)) throw new ApiException(400, "DEST", "Choose the local disk or network folder.");
                 if (s.DestMode == "BOTH") s.LocalCopy = true;
-                bool allByDefault = s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "HYPERV" || s.Type == "VMWARE" || s.Type == "DOMINO";   // none chosen = every database / VM
+                // none chosen = every database / VM; System State has no folders at all (wbadmin backs up the system state) -
+                // bug 94: the client window sends it with none, and it was refused, so no System State set could be made
+                bool allByDefault = s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "HYPERV" || s.Type == "VMWARE" || s.Type == "DOMINO" || s.Type == "SYSTEMSTATE";
                 if (s.Sources.Count == 0 && !allByDefault) throw new ApiException(400, "NO_SOURCE", "No folders were chosen for backup.");
                 var pol = cfg.Policy();
                 var ps = pol.Element("BACKUP_SET");

@@ -111,11 +111,15 @@ namespace OnlineBackup.Tests
             if (!Have) return;
             using (var rig = new Rig())
             {
-                for (int i = 0; i < 6; i++) { var b = new byte[8 * 1024 * 1024]; new Random(100 + i).NextBytes(b); File.WriteAllBytes(Path.Combine(rig.Src, "more" + i + ".bin"), b); }
+                for (int i = 0; i < 16; i++) { var b = new byte[8 * 1024 * 1024]; new Random(100 + i).NextBytes(b); File.WriteAllBytes(Path.Combine(rig.Src, "more" + i + ".bin"), b); }
                 var first = rig.Runner();
                 var sw = Stopwatch.StartNew();
-                first.StopRequested = () => sw.ElapsedMilliseconds > 1500;
+                // Q32: the stop came after 1.5 s; on the fast CI runner the backup had ENDED by then - its "success" was true and
+                // the test called it a product failure. The stop now comes early, and the test proves it was asked for in time.
+                bool asked = false;
+                first.StopRequested = () => { if (sw.ElapsedMilliseconds > 300) asked = true; return asked; };
                 var stopped = first.Backup();
+                if (!asked) throw new InvalidOperationException("NOT TESTED: the backup ended in " + sw.ElapsedMilliseconds + " ms, before the stop could be asked for");
                 Assert.False(stopped.Result.StartsWith("BS_STOP_SUCCESS"), "a stopped backup must not say success: " + stopped.Result);
                 var chk = rig.Runner().Check("100%");
                 Assert.True(chk.Int("ok") == 1, "restic check after a stopped backup: " + chk["message"] + "\n" + string.Join("\n", stopped.LogLines));
