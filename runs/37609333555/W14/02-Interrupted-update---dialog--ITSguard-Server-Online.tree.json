@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "Interrupted update - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  330,
+                 "w":  413,
+                 "h":  156,
+                 "x":  332
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  450,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  652
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  379,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  356
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "The process cannot access the file \u0027C:\\Program Files\\ITSguard Server Online\\restic.exe\u0027 because it is being used by another process.",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  379,
+                                      "w":  315,
+                                      "h":  41,
+                                      "x":  397
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

@@ -1,0 +1,198 @@
+﻿{
+    "facts":  {
+                  "phase":  "main",
+                  "windows":  "Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100",
+                  "computer":  "runnervmfi6oq",
+                  "package":  "OnlineBackup-Server-0.1.27.zip",
+                  "commit":  "ff1b0e4fee8f25cb7eb50ab56a40942fef968f89",
+                  "run":  "37609333555",
+                  "started":  "2026-10-07T10:47:57.3175931+00:00",
+                  "resolution":  "1024x768",
+                  "dpi":  100,
+                  "powershell":  "5.1.26100.33438",
+                  "interactive":  true,
+                  "user":  "runnervmfi6oq\\runneradmin"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W01",
+                         "title":  "Server: install from the real package (Windows service) and sign in",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W02",
+                         "title":  "Installer failure: a damaged Setup.exe installs nothing and says so",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "PASS",
+                         "ux":  "PASS",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W03",
+                         "title":  "Client installation through the installer window, proven by Windows",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "FAIL",
+                         "visualFindings":  1,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W04",
+                         "title":  "First run: sign in through the window, the agent connects to the server",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  12,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W05",
+                         "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  22,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W06",
+                         "title":  "Service restart: Windows restarts the backup service, then backup and restore again",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  17,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W07",
+                         "title":  "Agent crash mid-backup: the process is killed; Windows brings it back; no ghost run; the next backup restores identical",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  20,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W08",
+                         "title":  "Service stopped mid-backup: the run ends cleanly; start; backup and restore identical",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  18,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W09",
+                         "title":  "Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W10",
+                         "title":  "VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  17,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W11",
+                         "title":  "VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W12",
+                         "title":  "Permission denied: a folder the service may not read is an error, not a deletion; recovery",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W13",
+                         "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+                         "functional":  "FAIL",
+                         "reason":  "Maintenance - Setup sees the installation (repair): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || After Repair: the file is back and the service runs: Stopped || the journey stopped: You cannot call a method on a null-valued expression. @ line 362",
+                         "visual":  "FAIL",
+                         "ux":  "FAIL",
+                         "visualFindings":  1,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W14",
+                         "title":  "Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  20,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W15",
+                         "title":  "Uninstall through the installer window, reinstall, sign in again, backup and restore",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "FAIL",
+                         "visualFindings":  18,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W16",
+                         "title":  "Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  26,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W17",
+                         "title":  "System State backup (Windows Server Backup)",
+                         "functional":  "FAIL",
+                         "reason":  "The System State backup finishes successfully (server record): BS_STOP_BY_SYSTEM_ERROR bytes 0",
+                         "visual":  "FAIL",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  2,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W18",
+                         "title":  "Reboot",
+                         "functional":  "NOT TESTED",
+                         "reason":  "a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

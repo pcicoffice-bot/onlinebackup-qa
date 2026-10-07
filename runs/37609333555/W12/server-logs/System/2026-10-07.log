@@ -1,0 +1,5 @@
+2026-10-07 10:48:15	-	server started https://+:8443/
+2026-10-07 10:48:17	-	server started https://+:8443/
+2026-10-07 10:52:11	::1	error: PUT /api/sets/1791370172657/jobs/2026-10-07-10-51-54/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)
+2026-10-07 10:54:48	::1	error: PUT /api/sets/1791370172657/jobs/2026-10-07-10-54-35/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)
+2026-10-07 11:03:44	-	server started https://+:8443/

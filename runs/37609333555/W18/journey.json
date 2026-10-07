@@ -1,0 +1,12 @@
+﻿{
+    "id":  "W18",
+    "title":  "Reboot",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W18",
+    "started":  "2026-10-07T11:40:34.3927222+00:00",
+    "result":  "NOT TESTED",
+    "reason":  "a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).",
+    "steps":  [
+
+              ],
+    "ended":  "2026-10-07T11:40:36.3287942+00:00"
+}
