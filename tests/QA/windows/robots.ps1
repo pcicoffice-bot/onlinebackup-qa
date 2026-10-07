@@ -149,6 +149,9 @@ function Answer-Dialogs($main, [string]$password, [string]$screen, [int]$seconds
     Look $d ("$screen - dialog: " + $d.Current.Name) 'en' $script:ClientProc | Out-Null
     $seen += ($d.Current.Name + ': ' + $text)
     $pw = @(Find $d $CT::Edit) | Where-Object { $_.Current.IsPassword -or $_.Current.Name -eq 'Password' } | Select-Object -First 1
+    # W1 run 13: the sign-in question after the service restarted has fields with no UI Automation name and no IsPassword:
+    # nothing was typed and "Sign in" was clicked empty - the field is found under its label, as on the main window (Q18)
+    if (-not $pw) { try { $pw = Edit $d 'Password' } catch { $pw = $null } }
     if ($pw -and $password) { TypeInto $pw $password; Click (@(Find $d $CT::Button) | Where-Object { $_.Current.Name -eq 'Sign in' -or $_.Current.Name -eq 'OK' } | Select-Object -First 1); Start-Sleep -Seconds 2; continue }
     $agree = Named $d '*read and accept*'; if ($agree) { [void](SetCheck $agree $true $false) }   # the provider's agreement
     $yes = @(Find $d $CT::Button) | Where-Object { @('OK', 'Yes', 'Continue') -contains $_.Current.Name } | Select-Object -First 1

@@ -12,7 +12,8 @@ on:
     - cron: '17 1 * * *'
 concurrency:
   group: qa-${{ github.ref }}
-  cancel-in-progress: true
+  # a push replaces an older run; the nightly schedule never cancels a run in progress (it cancelled W1 run 13 mid-way)
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 jobs:
   journeys:
     # in the private repository the same suite runs inside the quality gate (online-backup.yml, job "qa")

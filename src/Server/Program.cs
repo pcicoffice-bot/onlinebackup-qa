@@ -198,7 +198,14 @@ namespace OnlineBackup.Server
                         return 0;
                 }
             }
-            catch (Exception e) { Console.Error.WriteLine("error: " + e.Message); return 1; }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine("error: " + e.Message);
+                // night soak: a start after the machine was cut off failed once with only "Value cannot be null." — the kind
+                // of error and where it came from are kept, so the next one can be traced (not reproduced in 6 kill-restarts)
+                if (!(e is ApiException)) Console.Error.WriteLine("detail: " + e.GetType().FullName + " " + (e.StackTrace ?? "").Trim().Split('\n')[0].Trim());
+                return 1;
+            }
             Console.Error.WriteLine("unknown command " + args[0]);
             return 2;
         }

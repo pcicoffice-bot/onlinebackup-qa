@@ -274,7 +274,9 @@ namespace OnlineBackup.Tests
                 Together(() => { SystemClock.Use(() => T + SetStore.Lease); st.Touch(job); }, () => gone = st.ExpireStale(T + SetStore.Lease + TimeSpan.FromSeconds(1)), out ea, out eb, out ms);
                 var bad = new List<string>();
                 if (ea != null || eb != null) bad.Add("touch: " + Ex(ea) + " expire: " + Ex(eb));
-                bool exists = Directory.Exists(dir), ended = File.ReadAllLines(Path.Combine(st.Dir, "jobs.log")).Contains("E\t" + job);
+                // night r2: jobs.log is written when a run ENDS — if the first iteration's run stays open there is no jobs.log yet
+                var jl = Path.Combine(st.Dir, "jobs.log");
+                bool exists = Directory.Exists(dir), ended = File.Exists(jl) && File.ReadAllLines(jl).Contains("E\t" + job);
                 if (gone != null && gone.Contains(job))
                 {
                     closed++;
