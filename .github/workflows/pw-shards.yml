@@ -1,0 +1,141 @@
+# QA shards for the Playwright journeys (public mirror only) - the owner approved ONLY the proof step for now: the journeys
+# split by spec file over isolated runners, next to the previous method (every journey one after another in one job, its own
+# build) and compared test by test. Used for certification only after SAME.
+# Every journey starts its own server and agent (playwright.config.ts, workers: 1); each shard is its own fresh machine.
+# ONE build of the product (SHA-256 checked by every shard); QA_NO_BUILD keeps the journeys from building again.
+# Started by a push of a branch qa-pw-<n> with tools/qa-shards/pw-request.json: {"shards": N, "control": true}.
+name: QA shards (journeys)
+on:
+  push:
+    branches: ['qa-pw-*']
+permissions: { contents: read }
+env:
+  RESTIC_VERSION: '0.18.1'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+jobs:
+  build:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      build_sha: ${{ steps.pack.outputs.sha }}
+      control: ${{ steps.plan.outputs.control }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - name: Build once (server and agent - what the journeys run)
+        run: dotnet build src/Server -nologo -v q && dotnet build src/Agent -nologo -v q
+      - name: Pack the build with its SHA-256
+        id: pack
+        run: |
+          mkdir -p build-out && tar -cf build-out/build.tar $(ls -d src/*/bin src/*/obj)
+          (cd build-out && sha256sum build.tar > build.sha256); echo "sha=$(cut -d' ' -f1 build-out/build.sha256)" >> "$GITHUB_OUTPUT"
+      - name: The journeys of this build, and the plan (by spec file)
+        id: plan
+        working-directory: tests/QA
+        run: |
+          npm ci
+          QA_NO_BUILD=1 npx playwright test --list --reporter=json > ../../build-out/list.json
+          cd ../..
+          python3 tools/qa-shards/pw_plan.py --list build-out/list.json --shards "$(python3 -c "import json;print(json.load(open('tools/qa-shards/pw-request.json'))['shards'])")" --out plan | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
+          echo "control=$(python3 -c "import json;print(str(json.load(open('tools/qa-shards/pw-request.json')).get('control', False)).lower())")" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with: { name: build, path: build-out, retention-days: 7 }
+      - uses: actions/upload-artifact@v4
+        with: { name: plan, path: plan, retention-days: 30 }
+
+  shard:
+    needs: build
+    name: shard ${{ matrix.id }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix: ${{ fromJSON(needs.build.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with: { name: build, path: build-in }
+      - name: restic (checked against the release's SHA256SUMS)
+        run: tools/qa-shards/restic.sh
+      - name: The run's build (SHA-256 checked), Playwright and Chromium
+        run: |
+          got=$(cd build-in && sha256sum build.tar | cut -d' ' -f1)
+          [ "$got" = "${{ needs.build.outputs.build_sha }}" ] || { echo "not the run's build"; exit 1; }
+          tar -xf build-in/build.tar
+          cd tests/QA && npm ci && timeout 900 npx playwright install --with-deps chromium
+      - name: Journeys of ${{ matrix.id }}
+        env: { FILES: '${{ matrix.files }}', ID: 'shard-${{ matrix.id }}' }
+        run: tools/qa-shards/run-pw.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: 'shard-${{ matrix.id }}', path: 'out/shard-${{ matrix.id }}', retention-days: 30 }
+
+  control:
+    needs: build
+    if: ${{ needs.build.outputs.control == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - uses: actions/download-artifact@v4
+        with: { name: plan, path: plan }
+      - name: restic (checked against the release's SHA256SUMS)
+        run: tools/qa-shards/restic.sh
+      - name: Playwright and Chromium
+        working-directory: tests/QA
+        run: npm ci && timeout 900 npx playwright install --with-deps chromium
+      - name: The previous method - its own build (the journeys build it), every journey in this one job
+        run: FILES="$(cat plan/control-files.txt)" ID=control OWN_BUILD=1 tools/qa-shards/run-pw.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: control, path: out/control, retention-days: 30 }
+
+  aggregate:
+    needs: [build, shard, control]
+    if: ${{ always() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      rc: ${{ steps.agg.outputs.rc }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: results, pattern: '{plan,control,shard-*}' }
+      - name: One verdict
+        id: agg
+        run: |
+          set +e
+          python3 tools/qa-shards/aggregate.py --expected results/plan/expected.json --results results --out verdict --plan results/plan \
+            --build-sha "${{ needs.build.outputs.build_sha }}" --title "Journeys (Playwright) - run ${{ github.run_id }} (${{ github.sha }})" \
+            ${{ needs.build.outputs.control == 'true' && '--control' || '' }}
+          echo "rc=$?" >> "$GITHUB_OUTPUT"; cat verdict/summary.md >> "$GITHUB_STEP_SUMMARY"; cp results/plan/expected.json verdict/
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with: { name: verdict, path: verdict, retention-days: 30 }
+
+  keep:
+    needs: aggregate
+    if: ${{ always() && needs.aggregate.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: { contents: write }   # only to keep the verdict in the qa-evidence branch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: verdict, path: verdict }
+      - run: sh tools/qa-shards/keep.sh verdict "pw-${{ github.run_id }}" "${{ github.sha }}"

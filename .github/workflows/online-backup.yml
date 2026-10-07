@@ -4,7 +4,7 @@
 name: Online Backup — quality gate and package
 on:
   push:
-    branches-ignore: ['qa-shards-*']   # the QA shards branches of the public mirror run only qa-shards.yml
+    branches-ignore: ['qa-shards-*', 'qa-pw-*']   # the QA shards branches of the public mirror run only qa-shards.yml
     # cost (owner, 07.10): a push that changes only notes, reports or the Windows robot (which this gate does not run) does
     # not start the whole gate again - in one night ~3,900 billable minutes went on such pushes. Product code, the tests
     # this gate runs and this workflow itself still start it every time; the nightly run and a manual run cover the rest.
@@ -34,7 +34,7 @@ jobs:
   tests-extra:
     # 1c. what the single tests job also did: the security scan and the load run
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 120   # CI-3: the load run had not run in the gate for a long time; its real duration is measured, then the limit set from it
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4

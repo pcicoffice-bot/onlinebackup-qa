@@ -34,7 +34,7 @@ def class_of(test):
 def method_of(test):
     return test.split('(', 1)[0]
 
-def plan(all_tests, shards, repeat, patterns, durations):
+def plan(all_tests, shards, repeat, patterns, durations, serial=1, load=False):
     picked = set(method_of(t) for t in all_tests if not patterns or any(p in t for p in patterns))
     tests = [t for t in all_tests if method_of(t) in picked]   # a theory runs all its cases: all of them are expected
     if not tests: raise SystemExit('plan: no tests selected - nothing to run is NOT a pass')
@@ -60,8 +60,13 @@ def plan(all_tests, shards, repeat, patterns, durations):
         f = '|'.join(parts)
         for r in range(1, repeat + 1):
             jid = 's%02d-r%02d' % (i, r)
-            jobs.append({'id': jid, 'shard': i, 'rep': r, 'filter': f, 'est_min': round(b['weight'] / 60, 1)})
-            expected[jid] = sorted(t for c in b['classes'] for t in classes[c])
+            jobs.append({'id': jid, 'shard': i, 'rep': r, 'filter': f, 'est_min': round(b['weight'] * serial / 60, 1), 'serial': serial, 'load': 1 if load else 0})
+            names = sorted(t for c in b['classes'] for t in classes[c])
+            # Flaky Hunter: SERIAL iterations on the same machine, each counted on its own (never "until it passes")
+            if serial > 1:
+                for k in range(1, serial + 1): expected['%s/i%02d' % (jid, k)] = names
+            else:
+                expected[jid] = names
     return jobs, expected, tests
 
 def main():
@@ -71,9 +76,10 @@ def main():
     a.add_argument('--durations', default=''); a.add_argument('--out', required=True)
     a.add_argument('--max-jobs', type=int, default=256)
     a.add_argument('--known', default='')
+    a.add_argument('--serial', type=int, default=1); a.add_argument('--load', action='store_true')
     o = a.parse_args()
     durations = json.load(open(o.durations)) if o.durations and os.path.exists(o.durations) else {}
-    jobs, expected, tests = plan(read_tests(o.tests), o.shards, max(1, o.repeat), o.select.split(), durations)
+    jobs, expected, tests = plan(read_tests(o.tests), o.shards, max(1, o.repeat), o.select.split(), durations, max(1, o.serial), o.load)
     if len(jobs) > o.max_jobs: raise SystemExit('plan: %d jobs is more than GitHub allows in one matrix (%d)' % (len(jobs), o.max_jobs))
     os.makedirs(o.out, exist_ok=True)
     json.dump({'include': jobs}, open(os.path.join(o.out, 'matrix.json'), 'w'))
@@ -91,7 +97,7 @@ def main():
         gone, new = [], []
     json.dump(gone, open(os.path.join(o.out, 'disappeared.json'), 'w'), indent=1)
     json.dump(new, open(os.path.join(o.out, 'new.json'), 'w'), indent=1)
-    for j in jobs: print('%s  ~%5.1f min  %3d tests' % (j['id'], j['est_min'], len(expected[j['id']])))
+    for j in jobs: print('%s  ~%5.1f min  %3d tests%s' % (j['id'], j['est_min'], len(expected.get(j['id']) or expected[j['id'] + '/i01']), ('  x%d serial%s' % (j['serial'], ' under load' if j['load'] else '')) if j['serial'] > 1 else ''))
     if gone: print('DISAPPEARED (known, no longer in this build): ' + ', '.join(gone))
     if new: print('new (not yet in known-tests.txt): %d' % len(new))
 

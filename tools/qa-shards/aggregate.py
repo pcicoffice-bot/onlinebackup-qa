@@ -72,8 +72,9 @@ def main():
     per_test = OrderedDict()   # test -> list of {job, status, sec, note, kind}
     jobs = []
     for jid in sorted(expected):
-        folder = os.path.join(o.results, 'shard-' + jid)
-        res, m = read_trx(folder), meta(folder)
+        job, _, it = jid.partition('/')   # Flaky Hunter: "s01-r01/i03" = the 3rd serial iteration on that job's machine
+        folder = os.path.join(o.results, 'shard-' + job, it) if it else os.path.join(o.results, 'shard-' + job)
+        res, m = read_trx(folder), meta(os.path.join(o.results, 'shard-' + job))
         pre = str(m.get('preflight', ''))
         if o.build_sha and m.get('build_sha') and m.get('build_sha') != o.build_sha:
             state, res = 'ran another build (%s) - its results do not count' % m.get('build_sha')[:12], None

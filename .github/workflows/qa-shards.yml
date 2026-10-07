@@ -29,6 +29,8 @@ jobs:
       max_parallel: ${{ steps.req.outputs.max_parallel }}
       control: ${{ steps.req.outputs.control }}
       title: ${{ steps.req.outputs.title }}
+      serial: ${{ steps.req.outputs.serial }}
+      load: ${{ steps.req.outputs.load }}
     steps:
       - uses: actions/checkout@v4
       - name: The request (the inputs of a manual run, or tools/qa-shards/request.json of a qa-shards-* branch)
@@ -48,6 +50,8 @@ jobs:
       control: ${{ needs.request.outputs.control == 'true' }}
       mode: strict
       title: ${{ needs.request.outputs.title }}
+      serial: ${{ fromJSON(needs.request.outputs.serial) }}
+      load: ${{ needs.request.outputs.load == 'true' }}
 
   keep:
     needs: [request, run]

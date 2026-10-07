@@ -21,8 +21,32 @@ else
 fi
 if ! tools/qa-shards/preflight.sh "$OUT"; then meta "$got" "failed: $(grep FAILED "$OUT/preflight.txt" | tr '\n"' '; ' )" 1 0; exit 1; fi
 rc=0
-dotnet test $TARGET ${NOBUILD:-} ${NOLOGO:-} --filter "$F" --logger "trx;LogFileName=$ID.trx" \
-  --logger "console;verbosity=normal" --results-directory "$OUT" > "$OUT/console.log" 2>&1 || rc=$?
+# Flaky Hunter: SERIAL=k runs the same tests k times on THIS machine (state that builds up, a warm machine), each iteration in
+# its own folder and counted on its own; LOAD=1 keeps all but one processor busy meanwhile (a contention a quiet runner hides)
+SERIAL=${SERIAL:-1}; LOADPID=""
+if [ "${LOAD:-0}" = 1 ]; then
+  PY=$(command -v python3 || command -v python)
+  $PY -c 'import multiprocessing as m, time
+def burn():
+    while True: pass
+n = max(1, m.cpu_count() - 1)
+ps = [m.Process(target=burn, daemon=True) for _ in range(n)]
+[p.start() for p in ps]; print("load: %d busy processes" % n, flush=True); time.sleep(86400)' > "$OUT/load.txt" 2>&1 &
+  LOADPID=$!
+fi
+if [ "$SERIAL" -gt 1 ]; then
+  for k in $(seq 1 "$SERIAL"); do
+    IT=$(printf 'i%02d' "$k"); mkdir -p "$OUT/$IT"
+    dotnet test $TARGET ${NOBUILD:-} ${NOLOGO:-} --filter "$F" --logger "trx;LogFileName=$ID-$IT.trx" \
+      --logger "console;verbosity=normal" --results-directory "$OUT/$IT" > "$OUT/$IT/console.log" 2>&1 || rc=$?
+    echo "serial iteration $k of $SERIAL: $(grep -E '^\s+(Passed|Failed): ' "$OUT/$IT/console.log" | tr -s ' ' | tr '\n' ' ')"
+  done
+  cat "$OUT"/i*/console.log > "$OUT/console.log"
+else
+  dotnet test $TARGET ${NOBUILD:-} ${NOLOGO:-} --filter "$F" --logger "trx;LogFileName=$ID.trx" \
+    --logger "console;verbosity=normal" --results-directory "$OUT" > "$OUT/console.log" 2>&1 || rc=$?
+fi
+[ -n "$LOADPID" ] && kill "$LOADPID" 2>/dev/null
 end=$(date +%s)
 # the job log keeps every failure WITH its message and the first lines of its stack (the .trx holds the whole of it)
 awk '/^  Failed /{on=1; n=0} /^  (Passed|Skipped) /{on=0} on && n<25 {print; n++}' "$OUT/console.log" | head -n 600
@@ -31,5 +55,5 @@ meta "$got" "ok" "$rc" "$(( (end - start + 59) / 60 ))"
 # The verdict is the aggregator's alone (it reads every test's outcome and message). This job only has to leave results: a
 # test that ends "NOT TESTED: <reason>" is Failed for dotnet test, and a job colour taken from that would change the
 # gate's criteria. No .trx at all (the test host never started or crashed first) is this job's failure.
-if ls "$OUT"/*.trx >/dev/null 2>&1; then exit 0; fi
+if find "$OUT" -name "*.trx" | grep -q .; then exit 0; fi
 echo "no results were written (dotnet test exit $rc)"; exit 1

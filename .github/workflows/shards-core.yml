@@ -22,6 +22,8 @@ on:
       control: { type: boolean, default: false }
       mode: { type: string, default: strict }
       title: { type: string, default: 'QA shards' }
+      serial: { type: number, default: 1 }     # Flaky Hunter: iterations on the same machine, each counted
+      load: { type: boolean, default: false }  # Flaky Hunter: keep the machine's other processors busy meanwhile
     outputs:
       verdict_rc: { value: '${{ jobs.aggregate.outputs.rc }}' }
 permissions: { contents: read }
@@ -57,12 +59,17 @@ jobs:
       - name: Plan (the tests of this build; balanced by measured time; known tests that disappeared are reported)
         id: plan
         shell: bash
-        env: { SELECT: '${{ inputs.select }}', SHARDS: '${{ inputs.shards }}', REPEAT: '${{ inputs.repeat }}' }
+        env:
+          SELECT: ${{ inputs.select }}
+          SHARDS: ${{ inputs.shards }}
+          REPEAT: ${{ inputs.repeat }}
+          SERIAL: ${{ inputs.serial }}
+          LOAD: ${{ inputs.load && '--load' || '' }}
         run: |
           PY=$(command -v python3 || command -v python)
           dotnet test tests/Tests/bin/Debug/net8.0/Tests.dll --list-tests > build-out/list.txt
           $PY tools/qa-shards/plan.py --tests build-out/list.txt --shards "$SHARDS" --repeat "$REPEAT" --select "$SELECT" \
-            --durations "tools/qa-shards/durations-${{ inputs.os }}.json" --known tools/qa-shards/known-tests.txt \
+            --durations "tools/qa-shards/durations-${{ inputs.os }}.json" --known tools/qa-shards/known-tests.txt --serial "$SERIAL" $LOAD \
             --out plan | tee -a "$GITHUB_STEP_SUMMARY"
           cp build-out/build.sha256 plan/
           echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
@@ -91,7 +98,7 @@ jobs:
         run: tools/qa-shards/restic.sh
       - name: Tests of ${{ matrix.id }} (the build's SHA-256 checked, the machine checked, then the tests)
         shell: bash
-        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}', BUILD: build-in, BUILD_SHA: '${{ needs.build.outputs.build_sha }}' }
+        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}', BUILD: build-in, BUILD_SHA: '${{ needs.build.outputs.build_sha }}', SERIAL: '${{ matrix.serial }}', LOAD: '${{ matrix.load }}' }
         run: tools/qa-shards/run-shard.sh
       - uses: actions/upload-artifact@v4
         if: always()

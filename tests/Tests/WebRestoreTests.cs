@@ -89,7 +89,11 @@ namespace OnlineBackup.Tests
                 }
                 Assert.Null(Download(env, c.Session, set.Id, new Msg().Set("key", "nope").Set("point", newest), out st)); Assert.Equal(403, st);
                 // nothing left behind on the server, and nothing written into the repository
-                Assert.Empty(Directory.GetFileSystemEntries(Path.Combine(env.Cfg.SystemHome, "temp")));
+                // the same check, with what was left printed (bug 101, QA shards run 37670607954 on Windows: the restored files
+                // stayed in the server's temp folder; the names were cut off in the message)
+                var temp = Path.Combine(env.Cfg.SystemHome, "temp");
+                var left = Directory.GetFileSystemEntries(temp, "*", SearchOption.AllDirectories);
+                Assert.True(left.Length == 0, left.Length + " left in the server's temp folder after the web restore: " + string.Join(", ", left.Take(12).Select(f => Path.GetRelativePath(temp, f) + " [" + File.GetAttributes(f) + "]")));
                 // another user cannot reach this set
                 env.CreateUser("other1", "Customer-Pass-1");
                 var o = new Client(env.Url); o.Session = o.Call("POST", "/api/login", new Msg().Set("login", "other1").Set("password", "Customer-Pass-1"))["session"];

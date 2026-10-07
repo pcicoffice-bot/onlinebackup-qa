@@ -118,4 +118,19 @@ open(os.path.join(d, 'known.txt'), 'w').write('# known\nN.A.x\nN.Gone.test\nN.Ot
 rc, _ = run(os.path.join(HERE, 'plan.py'), '--tests', lst, '--shards', '2', '--select', 'N.A. N.Gone', '--known', os.path.join(d, 'known.txt'), '--out', os.path.join(d, 'p7'))
 check(rc == 0 and json.load(open(os.path.join(d, 'p7', 'disappeared.json'))) == ['N.Gone.test'], 'plan: a known test of the selection that is gone is reported (one outside the selection is not)')
 check(json.load(open(os.path.join(d, 'p7', 'new.json'))) == ['N.A.y'], 'plan: a test not yet known is reported as new')
+# --- Flaky Hunter: serial iterations on one machine, each counted ---
+rc, _ = run(os.path.join(HERE, 'plan.py'), '--tests', lst, '--shards', '1', '--repeat', '2', '--serial', '3', '--select', 'N.A.', '--out', os.path.join(d, 'p8'))
+e8 = json.load(open(os.path.join(d, 'p8', 'expected.json'))); m8 = json.load(open(os.path.join(d, 'p8', 'matrix.json')))['include']
+check(rc == 0 and len(m8) == 2 and sorted(e8) == ['s01-r01/i01', 's01-r01/i02', 's01-r01/i03', 's01-r02/i01', 's01-r02/i02', 's01-r02/i03'], 'serial x3 on 2 machines = 6 counted iterations')
+res8 = os.path.join(d, 'res8')
+for k in e8:
+    job, it = k.split('/')
+    trx(os.path.join(res8, 'shard-' + job, it, 'r.trx'), [(t, 'Failed' if (k == 's01-r02/i03' and t == 'N.A.x') else 'Passed', '', 'boom') for t in e8[k]])
+rc, _ = run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'p8', 'expected.json'), '--results', res8, '--out', os.path.join(d, 'a8'))
+r = json.load(open(os.path.join(d, 'a8', 'results.json')))
+check(rc != 0 and r['verdict']['N.A.x'] == 'FAIL' and sum(1 for x in r['runs']['N.A.x'] if x['status'] == 'PASS') == 5, 'one failure in 6 iterations: FAIL, reported 5 PASS of 6 - never retried to green')
+import shutil; shutil.rmtree(os.path.join(res8, 'shard-s01-r01', 'i02'))
+rc, _ = run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'p8', 'expected.json'), '--results', res8, '--out', os.path.join(d, 'a9'))
+r = json.load(open(os.path.join(d, 'a9', 'results.json')))
+check(any(x['job'] == 's01-r01/i02' and x['status'] == 'NOT TESTED' for x in r['runs']['N.A.y']), 'an iteration that left no results is NOT TESTED')
 print('SELFTEST PASS')
