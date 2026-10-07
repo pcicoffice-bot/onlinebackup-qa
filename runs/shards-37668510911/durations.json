@@ -1,0 +1,8 @@
+{
+ "OnlineBackup.Tests.AuditJ_ResticEngineTests": 534.0,
+ "OnlineBackup.Tests.DbHyperVTests": 0.0,
+ "OnlineBackup.Tests.NoSilentPassTests": 0.1,
+ "OnlineBackup.Tests.ResticComponentTests": 504.9,
+ "OnlineBackup.Tests.ResticPathComponentTests": 0.0,
+ "OnlineBackup.Tests.WebRestoreTests": 28.3
+}
