@@ -1,0 +1,20 @@
+2026-10-07 09:50:10	-	qa-win	1791366563674	2026-10-07-09-50-10	1791366610703,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 09:51:12	-	qa-win	1791366563674	2026-10-07-09-51-12	1791366672839,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 09:52:59	-	qa-win	1791366563674	2026-10-07-09-51-41	1791366779217,err,,0,"The backup was interrupted and did not finish: the backup program stopped in the middle of the run (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 09:52:59	-	qa-win	1791366563674	2026-10-07-09-51-41	1791366779217,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 09:53:54	-	qa-win	1791366563674	2026-10-07-09-53-53	1791366833962,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 10:00:09	-	qa-win	1791366563674	2026-10-07-09-54-23	1791367209700,err,,0,"The backup was interrupted and did not finish: no sign of life from the computer for 5 minutes (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 10:00:09	-	qa-win	1791366563674	2026-10-07-09-54-23	1791367209700,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 10:01:15	-	qa-win	1791366563674	2026-10-07-10-01-15	1791367275426,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 10:02:54	-	qa-win	1791366563674	2026-10-07-10-01-40	1791367313684,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host.),,,0
+2026-10-07 10:02:54	-	qa-win	1791366563674	2026-10-07-10-01-40	1791367323707,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to connect to the remote server),,,0
+2026-10-07 10:02:54	-	qa-win	1791366563674	2026-10-07-10-01-40	1791367335720,err,C:\OnlineBackup-QA\Data\Big\video-w09.bin,0,The connection to the backup server broke: Unable to connect to the remote server,,,0
+2026-10-07 10:03:57	-	qa-win	1791366563674	2026-10-07-10-03-57	1791367437178,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 10:04:55	-	qa-win	1791366563674	2026-10-07-10-04-55	1791367495075,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 10:05:11	-	qa-win	1791366563674	2026-10-07-10-05-11	1791367511458,warn,,0,"Shadow Copy of C: could not be created: ERR=  Invoke-CimMethod : Initialization failure   At line:1 char:6  + $r = Invoke-CimMethod -ClassName Win32_ShadowCopy -MethodName Create  ...  +      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      + CategoryInfo          : NotSpecified: (root\\cimv2:Win32_ShadowCopy:String) [Invoke-CimMethod], CimException      + FullyQualifiedErrorId : HRESULT 0x80041014,Microsoft.Management.Infrastructure.CimCmdlets.InvokeCimMethodCommand",,,0
+2026-10-07 10:05:11	-	qa-win	1791366563674	2026-10-07-10-05-11	1791367511497,end,,0,BS_STOP_SUCCESS_WITH_WARNING,,,0
+2026-10-07 10:08:33	-	qa-win	1791366563674	2026-10-07-10-08-33	1791367713731,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 10:10:35	-	qa-win	1791366563674	2026-10-07-10-10-34	1791367834999,warn,,0,Cannot list C:\OnlineBackup-QA\Data\Documents (files kept): Access to the path 'C:\OnlineBackup-QA\Data\Documents' is denied.,,,0
+2026-10-07 10:10:35	-	qa-win	1791366563674	2026-10-07-10-10-34	1791367834999,err,C:\OnlineBackup-QA\Data\Documents,0,Not backed up: this source could not be read now (its earlier backups are kept),,,0
+2026-10-07 10:10:35	-	qa-win	1791366563674	2026-10-07-10-10-34	1791367834999,end,,0,BS_STOP_SUCCESS_WITH_ERROR,,,0
+2026-10-07 10:11:20	-	qa-win	1791366563674	2026-10-07-10-11-19	1791367879333,end,,0,RESTORE_STOP_SUCCESS,,,0

@@ -1,0 +1,15 @@
+2026-10-07 09:48:12	::1	admin login ok admin
+2026-10-07 09:48:49	::1	login ok qa-win
+2026-10-07 09:48:49	::1	device registered qa-win computer=runnervmfi6oq
+2026-10-07 09:48:49	::1	login ok qa-win
+2026-10-07 09:49:23	::1	encryption key saved for recovery qa-win/1791366563674
+2026-10-07 09:49:43	::1	backup started qa-win/1791366563674 2026-10-07-09-49-43
+2026-10-07 09:49:47	::1	backup committed qa-win/1791366563674 2026-10-07-09-49-43 bad=0
+2026-10-07 09:50:30	::1	restore-test download qa-win/1791366563674
+2026-10-07 09:50:30	::1	restore-test download qa-win/1791366563674
+2026-10-07 09:50:30	::1	restore-test download qa-win/1791366563674
+2026-10-07 09:50:30	::1	restore-test download qa-win/1791366563674
+2026-10-07 09:50:30	::1	restore-test download qa-win/1791366563674
+2026-10-07 09:50:35	::1	backup started qa-win/1791366563674 2026-10-07-09-50-35
+2026-10-07 09:50:35	::1	backup committed qa-win/1791366563674 2026-10-07-09-50-35 bad=0
+2026-10-07 09:51:01	::1	login ok qa-win
