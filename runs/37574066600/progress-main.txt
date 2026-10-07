@@ -54,3 +54,4 @@
 05:32:22   waiting up to 45 min for a new Backup run
 05:32:24 end W17 FAIL The System State set is added: ITSguard Server Online: No folders were chosen for backup.
 05:32:25 start W18 Reboot
+05:32:26 end W18 NOT TESTED a GitHub-hosted runner cannot restart (the job ends with the machine). The real reboot runs in the virtual-machine job (phase before-reboot / after-reboot).
