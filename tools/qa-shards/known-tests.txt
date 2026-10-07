@@ -324,15 +324,17 @@ OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestore
 OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository
 OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing
 OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical
-OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: "/home/anna/a.txt")
-OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: "C:\\not\\a\\linux\\path")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "/C/Users/anna/a.txt", expected: "/C/Users/anna/a.txt")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "C:", expected: "/C")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "C:\\", expected: "/C/")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "C:\\Users\\anna\\Documents\\invoice 7.pdf", expected: "/C/Users/anna/Documents/invoice 7.pdf")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "D:/Mixed\\slashes/x.txt", expected: "/D/Mixed/slashes/x.txt")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "\\\\server\\share\\x.txt", expected: "\\\\server\\share\\x.txt")
-OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: "c:\\Data\\Report [final].docx", expected: "/C/Data/Report [final].docx")
+OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: "C:", expected: "/C")
+OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: "C:\\", expected: "/C/")
+OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: "C:\\Users\\anna\\Documents\\invoice 7.pdf", expected: "/C/Users/anna/Documents/invoice 7.pdf")
+OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: "D:/Mixed\\slashes/x.txt", expected: "/D/Mixed/slashes/x.txt")
+OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: "c:\\Data\\Report [final].docx", expected: "/C/Data/Report [final].docx")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: "")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: "/C/Users/anna/a.txt")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: "/home/anna/a.txt")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: "\\\\server\\share\\x.txt")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: "relative/name.txt")
+OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)
 OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores
 OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository
 OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota

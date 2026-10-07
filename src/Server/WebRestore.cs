@@ -72,6 +72,7 @@ namespace OnlineBackup.Server
         {
             CheckPoint(point);
             var args = new List<string> { "ls", "--json", point };
+            path = OnlineBackup.Core.ResticPaths.Of(path);   // bug 100: a folder asked for as Windows writes it
             if (!string.IsNullOrEmpty(path)) args.Add(path);
             var items = new List<Msg>();
             var norm = string.IsNullOrEmpty(path) ? null : path.TrimEnd('/');
@@ -107,7 +108,7 @@ namespace OnlineBackup.Server
             try
             {
                 var args = new List<string> { "restore", point, "--target", tmp };
-                foreach (var p in paths) { args.Add("--include"); args.Add(GlobLiteral(p)); }
+                foreach (var p in paths) { args.Add("--include"); args.Add(GlobLiteral(OnlineBackup.Core.ResticPaths.Of(p))); }   // bug 100: C:\... -> /C/...
                 Run(repo, password, args.ToArray());
                 long n = 0;
                 using (var z = new ZipArchive(output, ZipArchiveMode.Create, true))

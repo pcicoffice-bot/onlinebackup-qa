@@ -1,13 +1,13 @@
-using OnlineBackup.Agent;
+using OnlineBackup.Core;
 using Xunit;
 
 namespace OnlineBackup.Tests
 {
-    /// <summary>Bug 100 (QA shards, hosted Windows with restic, run 37655041862): a restore from the website of chosen files
-    /// failed - "Fatal: All path filters must be absolute, starting with a forward slash '/'". restic names a Windows file
-    /// "/C/Users/..." (the drive letter as the first folder, forward slashes); the restore API takes the customer's path as
-    /// Windows writes it ("C:\Users\..."), and the agent gave it to restic unchanged. The agent now gives restic its own
-    /// form; a path already in restic's form, and every path on Linux, stay as they are. The Windows behaviour itself is
+    /// <summary>Bug 100 (QA shards, hosted Windows with restic, runs 37655041862 and 37668510911): a restore from the website of
+    /// chosen files failed - "Fatal: All path filters must be absolute, starting with a forward slash". restic names a Windows
+    /// file "/C/Users/..."; the restore API took the path as Windows writes it ("C:\Users\...") and the server (WebRestore)
+    /// and the agent (ResticRunner) gave it to restic unchanged. Both now give restic its own form - by the path's shape, not
+    /// by the system they run on (a Linux server restores a Windows computer's backup too). The Windows behaviour itself is
     /// proven by WebRestoreTests on the hosted-Windows QA shards.</summary>
     public class ResticPathComponentTests
     {
@@ -17,19 +17,21 @@ namespace OnlineBackup.Tests
         [InlineData(@"D:/Mixed\slashes/x.txt", "/D/Mixed/slashes/x.txt")]
         [InlineData(@"C:\", "/C/")]
         [InlineData(@"C:", "/C")]
-        [InlineData("/C/Users/anna/a.txt", "/C/Users/anna/a.txt")]                  // already restic's form (from the point's list)
-        [InlineData(@"\\server\share\x.txt", @"\\server\share\x.txt")]              // a network path: not restic's to rename here
-        public void OnWindows_TheCustomersPathBecomesResticsForm(string given, string expected)
+        public void AWindowsPath_BecomesResticsForm(string given, string expected)
         {
-            Assert.Equal(expected, ResticRunner.ToResticPath(given, windows: true));
+            Assert.Equal(expected, ResticPaths.Of(given));
         }
 
         [Theory]
-        [InlineData("/home/anna/a.txt")]
-        [InlineData(@"C:\not\a\linux\path")]   // on Linux this is a (strange) relative name: left as it is
-        public void OnLinux_EveryPathStaysAsItIs(string given)
+        [InlineData("/C/Users/anna/a.txt")]                 // already restic's form (from the point's list)
+        [InlineData("/home/anna/a.txt")]                    // Linux
+        [InlineData(@"\\server\share\x.txt")]               // a network path: not restic's to rename here
+        [InlineData("relative/name.txt")]
+        [InlineData("")]
+        [InlineData(null)]
+        public void EveryOtherPath_StaysAsItIs(string given)
         {
-            Assert.Equal(given, ResticRunner.ToResticPath(given, windows: false));
+            Assert.Equal(given, ResticPaths.Of(given));
         }
     }
 }
