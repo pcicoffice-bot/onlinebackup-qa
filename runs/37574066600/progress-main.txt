@@ -21,3 +21,4 @@
 05:09:23 start W08 Service stopped mid-backup: the run ends cleanly; start; backup and restore identical
 05:12:04   waiting up to 20 min for a new Backup run
 05:12:43   waiting up to 20 min for a new Restore run
+05:12:45 end W08 FAIL The backup is running: live=False || Stop the service (Windows service manager) while it backs up: Stopped; live job when stopped '' || The stopped run is closed on the server (not running): live 0; job '': not recorded
