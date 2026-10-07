@@ -50,3 +50,4 @@
 11:24:12 start W15 Uninstall through the installer window, reinstall, sign in again, backup and restore
 11:26:28   waiting up to 20 min for a new Backup run
 11:27:09   waiting up to 20 min for a new Restore run
+11:27:19 end W15 PASS 
