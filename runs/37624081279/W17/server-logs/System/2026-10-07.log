@@ -1,0 +1,7 @@
+2026-10-07 12:55:31	-	server started https://+:8443/
+2026-10-07 12:55:33	-	server started https://+:8443/
+2026-10-07 12:59:26	::1	error: PUT /api/sets/1791377809213/jobs/2026-10-07-12-59-09/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)
+2026-10-07 13:02:10	::1	error: PUT /api/sets/1791377809213/jobs/2026-10-07-13-01-57/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)
+2026-10-07 13:10:24	-	server started https://+:8443/
+2026-10-07 13:10:24	127.0.0.1	error: GET /api/quota: IOException The process cannot access the file 'C:\obqa\users\qa-win\db\devices.xml' because it is being used by another process. @ at OnlineBackup.Server.Users.CheckDevice(String token, String ip, String agent)
+2026-10-07 13:24:08	-	server started https://+:8443/

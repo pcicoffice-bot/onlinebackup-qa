@@ -1,0 +1,209 @@
+﻿{
+    "screen":  "Tour 1024x768 en page 4 Security",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  0,
+                 "w":  1044,
+                 "h":  719,
+                 "x":  0
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  808,
+                                      "h":  608,
+                                      "x":  228
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  123,
+                                      "w":  735,
+                                      "h":  150,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Two-step verification",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  129,
+                                      "w":  735,
+                                      "h":  30,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Protect restores and changes with a code from an authenticator app on your phone (Google Authenticator, Microsoft Authenticator, Authy…).",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  735,
+                                      "h":  40,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Turn on",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  110,
+                                      "h":  36,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  220,
+                                      "h":  608,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Backup status",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  119,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Restore",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "New backup",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Security",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  263,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Help",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  311,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Version 0.2.29  ·  Check for updates",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  623,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  663,
+                                      "w":  196,
+                                      "h":  23,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Powered by ITSguard Server Online",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  647,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  31,
+                                      "w":  1028,
+                                      "h":  72,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

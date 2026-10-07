@@ -1,0 +1,352 @@
+﻿{
+    "screen":  "Tour 1024x768 he page 2 שחזור",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  0,
+                 "w":  1044,
+                 "h":  719,
+                 "x":  0
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  808,
+                                      "h":  608,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  123,
+                                      "w":  752,
+                                      "h":  687,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "שחזור",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  129,
+                                      "w":  752,
+                                      "h":  30,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "גיבוי",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  171,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "QA files",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  196,
+                                      "w":  520,
+                                      "h":  27,
+                                      "x":  268
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "נקודת שחזור (תאריך)",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  235,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "האחרון — 2026-10-07-13-33-22",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  260,
+                                      "w":  520,
+                                      "h":  27,
+                                      "x":  268
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "קבצים (ללא סימון = הכול)",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  299,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  324,
+                                      "w":  752,
+                                      "h":  27,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "סינון לפי שם קובץ או תיקייה",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  359,
+                                      "w":  752,
+                                      "h":  17,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Tree",
+                         "name":  "",
+                         "cls":  "WindowsForms10.SysTreeView32.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  382,
+                                      "w":  752,
+                                      "h":  260,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "לשחזר אל תיקייה",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  654,
+                                      "w":  752,
+                                      "h":  21,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "C:\\Users\\runneradmin\\Desktop\\Restore",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  679,
+                                      "w":  700,
+                                      "h":  27,
+                                      "x":  154
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "…",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  679,
+                                      "w":  110,
+                                      "h":  30,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "להחליף קבצים קיימים",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  716,
+                                      "w":  752,
+                                      "h":  28,
+                                      "x":  36
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "שחזור",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  752,
+                                      "w":  110,
+                                      "h":  36,
+                                      "x":  678
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  220,
+                                      "h":  608,
+                                      "x":  816
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "מצב הגיבוי",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  119,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "שחזור",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "גיבוי חדש",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "אבטחה",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  263,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "עזרה",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  311,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "גרסה 0.2.29  ·  בדיקת עדכונים",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  623,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "עברית",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  663,
+                                      "w":  196,
+                                      "h":  23,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "מופעל על ידי ITSguard Server Online",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  647,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  828
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  31,
+                                      "w":  1028,
+                                      "h":  72,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

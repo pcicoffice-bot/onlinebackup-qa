@@ -1,0 +1,180 @@
+﻿
+
+TimeCreated      : 10/7/2026 1:23:48 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 1:22:48 PM
+ProviderName     : Application Error
+Id               : 1000
+LevelDisplayName : Error
+Message          : Faulting application name: OnlineBackup.Client.exe, version: 0.1.29.0, time stamp: 0xb6568712
+                   Faulting module name: KERNELBASE.dll, version: 10.0.26100.33438, time stamp: 0xace796d3
+                   Exception code: 0xe0434352
+                   Fault offset: 0x00000000000c75fa
+                   Faulting process id: 0x760
+                   Faulting application start time: 0x1DD565EF249A3FD
+                   Faulting application path: C:\Program Files\ITSguard Server Online\OnlineBackup.Client.exe
+                   Faulting module path: C:\Windows\System32\KERNELBASE.dll
+                   Report Id: fdbd2de9-d5f3-40a4-8c03-81e5c64f0efc
+                   Faulting package full name: 
+                   Faulting package-relative application ID: 
+
+TimeCreated      : 10/7/2026 1:22:48 PM
+ProviderName     : .NET Runtime
+Id               : 1026
+LevelDisplayName : Error
+Message          : Application: OnlineBackup.Client.exe
+                   Framework Version: v4.0.30319
+                   Description: The process was terminated due to an unhandled exception.
+                   Exception Info: System.IO.FileNotFoundException
+                      at OnlineBackup.ClientApp.Program.Main(System.String[])
+                   
+                   
+
+TimeCreated      : 10/7/2026 1:21:20 PM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/7/2026 1:20:07 PM
+ProviderName     : Application Error
+Id               : 1000
+LevelDisplayName : Error
+Message          : Faulting application name: OnlineBackup.Client.exe, version: 0.1.29.0, time stamp: 0xb6568712
+                   Faulting module name: KERNELBASE.dll, version: 10.0.26100.33438, time stamp: 0xace796d3
+                   Exception code: 0xe0434352
+                   Fault offset: 0x00000000000c75fa
+                   Faulting process id: 0x1B20
+                   Faulting application start time: 0x1DD565E927C859A
+                   Faulting application path: C:\Program Files\ITSguard Server Online\OnlineBackup.Client.exe
+                   Faulting module path: C:\Windows\System32\KERNELBASE.dll
+                   Report Id: f24cc626-151c-4108-b6de-50c7410c6483
+                   Faulting package full name: 
+                   Faulting package-relative application ID: 
+
+TimeCreated      : 10/7/2026 1:20:07 PM
+ProviderName     : .NET Runtime
+Id               : 1026
+LevelDisplayName : Error
+Message          : Application: OnlineBackup.Client.exe
+                   Framework Version: v4.0.30319
+                   Description: The process was terminated due to an unhandled exception.
+                   Exception Info: System.IO.FileNotFoundException
+                      at OnlineBackup.ClientApp.Program.Main(System.String[])
+                   
+                   
+
+TimeCreated      : 10/7/2026 1:19:55 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 1:12:45 PM
+ProviderName     : VSS
+Id               : 8225
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to shutdown event from the Service Control Manager. 
+
+TimeCreated      : 10/7/2026 1:10:24 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 1:10:14 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: No connection to the backup server: Unable to connect to the remote server
+
+TimeCreated      : 10/7/2026 1:07:40 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files: the previous backup was interrupted — reported
+
+TimeCreated      : 10/7/2026 1:07:40 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 1:04:57 PM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/7/2026 1:02:09 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 1:00:27 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files: the previous backup was interrupted — reported
+
+TimeCreated      : 10/7/2026 1:00:26 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 12:57:57 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files restore test: 5/5
+
+TimeCreated      : 10/7/2026 12:57:57 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 12:57:56 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 12:56:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 12:56:01 PM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/7/2026 12:55:33 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 12:55:32 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 12:55:31 PM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+
+
