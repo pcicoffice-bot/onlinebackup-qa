@@ -25,10 +25,11 @@ namespace OnlineBackup.Tests
         sealed class ShaFlipProxy : IDisposable
         {
             readonly TcpListener l = new TcpListener(IPAddress.Loopback, 0);
-            readonly int target; int left; int flipped;
+            readonly int target; int left; int flipped; int refused;
             readonly List<TcpClient> open = new List<TcpClient>();
             public int Port { get { return ((IPEndPoint)l.LocalEndpoint).Port; } }
             public int Flipped { get { return flipped; } }
+            public int Refused { get { return refused; } }
             public ShaFlipProxy(int targetPort, int flips)
             {
                 target = targetPort; left = flips; l.Start();
@@ -37,7 +38,11 @@ namespace OnlineBackup.Tests
                     while (true)
                     {
                         TcpClient a; try { a = l.AcceptTcpClient(); } catch (Exception) { return; }
-                        var b = new TcpClient(); b.Connect(IPAddress.Loopback, target);
+                        // a late connection after the server is gone must not throw on this thread: an unhandled exception
+                        // in a background thread ends the whole test process (CI gate run 37557981765: aborted after 7 tests)
+                        var b = new TcpClient();
+                        try { b.Connect(IPAddress.Loopback, target); }
+                        catch (Exception) { Interlocked.Increment(ref refused); try { a.Close(); b.Close(); } catch (Exception) { } continue; }
                         lock (open) { open.Add(a); open.Add(b); }
                         Pump(a, b, true); Pump(b, a, false);
                     }
@@ -133,6 +138,18 @@ namespace OnlineBackup.Tests
                 Assert.NotEqual("BS_STOP_SUCCESS_WITH_WARNING", r.Result);
                 Assert.Contains(r.LogLines, l => l.Contains("different copy than was sent"));
             });
+        }
+        [Fact]
+        public void TheProxy_AConnectionAfterTheServerIsGone_DoesNotEndTheTestProcess()
+        {
+            var gone = new TcpListener(IPAddress.Loopback, 0); gone.Start(); var port = ((IPEndPoint)gone.LocalEndpoint).Port; gone.Stop();
+            using (var proxy = new ShaFlipProxy(port, 0))
+            {
+                for (int i = 0; i < 2; i++) using (var c = new TcpClient()) { c.Connect(IPAddress.Loopback, proxy.Port); Thread.Sleep(300); }
+                var until = DateTime.UtcNow.AddSeconds(5);
+                while (proxy.Refused < 2 && DateTime.UtcNow < until) Thread.Sleep(50);
+                Assert.Equal(2, proxy.Refused);                                             // the second one was still accepted
+            }
         }
     }
 }

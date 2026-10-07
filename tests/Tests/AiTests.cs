@@ -32,6 +32,13 @@ namespace OnlineBackup.Tests
                 {
                     HttpListenerContext c;
                     try { c = l.GetContext(); } catch { return; }
+                    try { Serve(c); } catch (Exception) { }   // a client gone mid-reply must not end the test process
+                }
+            }) { IsBackground = true }.Start();
+            Environment.SetEnvironmentVariable("OB_AI_BASE_URL", Url.TrimEnd('/'));
+        }
+        void Serve(HttpListenerContext c)
+        {
                     var body = new StreamReader(c.Request.InputStream, Encoding.UTF8).ReadToEnd();
                     var head = c.Request.Url.PathAndQuery + "\n" + string.Join("\n", c.Request.Headers.AllKeys.Select(k => k.ToLowerInvariant() + ": " + c.Request.Headers[k]));
                     lock (Requests) Requests.Add(new KeyValuePair<string, string>(head, body));
@@ -45,9 +52,6 @@ namespace OnlineBackup.Tests
                         });
                     var b = Encoding.UTF8.GetBytes(reply);
                     c.Response.ContentType = "application/json"; c.Response.ContentLength64 = b.Length; c.Response.OutputStream.Write(b, 0, b.Length); c.Response.Close();
-                }
-            }) { IsBackground = true }.Start();
-            Environment.SetEnvironmentVariable("OB_AI_BASE_URL", Url.TrimEnd('/'));
         }
         public void Dispose() { Environment.SetEnvironmentVariable("OB_AI_BASE_URL", null); try { l.Stop(); l.Close(); } catch { } }
     }
