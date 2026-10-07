@@ -1,0 +1,29 @@
+﻿{
+    "id":  "W18",
+    "title":  "Reboot",
+    "dir":  "C:\\obqa-vm\\out\\vm-1-before-restart\\W18",
+    "started":  "2026-10-07T09:12:51.4420112-07:00",
+    "result":  "PASS",
+    "reason":  "",
+    "steps":  [
+                  {
+                      "step":  "The schedule before the restart",
+                      "expected":  "a daily or weekly schedule of this set, and finished backups before it",
+                      "actual":  "\u003cDAILY_SCHEDULE ID=\"1791389510612\" NAME=\"Backup Schedule\" HOUR=\"22\" MINUTE=\"0\" DURATION=\"-1\" BACKUP_TYPE=\"FILE\" BACKUP_INTERVAL=\"-1\" ENABLED_SKIP_BACKUP=\"N\" /\u003e; 1 backup runs",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:12:51"
+                  },
+                  {
+                      "step":  "Ready for a real restart",
+                      "expected":  "the saved state reads back with the set and the time of the restart",
+                      "actual":  "C:\\obqa\\state.json set 1791389510609 at 2026-10-07T09:12:51.5045075-07:00",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:12:51"
+                  }
+              ],
+    "ended":  "2026-10-07T09:12:51.8951483-07:00"
+}

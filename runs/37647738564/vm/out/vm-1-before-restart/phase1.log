@@ -1,0 +1,119 @@
+[robot] the client-side providers could not be registered (Exception calling "RegisterClientSideProviderAssembly" with "1" argument(s): "Object reference not set to an instance of an object."); controls are found by their name and window class, and used through Windows messages
+{
+    "phase":  "before-reboot",
+    "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+    "computer":  "WIN-7ASEUIF8LN1",
+    "package":  "OnlineBackup-Server-0.1.31.zip",
+    "commit":  null,
+    "run":  null,
+    "started":  "2026-10-07T09:10:22.2956975-07:00",
+    "resolution":  "1280x800",
+    "dpi":  100,
+    "powershell":  "5.1.26100.7920",
+    "interactive":  true,
+    "user":  "WIN-7ASEUIF8LN1\\Docker"
+}
+
+==== W01 Server: install from the real package (Windows service) and sign in
+[PASS] install-server.ps1 in Windows PowerShell (as the README says) -- exit 0; Running
+[PASS] The server service starts again with the licence -- Running
+[PASS] Server service: automatic start, restarts after a failure -- Auto;         RESET_PERIOD (in seconds)    : 86400         FAILURE_ACTIONS              : RESTART -- Delay = 60000 milliseconds.                                        RESTART -- Delay = 60000 milliseconds.                                        RESTART -- Delay = 300000 milliseconds.
+[PASS] Admin sign-in over HTTPS (password + authenticator) -- HTTP 200
+[PASS] A customer account for this computer -- 1 users
+[PASS] Download the client Setup.exe from the server (what the IT company hands out) -- HTTP 200, 13895626 bytes
+==== W01: PASS 
+
+==== W03 Client installation through the installer window, proven by Windows
+[PASS] Setup.exe opens its window -- ITSguard Server Online
+[PASS] Installer 01 - Welcome -- Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider's backup server, encrypted on this computer before they leave. | Computer: WIN-7ASEUIF8LN1 | Click Next to continue, or Cancel to exit. | English | Next | Cancel
+[UX PASS] Installer: the first page says what will be installed -- Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider's backup server, encrypted on this computer before they leave. | Computer: WIN-7ASEUIF8LN1 | Click Next to continue, or Cancel to exit. | English | Next | Cancel
+[PASS] Installer 02 - License agreement -- License agreement | Please read the license agreement. To continue, accept it. | ITSguard Server Online - license agreement
+
+1. This software is licensed, not sold, by support (the provider) to back up your computers to the provider's backup service.
+
+2. You may install it on the computers covered by your service agreement. You may not copy, change, decompile or resell it.
+
+3. Your files are encrypted on this computer before they are sent. Keep your password: without it, backups cannot be restored.
+
+4. The software sends the backup service what it needs to work: the computer's name, the backup status and logs. It checks for updates by itself.
+
+5. The software is provided as is, as far as the law allows. The provider is not liable for indirect damage or for lost data beyond what your service agreement says.
+
+6. Removing the software from this computer does not delete your backups on the server. | I accept the terms of the license agreement | English | Back | Install | Cancel
+[PASS] Install is disabled before the license is accepted -- enabled=False
+[UX PASS] Installer: a license agreement must be accepted before installing -- enabled=False
+[PASS] Back returns to Welcome, Next comes back -- Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider's backup server, encrypted on this computer before they leave. | Computer: WIN-7ASEUIF8LN1 | Click Next to continue, or Cancel to exit. | English | Next | Cancel
+[PASS] Accept the license (tick the box) -- ticked= install enabled=True
+[INFO] Installer pages that exist -- Welcome -> License agreement -> Installation (progress) -> Finish. There is no configuration page (folder, options) and no "Ready to install" page in the current installer.
+[UX Low] Installer: a "Ready to install" summary before installing -- Installer: a "Ready to install" summary before installing -- the license page's button installs at once (no configuration or ready page)
+[UX FAIL] Installer: a "Ready to install" summary before installing -- the license page's button installs at once (no configuration or ready page)
+[PASS] Installer 04 - Installing (progress) -- Installing ITSguard Server Online. | Please wait. This takes about a minute. |   ITSguard Server Online - https://localhost:8443 |   Installed to C:\Program Files\ITSguard Server Online | English | Cancel
+[UX PASS] Installer: progress is visible while installing -- see the screenshot
+[PASS] Installer 05 - Finish -- ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish
+[UX PASS] Installer: the last page says the result and what to do next -- ITSguard Server Online is installed | It runs in the background and starts with Windows. When it opens, sign in with your user name and password, or open a new account. | Open ITSguard Server Online now | English | Finish
+[PASS] The setup window closes after Finish -- 0 window(s) left
+[PASS] Windows service manager: the backup service exists, starts automatically and is Running -- Running Auto as LocalSystem
+[PASS] Its process runs from the installed program -- pid 2664 C:\Program Files\ITSguard Server Online\OnlineBackup.Agent.exe
+[PASS] Installed programs list (Apps / Programs and Features) -- ITSguard Server Online 0.1.31 [ITSguard Server Online] C:\Program Files\ITSguard Server Online
+[PASS] The program files on disk -- C:\Program Files\ITSguard Server Online; missing: 
+[PASS] The settings folder (ProgramData) belongs to SYSTEM and Administrators only -- NT AUTHORITY\SYSTEM:FullControl; BUILTIN\Administrators:FullControl
+[PASS] Start menu shortcut and start with Windows -- C:\Users\Public\Desktop\ITSguard Server Online.lnk ; C:\ProgramData\Microsoft\Windows\Start Menu\Programs\ITSguard Server Online.lnk ; C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\ITSguard Server Online.lnk --tray; C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Startup\ITSguard Server Online.lnk --tray
+[PASS] Finish with "Open now" opens the program window -- ITSguard Server Online
+==== W03: PASS 
+
+==== W04 First run: sign in through the window, the agent connects to the server
+[PASS] Client 01 - First run: the sign-in page -- English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer - open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.
+[UX PASS] Client: the first screen asks only for what the customer received -- English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer - open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.
+[INFO] Accessibility -- the field 'User name' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[INFO] Accessibility -- the field 'Password' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[INFO] Messages while signing in -- ITSguard Server Online: This computer is connected. Now choose what to back up.
+[PASS] Client 04 - Connected: the program asks what to back up -- New backup | Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored - keep it safe. | Backup type | Files and folders | Backup name | Documents | Folders to back up | Daily backup time | 22:00 | New backup | Backup status | Restore | New backup | Security | Help | Version -  ú  Check for updates | English | Powered by ITSguard Server Online
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Pane is outside the window -- '' at 368,123 984x604; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'New backup' at 368,129 984x30; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored - keep it safe.' at 368,167 984x19; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'Backup type' at 368,198 984x21; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'Backup name' at 368,262 984x21; window 112,16 1056x719
+[VISUAL High] Client 04 - Connected: the program asks what to back up -- A Edit is outside the window -- 'Documents' at 368,287 984x27; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'Folders to back up' at 368,326 984x21; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Tree is outside the window -- '' at 368,355 984x240; window 112,16 1056x719
+[VISUAL Medium] Client 04 - Connected: the program asks what to back up -- A Text is outside the window -- 'Daily backup time' at 368,607 984x21; window 112,16 1056x719
+[UX PASS] Client: after signing in the program says the computer is connected and what to do next -- ITSguard Server Online: This computer is connected. Now choose what to back up.
+[PASS] ORACLE (server): this computer is registered and connected -- WIN-7ASEUIF8LN1 connected=1 seen=1791389479874 version=0.1.31.0
+==== W04: PASS 
+
+==== W05 FULL CHAIN: backup set in the window -> Back up now -> delete the source -> Restore in the window -> SHA-256
+[INFO] The golden dataset -- 112 files: text, Hebrew and Japanese names, spaces, an empty file, 20 MB + 3 MB random, duplicates, 100 small files, a long path, read-only and hidden files
+[PASS] Client 05 - New backup page -- New backup | Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored - keep it safe. | Backup type | Files and folders | Backup name | Documents | Folders to back up | Daily backup time | 22:00 | New backup | Backup status | Restore | New backup | Security | Help | Version -  ú  Check for updates | English | Powered by ITSguard Server Online
+[VISUAL Medium] Client 05 - New backup page -- A Pane is outside the window -- '' at 368,119 747x621; window 112,16 1056x719
+[INFO] Accessibility -- the field 'Backup name' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[INFO] Tick the folder in the tree -- C:\OnlineBackup-QA\Data (keyboard: name typed, space bar); not readable through UI Automation - the server's copy of the set is the proof (next step)
+[VISUAL Medium] Client 06 - Backup configured -- A Pane is outside the window -- '' at 368,119 747x621; window 112,16 1056x719
+[INFO] Messages when adding the backup -- ITSguard Server Online: The backup was added
+[PASS] Client 08 - The backup is listed on the status page -- Partly protected | Some backups finished with warnings or have not run yet. | Change | Back up now | QA files | C:\OnlineBackup-QA\Data | Automatic backup every day at 22:00  ú  last backup: Not yet  ú  Not yet | Backup status | Restore | New backup | Security | Help | Version -  ú  Check for updates | English | Powered by ITSguard Server Online || ITSguard Server Online: The backup was added
+[PASS] ORACLE (server): the backup set exists with the chosen folder -- set id 1791389510609; sources C:\OnlineBackup-QA\Data; computer WIN-7ASEUIF8LN1
+[PASS] Backup 1 - result -- server: BS_STOP_SUCCESS (new 112, bytes 24174191); window:  Automatic backup every day at 22:00  ú  last backup: 2026-10-07-16-12-18  ú  Completed successfully ; messages: ITSguard Server Online: The backup has started
+[UX PASS] Backup 1 - the window shows the result of the backup --  Automatic backup every day at 22:00  ú  last backup: 2026-10-07-16-12-18  ú  Completed successfully 
+[PASS] Restore 1 - the source folder is deleted -- C:\OnlineBackup-QA\Data (kept by the robot in C:\obqa\source-aside-1)
+[PASS] Restore 1 - Restore page -- Restore | Backup | QA files | Restore point (date) | Latest - 2026-10-07-16-12-13 | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\Users\Docker\Desktop\Restore | . | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version -  ú  Check for updates | English | Powered by ITSguard Server Online
+[VISUAL Medium] Restore 1 - Restore page -- A Pane is outside the window -- '' at 368,119 764x687; window 112,16 1056x719
+[VISUAL High] Restore 1 - Restore page -- A Button is outside the window -- 'Replace existing files' at 368,712 764x28; window 112,16 1056x719
+[VISUAL High] Restore 1 - Restore page -- A Button is outside the window -- 'Restore' at 368,748 110x36; window 112,16 1056x719
+[VISUAL Medium] Restore 1 - Restore page -- Two controls on top of each other -- 'C:\Users\Docker\Desktop\Restore' (Edit) and '.' (Button) share 47%
+[INFO] Accessibility -- the field 'Restore to folder' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[VISUAL Medium] Restore 1 - Restore selection -- A Pane is outside the window -- '' at 368,119 764x687; window 112,16 1056x719
+[VISUAL High] Restore 1 - Restore selection -- A Button is outside the window -- 'Replace existing files' at 368,712 764x28; window 112,16 1056x719
+[VISUAL High] Restore 1 - Restore selection -- A Button is outside the window -- 'Restore' at 368,748 110x36; window 112,16 1056x719
+[VISUAL Medium] Restore 1 - Restore selection -- Two controls on top of each other -- 'C:\obqa\restore-1' (Edit) and '.' (Button) share 47%
+[INFO] Restore 1 - messages -- ITSguard Server Online: The restore has started - follow it in the "Backup status" tab
+[VISUAL Medium] Restore 1 - restore result in the window -- A Pane is outside the window -- '' at 368,139 747x687; window 112,16 1056x719
+[VISUAL High] Restore 1 - restore result in the window -- A Button is outside the window -- 'Replace existing files' at 368,732 747x28; window 112,16 1056x719
+[VISUAL High] Restore 1 - restore result in the window -- A Button is outside the window -- 'Restore' at 368,768 110x36; window 112,16 1056x719
+[VISUAL Medium] Restore 1 - restore result in the window -- Two controls on top of each other -- 'C:\Users\Docker\Desktop\Restore' (Edit) and '.' (Button) share 47%
+[PASS] Restore 1 - ORACLE: every restored file has the SHA-256 of the original -- server: RESTORE_STOP_SUCCESS; files 112/112; differences 0: 
+==== W05: PASS 
+
+==== W18 Reboot
+[PASS] The schedule before the restart -- <DAILY_SCHEDULE ID="1791389510612" NAME="Backup Schedule" HOUR="22" MINUTE="0" DURATION="-1" BACKUP_TYPE="FILE" BACKUP_INTERVAL="-1" ENABLED_SKIP_BACKUP="N" />; 1 backup runs
+[PASS] Ready for a real restart -- C:\obqa\state.json set 1791389510609 at 2026-10-07T09:12:51.5045075-07:00
+==== W18: PASS 
+5 journeys: 5 PASS, 0 FAIL, 0 NOT TESTED

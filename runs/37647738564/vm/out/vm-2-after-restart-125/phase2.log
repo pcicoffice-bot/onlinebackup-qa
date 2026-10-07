@@ -1,0 +1,58 @@
+[robot] the client-side providers could not be registered (Exception calling "RegisterClientSideProviderAssembly" with "1" argument(s): "Object reference not set to an instance of an object."); controls are found by their name and window class, and used through Windows messages
+{
+    "phase":  "after-reboot",
+    "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+    "computer":  "WIN-7ASEUIF8LN1",
+    "package":  "OnlineBackup-Server-0.1.31.zip",
+    "commit":  null,
+    "run":  null,
+    "started":  "2026-10-07T09:14:19.4155486-07:00",
+    "resolution":  "1280x800",
+    "dpi":  125,
+    "powershell":  "5.1.26100.7920",
+    "interactive":  true,
+    "user":  "WIN-7ASEUIF8LN1\\Docker"
+}
+
+==== W19 After a real Windows restart: services back, agent connected, no ghost run, no lock, schedule kept, backup and restore
+[PASS] Windows really restarted -- boot 10/07/2026 09:13:06; asked 2026-10-07T09:12:52.5045066-07:00
+[PASS] Both services came back by themselves -- agent Running, server Running
+[PASS] The agent is connected again (server view) -- connected=1 seen=1791389479874
+[PASS] No ghost run, no locked set -- live 0; set folder C:\obqa\users\qa-win\files\1791389510609; open runs: 0 
+[PASS] The schedule is kept -- <DAILY_SCHEDULE ID="1791389510612" NAME="Backup Schedule" HOUR="22" MINUTE="0" DURATION="-1" BACKUP_TYPE="FILE" BACKUP_INTERVAL="-1" ENABLED_SKIP_BACKUP="N" />
+[PASS] Backup after the restart - result -- server: BS_STOP_SUCCESS (new 0, bytes 538); window:  Automatic backup every day at 22:00  ú  last backup: 2026-10-07-16-14-55  ú  Completed successfully ; messages: ITSguard Server Online: The backup has started
+[UX PASS] Backup after the restart - the window shows the result of the backup --  Automatic backup every day at 22:00  ú  last backup: 2026-10-07-16-14-55  ú  Completed successfully 
+[PASS] Restore after the restart - the source folder is deleted -- C:\OnlineBackup-QA\Data (kept by the robot in C:\obqa\source-aside-2)
+[INFO] Accessibility -- the field 'Password' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[INFO] Restore after the restart - sign-in when the Restore page opened -- Sign in: Sign in Restoring and adding backups require your password. Password Verification code (if enabled)
+[PASS] Restore after the restart - Restore page -- Restore | Backup | QA files | Restore point (date) | Latest - 2026-10-07-16-14-54 | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\Users\Docker\Desktop\Restore | . | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.31  ú  Check for updates | English | Powered by ITSguard Server Online
+[VISUAL Medium] Restore after the restart - Restore page -- A Pane is outside the window -- '' at 368,136 743x733; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore page -- A Edit is outside the window -- 'C:\Users\Docker\Desktop\Restore' at 368,733 691x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore page -- A Button is outside the window -- '.' at 1001,733 110x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore page -- A Button is outside the window -- 'Replace existing files' at 368,775 743x28; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore page -- A Button is outside the window -- 'Restore' at 368,811 110x36; window 111,6 1058x727
+[VISUAL Medium] Restore after the restart - Restore page -- Two controls on top of each other -- 'C:\Users\Docker\Desktop\Restore' (Edit) and '.' (Button) share 53%
+[INFO] Accessibility -- the field 'Restore to folder' has no name in UI Automation (a screen reader says only 'edit'); the robot found it under its label
+[VISUAL Medium] Restore after the restart - Restore selection -- A Pane is outside the window -- '' at 368,136 743x733; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore selection -- A Edit is outside the window -- 'C:\obqa\restore-2' at 368,733 691x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore selection -- A Button is outside the window -- '.' at 1001,733 110x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore selection -- A Button is outside the window -- 'Replace existing files' at 368,775 743x28; window 111,6 1058x727
+[VISUAL High] Restore after the restart - Restore selection -- A Button is outside the window -- 'Restore' at 368,811 110x36; window 111,6 1058x727
+[VISUAL Medium] Restore after the restart - Restore selection -- Two controls on top of each other -- 'C:\obqa\restore-2' (Edit) and '.' (Button) share 53%
+[INFO] Restore after the restart - messages -- ITSguard Server Online: The restore has started - follow it in the "Backup status" tab
+[VISUAL Medium] Restore after the restart - restore result in the window -- A Pane is outside the window -- '' at 368,136 743x733; window 111,6 1058x727
+[VISUAL High] Restore after the restart - restore result in the window -- A Edit is outside the window -- 'C:\Users\Docker\Desktop\Restore' at 368,733 691x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - restore result in the window -- A Button is outside the window -- '.' at 1001,733 110x32; window 111,6 1058x727
+[VISUAL High] Restore after the restart - restore result in the window -- A Button is outside the window -- 'Replace existing files' at 368,775 743x28; window 111,6 1058x727
+[VISUAL High] Restore after the restart - restore result in the window -- A Button is outside the window -- 'Restore' at 368,811 110x36; window 111,6 1058x727
+[VISUAL Medium] Restore after the restart - restore result in the window -- Two controls on top of each other -- 'C:\Users\Docker\Desktop\Restore' (Edit) and '.' (Button) share 53%
+[PASS] Restore after the restart - ORACLE: every restored file has the SHA-256 of the original -- server: RESTORE_STOP_SUCCESS; files 112/112; differences 0: 
+==== W19: PASS 
+
+==== W20 Visual tour after the restart, at this session's scale
+[INFO] Scale -- 125% (set before the restart; Windows applies it at sign-in)
+[INFO] Resolution 1920x1080 -- NOT TESTED: asked 1920x1080, the screen is 1280x800
+[INFO] Resolution 1366x768 -- NOT TESTED: ChangeDisplaySettings -2
+[INFO] Resolution 1024x768 -- NOT TESTED: asked 1024x768, the screen is 1280x800
+==== W20: NOT TESTED the screen resolution could not be changed on this machine
+2 journeys: 1 PASS, 0 FAIL, 1 NOT TESTED

@@ -1,0 +1,66 @@
+﻿{
+    "screen":  "Removal asks for confirmation",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  335,
+                 "w":  548,
+                 "h":  252,
+                 "x":  372
+             },
+    "resolution":  "1280x800",
+    "dpi":  150,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "Yes",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  525,
+                                      "w":  113,
+                                      "h":  39,
+                                      "x":  654
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "No",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  525,
+                                      "w":  113,
+                                      "h":  39,
+                                      "x":  780
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  413,
+                                      "w":  48,
+                                      "h":  48,
+                                      "x":  408
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "Remove ITSguard Server Online from this computer?",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  431,
+                                      "w":  401,
+                                      "h":  26,
+                                      "x":  470
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

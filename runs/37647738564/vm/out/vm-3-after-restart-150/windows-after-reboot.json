@@ -1,0 +1,48 @@
+﻿{
+    "facts":  {
+                  "phase":  "after-reboot",
+                  "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+                  "computer":  "WIN-7ASEUIF8LN1",
+                  "package":  "OnlineBackup-Server-0.1.31.zip",
+                  "commit":  null,
+                  "run":  null,
+                  "started":  "2026-10-07T09:17:15.7237101-07:00",
+                  "resolution":  "1280x800",
+                  "dpi":  150,
+                  "powershell":  "5.1.26100.7920",
+                  "interactive":  true,
+                  "user":  "WIN-7ASEUIF8LN1\\Docker"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W19",
+                         "title":  "After a real Windows restart: services back, agent connected, no ghost run, no lock, schedule kept, backup and restore",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  30,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W20",
+                         "title":  "Visual tour after the restart, at this session\u0027s scale",
+                         "functional":  "NOT TESTED",
+                         "reason":  "the screen resolution could not be changed on this machine",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W21",
+                         "title":  "End of the lifecycle: uninstall through the installer window; the backups stay on the server",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  4,
+                         "uxFindings":  0
+                     }
+                 ]
+}

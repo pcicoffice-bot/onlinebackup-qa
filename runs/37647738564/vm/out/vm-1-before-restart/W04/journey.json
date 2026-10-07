@@ -1,0 +1,206 @@
+﻿{
+    "id":  "W04",
+    "title":  "First run: sign in through the window, the agent connects to the server",
+    "dir":  "C:\\obqa-vm\\out\\vm-1-before-restart\\W04",
+    "started":  "2026-10-07T09:11:17.7175982-07:00",
+    "result":  "PASS",
+    "reason":  "",
+    "steps":  [
+                  {
+                      "step":  "Client 01 - First run: the sign-in page",
+                      "expected":  "Sign in, the server, user name and password",
+                      "actual":  "English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "01-Client-01---First-run--the-sign-in-page.png",
+                      "at":  "09:11:17"
+                  },
+                  {
+                      "step":  "Accessibility",
+                      "expected":  "",
+                      "actual":  "the field \u0027User name\u0027 has no name in UI Automation (a screen reader says only \u0027edit\u0027); the robot found it under its label",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:11:17"
+                  },
+                  {
+                      "step":  "Accessibility",
+                      "expected":  "",
+                      "actual":  "the field \u0027Password\u0027 has no name in UI Automation (a screen reader says only \u0027edit\u0027); the robot found it under its label",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:11:18"
+                  },
+                  {
+                      "step":  "Messages while signing in",
+                      "expected":  "",
+                      "actual":  "ITSguard Server Online: This computer is connected. Now choose what to back up.",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:11:32"
+                  },
+                  {
+                      "step":  "Client 04 - Connected: the program asks what to back up",
+                      "expected":  "the \"New backup\" page",
+                      "actual":  "New backup | Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe. | Backup type | Files and folders | Backup name | Documents | Folders to back up | Daily backup time | 22:00 | New backup | Backup status | Restore | New backup | Security | Help | Version —  ·  Check for updates | English | Powered by ITSguard Server Online",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                      "at":  "09:11:32"
+                  },
+                  {
+                      "step":  "ORACLE (server): this computer is registered and connected",
+                      "expected":  "the computer in the customer\u0027s list, connected",
+                      "actual":  "WIN-7ASEUIF8LN1 connected=1 seen=1791389479874 version=0.1.31.0",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:11:32"
+                  }
+              ],
+    "ux":  [
+               {
+                   "step":  "UX: Client: the first screen asks only for what the customer received",
+                   "expected":  "server (pre-filled), user name, password",
+                   "actual":  "English | Sign in to ITSguard Server Online | Sign in with the user name and password you received, or open a new account. | Backup server | https://localhost:8443 | Use a different server address | I already have an account | I am a new customer — open an account | User name | Password | Code from the authenticator app (only if it is on) | Sign in | Need help? Contact support.",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "09:11:17",
+                   "layer":  "UX"
+               },
+               {
+                   "step":  "UX: Client: after signing in the program says the computer is connected and what to do next",
+                   "expected":  "a confirmation and the next step",
+                   "actual":  "ITSguard Server Online: This computer is connected. Now choose what to back up.",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "09:11:32",
+                   "layer":  "UX"
+               }
+           ],
+    "visual":  [
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Pane is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 368,123 984x604; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027New backup\u0027 at 368,129 984x30; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.\u0027 at 368,167 984x19; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Backup type\u0027 at 368,198 984x21; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Backup name\u0027 at 368,262 984x21; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Edit is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Documents\u0027 at 368,287 984x27; window 112,16 1056x719",
+                       "severity":  "High",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Folders to back up\u0027 at 368,326 984x21; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Tree is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 368,355 984x240; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W04",
+                       "screen":  "Client 04 - Connected: the program asks what to back up",
+                       "screenshot":  "04-Client-04---Connected--the-program-asks-what-to-back-up.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Text is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027Daily backup time\u0027 at 368,607 984x21; window 112,16 1056x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1280x800",
+                       "dpi":  100
+                   }
+               ],
+    "ended":  "2026-10-07T09:11:32.5422769-07:00"
+}

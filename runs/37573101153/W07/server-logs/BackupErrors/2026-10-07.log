@@ -1,5 +1,0 @@
-2026-10-07 04:53:10	-	qa-win	1791348744429	2026-10-07-04-53-10	1791348790030,end,,0,RESTORE_STOP_SUCCESS,,,0
-2026-10-07 04:54:10	-	qa-win	1791348744429	2026-10-07-04-54-10	1791348850491,end,,0,RESTORE_STOP_SUCCESS,,,0
-2026-10-07 04:56:00	-	qa-win	1791348744429	2026-10-07-04-56-00	1791348960167,warn,,0,"This computer's index of the set is not the server's last backup (2026-10-07-04-53-33 / 2026-10-07-04-54-37): another copy of this computer backed it up, or the last run was not recorded here. The index is rebuilt from the server and every difference is sent.",,,0
-2026-10-07 04:56:00	-	qa-win	1791348744429	2026-10-07-04-56-00	1791348960205,end,,0,BS_STOP_SUCCESS_WITH_WARNING,,,0
-2026-10-07 04:56:40	-	qa-win	1791348744429	2026-10-07-04-56-40	1791349000368,end,,0,RESTORE_STOP_SUCCESS,,,0
