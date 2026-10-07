@@ -1,0 +1,8 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical"
+ ],
+ "s02-r01": [
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+ ]
+}

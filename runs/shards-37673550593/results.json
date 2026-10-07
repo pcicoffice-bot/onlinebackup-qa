@@ -1,0 +1,72 @@
+{
+ "title": "windows-latest, select 'Restic_LongChain_EverySnapshotRestoresIdentical WebRestoreTests', 2 shards x 1 - run 37673550593 (8766e08155fa217ab6c232bab2954129c27482b8)",
+ "mode": "strict",
+ "build_sha": "21fe967dcec407bce49560bb6bd83ad63bf24350b915cd157673d37f73d08137",
+ "counts": {
+  "PASS": 1,
+  "FAIL": 1,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1368.6914741,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 55.8022805,
+    "note": "6 left in the server's temp folder after the web restore: webrestore-acdf403121fe [Directory], webrestore-d1cb7ac37f24 [Directory], webrestore-acdf403121fe\\C [Directory], webrestore-d1cb7ac37f24\\C [Directory], webrestore-acdf403121fe\\C\\Users [ReadOnly, Directory], webrestore-d1cb7ac37f24\\C\\Users [ReadOnly, Directory]",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001505",
+    "os": "Windows",
+    "sha": "8766e08155fa217ab6c232bab2954129c27482b8",
+    "build_sha": "21fe967dcec407bce49560bb6bd83ad63bf24350b915cd157673d37f73d08137",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 23
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001506",
+    "os": "Windows",
+    "sha": "8766e08155fa217ab6c232bab2954129c27482b8",
+    "build_sha": "21fe967dcec407bce49560bb6bd83ad63bf24350b915cd157673d37f73d08137",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
