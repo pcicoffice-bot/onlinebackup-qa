@@ -45,6 +45,33 @@ namespace OnlineBackup.Tests
             Directory.Delete(dir, true);
         }
 
+        /// <summary>Bug 96 (gate 37635681591, hosted Windows): 1 of 16 simultaneous requests answered 500 - Profile.Load used
+        /// XDocument.Load(path), which shares only reading, so it was refused while another request replaced Profile.xml. 93b had
+        /// moved File.ReadAll* to the shared readers but not the XML loads (20 more places). Linux never refuses an open, so the
+        /// behaviour is proven on Windows (the gate, and the QA shards repeating it); here: no product file is read any other way.</summary>
+        [Fact]
+        public void TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders()
+        {
+            var root = AppContext.BaseDirectory;
+            while (root != null && !File.Exists(Path.Combine(root, "src", "Core", "Profile.cs"))) root = Path.GetDirectoryName(root);
+            Assert.True(root != null, "the source folder was not found from " + AppContext.BaseDirectory);
+            var allowed = new[] { "XDocument.Load(fs)", "XElement.Load(fs)", "XElement.Load(r)" };   // the shared readers themselves; Msg reads a string
+            var bad = new System.Collections.Generic.List<string>();
+            foreach (var f in Directory.GetFiles(Path.Combine(root, "src"), "*.cs", SearchOption.AllDirectories))
+            {
+                if (f.Contains(Path.DirectorySeparatorChar + "obj" + Path.DirectorySeparatorChar) || f.Contains(Path.DirectorySeparatorChar + "bin" + Path.DirectorySeparatorChar)) continue;
+                var lines = File.ReadAllLines(f);
+                for (int i = 0; i < lines.Length; i++)
+                {
+                    var l = lines[i].Trim();
+                    if (l.StartsWith("//")) continue;
+                    foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(l, @"\b(XDocument|XElement)\.Load\([^)]*\)|\bFile\.ReadAll(Text|Lines|Bytes)\("))
+                        if (!allowed.Contains(m.Value)) bad.Add(f.Substring(root.Length + 1) + ":" + (i + 1) + "  " + m.Value);
+                }
+            }
+            Assert.True(bad.Count == 0, bad.Count + " reads of the product's own files that Windows refuses while the file is replaced:\n" + string.Join("\n", bad));
+        }
+
         [Fact]
         public void WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen()
         {

@@ -23,7 +23,7 @@ namespace OnlineBackup.Server
         public static XElement Load(SystemConfig cfg)
         {
             var p = PathOf(cfg);
-            return File.Exists(p) ? XElement.Load(p) : new XElement("CONTRACT", new XAttribute("VERSION", 0), new XAttribute("INSTALL", "Y"), new XAttribute("SIGNUP", "Y"), new XAttribute("REACCEPT", "Y"));
+            return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : new XElement("CONTRACT", new XAttribute("VERSION", 0), new XAttribute("INSTALL", "Y"), new XAttribute("SIGNUP", "Y"), new XAttribute("REACCEPT", "Y"));
         }
 
         public static int Version(SystemConfig cfg) { return (int?)Load(cfg).Attribute("VERSION") ?? 0; }

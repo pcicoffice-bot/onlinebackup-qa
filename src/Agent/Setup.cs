@@ -26,9 +26,9 @@ namespace OnlineBackup.Agent
 
         public static Result Run(string packageDir, Func<string, string> opt, Func<string, bool> flag, Action<string> say)
         {
-            var conn = XElement.Load(Path.Combine(packageDir, "connection.xml"));
+            var conn = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(packageDir, "connection.xml"));
             var brandPath = Path.Combine(packageDir, "branding.xml");
-            var brand = File.Exists(brandPath) ? XElement.Load(brandPath) : new XElement("BRANDING");
+            var brand = File.Exists(brandPath) ? OnlineBackup.Core.Atomic.LoadXElement(brandPath) : new XElement("BRANDING");
             var product = (string)brand.Attribute("PRODUCT"); if (string.IsNullOrEmpty(product)) product = "ITSguard Server Online";
             var folder = (string)conn.Attribute("FOLDER"); if (string.IsNullOrEmpty(folder)) folder = "OnlineBackup";
             bool windows = Environment.OSVersion.Platform == PlatformID.Win32NT;

@@ -138,7 +138,7 @@ namespace OnlineBackup.Agent
             if (r.Failed > 0) throw new AgentException(0, "RESTORE", "Restoring the image failed for " + r.Failed + " files. Do not use a partial image.");
             var mf = Path.Combine(work, "image.xml");
             if (!File.Exists(mf)) throw new AgentException(0, "RESTORE", "This point has no computer image.");
-            var m = XElement.Load(mf);
+            var m = OnlineBackup.Core.Atomic.LoadXElement(mf);
             string steps;
             if ((string)m.Attribute("TOOL") == "wbadmin")
             {

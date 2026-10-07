@@ -41,7 +41,7 @@ namespace OnlineBackup.Server
         {
             var fi = new FileInfo(UsersXml);
             if (indexDoc != null && fi.Exists && fi.LastWriteTimeUtc == indexTime && fi.Length == indexLength) return;
-            indexDoc = fi.Exists ? XDocument.Load(UsersXml) : new XDocument(new XElement("USERS"));
+            indexDoc = fi.Exists ? OnlineBackup.Core.Atomic.LoadXml(UsersXml) : new XDocument(new XElement("USERS"));
             indexTime = fi.Exists ? fi.LastWriteTimeUtc : DateTime.MinValue; indexLength = fi.Exists ? fi.Length : -1;
             var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); var l = new List<string>();
             foreach (var x in indexDoc.Root.Elements("USER")) { var n = (string)x.Attribute("LOGIN"); if (n == null || d.ContainsKey(n)) continue; d[n] = Path.Combine((string)x.Attribute("HOME"), n); l.Add(n); }
@@ -408,7 +408,7 @@ namespace OnlineBackup.Server
             lock (keptGate)
                 try
                 {
-                    var doc = File.Exists(KeptPath) ? XDocument.Load(KeptPath) : new XDocument(new XElement("KEPT"));
+                    var doc = File.Exists(KeptPath) ? OnlineBackup.Core.Atomic.LoadXml(KeptPath) : new XDocument(new XElement("KEPT"));
                     var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow) || (string)e.Attribute("HASH") == h).Remove();
                     doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N"), new XAttribute("ACCOUNT", s.Account ?? "")));
@@ -424,7 +424,7 @@ namespace OnlineBackup.Server
                 {
                     if (!File.Exists(KeptPath)) return null;
                     var h = Hash(token);
-                    var e = XDocument.Load(KeptPath).Root.Elements("S").FirstOrDefault(x => (string)x.Attribute("HASH") == h);
+                    var e = OnlineBackup.Core.Atomic.LoadXml(KeptPath).Root.Elements("S").FirstOrDefault(x => (string)x.Attribute("HASH") == h);
                     if (e == null || (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow)) return null;
                     bool admin = (string)e.Attribute("ADMIN") != "N";
                     if (admin && Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
@@ -442,7 +442,7 @@ namespace OnlineBackup.Server
                 try
                 {
                     if (!File.Exists(KeptPath)) return;
-                    var doc = XDocument.Load(KeptPath); var h = Hash(token);
+                    var doc = OnlineBackup.Core.Atomic.LoadXml(KeptPath); var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (string)e.Attribute("HASH") == h).Remove();
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
@@ -486,7 +486,7 @@ namespace OnlineBackup.Server
             {
                 var p = Path.Combine(UserDir(l), "db", "devices.xml");
                 if (!File.Exists(p)) continue;
-                n += XDocument.Load(p).Root.Elements("DEVICE").Where(d => (string)d.Attribute("REVOKED") != "Y")
+                n += OnlineBackup.Core.Atomic.LoadXml(p).Root.Elements("DEVICE").Where(d => (string)d.Attribute("REVOKED") != "Y")
                     .Select(d => ((string)d.Attribute("NAME") ?? "").ToUpperInvariant()).Distinct().Count();
             }
             return n;
@@ -497,7 +497,7 @@ namespace OnlineBackup.Server
             lock (gate)
             {
                 var path = Path.Combine(UserDir(login), "db", "devices.xml");
-                var doc = File.Exists(path) ? XDocument.Load(path) : new XDocument(new XElement("DEVICES"));
+                var doc = File.Exists(path) ? OnlineBackup.Core.Atomic.LoadXml(path) : new XDocument(new XElement("DEVICES"));
                 // LIC-016: the licence counts the computers backed up (the same computer registering again is not a new one)
                 var lic = cfg.License;
                 bool again = doc.Root.Elements("DEVICE").Any(d => (string)d.Attribute("REVOKED") != "Y" && string.Equals((string)d.Attribute("NAME"), computer ?? "", StringComparison.OrdinalIgnoreCase));
@@ -524,7 +524,7 @@ namespace OnlineBackup.Server
             catch (ApiException) { throw new ApiException(401, "DEVICE", "Unknown device."); }   // H-09: an unknown name answers like a wrong token
             if (!File.Exists(path)) throw new ApiException(401, "DEVICE", "Unknown device.");
             var hash = Bytes.Hex(Bytes.Sha256(Encoding.UTF8.GetBytes(p[2])));
-            var dev = XDocument.Load(path).Root.Elements("DEVICE").FirstOrDefault(d => (string)d.Attribute("ID") == p[1] && (string)d.Attribute("TOKEN_HASH") == hash && (string)d.Attribute("REVOKED") != "Y");
+            var dev = OnlineBackup.Core.Atomic.LoadXml(path).Root.Elements("DEVICE").FirstOrDefault(d => (string)d.Attribute("ID") == p[1] && (string)d.Attribute("TOKEN_HASH") == hash && (string)d.Attribute("REVOKED") != "Y");
             if (dev == null) { SysLog.Write(ip, "Access", "device refused " + login); throw new ApiException(401, "DEVICE", "The device was revoked or is unknown."); }
             ComputerSeen(path, p[1], ip, agent, SystemClock.UtcNow);
             var prof = LoadProfile(login);

@@ -152,13 +152,13 @@ namespace OnlineBackup.Agent
                                 try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, string.Join(" ", args.Select(a => "\"" + a + "\"").ToArray())) { UseShellExecute = true, Verb = "runas" }); return 0; }
                                 catch (Exception) { Console.Error.WriteLine("Administrator permission is needed to remove the software."); return 1; }
                             }
-                            var conn = File.Exists(Path.Combine(dir, "connection.xml")) ? System.Xml.Linq.XElement.Load(Path.Combine(dir, "connection.xml")) : new System.Xml.Linq.XElement("CONNECTION");
+                            var conn = File.Exists(Path.Combine(dir, "connection.xml")) ? OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(dir, "connection.xml")) : new System.Xml.Linq.XElement("CONNECTION");
                             var folder = (string)conn.Attribute("FOLDER"); if (string.IsNullOrEmpty(folder)) folder = "OnlineBackup";
 #if NET40
                             if (!o.ContainsKey("quiet") && File.Exists(Path.Combine(dir, "connection.xml"))) return SetupForm.Run(dir, true);
 #endif
                             var inst = Setup.Installed(folder);
-                            var br = File.Exists(Path.Combine(dir, "branding.xml")) ? System.Xml.Linq.XElement.Load(Path.Combine(dir, "branding.xml")) : new System.Xml.Linq.XElement("BRANDING");
+                            var br = File.Exists(Path.Combine(dir, "branding.xml")) ? OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(dir, "branding.xml")) : new System.Xml.Linq.XElement("BRANDING");
                             Setup.Uninstall(inst != null ? inst.InstallDir : dir, inst != null ? inst.DataDir : app.Home.Dir, (string)br.Attribute("PRODUCT") ?? folder, folder, o.ContainsKey("remove-settings"), m => Console.WriteLine(m));
                             return 0;
                         }

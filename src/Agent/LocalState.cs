@@ -23,7 +23,7 @@ namespace OnlineBackup.Agent
 
         public XElement Config
         {
-            get { return File.Exists(ConfigPath) ? XElement.Load(ConfigPath) : new XElement("AGENT"); }
+            get { return File.Exists(ConfigPath) ? OnlineBackup.Core.Atomic.LoadXElement(ConfigPath) : new XElement("AGENT"); }
             set { Atomic.WriteText(ConfigPath, value.ToString()); }
         }
 

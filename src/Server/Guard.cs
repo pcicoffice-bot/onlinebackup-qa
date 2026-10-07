@@ -97,7 +97,7 @@ namespace OnlineBackup.Server
             Dictionary<string, XElement> blocked;
             if (blockedBy.TryGetValue(cfg.SystemHome, out blocked)) return blocked;
             blockedBy[cfg.SystemHome] = blocked = new Dictionary<string, XElement>();
-            try { if (File.Exists(FilePath(cfg))) foreach (var e in XDocument.Load(FilePath(cfg)).Root.Elements("BLOCK")) blocked[(string)e.Attribute("IP")] = e; } catch (Exception) { }
+            try { if (File.Exists(FilePath(cfg))) foreach (var e in OnlineBackup.Core.Atomic.LoadXml(FilePath(cfg)).Root.Elements("BLOCK")) blocked[(string)e.Attribute("IP")] = e; } catch (Exception) { }
             return blocked;
         }
 
@@ -208,7 +208,7 @@ namespace OnlineBackup.Server
         }
 
         static string SeenPath(SystemConfig cfg) { return Path.Combine(cfg.SystemHome, "conf", "guard-seen.xml"); }
-        static XDocument SeenDoc(SystemConfig cfg) { try { if (File.Exists(SeenPath(cfg))) return XDocument.Load(SeenPath(cfg)); } catch (Exception) { } return new XDocument(new XElement("SEEN_LIST")); }
+        static XDocument SeenDoc(SystemConfig cfg) { try { if (File.Exists(SeenPath(cfg))) return OnlineBackup.Core.Atomic.LoadXml(SeenPath(cfg)); } catch (Exception) { } return new XDocument(new XElement("SEEN_LIST")); }
 
         static void AlertOnce(SystemConfig cfg, string key, string subject, string html)
         {

@@ -16,7 +16,7 @@ namespace OnlineBackup.Server
     public static class Templates
     {
         static string PathOf(SystemConfig cfg) { return Path.Combine(cfg.SystemHome, "policy", "templates.xml"); }
-        static XElement Load(SystemConfig cfg) { var p = PathOf(cfg); return File.Exists(p) ? XElement.Load(p) : new XElement("TEMPLATES"); }
+        static XElement Load(SystemConfig cfg) { var p = PathOf(cfg); return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : new XElement("TEMPLATES"); }
 
         public static Msg List(SystemConfig cfg)
         {

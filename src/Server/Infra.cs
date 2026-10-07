@@ -55,7 +55,7 @@ namespace OnlineBackup.Server
         {
             var c = new SystemConfig { SystemHome = Path.GetFullPath(systemHome) };
             if (!File.Exists(c.PathXml)) throw new InvalidOperationException("Server is not initialised: run 'init' first.");
-            c.Doc = XDocument.Load(c.PathXml);
+            c.Doc = OnlineBackup.Core.Atomic.LoadXml(c.PathXml);
             c.EnsureServerId();
             return c;
         }
@@ -158,7 +158,7 @@ namespace OnlineBackup.Server
         public XElement Policy()
         {
             var p = Path.Combine(SystemHome, "policy", "default.xml");
-            return File.Exists(p) ? XElement.Load(p) : DefaultPolicy();
+            return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : DefaultPolicy();
         }
     }
 

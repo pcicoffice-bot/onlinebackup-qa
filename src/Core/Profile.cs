@@ -20,7 +20,7 @@ namespace OnlineBackup.Core
 
         Profile(XDocument d) { Doc = d; }
 
-        public static Profile Load(string path) { return new Profile(XDocument.Load(path)); }
+        public static Profile Load(string path) { return new Profile(Atomic.LoadXml(path)); }
         public static Profile Parse(string xml) { return new Profile(XDocument.Parse(xml)); }
 
         public static Profile Create(string login, string alias, string passwordHash, string language, string timezone)
@@ -302,13 +302,14 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
     /// <summary>Write to a temporary name, flush to disk, then rename: a crash never leaves a half-written file.</summary>
     public static class Atomic
     {
-        /// <summary>A file left by a write that never finished: "&lt;name&gt;.tmp" + 8 hex digits — judged by the FILE NAME only.
+        /// <summary>A file left by a write that never finished: "&lt;name&gt;.tmp" (or ".old") + 8 hex digits — judged by the FILE NAME only.
         /// Bug 35 (Agent B): the index rebuild tested the whole path for ".tmp" and deleted every object of a customer
         /// called "acme.tmp" (or under a folder "D:\Backup.tmp").</summary>
         public static bool IsTemp(string path)
         {
             var n = Path.GetFileName(path ?? "");
-            int i = n.LastIndexOf(".tmp", StringComparison.Ordinal);
+            // bug 99: ".old" + 8 hex is the old file of a Windows replace, left only when the process stopped right then
+            int i = Math.Max(n.LastIndexOf(".tmp", StringComparison.Ordinal), n.LastIndexOf(".old", StringComparison.Ordinal));
             if (i < 0 || n.Length - i != 12) return false;
             for (int k = i + 4; k < n.Length; k++) if (Uri.IsHexDigit(n[k]) == false || char.IsUpper(n[k])) return false;
             return true;
@@ -333,19 +334,30 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
             {
                 try
                 {
-                    if (File.Exists(path)) File.Replace(tmp, path, null); else File.Move(tmp, path);
+                    if (!File.Exists(path)) { File.Move(tmp, path); return; }
+                    if (Environment.OSVersion.Platform != PlatformID.Win32NT) { File.Replace(tmp, path, null); return; }   // rename(): atomic
+                    // Bug 99 (QA shards, Windows): with no backup name, Windows keeps the old file as "<name>~RFxxxx.TMP" when a
+                    // reader has it open, and never removes it (1 MB left per write in the test). The old file gets our own name
+                    // and is deleted at once: a file open with FileShare.Delete is removed as soon as its reader closes it.
+                    var old = path + ".old" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                    File.Replace(tmp, path, old, true);
+                    try { File.Delete(old); } catch (Exception) { }
                     return;
                 }
                 catch (Exception e) when ((e is IOException || e is UnauthorizedAccessException) && attempt < ReplaceAttempts && File.Exists(tmp))
                 {
-                    System.Threading.Thread.Sleep(Math.Min(20 * attempt, 200));
+                    // bug 96: a reader that opens the file again at once (a plain reader in a loop, an antivirus) leaves only
+                    // short gaps; many quick tries find one, a few slow ones did not (gate 37635681591, two writers + a reader)
+                    System.Threading.Thread.Sleep(Math.Min(attempt, 25));
                 }
                 catch (Exception) { try { File.Delete(tmp); } catch (Exception) { } throw; }
             }
         }
 
-        /// <summary>How often a refused replace is tried (about 5 seconds in all).</summary>
-        public static int ReplaceAttempts = 40;
+        /// <summary>How often a refused replace is tried (about 10 seconds in all, mostly 25 ms apart).</summary>
+        public static int ReplaceAttempts = 420;
+        /// <summary>How often a refused open for reading is tried (about 5 seconds in all, mostly 20 ms apart).</summary>
+        public static int ReadAttempts = 260;
 
         /// <summary>File.ReadAllText / ReadAllLines / ReadAllBytes, the same in every way except that the file may be REPLACED while
         /// it is open (FileShare.Delete): on Windows a plain read holds the file so that an Atomic write cannot replace it at that
@@ -367,13 +379,37 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
                 fs.CopyTo(ms); return ms.ToArray();
             }
         }
-        static FileStream OpenShared(string path) { return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete); }
+        /// <summary>The product's XML files (profiles, users, computers, settings) read the same way (bug 96: XDocument.Load(path)
+        /// shares only reading, so on Windows it was refused while another request replaced the file - "Server error" 500).</summary>
+        public static System.Xml.Linq.XDocument LoadXml(string path) { using (var fs = OpenShared(path)) return System.Xml.Linq.XDocument.Load(fs); }
+        public static System.Xml.Linq.XElement LoadXElement(string path) { using (var fs = OpenShared(path)) return System.Xml.Linq.XElement.Load(fs); }
+
+        /// <summary>Opens for reading while letting the file be written or replaced. On Windows the open itself can still be refused
+        /// for a moment ("being used by another process") while a replace is under way: that is tried again for a while; a missing
+        /// file or any other error is reported at once, as File.ReadAll* reports it.</summary>
+        static FileStream OpenShared(string path)
+        {
+            for (int attempt = 1; ; attempt++)
+            {
+                try { return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete); }
+                catch (IOException e) when (attempt < ReadAttempts && IsSharingRefusal(e)) { System.Threading.Thread.Sleep(Math.Min(attempt, 20)); }
+                catch (UnauthorizedAccessException) when (attempt < ReadAttempts && File.Exists(path) && !Directory.Exists(path)) { System.Threading.Thread.Sleep(Math.Min(attempt, 20)); }
+            }
+        }
+
+        /// <summary>ERROR_SHARING_VIOLATION (32) or ERROR_LOCK_VIOLATION (33) - "used by another process" (Exception.HResult is
+        /// not public on .NET 4.0).</summary>
+        internal static bool IsSharingRefusal(IOException e)
+        {
+            if (e is FileNotFoundException || e is DirectoryNotFoundException) return false;
+            int code = System.Runtime.InteropServices.Marshal.GetHRForException(e) & 0xFFFF;
+            return code == 32 || code == 33;
+        }
 
         /// <summary>Reads a file that may be written at the same moment (a log): on Windows a plain read is refused then.</summary>
         public static string ReadShared(string path)
         {
-            using (var fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete))
-            using (var r = new StreamReader(fs, Encoding.UTF8)) return r.ReadToEnd();
+            using (var r = new StreamReader(OpenShared(path), Encoding.UTF8)) return r.ReadToEnd();
         }
         public static string[] ReadLinesShared(string path) { return ReadShared(path).Replace("\r\n", "\n").Split('\n').Where(l => l.Length > 0).ToArray(); }
 

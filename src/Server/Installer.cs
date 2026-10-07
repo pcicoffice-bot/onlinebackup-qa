@@ -49,7 +49,7 @@ namespace OnlineBackup.Server
         /// <summary>The existing installation (its system folder and address), or null.</summary>
         public static XElement Existing()
         {
-            try { if (File.Exists(InfoFile)) { var x = XElement.Load(InfoFile); if (File.Exists(Path.Combine((string)x.Attribute("SYSTEM_HOME") ?? "", "conf", "system.xml"))) return x; } } catch (Exception) { }
+            try { if (File.Exists(InfoFile)) { var x = OnlineBackup.Core.Atomic.LoadXElement(InfoFile); if (File.Exists(Path.Combine((string)x.Attribute("SYSTEM_HOME") ?? "", "conf", "system.xml"))) return x; } } catch (Exception) { }
             return null;
         }
 
@@ -77,7 +77,7 @@ namespace OnlineBackup.Server
             // PORTAL-020: a package downloaded from the partner portal carries the company's product (the wizard is filled in)
             var preset = packageServerDir == null ? null : Path.Combine(packageServerDir, "branding-preset.xml");
             if (preset != null && File.Exists(preset))
-                try { var p = XElement.Load(preset); m["preset"] = Vendors.BrandAttrs.ToDictionary(k => k.ToLowerInvariant(), k => (object)((string)p.Attribute(k) ?? "")); }
+                try { var p = OnlineBackup.Core.Atomic.LoadXElement(preset); m["preset"] = Vendors.BrandAttrs.ToDictionary(k => k.ToLowerInvariant(), k => (object)((string)p.Attribute(k) ?? "")); }
                 catch (Exception) { }
             m["portal"] = packageServerDir != null && File.Exists(Path.Combine(packageServerDir, "portal.xml"));
             return m;
@@ -355,7 +355,7 @@ namespace OnlineBackup.Server
             if (!File.Exists(pf)) return;
             try
             {
-                var p = XElement.Load(pf);
+                var p = OnlineBackup.Core.Atomic.LoadXElement(pf);
                 // LIC-150: kept for "Update licence" — a licence bought later arrives with one click
                 var le = cfg.Doc.Root.Element("LICENSE");
                 le.SetAttributeValue("PORTAL_URL", (string)p.Attribute("URL")); le.SetAttributeValue("PORTAL_ACCOUNT", (string)p.Attribute("ACCOUNT")); le.SetAttributeValue("PORTAL_TOKEN", (string)p.Attribute("TOKEN"));

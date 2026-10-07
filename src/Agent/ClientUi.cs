@@ -77,7 +77,7 @@ namespace OnlineBackup.Agent
         {
             var dir = AppDomain.CurrentDomain.BaseDirectory;
             var p = Path.Combine(dir, "branding.xml");
-            try { if (File.Exists(p)) return XElement.Load(p); } catch (Exception) { }
+            try { if (File.Exists(p)) return OnlineBackup.Core.Atomic.LoadXElement(p); } catch (Exception) { }
             return new XElement("BRANDING");
         }
 
@@ -89,7 +89,7 @@ namespace OnlineBackup.Agent
             if (!string.IsNullOrEmpty((string)local.Attribute("PRODUCT"))) return local;
             var cache = Path.Combine(app.Home.Dir, "server-brand.xml");
             XElement cached = null;
-            try { if (File.Exists(cache)) cached = XElement.Load(cache); } catch (Exception) { }
+            try { if (File.Exists(cache)) cached = OnlineBackup.Core.Atomic.LoadXElement(cache); } catch (Exception) { }
             if (app.Home.DeviceToken != null && (cached == null || File.GetLastWriteTimeUtc(cache) < SystemClock.UtcNow.AddHours(-6)))
             {
                 try
@@ -258,7 +258,7 @@ namespace OnlineBackup.Agent
         static XElement Connection()
         {
             var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "connection.xml");
-            return File.Exists(p) ? XElement.Load(p) : new XElement("CONNECTION");
+            return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : new XElement("CONNECTION");
         }
 
         Msg State()
