@@ -34,3 +34,4 @@
 05:18:22   waiting up to 20 min for a new Backup run
 05:18:47   waiting up to 20 min for a new Backup run
 05:19:15   waiting up to 20 min for a new Restore run
+05:19:18 end W11 FAIL The result names the problem (not a plain success): result BS_STOP_SUCCESS_WITH_WARNING; log mentions: 
