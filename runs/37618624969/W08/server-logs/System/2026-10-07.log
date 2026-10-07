@@ -1,0 +1,5 @@
+2026-10-07 12:10:08	-	server started https://+:8443/
+2026-10-07 12:10:11	-	server started https://+:8443/
+2026-10-07 12:13:54	::1	error: PUT /api/sets/1791375082275/jobs/2026-10-07-12-13-38/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)
+2026-10-07 12:15:16	::1	error: GET /api/profile: IOException The process cannot access the file 'C:\obqa\users\qa-win\db\Profile.xml' because it is being used by another process. @ at OnlineBackup.Server.Users.CheckDevice(String token, String ip, String agent)
+2026-10-07 12:16:25	::1	error: PUT /api/sets/1791375082275/jobs/2026-10-07-12-16-10/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request. @ at OnlineBackup.Server.SetStore.StageObject(String job, ChkRecord meta, Stream body, Int64 maxBytes)

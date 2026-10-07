@@ -1,0 +1,20 @@
+2026-10-07 12:10:14	::1	admin login ok admin
+2026-10-07 12:10:48	::1	login ok qa-win
+2026-10-07 12:10:48	::1	device registered qa-win computer=runnervmfi6oq
+2026-10-07 12:10:49	::1	login ok qa-win
+2026-10-07 12:11:22	::1	encryption key saved for recovery qa-win/1791375082275
+2026-10-07 12:11:41	::1	backup started qa-win/1791375082275 2026-10-07-12-11-41
+2026-10-07 12:11:46	::1	backup committed qa-win/1791375082275 2026-10-07-12-11-41 bad=0
+2026-10-07 12:11:51	::1	restore-test download qa-win/1791375082275
+2026-10-07 12:11:51	::1	restore-test download qa-win/1791375082275
+2026-10-07 12:11:51	::1	restore-test download qa-win/1791375082275
+2026-10-07 12:11:51	::1	restore-test download qa-win/1791375082275
+2026-10-07 12:11:51	::1	restore-test download qa-win/1791375082275
+2026-10-07 12:12:32	::1	backup started qa-win/1791375082275 2026-10-07-12-12-32
+2026-10-07 12:12:32	::1	backup committed qa-win/1791375082275 2026-10-07-12-12-32 bad=0
+2026-10-07 12:12:58	::1	login ok qa-win
+2026-10-07 12:13:38	::1	backup started qa-win/1791375082275 2026-10-07-12-13-38
+2026-10-07 12:14:54	-	backup interrupted qa-win/1791375082275 2026-10-07-12-13-38: the backup program stopped in the middle of the run
+2026-10-07 12:14:58	::1	backup started qa-win/1791375082275 2026-10-07-12-14-58
+2026-10-07 12:15:16	::1	backup committed qa-win/1791375082275 2026-10-07-12-14-58 bad=0
+2026-10-07 12:15:29	::1	login ok qa-win

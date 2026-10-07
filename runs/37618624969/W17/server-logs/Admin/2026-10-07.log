@@ -1,0 +1,5 @@
+2026-10-07 12:10:14	::1	admin changed the system settings (publicUrl,certPin)
+2026-10-07 12:10:14	::1	user created qa-win home=C:\obqa\users quota=21474836480
+2026-10-07 12:10:15	::1	admin downloaded the Windows client package (13895430 bytes)
+2026-10-07 12:11:22	::1	set created qa-win/1791375082275 QA files
+2026-10-07 12:58:36	::1	set created qa-win/1791377916234 Windows System State

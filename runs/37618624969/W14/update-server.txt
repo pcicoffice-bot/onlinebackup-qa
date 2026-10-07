@@ -1,0 +1,6 @@
+Files in C:\Program Files\OnlineBackup Server
+
+Installed. Management site: https://localhost:8443/admin
+Certificate pin (already set for the client software): e5a3362894c42239d9e30536782d8e4c406a1f53396121fa1dee1a22e0c73500
+Next: sign in, open "????? ??????", fill in your company and product, then "??? ????? ????".
+
