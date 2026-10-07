@@ -1,0 +1,120 @@
+﻿{
+    "id":  "W17",
+    "title":  "System State backup (Windows Server Backup)",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W17",
+    "started":  "2026-10-07T14:17:22.0657130+00:00",
+    "result":  "FAIL",
+    "reason":  "The System State backup finishes successfully (server record): BS_STOP_BY_SYSTEM_ERROR bytes ",
+    "steps":  [
+                  {
+                      "step":  "Windows Server Backup feature",
+                      "expected":  "installed",
+                      "actual":  "Success restart=No",
+                      "result":  "PASS",
+                      "seconds":  208,
+                      "screenshot":  "",
+                      "at":  "14:20:54"
+                  },
+                  {
+                      "step":  "The type list shows Windows System State",
+                      "expected":  "System State chosen",
+                      "actual":  "list: Windows System State",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:21:02"
+                  },
+                  {
+                      "step":  "The System State set is added",
+                      "expected":  "was added",
+                      "actual":  "ITSguard Server Online: The backup was added",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:21:18"
+                  },
+                  {
+                      "step":  "C: free before the System State backup",
+                      "expected":  "",
+                      "actual":  "25.9 GB",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:21:39"
+                  },
+                  {
+                      "step":  "C: free after the System State backup",
+                      "expected":  "",
+                      "actual":  "8.8 GB",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:52:56"
+                  },
+                  {
+                      "step":  "Windows backup event log",
+                      "expected":  "",
+                      "actual":  "14:37:37 14 Information: The backup operation has completed. || 14:37:37 4 Information: The backup operation has finished successfully. || 14:21:54 1 Information: The backup operation has started.",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:52:56"
+                  },
+                  {
+                      "step":  "wbadmin error log",
+                      "expected":  "",
+                      "actual":  "",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:52:56"
+                  },
+                  {
+                      "step":  "The System State backup finishes successfully (server record)",
+                      "expected":  "ok",
+                      "actual":  "BS_STOP_BY_SYSTEM_ERROR bytes ",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "04-The-System-State-backup-finishes-successfully--server-record-.png",
+                      "at":  "14:52:56"
+                  },
+                  {
+                      "step":  "System State restore",
+                      "expected":  "",
+                      "actual":  "NOT TESTED: restoring the system state of the test machine would replace its own registry and boot files; only the backup is tested here",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "14:52:56"
+                  }
+              ],
+    "visual":  [
+                   {
+                       "journey":  "W17",
+                       "screen":  "System State backup configured",
+                       "screenshot":  "01-System-State-backup-configured.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The window is larger than the screen",
+                       "expected":  "fits in 1024x720",
+                       "actual":  "1044x719",
+                       "severity":  "High",
+                       "recommendation":  "Smaller minimum size, or scroll inside the window",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W17",
+                       "screen":  "System State backup configured",
+                       "screenshot":  "01-System-State-backup-configured.png",
+                       "kind":  "VISUAL",
+                       "problem":  "A Pane is outside the window",
+                       "expected":  "every control inside the window",
+                       "actual":  "\u0027\u0027 at 256,123 752x621; window 0,0 1044x719",
+                       "severity":  "Medium",
+                       "recommendation":  "Lay the screen out for this window size (or let it scroll)",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   }
+               ],
+    "ended":  "2026-10-07T14:52:57.7235682+00:00"
+}

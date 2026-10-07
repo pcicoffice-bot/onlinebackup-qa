@@ -1,0 +1,12 @@
+2026-10-07 13:37:03	-	qa-win	1791380176470	2026-10-07-13-37-03	1791380223449,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 13:38:06	-	qa-win	1791380176470	2026-10-07-13-38-06	1791380286210,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 13:39:53	-	qa-win	1791380176470	2026-10-07-13-38-35	1791380393032,err,,0,"The backup was interrupted and did not finish: the backup program stopped in the middle of the run (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 13:39:53	-	qa-win	1791380176470	2026-10-07-13-38-35	1791380393032,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 13:40:52	-	qa-win	1791380176470	2026-10-07-13-40-52	1791380452938,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 13:47:00	-	qa-win	1791380176470	2026-10-07-13-41-23	1791380820419,err,,0,"The backup was interrupted and did not finish: no sign of life from the computer for 5 minutes (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
+2026-10-07 13:47:00	-	qa-win	1791380176470	2026-10-07-13-41-23	1791380820419,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
+2026-10-07 13:48:17	-	qa-win	1791380176470	2026-10-07-13-48-17	1791380897062,end,,0,RESTORE_STOP_SUCCESS,,,0
+2026-10-07 13:49:55	-	qa-win	1791380176470	2026-10-07-13-48-42	1791380935220,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to write data to the transport connection: An existing connection was forcibly closed by the remote host.),,,0
+2026-10-07 13:49:55	-	qa-win	1791380176470	2026-10-07-13-48-42	1791380945258,warn,,0,The connection broke while sending C:\OnlineBackup-QA\Data\Big\video-w09.bin; sending it again (The connection to the backup server broke: Unable to connect to the remote server),,,0
+2026-10-07 13:49:55	-	qa-win	1791380176470	2026-10-07-13-48-42	1791380961297,err,C:\OnlineBackup-QA\Data\Big\video-w09.bin,0,The connection to the backup server broke: Unable to connect to the remote server,,,0
+2026-10-07 13:51:09	-	qa-win	1791380176470	2026-10-07-13-51-09	1791381069258,end,,0,RESTORE_STOP_SUCCESS,,,0
