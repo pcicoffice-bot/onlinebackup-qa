@@ -6,3 +6,4 @@
 13:35:36 end W03 PASS 
 13:35:38 start W04 First run: sign in through the window, the agent connects to the server
 13:35:54 end W04 PASS 
+13:35:55 start W05 FULL CHAIN: backup set in the window -> Back up now -> delete the source -> Restore in the window -> SHA-256
