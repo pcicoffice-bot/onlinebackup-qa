@@ -30,3 +30,4 @@
 10:04:26   waiting up to 20 min for a new Backup run
 10:04:54   waiting up to 20 min for a new Restore run
 10:05:02 end W10 PASS 
+10:05:03 start W11 VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery
