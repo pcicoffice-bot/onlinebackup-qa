@@ -8,8 +8,12 @@
 #   aggregate  one verdict; a job that was cancelled, did not start, crashed or skipped a test is NOT TESTED, never PASS
 # Chains that must keep state on one machine (C1: install -> backup -> restart -> restore) stay in qa.yml, serial.
 # No secrets: the shards read only; the aggregator alone writes, with this run's GITHUB_TOKEN, to the qa-evidence branch.
+# Started by hand (inputs) or by a push of a branch qa-shards-<n> whose tools/qa-shards/request.json holds the same fields
+# (a manual run of a new workflow needs it on the default branch first; a qa-shards-* branch does not).
 name: QA shards
 on:
+  push:
+    branches: ['qa-shards-*']
   workflow_dispatch:
     inputs:
       os: { description: 'runner', type: choice, options: [ubuntu-latest, windows-latest], default: ubuntu-latest }
@@ -29,20 +33,28 @@ jobs:
     timeout-minutes: 20
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
+      os: ${{ steps.req.outputs.os }}
+      max_parallel: ${{ steps.req.outputs.max_parallel }}
+      control: ${{ steps.req.outputs.control }}
+      title: ${{ steps.req.outputs.title }}
     steps:
       - uses: actions/checkout@v4
       - name: The planner and the aggregator prove themselves first (every way of not testing ends NOT TESTED)
         run: python3 tools/qa-shards/selftest.py
       - uses: actions/setup-dotnet@v4
         with: { dotnet-version: '8.0.x' }
+      - name: The request (the inputs of a manual run, or tools/qa-shards/request.json of a qa-shards-* branch)
+        id: req
+        env: { INPUTS: '${{ toJSON(inputs) }}', EVENT: '${{ github.event_name }}' }
+        run: python3 tools/qa-shards/request.py >> "$GITHUB_OUTPUT"
       - name: Plan
         id: plan
-        env: { SELECT: '${{ inputs.select }}', SHARDS: '${{ inputs.shards }}', REPEAT: '${{ inputs.repeat }}' }
+        env: { SELECT: '${{ steps.req.outputs.select }}', SHARDS: '${{ steps.req.outputs.shards }}', REPEAT: '${{ steps.req.outputs.repeat }}' }
         run: |
           dotnet build tests/Tests -nologo -v q
           dotnet test tests/Tests --no-build -nologo --list-tests > list.txt
           python3 tools/qa-shards/plan.py --tests list.txt --shards "$SHARDS" --repeat "$REPEAT" --select "$SELECT" \
-            --durations tools/qa-shards/durations-${{ inputs.os }}.json --out plan | tee -a "$GITHUB_STEP_SUMMARY"
+            --durations tools/qa-shards/durations-${{ steps.req.outputs.os }}.json --out plan | tee -a "$GITHUB_STEP_SUMMARY"
           echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
         with: { name: plan, path: plan, retention-days: 30 }
@@ -50,11 +62,11 @@ jobs:
   shard:
     needs: plan
     name: shard ${{ matrix.id }}
-    runs-on: ${{ inputs.os }}
+    runs-on: ${{ needs.plan.outputs.os }}
     timeout-minutes: 150
     strategy:
       fail-fast: false   # one shard's failure never stops another's evidence
-      max-parallel: ${{ fromJSON(inputs.max_parallel) }}
+      max-parallel: ${{ fromJSON(needs.plan.outputs.max_parallel) }}
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
@@ -76,8 +88,8 @@ jobs:
 
   control:
     needs: plan
-    if: ${{ inputs.control }}
-    runs-on: ${{ inputs.os }}
+    if: ${{ needs.plan.outputs.control == 'true' }}
+    runs-on: ${{ needs.plan.outputs.os }}
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@v4
@@ -114,8 +126,8 @@ jobs:
         run: |
           set +e
           python3 tools/qa-shards/aggregate.py --expected results/plan/expected.json --results results --out verdict \
-            --title "QA shards run ${{ github.run_id }} (${{ inputs.os }}, ${{ github.sha }}; select '${{ inputs.select }}', ${{ inputs.shards }} shards x ${{ inputs.repeat }})" \
-            ${{ inputs.control && '--control' || '' }}
+            --title "QA shards run ${{ github.run_id }} (${{ github.sha }}; ${{ needs.plan.outputs.title }})" \
+            ${{ needs.plan.outputs.control == 'true' && '--control' || '' }}
           echo "rc=$?" >> "$GITHUB_OUTPUT"
           cat verdict/summary.md >> "$GITHUB_STEP_SUMMARY"
           cp results/plan/expected.json verdict/

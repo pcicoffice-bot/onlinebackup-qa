@@ -4,6 +4,7 @@
 name: Online Backup — quality gate and package
 on:
   push:
+    branches-ignore: ['qa-shards-*']   # the QA shards branches of the public mirror run only qa-shards.yml
     # cost (owner, 07.10): a push that changes only notes, reports or the Windows robot (which this gate does not run) does
     # not start the whole gate again - in one night ~3,900 billable minutes went on such pushes. Product code, the tests
     # this gate runs and this workflow itself still start it every time; the nightly run and a manual run cover the rest.

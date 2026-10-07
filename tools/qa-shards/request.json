@@ -1,0 +1,1 @@
+{"os":"ubuntu-latest","select":"Restic","shards":4,"repeat":1,"max_parallel":6,"control":true}

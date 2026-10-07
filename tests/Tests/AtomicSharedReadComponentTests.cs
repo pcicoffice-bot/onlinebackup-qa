@@ -70,7 +70,9 @@ namespace OnlineBackup.Tests
             Assert.Null(failure);
             Assert.True(bad == null, "a half-written file was seen: " + bad);
             Assert.True(reads > 0);
-            Assert.Equal(new[] { path }, Directory.GetFiles(dir));
+            // the same check, with every name printed (gate 37635681591 on Windows: a second file was left, its name cut off)
+            var left = Directory.GetFiles(dir);
+            Assert.True(left.Length == 1 && left[0] == path, "files left in the folder: " + string.Join(", ", left.Select(f => Path.GetFileName(f) + " (" + new FileInfo(f).Length + " bytes)")));
             Directory.Delete(dir, true);
         }
 
