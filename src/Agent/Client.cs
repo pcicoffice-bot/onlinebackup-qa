@@ -179,7 +179,14 @@ namespace OnlineBackup.Agent
                 var h = AuthHeaders();
                 foreach (var kv in headers) h[kv.Key] = kv.Value;
                 h["Content-Type"] = "application/octet-stream";
-                try { return BuiltinMsg(Builtin_("PUT", path, h, null, write)); }
+                // bug 118 (was 104b): every IOException here was "the network" - also the SOURCE file's own (locked, unreadable),
+                // read inside write(): the file was sent again and again and the whole run ended in a system error. As on the
+                // system TLS path: the network stream is wrapped, a failure writing to it is the network's, anything else is the file's.
+                Exception source = null;
+                Action<Stream> w = s => { try { write(new NetStream(s)); } catch (NetStream.Failure) { throw; } catch (Exception e) { source = e; throw; } };
+                try { return BuiltinMsg(Builtin_("PUT", path, h, null, w)); }
+                catch (Exception) when (source != null) { throw source; }
+                catch (NetStream.Failure e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.InnerException.Message); }
                 catch (IOException e) { throw new AgentException(0, "NETWORK", "No connection to the backup server: " + e.Message); }
                 catch (SocketException e) { throw new AgentException(0, "NETWORK", "No connection to the backup server: " + e.Message); }
             }

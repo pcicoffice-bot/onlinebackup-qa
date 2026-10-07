@@ -1119,7 +1119,7 @@
     const passed = rows.filter((x) => (x.s.restoreTest || '').startsWith('OK')).length, failed = rows.filter((x) => (x.s.restoreTest || '').startsWith('FAILED')).length;
     return h('div', { class: 'stack' }, head(t('Restore tests'), t('Every set is tested automatically every month: a sample is restored and compared with the original. This is how you know the backup can really be restored.')),
       h('div', { class: 'grid g3' }, kpiBox(t('Passed'), passed), kpiBox(t('Failed'), failed), kpiBox(t('Not tested yet'), rows.length - passed - failed)),
-      h('section', { class: 'card' }, table([t('Customer'), t('Set'), t('Last test'), t('Result')], rows.map(({ u, s }) => [h('b', {}, custName(u)), s.name, N(when(s.lastRestoreTest)), s.restoreTest ? (s.restoreTest.startsWith('OK') ? pill('ok', t('Passed') + ' · ' + s.restoreTest.slice(3)) : pill('bad', t('Failed') + ' · ' + s.restoreTest.slice(7))) : pill('mut', t('Not yet'))]))));
+      h('section', { class: 'card' }, table([t('Customer'), t('Set'), t('Last test'), t('Result')], rows.map(({ u, s }) => [h('b', {}, custName(u)), s.name, N(when(s.lastRestoreTest)), s.restoreTest ? (s.restoreTest.startsWith('OK') ? pill('ok', t('Passed') + ' · ' + s.restoreTest.slice(3)) : s.restoreTest.startsWith('NOT_CHECKED') ? pill('mut', t('Nothing to compare')) : pill('bad', t('Failed') + ' · ' + s.restoreTest.slice(7))) : pill('mut', t('Not yet'))]))));
   };
 
   // ------------------------------------------------------------------ storage on the server: drives, second server, recycle bin

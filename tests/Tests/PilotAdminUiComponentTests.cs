@@ -424,7 +424,8 @@ namespace OnlineBackup.Tests
             Assert.Equal("BS_STOP_BY_SYSTEM_ERROR", backups.Last()["result"]);          // a run that never said how it ended is a failure
             Assert.Equal("bad", got.Single(x => x["job"] == "r1")["status"]);
             Assert.Equal("ok", got.Single(x => x["job"] == "r2")["status"]);
-            Assert.Equal("bad", got.Single(x => x["job"] == "t1")["status"]);
+            Assert.Equal("warn", got.Single(x => x["job"] == "t1")["status"]);                   // nothing to compare: not green, and not a failed test (R1; bug 110)
+            Assert.Equal("NOT_CHECKED", got.Single(x => x["job"] == "t1")["result"]);
             Assert.Equal(1, got.Count(x => x["status"] == "ok" && x["kind"] == "Backup"));
         }
 

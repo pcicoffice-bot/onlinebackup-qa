@@ -158,6 +158,7 @@ namespace OnlineBackup.Agent
                 var pendingChunks = new Dictionary<string, List<KeyValuePair<string, int>>>();
                 var next = new Dictionary<string, LocalState.Entry>(StringComparer.Ordinal);
                 var deadline = set.DurationHours > 0 ? started.AddHours(set.DurationHours) : DateTime.MaxValue;
+                runDeadline = deadline;
                 bool stoppedByDuration = false, stoppedByAdmin = false;
 
                 if (set.LocalCopy)
@@ -210,6 +211,12 @@ namespace OnlineBackup.Agent
                         }
                         else { entry.Seq = old.Seq; entry.DeltaBytes = old.DeltaBytes; }
                         next[rel] = entry;
+                    }
+                    catch (StoppedInside e)
+                    {
+                        if (e.ByAdmin) stoppedByAdmin = true; else stoppedByDuration = true;
+                        if (old != null) next[rel] = old;   // the file keeps its earlier version; the next run sends it
+                        break;
                     }
                     catch (AgentException e) when (e.Code == "QUOTA")
                     {
@@ -274,6 +281,9 @@ namespace OnlineBackup.Agent
                 Info("Total Updated Files = " + Updated);
                 Info("Total Permission Updated Files = " + PermOnly);
                 Info("Total Deleted Files = " + Deleted);
+                // bug 125: every file is read - the shadow copy goes now, so its line is in the log the server keeps (it was written
+                // after the commit and existed only on the computer; the finally still removes it when the run fails earlier)
+                if (snapshot != null) { snapshot.Dispose(); snapshot = null; Info("Deleting Shadow Copy snapshot"); }
                 var result = Finish(endCode, started);
                 var commit = new Msg().Set("new", New).Set("upd", Updated).Set("perm", PermOnly).Set("del", Deleted).Set("bytes", BytesSent).Set("started", RunId.UnixMs(started))
                     .Set("prevFiles", state.Files.Count).Set("result", endCode);
@@ -427,6 +437,36 @@ namespace OnlineBackup.Agent
         /// <summary>The wait before sending an object again after the connection broke (tests make it short).</summary>
         public static Func<int, int> UploadRetryDelay = attempt => 2000 * attempt * attempt;
 
+        DateTime runDeadline = DateTime.MaxValue; int lastStopAsk = Environment.TickCount;
+        /// <summary>Bug 119: the maximum duration and "Stop" were checked only between files - one big file ran on without bound
+        /// and the run ended a success. Checked again while a file is sent (the stop request at most every 2 s): the object being
+        /// sent is abandoned (never committed) and the run ends stopped.</summary>
+        void StopInsideObject()
+        {
+            if (Clock() > runDeadline) throw new StoppedInside(false);
+            if (StopRequested != null && unchecked(Environment.TickCount - lastStopAsk) >= 2000) { lastStopAsk = Environment.TickCount; if (StopRequested()) throw new StoppedInside(true); }
+        }
+        /// <summary>Bug 119: writes in pieces of at most 64 KB, asking before each whether the run must stop.</summary>
+        sealed class StopCheckStream : Stream
+        {
+            readonly Stream s; readonly Action check;
+            public StopCheckStream(Stream s, Action check) { this.s = s; this.check = check; }
+            public override void Write(byte[] buffer, int offset, int count)
+            {
+                while (count > 0) { check(); int n = Math.Min(count, 64 * 1024); s.Write(buffer, offset, n); offset += n; count -= n; }
+            }
+            public override void Flush() { s.Flush(); }
+            public override bool CanRead { get { return false; } }
+            public override bool CanSeek { get { return false; } }
+            public override bool CanWrite { get { return true; } }
+            public override long Length { get { throw new NotSupportedException(); } }
+            public override long Position { get { throw new NotSupportedException(); } set { throw new NotSupportedException(); } }
+            public override int Read(byte[] buffer, int offset, int count) { throw new NotSupportedException(); }
+            public override long Seek(long offset, SeekOrigin origin) { throw new NotSupportedException(); }
+            public override void SetLength(long value) { throw new NotSupportedException(); }
+        }
+        sealed class StoppedInside : Exception { public readonly bool ByAdmin; public StoppedInside(bool byAdmin) : base("stopped while a file was being sent") { ByAdmin = byAdmin; } }
+
         long Upload(string rel, int seq, string kind, string path, LocalState.Entry entry, bool permOnly, string src, HashSet<string> known, List<KeyValuePair<string, int>> chunksOut)
         {
             for (int attempt = 1; ; attempt++)
@@ -444,12 +484,13 @@ namespace OnlineBackup.Agent
                 {
                 resp = client.Put(q, headers, s =>
                 {
-                    tee = new TeeStream(throttle.On ? new ThrottledStream(s, throttle) : s, localStream);
+                    tee = new TeeStream(new StopCheckStream(throttle.On ? new ThrottledStream(s, throttle) : s, StopInsideObject), localStream);   // bug 119: also while one chunk is written
                     w = new BackupObject.Writer(tee, key) { Compression = set.Compression };
                     var storedHere = new HashSet<string>();
                     using (var fs = Open(src))
                         foreach (var c in Chunker.ForFileSize(entry.Size).Split(fs))
                         {
+                            StopInsideObject();
                             var id = BackupObject.ChunkId(key, c);
                             chunksOut.Add(new KeyValuePair<string, int>(id, c.Length));
                             if ((known == null || !known.Contains(id)) && storedHere.Add(id)) w.AddChunk(id, c);
@@ -491,6 +532,18 @@ namespace OnlineBackup.Agent
     /// <summary>The real place of a folder (a link / junction followed to the end).</summary>
     public static class Links
     {
+        /// <summary>Bug 117: a symbolic link or junction - NOT every reparse point: a deduplicated file (Windows Server) or a OneDrive
+        /// file also carries the reparse attribute and is real data that must be backed up. The .NET 4.0 build (Windows XP / 2003,
+        /// outside the pilot) keeps the earlier behaviour.</summary>
+        public static bool IsLink(FileSystemInfo f)
+        {
+#if NET40
+            return false;
+#else
+            try { return f.LinkTarget != null; } catch (Exception) { return false; }
+#endif
+        }
+
         public static string RealPath(string dir)
         {
             try
@@ -575,7 +628,13 @@ namespace OnlineBackup.Agent
                             else seen.Add(Links.RealPath(it.FullName));
                             stack.Push((DirectoryInfo)it);
                         }
-                        else yield return (FileInfo)it;
+                        else
+                        {
+                            // bug 117: a link to a FILE was always followed (only folder links looked at the option); a broken one was
+                            // an error in every run. Without the option a file link is left out, like a folder link.
+                            if (!set.FollowLink && (it.Attributes & FileAttributes.ReparsePoint) != 0 && Links.IsLink(it)) continue;
+                            yield return (FileInfo)it;
+                        }
                     }
                 }
             }

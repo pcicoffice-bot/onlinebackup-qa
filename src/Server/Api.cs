@@ -56,6 +56,9 @@ namespace OnlineBackup.Server
                 try
                 {
                     var login = m["login"]; var setId = m["set"];
+                    // bug 113: a set deleted (to the recycle bin) while its backup ran - opening its store here made a new empty
+                    // files/<set> folder, and the set could no longer come back from the bin
+                    if (!Directory.Exists(Path.Combine(users.UserDir(login), "files", setId))) continue;
                     var store = new SetStore(users.UserDir(login), setId);
                     store.ExpireStale(nowUtc);
                     if (!string.IsNullOrEmpty(m["job"])) { seen.Add(login + "/" + setId + "/" + m["job"]); RecordInterrupted(login, setId, m["job"], m.Long("started"), "no sign of life from the computer for " + (int)SetStore.Lease.TotalMinutes + " minutes"); }
@@ -229,7 +232,11 @@ namespace OnlineBackup.Server
                 if (Guard.IsBlocked(cfg, ip) && !Guard.Trusted(cfg, ip)) throw new ApiException(403, "BLOCKED", "Too many failed attempts from your address — it is blocked for a while. Ask your provider if this is a mistake.");
                 var path = ctx.Request.Url.AbsolutePath.TrimEnd('/');
                 var seg = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (seg.Length >= 1 && seg[0] == "admin") { AdminUi.Serve(ctx, seg); return; }
+                if (seg.Length >= 1 && seg[0] == "admin")
+                {
+                    if (seg.Length > 1 && (seg[1] == "restore.html" || seg[1] == "restore.js")) PilotScope.Check(cfg, PilotScope.WebRestore);   // bug 114: also under /admin
+                    AdminUi.Serve(ctx, seg); return;
+                }
                 // I18N-010; R1 (found by the AI QA): the fonts are one level deeper (/i18n/fonts/x.woff2) — every one was a 404
                 if (seg.Length >= 2 && seg.Length <= 3 && seg[0] == "i18n") { AdminUi.ServeI18n(ctx, string.Join("/", seg.Skip(1))); return; }
                 if (seg.Length >= 1 && seg[0] == "restore") { PilotScope.Check(cfg, PilotScope.WebRestore); AdminUi.Serve(ctx, seg.Length == 1 ? new[] { "admin", "restore.html" } : new[] { "admin", seg[1] }); return; }   // WEB-010
@@ -409,6 +416,12 @@ namespace OnlineBackup.Server
                 var setId = seg[2];
                 var prof = users.LoadProfile(login);
                 Need(prof.FindSet(setId) != null);
+                // bug 114 (scope challenge): a set outside the pilot was refused only at "begin" - its data could still be listed and
+                // downloaded, a run opened before the switch committed, and a restore test recorded. Refused here, on the server, for
+                // every route that reads or changes its data; "stop"-like routes (abort, interrupted, progress) stay open.
+                if (cfg.Pilot && (seg[3] == "points" || seg[3] == "files" || seg[3] == "object" || seg[3] == "restoretest" || seg[3] == "restorelog"
+                    || (seg[3] == "jobs" && seg.Length > 5 && (seg[5] == "object" || seg[5] == "delete" || seg[5] == "commit"))))
+                    PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(prof.FindSet(setId)));
                 var store = new SetStore(users.UserDir(login), setId);
                 switch (seg[3])
                 {
@@ -1314,6 +1327,7 @@ namespace OnlineBackup.Server
                             // RST-070: puts back everything a restic prune / forget moved to the trash (e.g. after ransomware)
                             var sid = Q(ctx, "set");
                             Need(sid != null && users.LoadProfile(login).FindSet(sid) != null);
+                            PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(users.LoadProfile(login).FindSet(sid)));   // bug 114: a blocked restic set's repository stays as it is
                             int n = new ResticStore(users.UserDir(login), sid).RestoreTrash();
                             SysLog.Write(ip, "Admin", "restic trash restored " + login + "/" + sid + " files=" + n + " by " + admin);
                             Reply(ctx, 200, new Msg().Set("restored", n)); return;
@@ -1625,6 +1639,9 @@ namespace OnlineBackup.Server
             if (!string.IsNullOrEmpty(login))
             {
                 if (!new[] { "Backup", "Restore", "Retention", "Rebuild" }.Contains(cat)) throw new ApiException(400, "BAD_CAT", "Invalid log type.");
+                // bug 123 (AU-07): the set went into the path unchecked - "../../bob/logs/<id>" or an absolute folder read another
+                // customer's job log. A set id is letters, digits, '-' and '_' only.
+                if (!string.IsNullOrEmpty(set) && !System.Text.RegularExpressions.Regex.IsMatch(set, "^[A-Za-z0-9_-]{1,64}$")) throw new ApiException(400, "BAD_SET", "Invalid backup set.");
                 dir = cat == "Rebuild" ? Path.Combine(users.UserDir(login), "logs", "Rebuild") : Path.Combine(users.UserDir(login), "logs", set ?? "", cat);
             }
             else

@@ -111,7 +111,7 @@ jobs:
           bunzip2 -c restic.bz2 > restic && chmod 755 restic && rm restic.bz2
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
           npm install --no-save playwright@1
-          npx playwright install --with-deps chromium
+          sh tools/qa-shards/pw-deps.sh   # Q40: apt hung 1 h in gate 37680779754 - shorter tries, retried
       - name: Screen check (all languages)
         run: OUT=ui-report NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
       - name: Real phones and a tablet (touch, small screen, landscape) — Hebrew and English
@@ -142,7 +142,7 @@ jobs:
       - name: Check (every language, computer and phone)
         run: |
           npm install --no-save playwright@1
-          npx playwright install --with-deps chromium
+          sh tools/qa-shards/pw-deps.sh   # Q40
           SHOTS=all NODE_PATH=$PWD/node_modules node tools/site/check.mjs site/dist site-report
       - uses: actions/upload-artifact@v4
         with:
@@ -176,7 +176,7 @@ jobs:
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
       - name: QA tools (Playwright 1.63 + Chromium)
         working-directory: tests/QA
-        run: npm ci && npx playwright install --with-deps chromium
+        run: npm ci && sh ../../tools/qa-shards/pw-deps.sh   # Q40
       - name: Fault tools (libfaketime for F13 / N10; small disks and mount namespaces go through sudo -n, the product stays the runner user)
         run: |
           for i in 1 2 3; do

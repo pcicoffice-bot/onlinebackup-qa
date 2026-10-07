@@ -194,7 +194,10 @@ namespace OnlineBackup.Server
             {
                 List<KeyValuePair<DateTime, string>> l;
                 if (fails.TryGetValue(K(cfg, ip), out l) && l.Count(x => x.Value == (login ?? "").ToLowerInvariant()) >= 3) why.Add(l.Count(x => x.Value == login.ToLowerInvariant()) + " wrong passwords before it");
-                fails.Remove(K(cfg, ip));
+                // bug 120: a good sign-in cleared EVERY failure of the address - any account (a reseller's) could reset the count
+                // between guesses for other names and spray for ever. Only this name's own failures are cleared.
+                var mine = (login ?? "").ToLowerInvariant();
+                if (l != null) { l.RemoveAll(x => x.Value == mine); if (l.Count == 0) fails.Remove(K(cfg, ip)); }
                 var doc = SeenDoc(cfg); var key = (login ?? "").ToLowerInvariant();
                 var seen = doc.Root.Elements("SEEN").Where(e => (string)e.Attribute("LOGIN") == key).ToList();
                 if (seen.Count > 0 && !seen.Any(e => (string)e.Attribute("IP") == ip)) why.Add("from a new address");

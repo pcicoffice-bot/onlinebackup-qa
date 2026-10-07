@@ -26,7 +26,7 @@ namespace OnlineBackup.Server
         {
             try
             {
-                var vals = new[] { RunId.UnixMs(utc).ToString(CultureInfo.InvariantCulture), login, set.Id, set.Name, set.Computer, kind, job, body["result"] ?? (kind == "Backup" ? "BS_STOP_BY_SYSTEM_ERROR" : body.Int("failed") > 0 || body.Int("checked") == 0 && kind == "RestoreTest" ? "FAILED" : "OK"),
+                var vals = new[] { RunId.UnixMs(utc).ToString(CultureInfo.InvariantCulture), login, set.Id, set.Name, set.Computer, kind, job, body["result"] ?? (kind == "Backup" ? "BS_STOP_BY_SYSTEM_ERROR" : body.Int("failed") > 0 ? "FAILED" : body.Int("checked") == 0 && kind == "RestoreTest" ? "NOT_CHECKED" : "OK")   /* bug 110: nothing to compare is not a failed restore test (R1 fixed only the set) */,
                     body["new"] ?? body["ok"], body["upd"] ?? body["checked"], body["del"], body["bytes"], body["started"], logFile == null ? "" : Path.GetFileName(logFile) };
                 var file = Path.Combine(Dir, utc.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + ".log");
                 // bug 107: a line cut by a power failure has no line end - the next run was glued onto it and lost from the history
@@ -63,6 +63,7 @@ namespace OnlineBackup.Server
             if (result == "BS_STOP_SUCCESS" || result == "OK" || result == "RESTORE_STOP_SUCCESS") return "ok";
             if (result == "BS_STOP_SUCCESS_WITH_WARNING" || result == "RESTORE_STOP_WITH_WARNING") return "warn";
             if (result == "BS_STOP_BY_USER") return "stopped";
+            if (result == "NOT_CHECKED") return "warn";   // bug 110: a restore test with nothing to compare proves nothing - not ok, not a failure
             return "bad";
         }
 

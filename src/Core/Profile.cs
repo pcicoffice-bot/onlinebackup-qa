@@ -263,12 +263,21 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
             return e;
         }
 
+        /// <summary>Bug 116: the top folder and what is under it - "Docs" does not cover the siblings "Docs2" or "DocsArchive".</summary>
+        bool UnderTop(string fullPath)
+        {
+            var top = TopDir.TrimEnd('\\', '/');
+            if (!fullPath.StartsWith(top, StringComparison.OrdinalIgnoreCase)) return false;
+            if (fullPath.Length == top.Length) return true;
+            var c = fullPath[top.Length]; return c == '\\' || c == '/';
+        }
+
         /// <summary>True if the rule's patterns match this name (file or folder name).</summary>
         public bool Matches(string fullPath, string name, bool isDir)
         {
             if (isDir && !ApplyDir) return false;
             if (!isDir && !ApplyFile) return false;
-            if (TopDir.Length > 0 && !fullPath.StartsWith(TopDir.TrimEnd('\\', '/'), StringComparison.OrdinalIgnoreCase)) return false;
+            if (TopDir.Length > 0 && !UnderTop(fullPath)) return false;
             foreach (var p in Patterns)
             {
                 var n = name.ToLowerInvariant(); var q = p.ToLowerInvariant();

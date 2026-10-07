@@ -177,6 +177,7 @@ namespace OnlineBackup.Server
             {
                 var p = users.LoadProfile(login);
                 var e = Find(p, id);
+                PilotScope.CheckSet(users.Config, BackupSetInfo.FromXml(e));   // bug 114: a blocked set is not moved to another computer (as AddComputer)
                 if (Family(p, id).Any(x => x != e && string.Equals((string)x.Attribute("SCHEDULE_HOST"), computer, StringComparison.OrdinalIgnoreCase)))
                     throw new ApiException(409, "COMPUTER", "The set already runs on this computer.");
                 e.SetAttributeValue("SCHEDULE_HOST", computer);

@@ -72,9 +72,9 @@ namespace OnlineBackup.Server
               .Append(t1("Restores in the last 12 months")).Append("</th></tr>");
             foreach (var s in sets)
             {
-                bool ok = (s.TestResult ?? "").StartsWith("OK");
-                sb.Append("<tr><td>").Append(Fmt.H(s.Set.Name)).Append("</td><td><span class='num'>").Append(D(s.LastTest)).Append("</span></td><td class='").Append(s.LastTest.HasValue ? (ok ? "ok" : "bad") : "").Append("'>")
-                  .Append(s.LastTest.HasValue ? (ok ? t1("Passed") : t1("Failed")) + " <span class='num'>" + Fmt.H((s.TestResult ?? "").Replace("OK ", "").Replace("FAILED ", "")) + "</span>" : t1("Not tested yet"))
+                bool ok = (s.TestResult ?? "").StartsWith("OK"), none = (s.TestResult ?? "").StartsWith("NOT_CHECKED");   // bug 110: nothing to compare is not "Failed"
+                sb.Append("<tr><td>").Append(Fmt.H(s.Set.Name)).Append("</td><td><span class='num'>").Append(D(s.LastTest)).Append("</span></td><td class='").Append(s.LastTest.HasValue ? (ok ? "ok" : none ? "" : "bad") : "").Append("'>")
+                  .Append(s.LastTest.HasValue ? (none ? t1("Nothing to compare") : (ok ? t1("Passed") : t1("Failed")) + " <span class='num'>" + Fmt.H((s.TestResult ?? "").Replace("OK ", "").Replace("FAILED ", "")) + "</span>") : t1("Not tested yet"))
                   .Append("</td><td><span class='num'>").Append(s.RestoresYear).Append("</span></td></tr>");
             }
             sb.Append("</table>");

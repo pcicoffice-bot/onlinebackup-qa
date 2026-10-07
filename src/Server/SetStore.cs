@@ -777,6 +777,25 @@ namespace OnlineBackup.Server
                         records.Add(new KeyValuePair<string, ChkRecord>(loc, rec));
                     }
                 }
+                // bug 111: damage found earlier (by a verify) sits in Quarantine/ - the object with its .chk, the content no longer its
+                // fingerprint. With the index lost before the next backup, that knowledge was gone: the file was neither asked for again
+                // nor shown damaged. Found again here, unless a later full copy of the file has replaced it since.
+                var qdir = Path.Combine(Dir, "Quarantine");
+                if (Directory.Exists(qdir))
+                    foreach (var stamp in Directory.GetDirectories(qdir))
+                        foreach (var chk in Directory.EnumerateFiles(stamp, "*.chk", SearchOption.AllDirectories).ToList())
+                        {
+                            var obj = chk.Substring(0, chk.Length - 4);
+                            if (!File.Exists(obj)) continue;
+                            ChkRecord qr;
+                            try { qr = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(chk)); } catch (InvalidDataException) { continue; }
+                            string qsha; using (var fs = File.OpenRead(obj)) qsha = Bytes.Sha256Hex(fs);
+                            if (qsha == qr.Sha256) continue;                                   // not damaged: quarantined as an orphan
+                            var qloc = obj.Substring(stamp.Length + 1).Replace(Path.DirectorySeparatorChar, '/');
+                            if (records.Any(x => !x.Key.StartsWith("!") && x.Value.Rel == qr.Rel && x.Value.Kind == "F" && string.CompareOrdinal(x.Value.Job, qr.Job) > 0)) continue;
+                            if (records.Any(x => x.Key == "!" + qloc)) continue;
+                            records.Add(new KeyValuePair<string, ChkRecord>("!" + qloc, qr));
+                        }
                 var jobs = new Dictionary<string, string[]>();
                 var expired = new HashSet<string>();
                 foreach (var l in ReadLines(JobsLog))
@@ -799,6 +818,10 @@ namespace OnlineBackup.Server
                             if (r.Key.StartsWith("!"))
                             {
                                 Exec(c, t, "INSERT OR REPLACE INTO resend(rel, reason) VALUES($0,$1)", r.Value.Rel, "damaged object (rebuild)");
+                                // bug 112: the points that held it say "damaged" (as VerifyAll does), never leave the file out silently
+                                var dl = r.Key.Substring(1); var da = dl.Substring(0, dl.IndexOf('/'));
+                                Exec(c, t, "INSERT OR REPLACE INTO lost(loc,rel,seq,kind,job,removed,enc,orig,mtime) VALUES($0,$1,$2,$3,$4,$5,$6,$7,$8)",
+                                    dl, r.Value.Rel, r.Value.Seq, r.Value.Kind, r.Value.Job, da == Current ? null : da, r.Value.EncPath, r.Value.Orig, r.Value.Mtime);
                                 continue;
                             }
                             var area = r.Key.Substring(0, r.Key.IndexOf('/'));

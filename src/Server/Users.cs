@@ -22,7 +22,7 @@ namespace OnlineBackup.Server
         readonly object gate = new object();
         readonly ConcurrentDictionary<string, Session> sessions = new ConcurrentDictionary<string, Session>();
 
-        public sealed class Session { public string Login; public string Account; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; }
+        public sealed class Session { public string Login; public string Account; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; public string Pw; }
 
         public Users(SystemConfig cfg) { this.cfg = cfg; }
         public SystemConfig Config { get { return cfg; } }
@@ -371,10 +371,18 @@ namespace OnlineBackup.Server
             }
         }
 
+        /// <summary>Bug 121: a short fingerprint of the account's stored password hash (never the hash itself in the sessions file).</summary>
+        static string PwMark(Staff.Account acc)
+        {
+            var h = acc == null ? null : (string)acc.El.Attribute("HASHED_PWD");
+            return string.IsNullOrEmpty(h) ? "" : Bytes.Hex(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(h))).Substring(0, 16);
+        }
+
         public string NewSession(string login, bool admin, string device = null, string vendor = "")
         {
             var token = Bytes.Hex(Bytes.Random(24));
             var s = new Session { Login = login, Admin = admin, Device = device, Vendor = vendor ?? "", Expires = SystemClock.UtcNow.AddHours(admin ? 2 : 12) };
+            if (admin) s.Pw = PwMark(Staff.Find(cfg, login));
             if (!admin) s.Account = AccountId(login);
             sessions[token] = s;
             // Agent D (D-6): a customer's sign-in (the window, a restore) outlives a server restart as an administrator's
@@ -392,7 +400,7 @@ namespace OnlineBackup.Server
             var token = Bytes.Hex(Bytes.Random(24));
             // SEC-130 (owner: "after the update it went back to the sign-in again" — from outside): every administrator sign-in
             // outlives a restart; away from the server it ends after 2 hours without use (sliding), on the server after 30 days
-            var s = new Session { Login = si.Account.Login, Admin = true, Vendor = si.Account.Vendor ?? "", Enroll = si.Enroll, Expires = SystemClock.UtcNow.AddHours(local ? 24 * 30 : 2), Sliding = !local };
+            var s = new Session { Login = si.Account.Login, Admin = true, Vendor = si.Account.Vendor ?? "", Enroll = si.Enroll, Expires = SystemClock.UtcNow.AddHours(local ? 24 * 30 : 2), Sliding = !local, Pw = PwMark(si.Account) };
             sessions[token] = s;
             if (!si.Enroll) Keep(token, s);
             return token;
@@ -412,7 +420,7 @@ namespace OnlineBackup.Server
                     var doc = File.Exists(KeptPath) ? OnlineBackup.Core.Atomic.LoadXml(KeptPath) : new XDocument(new XElement("KEPT"));
                     var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow) || (string)e.Attribute("HASH") == h).Remove();
-                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N"), new XAttribute("ACCOUNT", s.Account ?? "")));
+                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N"), new XAttribute("ACCOUNT", s.Account ?? ""), new XAttribute("PW", s.Pw ?? "")));
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
                 catch (Exception) { }
@@ -429,7 +437,7 @@ namespace OnlineBackup.Server
                     if (e == null || (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow)) return null;
                     bool admin = (string)e.Attribute("ADMIN") != "N";
                     if (admin && Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
-                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Account = (string)e.Attribute("ACCOUNT"), Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
+                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Account = (string)e.Attribute("ACCOUNT"), Pw = (string)e.Attribute("PW"), Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
                 }
                 catch (Exception) { return null; }
         }
@@ -462,6 +470,9 @@ namespace OnlineBackup.Server
             {
                 var acc = Staff.Find(cfg, s.Login);
                 if (acc == null || (string)acc.El.Attribute("DISABLED") == "Y" || (acc.Vendor ?? "") != (s.Vendor ?? "")) { EndSession(token); return null; }
+                // bug 121: a sign-in opened with a password that has been changed since ends (it lived on: 2 h sliding, 30 days
+                // on the server). A session kept by an older version carries no mark and stays until it ends by itself.
+                if (!string.IsNullOrEmpty(s.Pw) && s.Pw != PwMark(acc)) { EndSession(token); return null; }
             }
             // QA round R (R-01, High): a customer's sign-in belonged to a NAME — after the customer was deleted and the name given
             // to another customer (another reseller's), the old token opened the new account. It belongs to the account now.

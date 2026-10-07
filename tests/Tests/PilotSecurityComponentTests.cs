@@ -21,6 +21,7 @@ namespace OnlineBackup.Tests
     /// Oracles are independent of the product: published vectors (RFC 6070 PBKDF2, NIST SP 800-38A F.2.5 AES-256-CBC), and
     /// values computed outside .NET (Python hashlib / hmac, OpenSSL) and written here as constants; exact counts and times.
     /// </summary>
+    [Collection("Guard")]   // Guard's state is one per process: these classes never run at the same time
     public class PilotSecurityComponentTests : IDisposable
     {
         readonly string root = Path.Combine(Path.GetTempPath(), "obpsec-" + Guid.NewGuid().ToString("N").Substring(0, 8));

@@ -177,7 +177,14 @@ namespace OnlineBackup.Agent
                         lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); }
                         return new Msg().Set("ok", 1);
                     }
-                case "logout": lock (gate) { session = null; sessionPassword = null; } return new Msg().Set("ok", 1);
+                case "logout":
+                    {
+                        // bug 124 (H-04): Sign out only forgot the sign-in here; on the server it stayed valid 12 hours (and across a
+                        // restart). It is ended there too; the window signs out here even when the server cannot be reached.
+                        Client was; lock (gate) { was = session; session = null; sessionPassword = null; }
+                        if (was != null) try { was.Call("POST", "/api/logout", new Msg()); } catch (Exception) { }
+                        return new Msg().Set("ok", 1);
+                    }
                 // SEC-010: two-step verification of this customer — on / off, set up with the authenticator app
                 case "security": { var p = app.Profile(); return new Msg().Set("totp", p.Get("TOTP_ON") == "Y" ? 1 : 0).Set("required", p.Get("REQUIRE_TOTP") == "Y" ? 1 : 0).Set("login", p.Get("LOGIN_NAME")); }
                 case "totp-enable": return Session().Call("POST", "/api/totp/enable", new Msg());
