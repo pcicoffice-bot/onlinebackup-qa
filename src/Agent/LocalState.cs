@@ -53,7 +53,7 @@ namespace OnlineBackup.Agent
         public KeySet LoadKey(string setId)
         {
             var p = Path.Combine(Dir, "keys", setId + ".bin");
-            return File.Exists(p) ? KeySet.FromRaw(Unprotect(File.ReadAllBytes(p))) : null;
+            return File.Exists(p) ? KeySet.FromRaw(Unprotect(OnlineBackup.Core.Atomic.ReadAllBytes(p))) : null;
         }
 
         /// <summary>A secret of this computer only (e.g. the SQL Server password of a set), protected like the keys.</summary>
@@ -61,7 +61,7 @@ namespace OnlineBackup.Agent
         public string LoadSecret(string name)
         {
             var p = Path.Combine(Dir, "secrets", name + ".bin");
-            return File.Exists(p) ? Encoding.UTF8.GetString(Unprotect(File.ReadAllBytes(p))) : null;
+            return File.Exists(p) ? Encoding.UTF8.GetString(Unprotect(OnlineBackup.Core.Atomic.ReadAllBytes(p))) : null;
         }
 
         public string SetDir(string setId) { var d = Path.Combine(Dir, "sets", setId); Directory.CreateDirectory(d); return d; }
@@ -130,7 +130,7 @@ namespace OnlineBackup.Agent
         void Read(string p)
         {
             bool v2 = false; long end = -1; int entries = 0;
-            foreach (var line in File.ReadAllLines(p, Encoding.UTF8))
+            foreach (var line in OnlineBackup.Core.Atomic.ReadAllLines(p, Encoding.UTF8))
             {
                 if (line == "#v2") { v2 = true; continue; }
                 if (line.StartsWith("#lastlocal\t")) { LastSuccessLocalMs = long.Parse(line.Substring(11), NumberStyles.None, CultureInfo.InvariantCulture); continue; }
@@ -193,7 +193,7 @@ namespace OnlineBackup.Agent
             var list = new List<KeyValuePair<string, int>>();
             try
             {
-                foreach (var l in File.ReadAllLines(p))
+                foreach (var l in OnlineBackup.Core.Atomic.ReadAllLines(p))
                 {
                     if (l.Length == 0) continue;
                     var x = l.Split(' '); int n;

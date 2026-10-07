@@ -44,7 +44,7 @@ namespace OnlineBackup.Server
         static string Iso(DateTime t) { return t.ToUniversalTime().ToString("o", CultureInfo.InvariantCulture); }
         static DateTime At(string iso) { return DateTime.Parse(iso, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).ToUniversalTime(); }
 
-        Msg Load(string path) { return File.Exists(path) ? Msg.Parse(File.ReadAllBytes(path)) : new Msg().Set("next", 1); }
+        Msg Load(string path) { return File.Exists(path) ? Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(path)) : new Msg().Set("next", 1); }
         void Write(string path, Msg m) { Atomic.WriteBytes(path, m.ToBytes()); }
 
         // ------------------------------------------------------------------ settings

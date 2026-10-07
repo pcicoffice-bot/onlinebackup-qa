@@ -151,7 +151,7 @@ namespace OnlineBackup.Server
             // SETUP-030: a port of another program is never taken — also not one an IIS site is set to use while it is
             // stopped, and not one with another program's HTTPS certificate binding (deleting it would break that site)
             try { if (IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners().Any(e => e.Port == port)) return false; } catch (Exception) { }
-            try { var iis = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "inetsrv", "config", "applicationHost.config"); if (File.Exists(iis) && IisBindsPort(File.ReadAllText(iis), port)) return false; } catch (Exception) { }
+            try { var iis = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "inetsrv", "config", "applicationHost.config"); if (File.Exists(iis) && IisBindsPort(OnlineBackup.Core.Atomic.ReadAllText(iis), port)) return false; } catch (Exception) { }
             return !ForeignSslBinding(ShowSsl(port));
         }
 

@@ -215,7 +215,7 @@ namespace OnlineBackup.Agent
         {
             using (var k = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(UninstallKey(folder)))
             {
-                var ver = ""; try { ver = File.ReadAllText(Path.Combine(r.InstallDir, "version.txt")).Trim(); } catch (Exception) { }
+                var ver = ""; try { ver = OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(r.InstallDir, "version.txt")).Trim(); } catch (Exception) { }
                 long kb = 0; try { kb = Directory.GetFiles(r.InstallDir).Sum(f => new FileInfo(f).Length) / 1024; } catch (Exception) { }
                 var agent = Path.Combine(r.InstallDir, "OnlineBackup.Agent.exe"); var gui = Path.Combine(r.InstallDir, "OnlineBackup.Client.exe");
                 k.SetValue("DisplayName", r.Product);

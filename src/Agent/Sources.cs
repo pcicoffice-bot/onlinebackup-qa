@@ -200,7 +200,7 @@ namespace OnlineBackup.Agent
                             if (big.Length > 0) info("Large database (" + Gb(size) + "): larger buffers for a faster backup");
                             bool diff = set.SqlFullDay >= 0 && (int)SystemClock.Now.DayOfWeek != set.SqlFullDay && File.Exists(marker) && db != "master";
                             if (diff)
-                                try { if (lastFull() != File.ReadAllText(marker).Trim()) { warn("Another program made a full backup of " + instance + "\\" + db + " — this run makes a full backup"); diff = false; } }
+                                try { if (lastFull() != OnlineBackup.Core.Atomic.ReadAllText(marker).Trim()) { warn("Another program made a full backup of " + instance + "\\" + db + " — this run makes a full backup"); diff = false; } }
                                 catch (Exception) { diff = false; }
                             if (diff)
                             {

@@ -107,7 +107,7 @@ namespace OnlineBackup.Server
                         }
                     case "license-issue":
                         {
-                            var key = System.IO.File.ReadAllText(one("key")).Trim();
+                            var key = OnlineBackup.Core.Atomic.ReadAllText(one("key")).Trim();
                             var mods = (one("modules") ?? string.Join(",", License.AllModules)).Split(',');
                             Console.WriteLine(License.Issue(key, one("id") ?? ("L-" + SystemClock.UtcNow.ToString("yyyyMMddHHmmss")), one("company") ?? "", one("edition") ?? "PRO",
                                 one("server-id"), int.Parse(one("users") ?? "0"), double.Parse(one("storage-gb") ?? "0", System.Globalization.CultureInfo.InvariantCulture), mods,
@@ -130,7 +130,7 @@ namespace OnlineBackup.Server
                         }
                         {
                             // the product owner's licensing centre
-                            using (var c = new LicenseCenter(System.IO.File.ReadAllText(one("key")).Trim(), one("data"), one("prefix") ?? "http://+:9443/"))
+                            using (var c = new LicenseCenter(OnlineBackup.Core.Atomic.ReadAllText(one("key")).Trim(), one("data"), one("prefix") ?? "http://+:9443/"))
                             {
                                 Console.WriteLine("licensing centre listening " + (one("prefix") ?? "http://+:9443/"));
                                 var done = new ManualResetEvent(false);
@@ -159,14 +159,14 @@ namespace OnlineBackup.Server
                             return 0;
                         }
                     case "license-center-list":
-                        foreach (var f in System.IO.Directory.GetFiles(one("data"), "*.json")) Console.WriteLine(System.IO.Path.GetFileNameWithoutExtension(f) + "\t" + System.IO.File.ReadAllText(f));
+                        foreach (var f in System.IO.Directory.GetFiles(one("data"), "*.json")) Console.WriteLine(System.IO.Path.GetFileNameWithoutExtension(f) + "\t" + OnlineBackup.Core.Atomic.ReadAllText(f));
                         return 0;
                     case "license-center-approve":
                     case "license-center-revoke":
                         {
                             // works on the centre's data folder (also while the centre runs)
                             var p2 = System.IO.Path.Combine(one("data"), one("license") + ".json");
-                            var rec = System.IO.File.Exists(p2) ? OnlineBackup.Core.Json.Obj(OnlineBackup.Core.Json.Parse(System.IO.File.ReadAllText(p2))) : new Dictionary<string, object>();
+                            var rec = System.IO.File.Exists(p2) ? OnlineBackup.Core.Json.Obj(OnlineBackup.Core.Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p2))) : new Dictionary<string, object>();
                             rec[args[0] == "license-center-approve" ? "approved" : "revoked"] = true;
                             OnlineBackup.Core.Atomic.WriteText(p2, OnlineBackup.Core.Json.Write(rec));
                             Console.WriteLine("saved");

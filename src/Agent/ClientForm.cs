@@ -131,7 +131,7 @@ namespace OnlineBackup.Agent
         /// <summary>The language picked in the installation (written beside the program, for every Windows user).</summary>
         static string InstalledLanguage()
         {
-            try { var f = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt"); if (File.Exists(f)) { var v = File.ReadAllText(f).Trim(); if (v.Length > 0) return L.Norm(v); } } catch (Exception) { }
+            try { var f = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "language.txt"); if (File.Exists(f)) { var v = OnlineBackup.Core.Atomic.ReadAllText(f).Trim(); if (v.Length > 0) return L.Norm(v); } } catch (Exception) { }
             return null;
         }
 

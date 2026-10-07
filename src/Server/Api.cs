@@ -110,7 +110,7 @@ namespace OnlineBackup.Server
         {
             var log = EndedLog(login, setId, job);
             if (!File.Exists(log)) return null;
-            try { var rp = ReplyFile(login, setId, job); if (File.Exists(rp)) return Msg.Parse(File.ReadAllBytes(rp)).Set("repeat", 1); } catch (Exception) { }
+            try { var rp = ReplyFile(login, setId, job); if (File.Exists(rp)) return Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(rp)).Set("repeat", 1); } catch (Exception) { }
             return new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1);
         }
 
@@ -429,7 +429,7 @@ namespace OnlineBackup.Server
                             var kp = string.IsNullOrEmpty(parent) ? null : Path.Combine(users.UserDir(login), "db", "keys", parent + ".bin");
                             if (kp == null || prof.Get("SAVE_ENCRYPT_KEY") != "Y" || !File.Exists(kp)) throw new ApiException(404, "NO_KEY", "Enter the set's encryption password on this computer (key recovery is off).");
                             SysLog.Write(ip, "Access", "shared set key given to the copy " + login + "/" + setId + " (from " + parent + ")");
-                            Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(kp)))));
+                            Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(kp)))));
                             return;
                         }
                     case "restic":
@@ -458,7 +458,7 @@ namespace OnlineBackup.Server
                             while (File.Exists(EndedLog(login, setId, job)))
                             {
                                 var rp = ReplyFile(login, setId, job);
-                                if (File.Exists(rp) && Msg.Parse(File.ReadAllBytes(rp))["digest"] == digest) { Reply(ctx, 200, new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1)); return; }
+                                if (File.Exists(rp) && Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(rp))["digest"] == digest) { Reply(ctx, 200, new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1)); return; }
                                 RunId.TryParse(job, out var jt); job = RunId.From(jt.AddSeconds(1)); b.Set("job", job);
                             }
                             KeepReply(login, setId, job, new Msg().Set("ok", 1).Set("job", job).Set("digest", digest), ip);
@@ -1126,7 +1126,7 @@ namespace OnlineBackup.Server
                 Need(set != null && new[] { "Backup", "Restore" }.Contains(b["cat"]) && !string.IsNullOrEmpty(b["file"]) && b["file"].IndexOfAny(new[] { '/', '\\' }) < 0 && !b["file"].Contains(".."));
                 var file = Path.Combine(users.UserDir(login), "logs", set.Id, b["cat"], b["file"]);
                 Need(File.Exists(file));
-                if (File.Exists(file + ".ai") && !b.Bool("again")) { Reply(ctx, 200, Msg.Parse(File.ReadAllBytes(file + ".ai")).Set("cached", 1)); return; }
+                if (File.Exists(file + ".ai") && !b.Bool("again")) { Reply(ctx, 200, Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(file + ".ai")).Set("cached", 1)); return; }
                 var d = Ai.Diagnose(cfg, L.Norm(b["lang"]), set.Type, set.Engine, Atomic.ReadLinesShared(file));
                 Atomic.WriteBytes(file + ".ai", d.ToBytes());
                 SysLog.Write(ip, "Admin", admin + " AI diagnosis " + login + "/" + set.Id + " " + b["file"]);
@@ -1372,7 +1372,7 @@ namespace OnlineBackup.Server
                 var p = Path.Combine(users.UserDir(seg[3]), "db", "keys", seg[4] + ".bin");
                 if (!File.Exists(p)) throw new ApiException(404, "NO_KEY", "The key is not stored on the server (key storage is off for this user).");
                 SysLog.Write(ip, "Admin", admin + " READ ENCRYPTION KEY of " + seg[3] + "/" + seg[4]);
-                Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(p)))));
+                Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(p)))));
                 return;
             }
             if (seg.Length == 5 && seg[2] == "users" && seg[4] == "unfreeze" && method == "POST")
@@ -1768,7 +1768,7 @@ namespace OnlineBackup.Server
             if (soon.Count == 0) return;
             var mark = Path.Combine(cfg.SystemHome, "stats", "disk-alert.txt");
             DateTime last;
-            if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Trim(), out last) && (nowUtc - last).TotalDays < 7) return;
+            if (File.Exists(mark) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(mark).Trim(), out last) && (nowUtc - last).TotalDays < 7) return;
             Atomic.WriteText(mark, RunId.From(nowUtc));
             mailer.Alert("⚠ Storage forecast — the backup disk fills up soon", string.Join("", soon.Select(d => "<p>" + Fmt.H(d["path"]) + ": " + Fmt.Size(d.Long("free")) + " free, full in about " + d["days"] + " days at the current pace.</p>")));
         }

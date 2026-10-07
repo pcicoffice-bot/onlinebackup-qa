@@ -56,7 +56,7 @@ namespace OnlineBackup.Server
                 DateTime d;
                 if (!DateTime.TryParseExact(Path.GetFileNameWithoutExtension(f).Substring(5), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out d) || d < fromUtc.Date) continue;
                 var m = new Dictionary<string, string[]>();
-                foreach (var line in File.ReadAllLines(f)) { var v = line.Split('\t'); if (v.Length >= 4) m[v[0] + "/" + v[1]] = v; }
+                foreach (var line in OnlineBackup.Core.Atomic.ReadAllLines(f)) { var v = line.Split('\t'); if (v.Length >= 4) m[v[0] + "/" + v[1]] = v; }
                 l.Add(new KeyValuePair<DateTime, Dictionary<string, string[]>>(d, m));
             }
             return l;

@@ -133,7 +133,12 @@ QA-system defects found tonight (each one could make a test PASS without testing
 - C1 not verified (Windows run 14 running); Windows crash journeys W07-W09, real reboot (VM), uninstall: NOT TESTED.
 - A-1 accessibility: the client's text fields have no name for screen readers although the code sets one (Windows only).
 - Server's first start after the container kill failed once ("Value cannot be null."), not reproduced (Medium).
-- Full regression on the latest snapshot cf39637: running (container restarts killed two attempts; xUnit on 17a4414 complete).
+- **Full regression on the latest snapshot: DEFERRED (owner, 07:33) — NOT PASS.** The local container restarted 9 times
+  tonight and killed every long run (the batched run on 30a6822 reached 2 of 16 batches). Last complete local xUnit: 17a4414
+  (441: 438 PASS, 1 FAIL P-1, 2 skipped 76/77); Playwright last complete on 8b95455. The CI gate runs xUnit on Linux and
+  hosted Windows per snapshot, but that is not the full regression (no Playwright failure-recovery as root, no soak).
+- **ACTION BEFORE RELEASE: Move full regression to persistent CI and rerun from scratch before Release** (a runner that
+  survives restarts and resumes instead of starting the hour again).
 - Hosted Windows xUnit: until Q25 its restore comparisons proved nothing; the gate on cf39637 is the first honest run.
 - Hebrew admin sign-in on phone/tablet: text '123 456' at 9.5 px (screen checker, Low, UX - not changed).
 - Rounds P, Q, S running; their areas stay NOT TESTED until they report and the evidence is checked.

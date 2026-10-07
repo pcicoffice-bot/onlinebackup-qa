@@ -34,7 +34,7 @@ namespace OnlineBackup.Server
         /// <summary>This program's version (version.txt beside it, written by the package build).</summary>
         public static string CurrentVersion
         {
-            get { try { var p = Path.Combine(AppContext.BaseDirectory, "version.txt"); return File.Exists(p) ? File.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
+            get { try { var p = Path.Combine(AppContext.BaseDirectory, "version.txt"); return File.Exists(p) ? OnlineBackup.Core.Atomic.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
         }
 
         public static bool Newer(string a, string b)
@@ -223,7 +223,7 @@ namespace OnlineBackup.Server
                 var exe = Path.Combine(unpack, "server", OperatingSystem.IsWindows() ? "OnlineBackup.Server.exe" : "OnlineBackup.Server");
                 var vf = Path.Combine(unpack, "server", "version.txt");
                 if (!File.Exists(exe) || !File.Exists(vf)) throw new InvalidOperationException("This package has no server program.");
-                var version = File.ReadAllText(vf).Trim();
+                var version = OnlineBackup.Core.Atomic.ReadAllText(vf).Trim();
                 var log = Path.Combine(dir, "update-" + Safe(version) + ".log");
                 SysLog.Write(ip, "Update", who + " update from files " + CurrentVersion + " → " + version + " (SHA-256 " + sha.Substring(0, 12) + "…)");
                 lock (gate) { state = "installing"; message = version; }

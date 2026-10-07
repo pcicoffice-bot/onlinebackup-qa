@@ -347,6 +347,28 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
         /// <summary>How often a refused replace is tried (about 5 seconds in all).</summary>
         public static int ReplaceAttempts = 40;
 
+        /// <summary>File.ReadAllText / ReadAllLines / ReadAllBytes, the same in every way except that the file may be REPLACED while
+        /// it is open (FileShare.Delete): on Windows a plain read holds the file so that an Atomic write cannot replace it at that
+        /// moment (bug 93b). Every reader of a file the product writes uses these.</summary>
+        public static string ReadAllText(string path) { using (var r = new StreamReader(OpenShared(path), Encoding.UTF8, true)) return r.ReadToEnd(); }
+        public static string ReadAllText(string path, Encoding encoding) { using (var r = new StreamReader(OpenShared(path), encoding, true)) return r.ReadToEnd(); }
+        public static string[] ReadAllLines(string path) { return ReadAllLines(path, Encoding.UTF8); }
+        public static string[] ReadAllLines(string path, Encoding encoding)
+        {
+            var lines = new List<string>();
+            using (var r = new StreamReader(OpenShared(path), encoding, true)) { string l; while ((l = r.ReadLine()) != null) lines.Add(l); }
+            return lines.ToArray();
+        }
+        public static byte[] ReadAllBytes(string path)
+        {
+            using (var fs = OpenShared(path))
+            {
+                var ms = new MemoryStream(fs.CanSeek ? (int)Math.Min(fs.Length, int.MaxValue) : 0);
+                fs.CopyTo(ms); return ms.ToArray();
+            }
+        }
+        static FileStream OpenShared(string path) { return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite | FileShare.Delete); }
+
         /// <summary>Reads a file that may be written at the same moment (a log): on Windows a plain read is refused then.</summary>
         public static string ReadShared(string path)
         {

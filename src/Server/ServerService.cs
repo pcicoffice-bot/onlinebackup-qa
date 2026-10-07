@@ -61,7 +61,7 @@ namespace OnlineBackup.Server
 
         public LicenseCenterService(string keyFile, string dataDir, string prefix) { this.keyFile = keyFile; this.dataDir = dataDir; this.prefix = prefix; ServiceName = Name; CanStop = true; CanShutdown = true; }
 
-        protected override void OnStart(string[] args) { center = new LicenseCenter(System.IO.File.ReadAllText(keyFile).Trim(), dataDir, prefix); }
+        protected override void OnStart(string[] args) { center = new LicenseCenter(OnlineBackup.Core.Atomic.ReadAllText(keyFile).Trim(), dataDir, prefix); }
         protected override void OnStop() { if (center != null) center.Dispose(); }
         protected override void OnShutdown() { OnStop(); }
 

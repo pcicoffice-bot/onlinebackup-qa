@@ -39,7 +39,7 @@ namespace OnlineBackup.Server
         {
             var m = new Msg().Set("version", Updater.CurrentVersion);
             var v = System.IO.Path.Combine(ClientPackage.ClientDir, "version.txt");
-            if (File.Exists(v)) m.Set("version", File.ReadAllText(v).Trim());
+            if (File.Exists(v)) m.Set("version", OnlineBackup.Core.Atomic.ReadAllText(v).Trim());
             foreach (var f in Files()) m.Add("files", new Msg().Set("name", System.IO.Path.GetFileName(f)).Set("size", new FileInfo(f).Length).Set("sha256", Sha(f)));
             return m;
         }

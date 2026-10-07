@@ -186,7 +186,7 @@ namespace OnlineBackup.Server
         {
             var p = Path.Combine(systemHome, "conf", "vault.key");
             if (!File.Exists(p)) Atomic.WriteBytes(p, Bytes.Random(96));
-            return KeySet.FromRaw(File.ReadAllBytes(p));
+            return KeySet.FromRaw(OnlineBackup.Core.Atomic.ReadAllBytes(p));
         }
     }
 }

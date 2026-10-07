@@ -140,7 +140,7 @@ namespace OnlineBackup.Server
                 {
                     if (File.Exists(Path.Combine(d, "journal"))) { RecoverPending(); continue; }
                     var kf = Path.Combine(d, "key");
-                    if (key != null && File.Exists(kf) && File.ReadAllText(kf).Trim() == key) { File.WriteAllText(Path.Combine(d, "lease"), ""); return Path.GetFileName(d); }
+                    if (key != null && File.Exists(kf) && OnlineBackup.Core.Atomic.ReadAllText(kf).Trim() == key) { File.WriteAllText(Path.Combine(d, "lease"), ""); return Path.GetFileName(d); }
                     throw new ApiException(409, "BUSY", "Another backup of this set is still running (it last answered " + Math.Max(0, (int)(utc - LeaseTime(d)).TotalMinutes) + " minutes ago).");
                 }
                 string id = RunId.From(utc);
@@ -371,7 +371,7 @@ namespace OnlineBackup.Server
                     foreach (var rel in deletes) replaced.Add(rel);
                     foreach (var name in uploads)
                     {
-                        var rec = ChkRecord.Parse(File.ReadAllText(Path.Combine(jd, "new", OsPath(name)) + ".chk"));
+                        var rec = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(jd, "new", OsPath(name)) + ".chk"));
                         if (rec.Kind == "F") replaced.Add(rec.Rel);
                         else
                         {
@@ -396,7 +396,7 @@ namespace OnlineBackup.Server
                         }
                     foreach (var name in uploads)
                     {
-                        var rec = ChkRecord.Parse(File.ReadAllText(Path.Combine(jd, "new", OsPath(name)) + ".chk"));
+                        var rec = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(jd, "new", OsPath(name)) + ".chk"));
                         if (rec.Kind == "D" && Query(c, "SELECT 1 FROM resend WHERE rel=$0 AND reason='delta without base'", rec.Rel).Count > 0) continue;
                         moves.Add(new[] { "jobs/" + job + "/new/" + name, Current + "/" + name });
                         moves.Add(new[] { "jobs/" + job + "/new/" + name + ".chk", Current + "/" + name + ".chk" });
@@ -417,7 +417,7 @@ namespace OnlineBackup.Server
             return string.Join("\t", new[] { "new", "upd", "perm", "del", "bytes" }.Select(k => k + "=" + (s == null ? 0 : s.Long(k))));
         }
 
-        static IEnumerable<string> ReadLines(string p) { return File.Exists(p) ? File.ReadAllLines(p).Where(l => l.Length > 0) : Enumerable.Empty<string>(); }
+        static IEnumerable<string> ReadLines(string p) { return File.Exists(p) ? OnlineBackup.Core.Atomic.ReadAllLines(p).Where(l => l.Length > 0) : Enumerable.Empty<string>(); }
 
         void Apply(string job, List<string[]> moves, Msg stats)
         {
@@ -442,7 +442,7 @@ namespace OnlineBackup.Server
                         Exec(c, t, "UPDATE objects SET loc=$0, removed=$1 WHERE loc=$2", m[1], job, m[0]);
                     else
                     {
-                        var rec = ChkRecord.Parse(File.ReadAllText(Abs(m[1]) + ".chk"));
+                        var rec = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(Abs(m[1]) + ".chk"));
                         Exec(c, t, "INSERT OR REPLACE INTO objects(loc,rel,seq,kind,job,removed,size,orig,mtime,sha,enc,perm) VALUES($0,$1,$2,$3,$4,NULL,$5,$6,$7,$8,$9,$10)",
                             m[1], rec.Rel, rec.Seq, rec.Kind, rec.Job, rec.Size, rec.Orig, rec.Mtime, rec.Sha256, rec.EncPath, rec.PermOnly ? 1 : 0);
                         if (rec.Kind == "F") { Exec(c, t, "DELETE FROM resend WHERE rel=$0", rec.Rel); ended.Add(rec.Rel); }
@@ -470,7 +470,7 @@ namespace OnlineBackup.Server
                     var journal = Path.Combine(d, "journal");
                     if (!File.Exists(journal)) continue;
                     var job = Path.GetFileName(d);
-                    var moves = File.ReadAllLines(journal).Where(l => l.StartsWith("M\t")).Select(l => l.Split('\t')).Select(p => new[] { p[1], p[2] }).ToList();
+                    var moves = OnlineBackup.Core.Atomic.ReadAllLines(journal).Where(l => l.StartsWith("M\t")).Select(l => l.Split('\t')).Select(p => new[] { p[1], p[2] }).ToList();
                     foreach (var m in moves)
                     {
                         string src = Abs(m[0]), dst = Abs(m[1]);
@@ -765,7 +765,7 @@ namespace OnlineBackup.Server
                         if (Atomic.IsTemp(f)) { File.Delete(f); continue; }   // bug 35: by the file's name, never the path
                         if (!File.Exists(f + ".chk")) { orphans++; Quarantine(loc); continue; }
                         ChkRecord rec;
-                        try { rec = ChkRecord.Parse(File.ReadAllText(f + ".chk")); }
+                        try { rec = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(f + ".chk")); }
                         catch (InvalidDataException) { orphans++; Quarantine(loc); continue; }
                         if (verify)
                         {

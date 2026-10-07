@@ -105,10 +105,10 @@ namespace OnlineBackup.Server
                         var e = new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, root + name) { Mode = mode, ModificationTime = DateTimeOffset.UtcNow, DataStream = new MemoryStream(data) };
                         tar.WriteEntry(e);
                     };
-                    add("OnlineBackup.Agent", File.ReadAllBytes(Path.Combine(dir, "OnlineBackup.Agent")), exec);
-                    add("restic", File.ReadAllBytes(Path.Combine(dir, "restic")), exec);
+                    add("OnlineBackup.Agent", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, "OnlineBackup.Agent")), exec);
+                    add("restic", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, "restic")), exec);
                     var notices = Path.Combine(p.Dir, "THIRD-PARTY-NOTICES.txt");
-                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", File.ReadAllBytes(notices), plain);
+                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", OnlineBackup.Core.Atomic.ReadAllBytes(notices), plain);
                     add("branding.xml", new UTF8Encoding(false).GetBytes(branding.ToString()), plain);
                     add("connection.xml", new UTF8Encoding(false).GetBytes(connection.ToString()), plain);
                     add("setup.sh", Encoding.ASCII.GetBytes(
@@ -154,11 +154,11 @@ namespace OnlineBackup.Server
                         tar.WriteEntry(new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, root + name) { Mode = mode, ModificationTime = DateTimeOffset.UtcNow, DataStream = new MemoryStream(data) });
                     foreach (var arch in new[] { "arm64", "x64" })
                     {
-                        add(arch + "/OnlineBackup.Agent", File.ReadAllBytes(Path.Combine(dir, arch, "OnlineBackup.Agent")), exec);
-                        add(arch + "/restic", File.ReadAllBytes(Path.Combine(dir, arch, "restic")), exec);
+                        add(arch + "/OnlineBackup.Agent", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, arch, "OnlineBackup.Agent")), exec);
+                        add(arch + "/restic", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, arch, "restic")), exec);
                     }
                     var notices = Path.Combine(p.Dir, "THIRD-PARTY-NOTICES.txt");
-                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", File.ReadAllBytes(notices), plain);
+                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", OnlineBackup.Core.Atomic.ReadAllBytes(notices), plain);
                     add("branding.xml", new UTF8Encoding(false).GetBytes(branding.ToString()), plain);
                     add("connection.xml", new UTF8Encoding(false).GetBytes(connection.ToString()), plain);
                     add("setup.command", Encoding.ASCII.GetBytes(SetupCommand()), exec);
@@ -240,14 +240,14 @@ namespace OnlineBackup.Server
             {
                 var n = Path.GetFileName(f);
                 if (n.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase) || n == "branding.xml" || n == "connection.xml" || n == "contract.xml" || n.Equals("Setup.exe", StringComparison.OrdinalIgnoreCase) || n.Equals("Setup.exe.config", StringComparison.OrdinalIgnoreCase)) continue;
-                files.Add(new KeyValuePair<string, byte[]>(n, File.ReadAllBytes(f)));
+                files.Add(new KeyValuePair<string, byte[]>(n, OnlineBackup.Core.Atomic.ReadAllBytes(f)));
             }
             files.Add(new KeyValuePair<string, byte[]>("branding.xml", new UTF8Encoding(true).GetBytes(p.Branding.ToString())));
             files.Add(new KeyValuePair<string, byte[]>("connection.xml", new UTF8Encoding(true).GetBytes(p.Connection.ToString())));
             if (p.Contract != null) files.Add(new KeyValuePair<string, byte[]>("contract.xml", new UTF8Encoding(true).GetBytes(p.Contract.ToString())));
             using (var ms = new MemoryStream())
             {
-                var head = File.ReadAllBytes(stub); ms.Write(head, 0, head.Length);
+                var head = OnlineBackup.Core.Atomic.ReadAllBytes(stub); ms.Write(head, 0, head.Length);
                 long start = ms.Position;
                 using (var gz = new System.IO.Compression.GZipStream(ms, CompressionLevel.Optimal, true))
                 using (var w = new BinaryWriter(gz, Encoding.UTF8, true))

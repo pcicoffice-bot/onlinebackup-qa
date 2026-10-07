@@ -52,7 +52,7 @@ namespace OnlineBackup.Server
                 int done = 0;
                 foreach (var f in Directory.GetFiles(QueueDir, "*.xml").OrderBy(x => x, StringComparer.Ordinal))
                 {
-                    var ev = Msg.Parse(File.ReadAllText(f));
+                    var ev = Msg.Parse(OnlineBackup.Core.Atomic.ReadAllText(f));
                     try { Send(ev); }
                     catch (Exception e)
                     {
@@ -102,7 +102,7 @@ namespace OnlineBackup.Server
                         {
                             // Saved keys are protected per machine (DPAPI): sent unprotected over TLS and protected again by the second server.
                             var tmp = Path.GetTempFileName();
-                            try { File.WriteAllBytes(tmp, KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(f))); PutFile(login, rel, tmp, true, true); }
+                            try { File.WriteAllBytes(tmp, KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(f))); PutFile(login, rel, tmp, true, true); }
                             finally { File.Delete(tmp); }
                         }
                         else PutFile(login, rel, f, true);
@@ -194,7 +194,7 @@ namespace OnlineBackup.Server
             var p = Path.Combine(cfg.SystemHome, "replication", "pending-deletes.log");
             if (!File.Exists(p)) return 0;
             var keep = new List<string>(); int done = 0;
-            foreach (var line in File.ReadAllLines(p).Where(l => l.Length > 0))
+            foreach (var line in OnlineBackup.Core.Atomic.ReadAllLines(p).Where(l => l.Length > 0))
             {
                 var x = line.Split('\t');
                 if (string.CompareOrdinal(x[0], RunId.From(nowUtc)) > 0) { keep.Add(line); continue; }

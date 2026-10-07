@@ -248,7 +248,7 @@ namespace OnlineBackup.Agent
             try
             {
                 var f = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "contract-accepted.txt");
-                if (string.IsNullOrEmpty(version) || version == "0" || !File.Exists(f) || File.ReadAllText(f).Trim() != version) return false;
+                if (string.IsNullOrEmpty(version) || version == "0" || !File.Exists(f) || OnlineBackup.Core.Atomic.ReadAllText(f).Trim() != version) return false;
                 var c = Connection(); var pkgPin = ((string)c.Attribute("PIN") ?? "").ToLowerInvariant();
                 return Setup.SameServer(server, (string)c.Attribute("SERVER")) || (pkgPin.Length > 0 && pkgPin == (pin ?? "").ToLowerInvariant());
             }
@@ -279,7 +279,7 @@ namespace OnlineBackup.Agent
                 {
                     var la = Path.Combine(app.Home.SetDir(s.Id), "last-attempt.txt");
                     string last = "", result = "";
-                    if (File.Exists(la)) { var f = File.ReadAllText(la).Split('\t'); last = f[0]; result = f.Length > 1 ? f[1].Trim() : ""; }
+                    if (File.Exists(la)) { var f = OnlineBackup.Core.Atomic.ReadAllText(la).Split('\t'); last = f[0]; result = f.Length > 1 ? f[1].Trim() : ""; }
                     bool mine = string.IsNullOrEmpty(s.Computer) || s.Computer.Equals(app.Home.Computer, StringComparison.OrdinalIgnoreCase);
                     m.Add("sets", new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
                         .Set("computer", s.Computer).Set("mine", mine ? 1 : 0).Set("src", string.Join("\n", s.Sources.ToArray())).Set("skip", string.Join("\n", s.Deselected.ToArray()))

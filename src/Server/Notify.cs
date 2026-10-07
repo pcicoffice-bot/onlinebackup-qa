@@ -155,7 +155,7 @@ namespace OnlineBackup.Server
         {
             var root = Attr("PROFILES");
             if (string.IsNullOrEmpty(root)) return;
-            try { Atomic.WriteBytes(Path.Combine(root, login, "Profile.xml"), File.ReadAllBytes(Path.Combine(userDir, "db", "Profile.xml"))); }
+            try { Atomic.WriteBytes(Path.Combine(root, login, "Profile.xml"), OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(userDir, "db", "Profile.xml"))); }
             catch (Exception e) { SysLog.Write(null, "System", "error: export profile " + login + ": " + e.Message); }
         }
 
@@ -163,7 +163,7 @@ namespace OnlineBackup.Server
         {
             var root = Attr("LOGS");
             if (string.IsNullOrEmpty(root) || !File.Exists(logFile)) return;
-            try { Atomic.WriteBytes(Path.Combine(root, login, setId, job + ".log"), File.ReadAllBytes(logFile)); }
+            try { Atomic.WriteBytes(Path.Combine(root, login, setId, job + ".log"), OnlineBackup.Core.Atomic.ReadAllBytes(logFile)); }
             catch (Exception e) { SysLog.Write(null, "System", "error: export log " + login + ": " + e.Message); }
         }
     }

@@ -198,13 +198,13 @@ namespace OnlineBackup.Agent
                             // the desktop shortcut: open the screen the service serves (ui.txt), else serve it here
                             if (File.Exists(ClientUi.UiFile))
                             {
-                                var url = File.ReadAllText(ClientUi.UiFile).Trim();
+                                var url = OnlineBackup.Core.Atomic.ReadAllText(ClientUi.UiFile).Trim();
                                 try
                                 {
                                     using (var t = new System.Net.Sockets.TcpClient()) { t.Connect("127.0.0.1", new Uri(url).Port); }
 #if NET40
                                     // CLI-100 (owner): on Windows the customer's screen is a program window, not a web page
-                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => File.ReadAllText(ClientUi.UiFile));
+                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => OnlineBackup.Core.Atomic.ReadAllText(ClientUi.UiFile));
 #endif
                                     Setup.OpenBrowser(url); return 0;
                                 }

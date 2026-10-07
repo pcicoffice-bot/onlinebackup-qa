@@ -25,7 +25,7 @@ namespace OnlineBackup.Agent
 
         public static string CurrentVersion
         {
-            get { try { var p = Path.Combine(InstallDir, "version.txt"); return File.Exists(p) ? File.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
+            get { try { var p = Path.Combine(InstallDir, "version.txt"); return File.Exists(p) ? OnlineBackup.Core.Atomic.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
         }
 
         static string Sha(string f) { using (var s = File.OpenRead(f)) using (var h = SHA256.Create()) return Bytes.Hex(h.ComputeHash(s)); }
@@ -111,7 +111,7 @@ namespace OnlineBackup.Agent
                 result("FAILED", "the backup service did not stop in " + (int)StopWait.TotalSeconds + " s — nothing was changed, the previous version runs on");
                 return 3;
             }
-            var names = File.ReadAllLines(Path.Combine(from, "update-files.txt")).Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
+            var names = OnlineBackup.Core.Atomic.ReadAllLines(Path.Combine(from, "update-files.txt")).Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
             var keep = Path.Combine(from, "previous"); Directory.CreateDirectory(keep);
             var touched = new List<string>(); var aside = new Dictionary<string, string>();
             try
@@ -187,7 +187,7 @@ namespace OnlineBackup.Agent
             return false;
         }
 
-        static string NewVersion(string from) { try { var v = Path.Combine(from, "version.txt"); return File.Exists(v) ? File.ReadAllText(v).Trim() : "?"; } catch (Exception) { return "?"; } }
+        static string NewVersion(string from) { try { var v = Path.Combine(from, "version.txt"); return File.Exists(v) ? OnlineBackup.Core.Atomic.ReadAllText(v).Trim() : "?"; } catch (Exception) { return "?"; } }
 
         static string Sc(string args)
         {

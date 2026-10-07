@@ -289,7 +289,7 @@ namespace OnlineBackup.Agent
             ResumeLayout(true);
         }
 
-        string PackageVersion { get { try { return File.ReadAllText(Path.Combine(packageDir, "version.txt")).Trim(); } catch (Exception) { return ""; } } }
+        string PackageVersion { get { try { return OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(packageDir, "version.txt")).Trim(); } catch (Exception) { return ""; } } }
         bool IsNewer { get { return existing != null && PackageVersion.Length > 0 && PackageVersion != (existing.Server ?? ""); } }
 
         void UpdateButtons()
@@ -323,7 +323,7 @@ namespace OnlineBackup.Agent
                 }
             }
             catch (Exception) { }
-            try { if (text == null && File.Exists(own)) text = File.ReadAllText(own); } catch (Exception) { }
+            try { if (text == null && File.Exists(own)) text = OnlineBackup.Core.Atomic.ReadAllText(own); } catch (Exception) { }
             if (string.IsNullOrEmpty(text))
                 text = string.Join("\n\n", new[]
                 {

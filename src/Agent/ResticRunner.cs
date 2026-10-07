@@ -307,7 +307,7 @@ namespace OnlineBackup.Agent
                 catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "The time of this backup could not be saved: " + e.Message)); }
             report.Set("result", result).Set("new", run.New).Set("upd", run.Updated).Set("del", 0).Set("perm", 0).Set("bytes", run.BytesSent);
             var prev = Path.Combine(app.Home.SetDir(set.Id), "restic-files.txt");
-            long prevFiles; if (File.Exists(prev) && long.TryParse(File.ReadAllText(prev).Trim(), out prevFiles)) report.Set("prevFiles", prevFiles);
+            long prevFiles; if (File.Exists(prev) && long.TryParse(OnlineBackup.Core.Atomic.ReadAllText(prev).Trim(), out prevFiles)) report.Set("prevFiles", prevFiles);
             if (report["files"] != null) File.WriteAllText(prev, report["files"]);
             foreach (var l in log) report.Add("log", new Msg().Set("l", l));
             bool delivered = false;
@@ -325,7 +325,7 @@ namespace OnlineBackup.Agent
         {
             var f = Path.Combine(app.Home.SetDir(set.Id), "last-job.txt");
             DateTime last;
-            try { if (File.Exists(f) && RunId.TryParse(File.ReadAllText(f).Trim(), out last) && started <= last) started = last.AddSeconds(1); } catch (IOException) { }
+            try { if (File.Exists(f) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(f).Trim(), out last) && started <= last) started = last.AddSeconds(1); } catch (IOException) { }
             var id = RunId.From(started);
             Atomic.WriteText(f, id);
             return id;
@@ -469,7 +469,7 @@ namespace OnlineBackup.Agent
         bool? UnlockAfterDeadRun(List<string> log)
         {
             if (!File.Exists(RunningFlag)) return null;
-            if (FlagNamesLiveRun(File.ReadAllText(RunningFlag))) return false;
+            if (FlagNamesLiveRun(OnlineBackup.Core.Atomic.ReadAllText(RunningFlag))) return false;
             var u = Run("unlock", "--remove-all");
             log.Add(AhsayLog.Info(Clock(), "The previous run was interrupted: its repository locks were removed (" + (u.Code == 0 ? "ok" : Last(u.Err)) + ")"));
             return true;
