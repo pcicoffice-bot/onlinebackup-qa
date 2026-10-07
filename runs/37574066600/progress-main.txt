@@ -25,3 +25,4 @@
 05:12:47 start W09 Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical
 05:16:34   waiting up to 20 min for a new Backup run
 05:17:02   waiting up to 20 min for a new Restore run
+05:17:04 end W09 FAIL The backup is running: live=False || Kill the server process: pid 8604; live job '' || No ghost run after the server came back: live 0; job '': never closed (an open run left behind)
