@@ -53,3 +53,4 @@
 13:34:23 end W15 PASS 
 13:34:24 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
 13:35:28 end W16 PASS 
+13:35:29 start W17 System State backup (Windows Server Backup)
