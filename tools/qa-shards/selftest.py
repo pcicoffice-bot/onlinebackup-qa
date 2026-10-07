@@ -133,4 +133,14 @@ import shutil; shutil.rmtree(os.path.join(res8, 'shard-s01-r01', 'i02'))
 rc, _ = run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'p8', 'expected.json'), '--results', res8, '--out', os.path.join(d, 'a9'))
 r = json.load(open(os.path.join(d, 'a9', 'results.json')))
 check(any(x['job'] == 's01-r01/i02' and x['status'] == 'NOT TESTED' for x in r['runs']['N.A.y']), 'an iteration that left no results is NOT TESTED')
+# --- Q-PW1: a Playwright error message with ANSI colour codes still gives a readable .trx (it made a shard's results unreadable) ---
+pr = os.path.join(d, 'pw'); os.makedirs(pr, exist_ok=True)
+json.dump({'suites': [{'file': 'a.spec.ts', 'title': 'a.spec.ts', 'specs': [
+    {'title': 'T1', 'tests': [{'results': [{'status': 'failed', 'duration': 5, 'error': {'message': '\x1b[31mExpected\x1b[39m: true \x07'}}]}]},
+    {'title': 'T2', 'tests': [{'results': [{'status': 'passed', 'duration': 5}]}]}]}]}, open(os.path.join(pr, 'r.json'), 'w'))
+rc, _ = run(os.path.join(HERE, 'pw2trx.py'), os.path.join(pr, 'r.json'), os.path.join(pr, 'x.trx'))
+import xml.etree.ElementTree as _ET
+try: _root = _ET.parse(os.path.join(pr, 'x.trx')).getroot(); _ok = len(list(_root.iter('{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}UnitTestResult'))) == 2
+except _ET.ParseError: _ok = False
+check(rc == 0 and _ok, 'a journey failure with colour codes in its message still gives a readable .trx with both results')
 print('SELFTEST PASS')

@@ -3,8 +3,13 @@
 passed -> Passed; failed / timedOut / interrupted -> Failed (with the error); skipped -> NotExecuted (NOT TESTED, never PASS).
 A test with several results (there are no retries: retries: 0) takes its worst.
   pw2trx.py report.json out.trx"""
-import json, sys
-from xml.sax.saxutils import escape
+import json, re, sys
+from xml.sax.saxutils import escape as _escape
+# Q-PW1 (pw run 37697506703): Playwright's error messages carry ANSI colour codes (ESC [ 31 m) - not allowed in XML: the shard's
+# .trx was unreadable and its 29 journeys were NOT TESTED in the verdict. Colour codes and other control characters go.
+_ANSI = re.compile(r'\x1b\[[0-9;?]*[A-Za-z]')
+_CTRL = re.compile(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]')
+def escape(s, entities=None): return _escape(_CTRL.sub('', _ANSI.sub('', s)), entities or {})
 RANK = {'passed': 0, 'skipped': 1, 'failed': 2, 'timedOut': 2, 'interrupted': 2}
 def walk(suite, path, file, out):
     f = suite.get('file') or file
