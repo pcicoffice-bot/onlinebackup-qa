@@ -1,0 +1,38 @@
+﻿{
+    "facts":  {
+                  "phase":  "after-reboot",
+                  "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+                  "computer":  "WIN-5NUF1VHG28U",
+                  "package":  "OnlineBackup-Server-0.1.30.zip",
+                  "commit":  null,
+                  "run":  null,
+                  "started":  "2026-10-07T06:55:23.5643390-07:00",
+                  "resolution":  "1280x800",
+                  "dpi":  125,
+                  "powershell":  "5.1.26100.7920",
+                  "interactive":  true,
+                  "user":  "WIN-5NUF1VHG28U\\Docker"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W19",
+                         "title":  "After a real Windows restart: services back, agent connected, no ghost run, no lock, schedule kept, backup and restore",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  18,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W20",
+                         "title":  "Visual tour after the restart, at this session\u0027s scale",
+                         "functional":  "NOT TESTED",
+                         "reason":  "the screen resolution could not be changed on this machine",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

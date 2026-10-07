@@ -1,0 +1,47 @@
+﻿{
+    "id":  "W20",
+    "title":  "Visual tour after the restart, at this session\u0027s scale",
+    "dir":  "C:\\obqa-vm\\out\\vm-2-after-restart-125\\W20",
+    "started":  "2026-10-07T06:56:52.7544740-07:00",
+    "result":  "NOT TESTED",
+    "reason":  "the screen resolution could not be changed on this machine",
+    "steps":  [
+                  {
+                      "step":  "Scale",
+                      "expected":  "",
+                      "actual":  "125% (set before the restart; Windows applies it at sign-in)",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "06:56:52"
+                  },
+                  {
+                      "step":  "Resolution 1920x1080",
+                      "expected":  "",
+                      "actual":  "NOT TESTED: asked 1920x1080, the screen is 1280x800",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "06:56:54"
+                  },
+                  {
+                      "step":  "Resolution 1366x768",
+                      "expected":  "",
+                      "actual":  "NOT TESTED: ChangeDisplaySettings -2",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "06:56:56"
+                  },
+                  {
+                      "step":  "Resolution 1024x768",
+                      "expected":  "",
+                      "actual":  "NOT TESTED: asked 1024x768, the screen is 1280x800",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "06:56:58"
+                  }
+              ],
+    "ended":  "2026-10-07T06:57:01.5490220-07:00"
+}

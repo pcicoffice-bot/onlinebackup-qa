@@ -1,0 +1,131 @@
+﻿{
+    "screen":  "Maintenance - remove finished",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  0,
+                 "w":  1179,
+                 "h":  830,
+                 "x":  50
+             },
+    "resolution":  "1280x800",
+    "dpi":  150,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  225,
+                                      "w":  1170,
+                                      "h":  504,
+                                      "x":  54
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  252,
+                                      "w":  1037,
+                                      "h":  113,
+                                      "x":  108
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "ITSguard Server Online was removed from this computer",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  261,
+                                      "w":  1037,
+                                      "h":  45,
+                                      "x":  108
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Your backups stay on the server.",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  318,
+                                      "w":  1037,
+                                      "h":  32,
+                                      "x":  108
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  156,
+                                      "w":  1170,
+                                      "h":  69,
+                                      "x":  54
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  39,
+                                      "w":  1170,
+                                      "h":  117,
+                                      "x":  54
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  80,
+                                      "w":  195,
+                                      "h":  36,
+                                      "x":  999
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  729,
+                                      "w":  1170,
+                                      "h":  96,
+                                      "x":  54
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Finish",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  749,
+                                      "w":  180,
+                                      "h":  57,
+                                      "x":  1008
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

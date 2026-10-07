@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "Backup after the restart - started - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  335,
+                 "w":  327,
+                 "h":  252,
+                 "x":  482
+             },
+    "resolution":  "1280x800",
+    "dpi":  150,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  525,
+                                      "w":  113,
+                                      "h":  39,
+                                      "x":  669
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  413,
+                                      "w":  48,
+                                      "h":  48,
+                                      "x":  518
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "The backup has started",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  431,
+                                      "w":  180,
+                                      "h":  26,
+                                      "x":  579
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

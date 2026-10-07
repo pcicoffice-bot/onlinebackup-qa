@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "Restore 1 - Restore started - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  327,
+                 "w":  411,
+                 "h":  149,
+                 "x":  437
+             },
+    "resolution":  "1280x800",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  441,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  755
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  376,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  461
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "The restore has started — follow it in the \"Backup status\" tab",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  386,
+                                      "w":  315,
+                                      "h":  15,
+                                      "x":  502
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

@@ -1,0 +1,23 @@
+﻿{
+    "agent":  {
+                  "exists":  false
+              },
+    "server":  {
+                   "exists":  true,
+                   "state":  "Running",
+                   "start":  "Auto",
+                   "account":  "LocalSystem",
+                   "path":  "\"C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe\" run --system-home \"C:\\obqa\\sys\" --prefix https://+:8443/",
+                   "pid":  5224,
+                   "process":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe"
+               },
+    "shadows":  0,
+    "processes":  [
+                      {
+                          "name":  "OnlineBackup.Server",
+                          "pid":  5224,
+                          "path":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe",
+                          "started":  "\/Date(1791381100212)\/"
+                      }
+                  ]
+}

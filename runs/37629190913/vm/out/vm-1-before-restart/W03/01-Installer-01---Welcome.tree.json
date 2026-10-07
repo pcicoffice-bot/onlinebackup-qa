@@ -1,0 +1,170 @@
+﻿{
+    "screen":  "Installer 01 - Welcome",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  21,
+                 "w":  786,
+                 "h":  709,
+                 "x":  247
+             },
+    "resolution":  "1280x800",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  171,
+                                      "w":  780,
+                                      "h":  492,
+                                      "x":  250
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  189,
+                                      "w":  691,
+                                      "h":  164,
+                                      "x":  286
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Welcome to the ITSguard Server Online setup",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  195,
+                                      "w":  691,
+                                      "h":  30,
+                                      "x":  286
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave.",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  233,
+                                      "w":  691,
+                                      "h":  40,
+                                      "x":  286
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Computer: WIN-5NUF1VHG28U",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  281,
+                                      "w":  691,
+                                      "h":  21,
+                                      "x":  286
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Click Next to continue, or Cancel to exit.",
+                         "cls":  "WindowsForms10.STATIC.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  322,
+                                      "w":  691,
+                                      "h":  21,
+                                      "x":  286
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  125,
+                                      "w":  780,
+                                      "h":  46,
+                                      "x":  250
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  47,
+                                      "w":  780,
+                                      "h":  78,
+                                      "x":  250
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  75,
+                                      "w":  130,
+                                      "h":  23,
+                                      "x":  880
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  663,
+                                      "w":  780,
+                                      "h":  64,
+                                      "x":  250
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Next",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  676,
+                                      "w":  120,
+                                      "h":  38,
+                                      "x":  886
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Cancel",
+                         "cls":  "WindowsForms10.BUTTON.app.0.1569a64_r6_ad1",
+                         "rect":  {
+                                      "y":  676,
+                                      "w":  120,
+                                      "h":  38,
+                                      "x":  274
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

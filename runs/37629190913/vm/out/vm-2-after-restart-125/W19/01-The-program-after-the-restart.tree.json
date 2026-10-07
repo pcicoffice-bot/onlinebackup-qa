@@ -1,0 +1,66 @@
+﻿{
+    "screen":  "The program after the restart",
+    "window":  "",
+    "rect":  {
+                 "y":  6,
+                 "w":  1058,
+                 "h":  727,
+                 "x":  111
+             },
+    "resolution":  "1280x800",
+    "dpi":  125,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  116,
+                                      "w":  820,
+                                      "h":  608,
+                                      "x":  340
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  136,
+                                      "w":  200,
+                                      "h":  100,
+                                      "x":  368
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  116,
+                                      "w":  220,
+                                      "h":  608,
+                                      "x":  120
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  44,
+                                      "w":  1040,
+                                      "h":  72,
+                                      "x":  120
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

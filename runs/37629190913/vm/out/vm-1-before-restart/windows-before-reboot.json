@@ -1,0 +1,68 @@
+﻿{
+    "facts":  {
+                  "phase":  "before-reboot",
+                  "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+                  "computer":  "WIN-5NUF1VHG28U",
+                  "package":  "OnlineBackup-Server-0.1.30.zip",
+                  "commit":  null,
+                  "run":  null,
+                  "started":  "2026-10-07T06:50:59.5127101-07:00",
+                  "resolution":  "1280x800",
+                  "dpi":  100,
+                  "powershell":  "5.1.26100.7920",
+                  "interactive":  true,
+                  "user":  "WIN-5NUF1VHG28U\\Docker"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W01",
+                         "title":  "Server: install from the real package (Windows service) and sign in",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W03",
+                         "title":  "Client installation through the installer window, proven by Windows",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "PASS",
+                         "ux":  "FAIL",
+                         "visualFindings":  0,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W04",
+                         "title":  "First run: sign in through the window, the agent connects to the server",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  11,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W05",
+                         "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  20,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W18",
+                         "title":  "Reboot",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

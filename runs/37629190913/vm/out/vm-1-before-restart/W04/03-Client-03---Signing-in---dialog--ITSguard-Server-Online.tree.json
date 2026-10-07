@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "Client 03 - Signing in - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  327,
+                 "w":  398,
+                 "h":  149,
+                 "x":  444
+             },
+    "resolution":  "1280x800",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  441,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  749
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  376,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  468
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "This computer is connected. Now choose what to back up.",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  386,
+                                      "w":  302,
+                                      "h":  15,
+                                      "x":  509
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

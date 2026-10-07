@@ -1,0 +1,17 @@
+2026-10-07T06:48:35.7578419-07:00 signed in; phase ''; share 'Z:\'; Microsoft Windows 11 Pro
+2026-10-07T06:48:36.0872716-07:00 restarting Windows (next phase: start)
+2026-10-07T06:50:50.3720743-07:00 signed in; phase 'start'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
+2026-10-07T06:50:50.6689722-07:00 phase 1: the journeys before the restart
+2026-10-07T06:53:53.6634713-07:00 phase start ended, exit code 0
+2026-10-07T06:53:54.3040908-07:00 kept vm-1-before-restart
+2026-10-07T06:53:54.4760221-07:00 restarting Windows (next phase: r1)
+2026-10-07T06:55:18.1112292-07:00 signed in; phase 'r1'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
+2026-10-07T06:55:18.3299611-07:00 phase 2: after the first real restart (scale 125%)
+2026-10-07T06:57:01.6896006-07:00 phase r1 ended, exit code 0
+2026-10-07T06:57:02.0490000-07:00 kept vm-2-after-restart-125
+2026-10-07T06:57:02.2052380-07:00 restarting Windows (next phase: r2)
+2026-10-07T06:58:22.9135042-07:00 signed in; phase 'r2'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
+2026-10-07T06:58:23.1010022-07:00 phase 3: after the second real restart (scale 150%)
+2026-10-07T07:00:23.1454742-07:00 phase r2 ended, exit code 0
+2026-10-07T07:00:23.5985724-07:00 kept vm-3-after-restart-150
+2026-10-07T07:00:23.6454532-07:00 done

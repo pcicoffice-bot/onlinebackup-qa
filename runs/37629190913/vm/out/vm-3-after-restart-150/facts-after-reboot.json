@@ -1,0 +1,14 @@
+﻿{
+    "phase":  "after-reboot",
+    "windows":  "Microsoft Windows 11 Pro 10.0.26200 build 26200",
+    "computer":  "WIN-5NUF1VHG28U",
+    "package":  "OnlineBackup-Server-0.1.30.zip",
+    "commit":  null,
+    "run":  null,
+    "started":  "2026-10-07T06:58:28.1478715-07:00",
+    "resolution":  "1280x800",
+    "dpi":  150,
+    "powershell":  "5.1.26100.7920",
+    "interactive":  true,
+    "user":  "WIN-5NUF1VHG28U\\Docker"
+}
