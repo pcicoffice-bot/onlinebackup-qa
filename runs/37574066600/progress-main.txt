@@ -4,3 +4,4 @@
 05:03:38 end W02 PASS 
 05:03:39 start W03 Client installation through the installer window, proven by Windows
 05:03:57 end W03 PASS 
+05:03:59 start W04 First run: sign in through the window, the agent connects to the server
