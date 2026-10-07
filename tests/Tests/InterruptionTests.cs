@@ -84,7 +84,7 @@ namespace OnlineBackup.Tests
         [InlineData("RESTIC")]
         public void AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(string engine)
         {
-            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) return;
+            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) throw NotTested.Because("OB_RESTIC (the restic program) is not set - the RESTIC case");
             using (var env = new Env())
             {
                 var src = env.Dir("src");

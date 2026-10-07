@@ -28,4 +28,8 @@ end=$(date +%s)
 awk '/^  Failed /{on=1; n=0} /^  (Passed|Skipped) /{on=0} on && n<25 {print; n++}' "$OUT/console.log" | head -n 600
 grep -E "^\s+Skipped |^Total tests|^\s+(Passed|Failed|Skipped): |Test Run Aborted" "$OUT/console.log" | head -n 40
 meta "$got" "ok" "$rc" "$(( (end - start + 59) / 60 ))"
-exit $rc
+# The verdict is the aggregator's alone (it reads every test's outcome and message). This job only has to leave results: a
+# test that ends "NOT TESTED: <reason>" is Failed for dotnet test, and a job colour taken from that would change the
+# gate's criteria. No .trx at all (the test host never started or crashed first) is this job's failure.
+if ls "$OUT"/*.trx >/dev/null 2>&1; then exit 0; fi
+echo "no results were written (dotnet test exit $rc)"; exit 1

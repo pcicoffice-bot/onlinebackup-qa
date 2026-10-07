@@ -58,7 +58,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rjow", "Customer-Pass-1");
@@ -99,7 +99,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile()
         {
-            if (!Have || !OperatingSystem.IsLinux() || !File.Exists("/usr/bin/setpriv")) return;
+            if (!Have || !OperatingSystem.IsLinux() || !File.Exists("/usr/bin/setpriv")) throw NotTested.Because("needs restic, Linux and /usr/bin/setpriv");
             using (var env = new Env())
             {
                 env.CreateUser("rjpart", "Customer-Pass-1");
@@ -134,7 +134,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rjkey", "Customer-Pass-1");

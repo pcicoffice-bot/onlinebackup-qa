@@ -15,7 +15,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void NotEnoughRoom_TheDatabaseIsSkippedWithAClearMessage_BigOnesGetLargerBuffers()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var log = Path.Combine(env.Root, "sqlcmd.log");
@@ -68,7 +68,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void FailingDatabase_IsAnError_AllFailing_IsAFailure()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 try
@@ -95,7 +95,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void SqlcmdWritingMuchToStderr_DoesNotHangTheBackup()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var fake = Path.Combine(env.Root, "sqlcmd-noisy.sh");
@@ -123,7 +123,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void HungDatabaseBackup_IsStoppedAtTheLimit_TheRunEnds()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var before = Limits.SqlCommand;
@@ -150,7 +150,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void NoDatabaseFound_IsAFailure_NotAnEmptySuccess()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var fake = Path.Combine(env.Root, "sqlcmd-empty.sh");

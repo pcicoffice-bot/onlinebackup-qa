@@ -99,7 +99,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog()
         {
-            if (!Have || !CanDropCaps) return;
+            if (!Have || !CanDropCaps) throw NotTested.Because("needs restic and the right to drop capabilities (setpriv)");
             using (var rig = new Rig())
             {
                 File.WriteAllText(Path.Combine(rig.Src, "readable.txt"), "ok");
@@ -133,7 +133,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 File.WriteAllText(Path.Combine(rig.Src, "a.txt"), "a");
@@ -158,7 +158,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 File.WriteAllText(Path.Combine(rig.Src, "a.txt"), "a");
@@ -180,7 +180,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Retention_KeepLastOne_KeepsTheNewestSnapshot()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 rig.Set.Retention = new RetentionPolicy { Unit = "JOBS", Period = 1 };
@@ -210,7 +210,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 rig.Set.Retention = new RetentionPolicy { Unit = "JOBS", Period = 1 };
@@ -235,7 +235,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 var deep = rig.Src;
@@ -246,7 +246,8 @@ namespace OnlineBackup.Tests
                 File.WriteAllText(Path.Combine(deep, longName), "long");
                 File.WriteAllText(Path.Combine(rig.Src, " leading and trailing .txt "), "spaces");
                 File.WriteAllText(Path.Combine(rig.Src, "été 🎉 ünï.txt"), "nfd+nfc+emoji");
-                File.WriteAllText(Path.Combine(rig.Src, "semi;colon,comma'quote\".txt"), "punct");
+                // a double quote cannot be in a Windows file name; every other character of the case can
+                File.WriteAllText(Path.Combine(rig.Src, OperatingSystem.IsWindows() ? "semi;colon,comma'quote.txt" : "semi;colon,comma'quote\".txt"), "punct");
                 var big = new byte[700 * 1024]; new Random(7).NextBytes(big); File.WriteAllBytes(Path.Combine(deep, "big.bin"), big);
                 Assert.True(Encoding.UTF8.GetByteCount(Path.Combine(deep, longName)) > 400);
 
@@ -272,7 +273,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Restore_PathNotInThePoint_IsNotReportedAsSuccess()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 File.WriteAllText(Path.Combine(rig.Src, "a.txt"), "a");

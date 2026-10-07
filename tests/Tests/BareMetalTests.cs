@@ -22,7 +22,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WholeComputerImageIsSentAsChangedBlocksOnly_AndRestoresInTheLayoutWindowsRecoveryReads()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 // A stand-in for wbadmin: writes a 16MB "disk" into a new dated folder each run (like Windows does),
@@ -87,7 +87,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ImageToolFailureKeepsThePreviousImage_AndWindows2003UsesNtbackup()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var fake = Path.Combine(env.Root, "ntbackup.sh");

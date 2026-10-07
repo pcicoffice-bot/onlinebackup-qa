@@ -51,7 +51,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             using (var env = new Env())
             {
                 var src = env.Dir("src"); File.WriteAllText(Path.Combine(src, "a.txt"), "a");
@@ -97,7 +97,7 @@ namespace OnlineBackup.Tests
         [InlineData("post")]   // the heartbeat is already stopped
         public void ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(string kind)
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var lease = SetStore.Lease;
             SetStore.Lease = TimeSpan.FromSeconds(100);
             try

@@ -74,7 +74,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void WebRestoreDownload_PointValue_CannotInjectAResponseHeader()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 var (set, _, session) = ResticSetWithBackup(env, "s2a");
@@ -124,7 +124,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 var (set, token, _) = ResticSetWithBackup(env, "s2b");

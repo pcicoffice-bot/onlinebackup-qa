@@ -40,7 +40,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
                 WithTools(env, () =>
                 {
@@ -71,7 +71,8 @@ namespace OnlineBackup.Tests
         [Fact]
         public void MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported()
         {
-            if (!Restic) return;
+            if (!Restic) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");   // as the MySQL test above
             using (var env = new Env())
                 WithTools(env, () =>
                 {
@@ -93,7 +94,8 @@ namespace OnlineBackup.Tests
         [Fact]
         public void HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported()
         {
-            if (!Restic) return;
+            if (!Restic) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");   // as the MySQL test above
             using (var env = new Env())
             {
                 var bin = env.Dir("bin");

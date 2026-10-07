@@ -38,7 +38,7 @@ namespace OnlineBackup.Tests
         [InlineData("RESTIC")]
         public void WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(string engine)
         {
-            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) return;
+            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) throw NotTested.Because("OB_RESTIC (the restic program) is not set - the RESTIC case");
             using (var env = new Env())
             {
                 var src = env.Dir("docs");
@@ -111,7 +111,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void SubfolderNotReadable_IsAnError_NotAWarning()
         {
-            if (OperatingSystem.IsWindows() || Environment.UserName == "root") return;   // root reads everything
+            if (OperatingSystem.IsWindows() || Environment.UserName == "root") throw NotTested.Because("needs a non-root Linux user (root reads every folder; Windows has no such permission bits)");   // root reads everything
             using (var env = new Env())
             {
                 var a = env.Dir("perm"); var locked = Path.Combine(a, "secret"); Directory.CreateDirectory(locked);

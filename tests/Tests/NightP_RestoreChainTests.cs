@@ -492,7 +492,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Restic_LongChain_EverySnapshotRestoresIdentical()
         {
-            if (string.IsNullOrEmpty(Restic) || !File.Exists(Restic)) { output.WriteLine("NOT TESTED: OB_RESTIC not set"); return; }
+            if (string.IsNullOrEmpty(Restic) || !File.Exists(Restic)) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             var root = Path.Combine(Path.GetTempPath(), "obnp-" + Guid.NewGuid().ToString("N").Substring(0, 8));
             try
             {

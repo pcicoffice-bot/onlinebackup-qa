@@ -27,7 +27,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void PostgresRolesDumpFails_ItIsAnError_AndTheLastRolesDumpStaysInTheLatestPoint()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var bin = env.Dir("bin");

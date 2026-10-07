@@ -203,7 +203,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Microsoft365_ItemLevel_OnlyChangesFetched_DeletedMailRestoredIntoTheMailbox()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var graph = new FakeGraph())
             using (var env = new Env())
             {

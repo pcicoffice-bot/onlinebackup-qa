@@ -24,7 +24,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void BigServer_500Customers_5000Sets_PagesAndComputersStayFast()
         {
-            if (Environment.GetEnvironmentVariable("OB_LOAD") != "1") return;
+            if (Environment.GetEnvironmentVariable("OB_LOAD") != "1") throw NotTested.Because("the load run is its own step (OB_LOAD=1; the gate runs it in job tests-extra)");
             int customers = int.Parse(Environment.GetEnvironmentVariable("OB_LOAD_CUSTOMERS") ?? "500");
             var report = new StringBuilder();
             using (var env = new Env())

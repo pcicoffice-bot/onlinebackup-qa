@@ -248,7 +248,7 @@ namespace OnlineBackup.Tests
         public void WebRestoreSearch_ByKeywords_AndInPlainWords_SendsNoFileNames()
         {
             var restic = Environment.GetEnvironmentVariable("OB_RESTIC");
-            if (string.IsNullOrEmpty(restic) || !File.Exists(restic)) return;
+            if (string.IsNullOrEmpty(restic) || !File.Exists(restic)) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var fake = new FakeClaude())
             using (var env = new Env())
             {

@@ -22,7 +22,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void AWbadminThatWritesNothing_IsNotASuccessWithTheOldImage()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var writes = Path.Combine(env.Root, "writes");

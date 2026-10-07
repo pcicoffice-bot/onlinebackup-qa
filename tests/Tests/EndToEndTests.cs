@@ -635,7 +635,7 @@ namespace OnlineBackup.Tests
         {
             var mono = new[] { "/usr/bin/mono", "/usr/local/bin/mono" }.FirstOrDefault(File.Exists);
             var exe = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "Agent", "bin", "Debug", "net40", "OnlineBackup.Agent.exe"));
-            if (mono == null || !File.Exists(exe)) return;   // the .NET 4.0 build is checked where mono exists
+            if (mono == null || !File.Exists(exe)) throw NotTested.Because("needs mono and the .NET 4.0 agent build");   // the .NET 4.0 build is checked where mono exists
             using (var env = new Env())
             {
                 env.CreateUser("mono2026", "Customer-Pass-1");

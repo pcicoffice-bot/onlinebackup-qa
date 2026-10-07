@@ -13,7 +13,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void LocalOnly_And_ServerPlusLocalCopy_WithRestic()
         {
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OB_RESTIC"))) return;   // needs the restic program
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("OB_RESTIC"))) throw NotTested.Because("OB_RESTIC (the restic program) is not set");   // needs the restic program
             using (var env = new Env())
             {
                 env.CreateUser("acme", "Customer-Pass-1", 5);

@@ -30,7 +30,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rst2026", "Customer-Pass-1");
@@ -102,7 +102,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ResticRespectsTheQuota()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rstq", "Customer-Pass-1", quotaGB: 2.0 / 1024);   // 2 MB
@@ -118,7 +118,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rstk", "Customer-Pass-1");
@@ -159,7 +159,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void SingleFileRestore_NamesWithBracketsAndStars()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("rstb", "Customer-Pass-1");

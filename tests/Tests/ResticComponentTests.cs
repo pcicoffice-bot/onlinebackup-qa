@@ -35,7 +35,9 @@ namespace OnlineBackup.Tests
                 Src = Path.Combine(Root, "src"); Repo = Path.Combine(Root, "nas");
                 Directory.CreateDirectory(Path.Combine(Src, "a", "b", "c")); Directory.CreateDirectory(Path.Combine(Src, "empty-folder")); Directory.CreateDirectory(Repo);
                 File.WriteAllText(Path.Combine(Src, "a", "חשבונית מס 7.txt"), "שלום");
-                File.WriteAllText(Path.Combine(Src, "a", "b", "Report [final] *v2*.docx"), "brackets and stars");
+                // "*" cannot be in a Windows file name (CreateFile refuses it): there the name keeps the brackets - the characters that
+                // are special in restic's include patterns and CAN be in a Windows name - and the same number of files
+                File.WriteAllText(Path.Combine(Src, "a", "b", OperatingSystem.IsWindows() ? "Report [final] (v2).docx" : "Report [final] *v2*.docx"), "brackets and stars");
                 File.WriteAllText(Path.Combine(Src, "a", "b", "c", "with space.txt"), "x y");
                 File.WriteAllBytes(Path.Combine(Src, "empty.bin"), new byte[0]);
                 var big = new byte[3 * 1024 * 1024]; new Random(42).NextBytes(big); File.WriteAllBytes(Path.Combine(Src, "big.bin"), big);
@@ -51,7 +53,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 var r = rig.Runner().Backup();
@@ -77,7 +79,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void AnotherKey_ReadsNothing()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
@@ -91,7 +93,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
@@ -115,7 +117,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
@@ -146,7 +148,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void EveryWritingResticCommand_WaitsForALockedRepository()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 var seen = new System.Collections.Concurrent.ConcurrentQueue<string[]>();
@@ -168,7 +170,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var rig = new Rig())
             {
                 for (int i = 0; i < 16; i++) { var b = new byte[8 * 1024 * 1024]; new Random(100 + i).NextBytes(b); File.WriteAllBytes(Path.Combine(rig.Src, "more" + i + ".bin"), b); }

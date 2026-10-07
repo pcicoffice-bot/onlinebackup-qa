@@ -155,7 +155,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void VMware_SnapshotCopyOfEveryVm_SnapshotsAlwaysRemoved_RestoredAsANewVm()
         {
-            if (!Have || OperatingSystem.IsWindows()) return;
+            if (!Have || OperatingSystem.IsWindows()) throw NotTested.Because("needs restic and Linux (the stand-in tools are shell scripts)");
             using (var esx = new FakeVSphere())
             using (var env = new Env())
             {
@@ -212,7 +212,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Oracle_RmanOnlineBackup_PasswordOnlyOnStdin_FailedRunKeepsTheLastBackup()
         {
-            if (!Have || OperatingSystem.IsWindows()) return;
+            if (!Have || OperatingSystem.IsWindows()) throw NotTested.Because("needs restic and Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var log = Path.Combine(env.Dir("rmanlog"), "stdin.txt");
@@ -260,7 +260,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Domino_FoldersFromNotesIni_CacheFlushedBeforeTheCopy()
         {
-            if (!Have || OperatingSystem.IsWindows()) return;
+            if (!Have || OperatingSystem.IsWindows()) throw NotTested.Because("needs restic and Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var prog = env.Dir("domino-prog"); var data = env.Dir("notesdata"); var tlog = env.Dir("translog");

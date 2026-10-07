@@ -28,7 +28,7 @@ namespace OnlineBackup.Tests
             File.WriteAllText(Path.Combine(src, "a.txt"), "a");
             File.WriteAllText(Path.Combine(src, "sub", "b.txt"), "b");
             try { Directory.CreateSymbolicLink(Path.Combine(src, "sub", "loop"), src); }
-            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is PlatformNotSupportedException) { return; /* no links here: NOT TESTED */ }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is PlatformNotSupportedException) { throw NotTested.Because("cannot create a symbolic link here: " + e.Message); /* no links here: NOT TESTED */ }
 
             var set = new BackupSetInfo { Name = "F", Sources = { src } };
             Assert.True(set.FollowLink);   // the default
@@ -49,7 +49,7 @@ namespace OnlineBackup.Tests
             File.WriteAllText(Path.Combine(src, "a.txt"), "a");
             File.WriteAllText(Path.Combine(src, "sub", "b.txt"), "b");
             try { Directory.CreateSymbolicLink(Path.Combine(src, "sub", "loop"), src); }
-            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is PlatformNotSupportedException) { return; }
+            catch (Exception e) when (e is IOException || e is UnauthorizedAccessException || e is PlatformNotSupportedException) { throw NotTested.Because("cannot create a symbolic link here: " + e.Message); }
             var set = new BackupSetInfo { Name = "F", Sources = { src }, FollowLink = false };
             var unreachable = new List<string>();
             var files = Scanner.Files(set, _ => { }, unreachable).Take(10000).ToList();

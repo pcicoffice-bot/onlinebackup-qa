@@ -510,6 +510,18 @@ namespace OnlineBackup.Agent
         }
 
         /// <summary>restic's --include is a pattern: [ * ? in a real name ("Report [final].docx") are made literal ([[] [*] [?]).</summary>
+        /// <summary>Bug 100: restic names a Windows file "/C/Users/..." (the drive letter as the first folder, forward slashes),
+        /// and refuses an include that is not in that form ("All path filters must be absolute"). A path as Windows writes it
+        /// ("C:\Users\...", from the restore API) is given in restic's form; restic's own form, a network path and every path
+        /// on Linux stay as they are.</summary>
+        public static string ToResticPath(string path) { return ToResticPath(path, Environment.OSVersion.Platform == PlatformID.Win32NT); }
+        public static string ToResticPath(string path, bool windows)
+        {
+            if (!windows || string.IsNullOrEmpty(path) || path.Length < 2 || path[1] != ':' || !char.IsLetter(path[0])) return path;
+            var rest = path.Substring(2).Replace('\\', '/');
+            return "/" + char.ToUpperInvariant(path[0]) + (rest.Length == 0 || rest[0] == '/' ? rest : "/" + rest);
+        }
+
         public static string GlobLiteral(string path)
         {
             var sb = new StringBuilder();
@@ -537,7 +549,7 @@ namespace OnlineBackup.Agent
             try
             {
                 var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", stage, "--tag", "set:" + set.Id };
-                if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(inc)); }
+                if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(ToResticPath(inc))); }
                 var r = Run(args.ToArray());
                 log.Add(AhsayLog.Info(Clock(), "restic restore " + (snapshot ?? "latest") + " to " + target + ": exit " + r.Code));
                 if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err) + " — nothing was put in place; run the restore again");

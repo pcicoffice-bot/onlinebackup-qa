@@ -118,7 +118,7 @@ namespace OnlineBackup.Tests
                 Assert.Throws<AgentException>(() => Setup.ServerCertificatePem(new Uri(front.Url), new string('1', 64)));
 
                 var r = Environment.GetEnvironmentVariable("OB_RESTIC");
-                if (string.IsNullOrEmpty(r) || !File.Exists(r)) return;
+                if (string.IsNullOrEmpty(r) || !File.Exists(r)) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
                 var pemFile = Path.Combine(env.Root, "server.pem"); File.WriteAllText(pemFile, pem);
                 var cfg = app.Home.Config; cfg.SetAttributeValue("CACERT", pemFile); app.Home.Config = cfg;
                 var src = env.Dir("src"); File.WriteAllText(Path.Combine(src, "a.txt"), "restic over the company's TLS");
@@ -133,7 +133,7 @@ namespace OnlineBackup.Tests
         {
             var mono = new[] { "/usr/bin/mono", "/usr/local/bin/mono" }.FirstOrDefault(File.Exists);
             var exe = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "Agent", "bin", "Debug", "net40", "OnlineBackup.Agent.exe"));
-            if (mono == null || !File.Exists(exe)) return;
+            if (mono == null || !File.Exists(exe)) throw NotTested.Because("needs mono and the .NET 4.0 agent build");
             using (var env = new Env())
             using (var front = new TlsFront(new Uri(env.Url).Port))
             {

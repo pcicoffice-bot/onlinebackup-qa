@@ -19,7 +19,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void StuckProgram_IsKilledWithItsChildren_AtTheLimit()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var dir = Path.Combine(Path.GetTempPath(), "obproc-" + Guid.NewGuid().ToString("N").Substring(0, 6)); Directory.CreateDirectory(dir);
             var pidFile = Path.Combine(dir, "child.pid");
             var psi = new ProcessStartInfo("/bin/sh", "-c \"sleep 600 & echo $! > '" + pidFile + "'; wait\"");
@@ -36,7 +36,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ProgramWritingMuchToBothStreams_IsReadToTheEnd()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var r = ProcessRunner.Run(new ProcessStartInfo("/bin/sh", "-c \"head -c 500000 /dev/zero | tr '\\\\0' e >&2; head -c 500000 /dev/zero | tr '\\\\0' o; exit 3\""), TimeSpan.FromSeconds(30));
             Assert.False(r.TimedOut);
             Assert.Equal(3, r.Code);
@@ -47,7 +47,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void StuckPreCommand_EndsAtTheLimit_AndTheBackupGoesOn()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var before = Limits.Command;
             try
             {
@@ -81,7 +81,7 @@ namespace OnlineBackup.Tests
         public void HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical()
         {
             var real = Environment.GetEnvironmentVariable("OB_RESTIC");
-            if (!Unix || string.IsNullOrEmpty(real) || !File.Exists(real)) return;
+            if (!Unix || string.IsNullOrEmpty(real) || !File.Exists(real)) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts) and restic");
             using (var env = new Env())
             {
                 var src = env.Dir("src");
@@ -118,7 +118,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void HungWebRestore_IsStopped_WithAClearTimeout()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var dir = Path.Combine(Path.GetTempPath(), "obwr-" + Guid.NewGuid().ToString("N").Substring(0, 6)); Directory.CreateDirectory(dir);
             var before = WebRestore.Limit;
             try
@@ -143,7 +143,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void InstallStep_ChattyOnStderr_DoesNotHang_AndAStuckStepEndsAtTheLimit()
         {
-            if (!Unix) return;
+            if (!Unix) throw NotTested.Because("needs Linux (the stand-in programs are shell scripts)");
             var dir = Path.Combine(Path.GetTempPath(), "obsetup-" + Guid.NewGuid().ToString("N").Substring(0, 6)); Directory.CreateDirectory(dir);
             var chatty = Script(dir, "chatty", "head -c 400000 /dev/zero | tr '\\0' w >&2; exit 4");
             int code = 0;

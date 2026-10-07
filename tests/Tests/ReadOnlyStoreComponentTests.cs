@@ -21,7 +21,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void AReadOnlyStore_StillListsItsPoints_AndServesItsObjects()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux and a bind mount");
             var user = Path.Combine(Path.GetTempPath(), "obro-" + Guid.NewGuid().ToString("N").Substring(0, 8));
             var st = new SetStore(user, "1700000000777");
             var job = st.BeginJob(DateTime.UtcNow);
@@ -35,7 +35,7 @@ namespace OnlineBackup.Tests
             var dir = Path.Combine(user, "files", "1700000000777");
             Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
             var mounted = Sh("mount --bind '" + dir + "' '" + dir + "' && mount -o remount,bind,ro '" + dir + "' && echo OK");
-            if (mounted != "OK") return;   // NOT TESTED where a bind mount is not allowed (reported by the runner's output)
+            if (mounted != "OK") throw NotTested.Because("a bind mount is not allowed here (needs root)");   // NOT TESTED where a bind mount is not allowed (reported by the runner's output)
             try
             {
                 Assert.Contains("Read-only file system", Sh("touch '" + dir + "/probe'"));   // the fault is real

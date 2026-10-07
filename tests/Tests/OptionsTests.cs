@@ -266,7 +266,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Links_FollowedOnlyWhenTheOptionIsOn()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT) return;   // a folder link needs rights on Windows; the same code path
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT) throw NotTested.Because("a folder link needs administrator rights on Windows");   // a folder link needs rights on Windows; the same code path
             using (var env = new Env())
             {
                 env.CreateUser("lnk", "Customer-Pass-1");
@@ -304,7 +304,7 @@ namespace OnlineBackup.Tests
             long none = Stored("NONE"), max = Stored("MAX");
             Assert.True(max * 4 < none, "MAX " + max + " vs NONE " + none);
 
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             var lines = new List<string[]>();
             ResticRunner.Trace = a => { lock (lines) lines.Add(a); };
             try
@@ -333,7 +333,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void SqlLogin_LikeSa_PasswordNeverOnTheCommandLine()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             var dir = Path.Combine(Path.GetTempPath(), "obsql-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(dir);
             var fake = Path.Combine(dir, "sqlcmd"); File.WriteAllText(fake, "#!/bin/sh\necho \"ARGS:$*\"\necho \"PW:$SQLCMDPASSWORD\"\n");
             Process.Start("chmod", "+x \"" + fake + "\"").WaitForExit();

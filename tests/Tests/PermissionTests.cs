@@ -52,7 +52,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux file permissions (chmod)");
             using (var env = new Env())
             {
                 var src = env.Dir("src");

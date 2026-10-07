@@ -63,7 +63,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void RestoreInterruptedMidway_RunAgain_GivesIdenticalFiles()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 var src = env.Dir("src");
@@ -91,7 +91,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Volume_20000SmallFilesAnd1GB_BackupChangeRestore()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 var src = env.Dir("src");
@@ -132,7 +132,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void ServerDiskFullMidBackup_ExistingBackupsUnharmed_NextRunAfterSpaceIsFreedCompletes()
         {
-            if (!Have || Environment.GetEnvironmentVariable("OB_ALLOW_MOUNT") != "1") return;
+            if (!Have || Environment.GetEnvironmentVariable("OB_ALLOW_MOUNT") != "1") throw NotTested.Because("needs restic and OB_ALLOW_MOUNT=1 (a small disk is mounted to fill it)");
             using (var env = new Env())
             {
                 var src = env.Dir("src");

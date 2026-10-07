@@ -28,7 +28,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var env = new Env())
             {
                 env.CreateUser("webcust", "Customer-Pass-1");
