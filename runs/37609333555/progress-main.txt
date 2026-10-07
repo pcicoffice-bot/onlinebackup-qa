@@ -39,3 +39,4 @@
 11:11:52   waiting up to 20 min for a new Backup run
 11:12:22   waiting up to 20 min for a new Restore run
 11:12:53   waiting up to 20 min for a new Backup run
+11:12:59 end W12 PASS 
