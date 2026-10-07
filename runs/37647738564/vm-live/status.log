@@ -10,3 +10,5 @@
 2026-10-07T09:15:53.6491539-07:00 phase r1 ended, exit code 0
 2026-10-07T09:15:53.8679042-07:00 kept vm-2-after-restart-125
 2026-10-07T09:15:53.9773133-07:00 restarting Windows (next phase: r2)
+2026-10-07T09:17:11.2080907-07:00 signed in; phase 'r2'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
+2026-10-07T09:17:11.3487254-07:00 phase 3: after the second real restart (scale 150%)
