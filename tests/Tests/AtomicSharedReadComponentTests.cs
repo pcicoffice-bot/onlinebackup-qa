@@ -103,6 +103,29 @@ namespace OnlineBackup.Tests
             Directory.Delete(dir, true);
         }
 
+        /// <summary>Bug 96 again (QA shards run 37650865595, Windows, after the shared reads): "Unknown device" - a request that
+        /// asked File.Exists(devices file) at the moment another request replaced it saw NO file and took an empty list. While a
+        /// reader holds the file (FileShare.Delete), Windows' File.Replace first moves the old file away and only then puts the
+        /// new one in: for a moment the name does not exist. A state file must exist at every moment once written.</summary>
+        [Fact]
+        public void WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace()
+        {
+            var dir = NewDir(); var path = Path.Combine(dir, "Computers.xml");
+            var a = new string('A', 1 << 18); var b = new string('B', 1 << 18);
+            Atomic.WriteText(path, a);
+            var stop = false; int missing = 0, checks = 0;
+            var holder = new Thread(() => { while (!Volatile.Read(ref stop)) { try { Atomic.ReadAllText(path); } catch (IOException) { } } });
+            var watcher = new Thread(() => { while (!Volatile.Read(ref stop)) { checks++; if (!File.Exists(path)) missing++; } });
+            holder.Start(); watcher.Start();
+            for (int i = 0; i < 200; i++) Atomic.WriteText(path, i % 2 == 0 ? b : a);
+            Volatile.Write(ref stop, true); holder.Join(); watcher.Join();
+            Assert.True(missing == 0, "the file did not exist " + missing + " times of " + checks + " checks during 200 replaces");
+            Assert.True(checks > 0);
+            var left = Directory.GetFiles(dir);
+            Assert.True(left.Length == 1 && left[0] == path, "files left in the folder: " + string.Join(", ", left.Select(f => Path.GetFileName(f) + " (" + new FileInfo(f).Length + " bytes)")));
+            Directory.Delete(dir, true);
+        }
+
         [Fact]
         public void AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt()
         {
