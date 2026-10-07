@@ -2,3 +2,6 @@
 2026-10-07T06:48:36.0872716-07:00 restarting Windows (next phase: start)
 2026-10-07T06:50:50.3720743-07:00 signed in; phase 'start'; share '\\host.lan\Data'; Microsoft Windows 11 Pro
 2026-10-07T06:50:50.6689722-07:00 phase 1: the journeys before the restart
+2026-10-07T06:53:53.6634713-07:00 phase start ended, exit code 0
+2026-10-07T06:53:54.3040908-07:00 kept vm-1-before-restart
+2026-10-07T06:53:54.4760221-07:00 restarting Windows (next phase: r1)
