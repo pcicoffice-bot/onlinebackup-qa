@@ -29,10 +29,16 @@ namespace OnlineBackup.Tests
             var psi = new ProcessStartInfo("dotnet") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
             foreach (var a in args) psi.ArgumentList.Add(a);
             var p = Process.Start(psi);
-            p.OutputDataReceived += (s, e) => { }; p.ErrorDataReceived += (s, e) => { };
+            var said = new System.Collections.Concurrent.ConcurrentQueue<string>(); Said[p.Id] = said;
+            p.OutputDataReceived += (s, e) => { if (e.Data != null) said.Enqueue(DateTime.UtcNow.ToString("HH:mm:ss.f ") + e.Data); };
+            p.ErrorDataReceived += (s, e) => { if (e.Data != null) said.Enqueue(DateTime.UtcNow.ToString("HH:mm:ss.f ") + "err: " + e.Data); };
             p.BeginOutputReadLine(); p.BeginErrorReadLine();
             return p;
         }
+
+        /// <summary>What each started agent printed, with the time: shown when a test fails on it (diagnosis only).</summary>
+        static readonly System.Collections.Concurrent.ConcurrentDictionary<int, System.Collections.Concurrent.ConcurrentQueue<string>> Said = new System.Collections.Concurrent.ConcurrentDictionary<int, System.Collections.Concurrent.ConcurrentQueue<string>>();
+        static string Tail(Process p) { System.Collections.Concurrent.ConcurrentQueue<string> q; return Said.TryGetValue(p.Id, out q) ? string.Join("\n", q.Reverse().Take(40).Reverse()) : ""; }
 
         static void Rnd(string path, long size, int seed)
         {
@@ -152,7 +158,8 @@ namespace OnlineBackup.Tests
                 var until = DateTime.UtcNow.AddSeconds(90);
                 while (DateTime.UtcNow < until && !env.Api.Live().Any(m => m["set"] == set.Id)) Thread.Sleep(100);
                 env.Api.Dispose();                                                   // the server is gone
-                Assert.True(p.WaitForExit(120000), "the agent did not end after the server went away");
+                var gone = DateTime.UtcNow.ToString("HH:mm:ss.f");
+                Assert.True(p.WaitForExit(120000), "the agent did not end after the server went away (at " + gone + "); what it printed:\n" + Tail(p));
                 Assert.NotEqual(0, p.ExitCode);                                      // not reported as a success
                 env.Api = new Api(env.Cfg); env.Api.Start(env.Url);                  // the server is back
                 Unthrottle(env, "srvdown", set.Id);

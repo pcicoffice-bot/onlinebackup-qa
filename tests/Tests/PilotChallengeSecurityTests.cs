@@ -149,7 +149,7 @@ namespace OnlineBackup.Tests
                 refused("POST", "/api/admin/tickets", new Msg().Set("id", ticket).Set("subject", "hijacked").Set("login", "acme-c1"));
                 refused("POST", "/api/admin/tickets", new Msg().Set("login", "beta-c1").Set("subject", "new call on beta's customer"));
                 refused("POST", "/api/admin/tickets", new Msg().Set("login", "direct").Set("subject", "new call on the system's customer"));
-                Assert.Empty(wrong);
+                Assert.True(wrong.Count == 0, wrong.Count + " not refused:\n" + string.Join("\n", wrong));   // every one, in full (Assert.Empty cut the status off)
 
                 // the pages a reseller may open show only its own (none of the other customers' names or data)
                 foreach (var p in new[] { "tickets?scope=all", "tickets?scope=all&login=beta-c1", "tasks?hours=744", "dashboard", "checks", "live", "users", "me" })
