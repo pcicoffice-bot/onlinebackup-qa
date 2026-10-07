@@ -52,3 +52,6 @@
 12:54:35   waiting up to 20 min for a new Restore run
 12:55:07 end W15 PASS 
 12:55:08 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
+12:56:09 end W16 PASS 
+12:56:10 start W17 System State backup (Windows Server Backup)
+12:59:16   waiting up to 45 min for a new Backup run
