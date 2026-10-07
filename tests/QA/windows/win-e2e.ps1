@@ -438,7 +438,11 @@ Journey 'W17' 'System State backup (Windows Server Backup)' {
   $w = Open-Client $S.installDir; Nav $w 'Backup status'
   $btns = @(Find $w $CT::Button 'Back up now'); $b = $btns | Sort-Object { $_.Current.BoundingRectangle.Y } | Select-Object -Last 1
   $before = RunMark $Login 'Backup'; Click $b; Answer-Dialogs $w $null 'System State started' 15 | Out-Null
+  Note 'C: free before the System State backup' ("{0:N1} GB" -f ((Get-PSDrive C).Free / 1GB))
   $run = WaitNewRun $Login 'Backup' $before 45
+  # run 19: wbadmin's error log was empty and its file list stopped in the middle - the reason is in Windows' backup event log
+  Note 'C: free after the System State backup' ("{0:N1} GB" -f ((Get-PSDrive C).Free / 1GB))
+  Note 'Windows backup event log' ((Get-WinEvent -LogName 'Microsoft-Windows-Backup' -MaxEvents 15 -ErrorAction SilentlyContinue | ForEach-Object { "$($_.TimeCreated.ToString('HH:mm:ss')) $($_.Id) $($_.LevelDisplayName): $($_.Message)" }) -join ' || ')
   # run 18: wbadmin ran (bug 95 fixed) but ended 'The backup of the system state failed' - its own logs say why; keep them
   Copy-Item 'C:\Windows\Logs\WindowsServerBackup\*.log' $script:Journey.dir -ErrorAction SilentlyContinue
   Note 'wbadmin error log' ((Get-ChildItem 'C:\Windows\Logs\WindowsServerBackup\Backup_Error-*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -ErrorAction SilentlyContinue | Select-Object -First 40) -join ' | ')
