@@ -25,3 +25,5 @@
 13:08:54 start W09 Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical
 13:10:48   waiting up to 20 min for a new Backup run
 13:11:28   waiting up to 20 min for a new Restore run
+13:11:37 end W09 PASS 
+13:11:38 start W10 VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind
