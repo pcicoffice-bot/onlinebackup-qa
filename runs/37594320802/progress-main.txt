@@ -9,3 +9,4 @@
 08:36:04 start W05 FULL CHAIN: backup set in the window -> Back up now -> delete the source -> Restore in the window -> SHA-256
 08:36:59   waiting up to 20 min for a new Backup run
 08:37:27   waiting up to 20 min for a new Restore run
+08:37:29 end W05 PASS 
