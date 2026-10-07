@@ -50,3 +50,4 @@
 05:27:09 end W15 FAIL Maintenance - Setup sees the installation (remove): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider's backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || Removed: no service, no entry in the installed programs, no program files: service True; entries 1; files False
 05:27:10 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
 05:28:08 end W16 PASS 
+05:28:09 start W17 System State backup (Windows Server Backup)
