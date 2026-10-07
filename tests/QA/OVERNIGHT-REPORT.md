@@ -60,6 +60,9 @@ Caveats (true for every number above):
 | 13 (37552591713) | 8bf7dc3 (bug 89 fixed) | W01-W05 PASS; W06: backup after the service restart PASS (bug 89 fixed on real Windows); restore after the restart FAIL — robot typed no password into the sign-in question (Q20); then the nightly schedule cancelled the run (qa.yml, fixed) | cancelled |
 | 14 (37557981704) | 8bf7dc3, robot Q20 | W01-W05 PASS; W06/W07/W10-W12 restores FAIL - robot Q23 (the sign-in question on the Restore page after a service restart); W08/W09 robot Q28; W11 robot null; W13 NEEDS OWNER DECISION (installer with a quarantined program file offers a fresh install); W14 null; main job hit 3 h (Q22 waits) | still running at 05:20 (ends by 06:41) |
 | 15 (37574066600) | cf39637 (mirror e600bdd), robot Q22/Q23 | **W01-W07 PASS** - incl. restore after a service restart (W06) and agent killed mid-backup -> Windows restarts it -> no ghost -> identical restore (W07); W08/W09 FAIL = robot Q28 (the backup finished in 2 s, nothing to interrupt: NOT TESTED); W10+ running | running |
+| 16 (37584263969) | 16f5d78 (bug 94, Q28/Q29) | NOT RUN: stopped at the robot lint (Q33, my own false-clean lint) | running (first one with screen pictures) |
+| 17 (37587620470) | 018cd6e / a9e213c | **W01-W12 PASS in one run on one build** - incl. W08 service stopped mid-backup and W09 server killed mid-backup (first real runs after Q28), W11 VSS failure (Q29), W12 permission denied; W16 PASS; W13 owner decision -> W14/W15 robot cascade (Q34); W17: the set is now made (bug 94 fixed on Windows) but the backup failed -> **bug 95** (wbadmin refuses a target on the system volume) | running |
+| 18 (37594320802) | eb0ac52 / 7649d15 (93b, 94, 95, Q34, Q35) | running - the C1 candidate on the final build | running |
 
 **Q14 (robot, not product):** the robot's window matchers were written with `$_` but called with an empty `$_`, so the
 client's window and the removal's Yes/No question were never matched. Runs 8-10 therefore measured nothing about the client
@@ -97,8 +100,8 @@ Product bugs fixed tonight (full rows in docs/R1-BUGLOG.md, each with root cause
 - 93 (Medium, Windows) a state/settings file write gave up when another program had the file open for a moment (File.Replace
   refused) — found by the CI gate's hosted-Windows xUnit job, which nobody had read before tonight (25 FAILs there:
   19 Q26, 3 Q25, 2 environment - no restic, no /dev/full - and this one).
-  **NOT FIXED on Windows:** the retry helps short readers only; the gate on cf39637 still fails it (bug 93b in the buglog:
-  the product's 51 plain readers must share delete access - open).
+  The first fix (retry) was NOT enough on Windows (93b); the real fix (every product reader lets the file be replaced, 101
+  places) is **proven on real Windows** by the gate on 23913e6. Only a foreign program that never lets go can still fail it.
 
 QA-system defects found tonight (each one could make a test PASS without testing, or fail without the product failing):
 | Id | Severity | What | Fixed in | Proof |
@@ -208,6 +211,15 @@ Windows: W07-W09 (crash journeys) NOT TESTED yet with a working robot.
 - Windows (real Windows Server 2025, through the program's window): run 12 and 13 W05 — 112/112 files identical after delete
   and restore. Evidence: qa-evidence branch runs/37533243798 and runs/37552591713 (journey.json, screenshots, manifests).
 ## 18. Critical capabilities FULLY VERIFIED (of 49)
+**Not recomputed on the final build — no number is claimed.** The last generated ledger (tests/QA/MASTER-QA-LEDGER.md,
+21:01 UTC, snapshot 8ffcd50) says PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14 — but its Windows column comes from runs 8-10,
+which Q14 made worthless, and its E2E rows predate Q15/Q25/Q28. A new count needs, on ONE snapshot: the full xUnit +
+Playwright regression (DEFERRED, item 13 — move to persistent CI) and the Windows run's windows-main.json (run 18), fed to
+tests/QA/ledger.py. What changed tonight in the inputs, qualitatively:
+- now proven on real Windows (runs 17 and 18, W01-W12 both times): install by the installer window, sign-in, backup ->
+  delete -> restore SHA-256 through the window, service restart, agent crash, service stop and server kill mid-backup,
+  VSS, VSS failure, permission denied (BK-01, BK-05, BK-06, RS-01 Windows rows, previously FAIL from Q14);
+- still not proven anywhere: the real reboot (VM job never completed), System State backup (bug 95 fix awaits run 18 W17).
 ## 19. Benchmark decisions
 - AUTO-APPROVED: Q16 only. Everything else waits for the owner (table at the top of docs/PRODUCT-BENCHMARK.md).
 

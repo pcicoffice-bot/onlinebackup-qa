@@ -383,8 +383,11 @@ Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update i
   $hold = Join-Path $S.installDir 'restic.exe'
   $holder = Hold $hold 600
   $w = Open-Client $S.installDir
-  $link = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | Where-Object { $_.Current.Name -like '*Check for updates*' } | Select-Object -First 1
-  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } }; Start-Sleep 4; $m = Answer-Dialogs $w $CustPass 'Interrupted update' 30; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
+  # Q36 (run 18): the window already showed its 'Update' button; invoking the 'Check for updates' link did nothing, so the
+  # interrupted update never started. Click the button, as the later Update step does (that one worked); the link only if there is none.
+  $link = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -like '*Update*' -and $_.Current.Name -notlike '*Update to*' } | Select-Object -First 1
+  if (-not $link) { $link = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | Where-Object { $_.Current.Name -like '*Check for updates*' } | Select-Object -First 1 }
+  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { Click $link } catch { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } } }; Start-Sleep 4; $m = Answer-Dialogs $w $CustPass 'Interrupted update' 30; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
   Start-Sleep 60
   Step 'Interrupted update: the old version still runs (rolled back), the service is Running' "version $v1, Running" { $st = WaitService OnlineBackupAgent 'Running' 180; $v = (Get-Content (Join-Path $S.installDir 'version.txt') | Select-Object -First 1); @((($st -eq 'Running') -and ($v -eq $v1) -and (Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'))), "$st; version $v") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
@@ -436,6 +439,9 @@ Journey 'W17' 'System State backup (Windows Server Backup)' {
   $btns = @(Find $w $CT::Button 'Back up now'); $b = $btns | Sort-Object { $_.Current.BoundingRectangle.Y } | Select-Object -Last 1
   $before = RunMark $Login 'Backup'; Click $b; Answer-Dialogs $w $null 'System State started' 15 | Out-Null
   $run = WaitNewRun $Login 'Backup' $before 45
+  # run 18: wbadmin ran (bug 95 fixed) but ended 'The backup of the system state failed' - its own logs say why; keep them
+  Copy-Item 'C:\Windows\Logs\WindowsServerBackup\*.log' $script:Journey.dir -ErrorAction SilentlyContinue
+  Note 'wbadmin error log' ((Get-ChildItem 'C:\Windows\Logs\WindowsServerBackup\Backup_Error-*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -ErrorAction SilentlyContinue | Select-Object -First 40) -join ' | ')
   Step 'The System State backup finishes successfully (server record)' 'ok' { @((($run -ne $null) -and ($run['status'] -eq 'ok')), $(if ($run) { "$($run['result']) bytes $($run['bytes'])" } else { 'no run in 45 min' })) } | Out-Null
   Note 'System State restore' 'NOT TESTED: restoring the system state of the test machine would replace its own registry and boot files; only the backup is tested here'
 }
