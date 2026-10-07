@@ -25,3 +25,4 @@
 10:01:25 start W09 Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical
 10:03:17   waiting up to 20 min for a new Backup run
 10:03:56   waiting up to 20 min for a new Restore run
+10:04:00 end W09 PASS 
