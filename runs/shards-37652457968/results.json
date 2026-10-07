@@ -1,0 +1,97 @@
+{
+ "title": "QA shards run 37652457968 (e394618d620a7996f7de55853925e10c3064d60e; windows-latest, select 'TheFileNeverDisappears WhileTheProductsOwnReaderReadsWithoutPause', 2 shards x 3)",
+ "counts": {
+  "PASS": 0,
+  "FAIL": 2,
+  "NOT TESTED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": "FAIL",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 2.1643335,
+    "note": "the file did not exist 1278 times of 116407 checks during 200 replaces"
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 1.5215626,
+    "note": "the file did not exist 1042 times of 149114 checks during 200 replaces"
+   },
+   {
+    "job": "s01-r03",
+    "status": "FAIL",
+    "sec": 1.9004907,
+    "note": "the file did not exist 624 times of 84130 checks during 200 replaces"
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 0.9055006,
+    "note": "files left in the folder: state.txt (1048576 bytes), state.txt.oldf9f3909f (1048576 bytes)"
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.398776,
+    "note": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "PASS",
+    "sec": 1.5555013,
+    "note": ""
+   }
+  ]
+ },
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001376",
+    "os": "Windows",
+    "sha": "e394618d620a7996f7de55853925e10c3064d60e",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001378",
+    "os": "Windows",
+    "sha": "e394618d620a7996f7de55853925e10c3064d60e",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s01-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r03",
+    "runner": "GitHub Actions 1000001377",
+    "os": "Windows",
+    "sha": "e394618d620a7996f7de55853925e10c3064d60e",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 2
+  }
+ ],
+ "control": null,
+ "control_differences": []
+}
