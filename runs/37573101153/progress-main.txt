@@ -2,3 +2,4 @@
 04:51:22 end W01 PASS 
 04:51:23 start W02 Installer failure: a damaged Setup.exe installs nothing and says so
 04:51:31 end W02 PASS 
+04:51:32 start W03 Client installation through the installer window, proven by Windows
