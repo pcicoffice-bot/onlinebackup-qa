@@ -20,3 +20,4 @@
 08:41:13 end W07 PASS 
 08:41:14 start W08 Service stopped mid-backup: the run ends cleanly; start; backup and restore identical
 08:47:31   waiting up to 20 min for a new Backup run
+08:48:22   waiting up to 20 min for a new Restore run
