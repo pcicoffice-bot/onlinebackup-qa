@@ -44,3 +44,4 @@
 10:17:35 end W13 FAIL Maintenance - Setup sees the installation (repair): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider's backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || After Repair: the file is back and the service runs: Stopped || the journey stopped: You cannot call a method on a null-valued expression. @ line 362
 10:17:37 start W14 Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after
 10:21:34   waiting up to 20 min for a new Backup run
+10:24:16   waiting up to 20 min for a new Backup run
