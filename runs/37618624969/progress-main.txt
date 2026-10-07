@@ -45,3 +45,4 @@
 12:42:46 start W14 Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after
 12:47:20   waiting up to 20 min for a new Backup run
 12:50:07   waiting up to 20 min for a new Backup run
+12:51:07   waiting up to 20 min for a new Restore run
