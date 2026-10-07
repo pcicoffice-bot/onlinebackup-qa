@@ -7,3 +7,4 @@
 15:58:37 start W04 First run: sign in through the window, the agent connects to the server
 15:58:52 end W04 PASS 
 15:58:54 start W05 FULL CHAIN: backup set in the window -> Back up now -> delete the source -> Restore in the window -> SHA-256
+15:59:49   waiting up to 20 min for a new Backup run
