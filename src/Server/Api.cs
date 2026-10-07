@@ -1981,7 +1981,7 @@ namespace OnlineBackup.Server
                     var p = users.LoadProfile(login); var e = p.FindSet(set.Id);
                     int fails = (int?)e.Attribute("TICKET_FAILS") ?? 0, warns = (int?)e.Attribute("TICKET_WARNS") ?? 0;
                     var lines = body.List("log").Select(l => l["l"]).Where(l => !string.IsNullOrEmpty(l)).Reverse().Take(5).Reverse();
-                    Calls.BackupResult(login, set.Id, set.Name, set.Computer, body["result"] ?? "BS_STOP_BY_SYSTEM_ERROR", ref fails, ref warns, string.Join("\n", lines), p);
+                    Calls.BackupResult(login, set.Id, set.Name, set.Computer, body["result"] ?? "BS_STOP_BY_SYSTEM_ERROR", ref fails, ref warns, string.Join("\n", lines), p, body["stop"] == "duration");
                     e.SetAttributeValue("TICKET_FAILS", fails); e.SetAttributeValue("TICKET_WARNS", warns);
                     users.SaveProfile(login, p);
                 }

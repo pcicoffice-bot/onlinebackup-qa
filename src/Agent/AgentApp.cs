@@ -313,8 +313,24 @@ namespace OnlineBackup.Agent
             var p = Path.Combine(Home.SetDir(s.Id), "last-restore-test.txt");
             DateTime last;
             if (File.Exists(p) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(p).Trim(), out last) && (utc - last).TotalDays < 30) return false;
-            File.WriteAllText(p, RunId.From(utc));
+            // Bug 102 (pilot restore tests, RS-06): "done" was written HERE, before the test ran - a test whose result never reached
+            // the server (line cut, server busy) was not due again for 30 days. Now it is written only when the server took the
+            // result (RestoreTestDone); an attempt that did not get there is tried again after an hour, not on every scheduler pass.
+            var tried = Path.Combine(Home.SetDir(s.Id), "last-restore-test-try.txt");
+            if (File.Exists(tried) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(tried).Trim(), out last) && (utc - last).TotalHours < 1 && utc >= last) return false;
+            OnlineBackup.Core.Atomic.WriteText(tried, RunId.From(utc));
+            lock (restoreTestDueAt) restoreTestDueAt[s.Id] = utc;
             return true;
+        }
+
+        readonly Dictionary<string, DateTime> restoreTestDueAt = new Dictionary<string, DateTime>();
+
+        /// <summary>The restore test of the set is done: its result reached the server. The 30 days count from the time it was due.</summary>
+        void RestoreTestDone(string setId)
+        {
+            DateTime at;
+            lock (restoreTestDueAt) { if (!restoreTestDueAt.TryGetValue(setId, out at)) at = SystemClock.UtcNow; restoreTestDueAt.Remove(setId); }
+            OnlineBackup.Core.Atomic.WriteText(Path.Combine(Home.SetDir(setId), "last-restore-test.txt"), RunId.From(at));
         }
 
         public Restore RestoreFor(Client session, string setId, string secret = null, byte[] recoveredKey = null)
@@ -345,6 +361,7 @@ namespace OnlineBackup.Agent
                 var t = Restic(s).Check();
                 t.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, t.Int("ok") == 1 ? "info" : "err", message: "restore test (restic check --read-data-subset 5%): " + t["message"])));
                 DeviceClient().Call("POST", "/api/sets/" + s.Id + "/restoretest", t);
+                RestoreTestDone(s.Id);   // bug 102: only once the server took the result
                 return t;
             }
             var key = Key(s);
@@ -380,6 +397,7 @@ namespace OnlineBackup.Agent
             finally { try { Directory.Delete(dir, true); } catch (Exception) { } }
             log.Set("checked", ok + failed).Set("ok", ok).Set("failed", failed).Set("candidates", candidates.Count);
             client.Call("POST", "/api/sets/" + s.Id + "/restoretest", log);
+            RestoreTestDone(s.Id);   // bug 102: only once the server took the result
             return log;
         }
 

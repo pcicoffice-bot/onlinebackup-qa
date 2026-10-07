@@ -267,6 +267,8 @@ namespace OnlineBackup.Agent
                 if (stoppedByDuration) Warn("Backup stopped after the maximum duration of " + set.DurationHours + " hours; the rest continues in the next run");
 
                 if (stoppedByAdmin && endCode == "BS_STOP_SUCCESS") endCode = "BS_STOP_BY_USER";
+                // bug 103: a run cut at its maximum duration is stopped, not a success (BK-07) - unless it also had errors (those count more)
+                if (stoppedByDuration && endCode == "BS_STOP_SUCCESS" && Errors == 0) endCode = "BS_STOP_BY_USER";
                 if (endCode == "BS_STOP_SUCCESS") endCode = Errors > 0 ? "BS_STOP_SUCCESS_WITH_ERROR" : Warnings > 0 ? "BS_STOP_SUCCESS_WITH_WARNING" : "BS_STOP_SUCCESS";
                 Info("Total New Files = " + New);
                 Info("Total Updated Files = " + Updated);
@@ -275,6 +277,7 @@ namespace OnlineBackup.Agent
                 var result = Finish(endCode, started);
                 var commit = new Msg().Set("new", New).Set("upd", Updated).Set("perm", PermOnly).Set("del", Deleted).Set("bytes", BytesSent).Set("started", RunId.UnixMs(started))
                     .Set("prevFiles", state.Files.Count).Set("result", endCode);
+                if (stoppedByDuration) commit.Set("stop", "duration");   // bug 103: the server still counts a run that never finishes in its window
                 // For the mass-change ("ransomware") check on the server: the most common extension among changed files.
                 if (extensions.Count > 0) { var top = extensions.OrderByDescending(kv => kv.Value).First(); commit.Set("topExt", top.Key).Set("topExtCount", top.Value); }
                 foreach (var l in log) commit.Add("log", new Msg().Set("l", l));

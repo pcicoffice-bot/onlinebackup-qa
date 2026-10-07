@@ -131,7 +131,10 @@ namespace OnlineBackup.Tests
             Assert.False(app.RestoreTestDue(s, last.AddDays(30) - TimeSpan.FromSeconds(1)));
             Assert.Equal(RunId.From(last), File.ReadAllText(Path.Combine(sd, "last-restore-test.txt")).Trim());   // not rewritten
             Assert.True(app.RestoreTestDue(s, last.AddDays(30)));
-            Assert.Equal(RunId.From(last.AddDays(30)), File.ReadAllText(Path.Combine(sd, "last-restore-test.txt")).Trim());
+            // bug 102: deciding that it is due does NOT mark it done (that waits for the result to reach the server) ...
+            Assert.Equal(RunId.From(last), File.ReadAllText(Path.Combine(sd, "last-restore-test.txt")).Trim());
+            Assert.False(app.RestoreTestDue(s, last.AddDays(30).AddMinutes(10)));   // ... and an attempt is not repeated within the hour
+            Assert.True(app.RestoreTestDue(s, last.AddDays(30).AddHours(1)));       // ... but is tried again after it
         }
 
         // ------------------------------------------------------------------ the run lease

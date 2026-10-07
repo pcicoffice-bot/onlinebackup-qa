@@ -200,7 +200,7 @@ namespace OnlineBackup.Agent
             var run = new BackupRun(app.DeviceClient(), app.Home, set, key);
             var log = run.Lines;
             var started = Clock();
-            string result = "BS_STOP_SUCCESS";
+            string result = "BS_STOP_SUCCESS"; bool byDuration = false;
             bool clean = false;   // restic finished normally: no lock of this run can be left behind
             Msg report = new Msg().Set("job", NewJobId(started)).Set("started", RunId.UnixMs(started));
             log.Add(AhsayLog.Line(started, "start"));
@@ -287,7 +287,7 @@ namespace OnlineBackup.Agent
                 if (fr.Code == 0) log.Add(AhsayLog.Info(Clock(), "Retention policy " + set.Retention.Describe() + " applied (removed data stays 14 days in the server trash)"));
                 if (set.DestMode == "BOTH") LocalCopy(args, run, log);
             }
-            catch (StoppedException e) { result = e.ByAdmin ? "BS_STOP_BY_USER" : "BS_STOP_SUCCESS_WITH_WARNING"; }
+            catch (StoppedException e) { result = e.ByAdmin || run.Errors == 0 ? "BS_STOP_BY_USER" : "BS_STOP_SUCCESS_WITH_ERROR"; if (!e.ByAdmin) byDuration = true; }   // bug 103: a duration stop is stopped, not a success
             catch (AgentException e)
             {
                 result = e.Code == "PRE" ? "BS_STOP_BY_PRE_COMMAND" : e.Message.Contains("(507)") ? StorageFull(log) : "BS_STOP_BY_SYSTEM_ERROR";
@@ -313,6 +313,7 @@ namespace OnlineBackup.Agent
             if (result.StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal))
                 try { var st = new LocalState(app.Home.SetDir(set.Id)); st.LastSuccess = report["job"]; st.LastSuccessLocalMs = RunId.UnixMs(started); st.Save(); }
                 catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "The time of this backup could not be saved: " + e.Message)); }
+            if (byDuration) report.Set("stop", "duration");   // bug 103: the server still counts a run that never finishes in its window
             report.Set("result", result).Set("new", run.New).Set("upd", run.Updated).Set("del", 0).Set("perm", 0).Set("bytes", run.BytesSent);
             var prev = Path.Combine(app.Home.SetDir(set.Id), "restic-files.txt");
             long prevFiles; if (File.Exists(prev) && long.TryParse(OnlineBackup.Core.Atomic.ReadAllText(prev).Trim(), out prevFiles)) report.Set("prevFiles", prevFiles);

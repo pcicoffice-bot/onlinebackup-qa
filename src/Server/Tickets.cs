@@ -369,12 +369,15 @@ namespace OnlineBackup.Server
 
         /// <summary>
         /// The result of one backup run. Counts failures / warnings in a row per set (kept in the set's profile entry by
-        /// the caller through <paramref name="counts"/>), opens a call when the customer's threshold is reached, and on a
+        /// the caller through <paramref name="fails"/> / <paramref name="warns"/>), opens a call when the customer's threshold is reached, and on a
         /// success closes the set's open automatic calls (RTK-310/311).
         /// </summary>
-        public Msg BackupResult(string login, string setId, string setName, string computer, string result, ref int fails, ref int warns, string detail, Profile customer = null)
+        public Msg BackupResult(string login, string setId, string setName, string computer, string result, ref int fails, ref int warns, string detail, Profile customer = null, bool byDuration = false)
         {
             var st = Read(customer);
+            // bug 103: a run cut at its maximum duration is now "stopped" - it still counts as before (as a warning): a set that
+            // never finishes within its window must not go quiet
+            if (result == "BS_STOP_BY_USER" && byDuration) result = "BS_STOP_SUCCESS_WITH_WARNING";
             // "completed with errors" is a failure (no silent failures); only a clean run closes the calls
             if (result == "BS_STOP_BY_USER") return null;   // stopped on purpose (SET-030): changes nothing
             bool ok = result == "BS_STOP_SUCCESS", warn = result == "BS_STOP_SUCCESS_WITH_WARNING";
