@@ -3,3 +3,4 @@
 09:48:15 start W02 Installer failure: a damaged Setup.exe installs nothing and says so
 09:48:24 end W02 PASS 
 09:48:25 start W03 Client installation through the installer window, proven by Windows
+09:48:43 end W03 PASS 
