@@ -385,9 +385,11 @@ Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update i
   $w = Open-Client $S.installDir
   # Q36 (run 18): the window already showed its 'Update' button; invoking the 'Check for updates' link did nothing, so the
   # interrupted update never started. Click the button, as the later Update step does (that one worked); the link only if there is none.
-  $link = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -like '*Update*' -and $_.Current.Name -notlike '*Update to*' } | Select-Object -First 1
+  # Q38 (run 21): the button was not there yet when the window had just opened (it appears once the window has asked the
+  # server) - wait for it up to 60 s, and below click a second time if no question came
+  $until = (Get-Date).AddSeconds(60); do { $link = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -like '*Update*' -and $_.Current.Name -notlike '*Update to*' } | Select-Object -First 1; if (-not $link) { Start-Sleep 3 } } while (-not $link -and (Get-Date) -lt $until)
   if (-not $link) { $link = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | Where-Object { $_.Current.Name -like '*Check for updates*' } | Select-Object -First 1 }
-  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { Click $link } catch { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } } }; Start-Sleep 4; $m = Answer-Dialogs $w $CustPass 'Interrupted update' 30; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
+  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { Click $link } catch { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } } }; Start-Sleep 4; $m = @(Answer-Dialogs $w $CustPass 'Interrupted update' 30); if ($m.Count -eq 0 -and $link) { try { Click $link } catch { }; Start-Sleep 4; $m = @(Answer-Dialogs $w $CustPass 'Interrupted update (2nd click)' 30) }; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
   Start-Sleep 60
   Step 'Interrupted update: the old version still runs (rolled back), the service is Running' "version $v1, Running" { $st = WaitService OnlineBackupAgent 'Running' 180; $v = (Get-Content (Join-Path $S.installDir 'version.txt') | Select-Object -First 1); @((($st -eq 'Running') -and ($v -eq $v1) -and (Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'))), "$st; version $v") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
