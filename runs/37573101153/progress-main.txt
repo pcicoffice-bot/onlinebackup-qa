@@ -18,3 +18,4 @@
 04:56:13   waiting up to 20 min for a new Backup run
 04:56:51   waiting up to 20 min for a new Restore run
 04:56:53 end W07 FAIL No ghost: the killed run is not "running" any more: live 0; job '2026-10-07-04-54-37' recorded: BS_STOP_SUCCESS || Backup after the crash - result: server: BS_STOP_SUCCESS_WITH_WARNING (new 0, bytes 0); window:  Automatic backup every day at 22:00  ·  last backup: 2026-10-07-04-56-00  ·  Completed with warnings ; messages: ITSguard Server Online: The backup has started
+04:56:54 start W08 Service stopped mid-backup: the run ends cleanly; start; backup and restore identical
