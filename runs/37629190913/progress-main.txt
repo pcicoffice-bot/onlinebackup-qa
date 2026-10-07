@@ -10,3 +10,4 @@
 13:36:49   waiting up to 20 min for a new Backup run
 13:37:17   waiting up to 20 min for a new Restore run
 13:37:19 end W05 PASS 
+13:37:21 start W06 Service restart: Windows restarts the backup service, then backup and restore again
