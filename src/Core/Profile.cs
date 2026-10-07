@@ -299,6 +299,66 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
         }
     }
 
+    /// <summary>Bug 96b / 99: replacing a file on Windows in one step (FileRenameInfoEx with POSIX semantics).</summary>
+    static class WindowsRename
+    {
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
+        static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFileW(string name, uint access, uint share, IntPtr security, uint disposition, uint flags, IntPtr template);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll", SetLastError = true)]
+        static extern bool SetFileInformationByHandle(Microsoft.Win32.SafeHandles.SafeFileHandle file, int infoClass, IntPtr info, uint size);
+
+        const uint Delete = 0x00010000, Synchronize = 0x00100000, ShareAll = 7, OpenExisting = 3;
+        const int FileRenameInfoEx = 22, ReplaceIfExists = 0x1, PosixSemantics = 0x2;
+        static int unsupported;   // 1: this Windows (or file system) has no POSIX rename - File.Replace from then on
+
+        static string Long(string p) { var f = Path.GetFullPath(p); return f.StartsWith(@"\\", StringComparison.Ordinal) ? @"\\?\UNC\" + f.Substring(2) : @"\\?\" + f; }
+
+        /// <summary>True when replaced; false when this Windows cannot (the caller uses File.Replace). A refusal ("used by another
+        /// process", access denied) is thrown as IOException, so the caller tries again as before.</summary>
+        internal static bool ReplaceAtOnce(string source, string target)
+        {
+            if (System.Threading.Thread.VolatileRead(ref unsupported) == 1) return false;
+            using (var h = CreateFileW(Long(source), Delete | Synchronize, ShareAll, IntPtr.Zero, OpenExisting, 0, IntPtr.Zero))
+            {
+                if (h.IsInvalid) throw Refused(System.Runtime.InteropServices.Marshal.GetLastWin32Error(), source);
+                // FILE_RENAME_INFO: Flags (4 bytes), RootDirectory (a handle, aligned), FileNameLength (4), FileName (WCHAR[])
+                var name = Long(target);
+                int rootAt = IntPtr.Size, lengthAt = 2 * IntPtr.Size, nameAt = lengthAt + 4;
+                int size = nameAt + (name.Length + 1) * 2;
+                var buf = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+                try
+                {
+                    for (int i = 0; i < size; i++) System.Runtime.InteropServices.Marshal.WriteByte(buf, i, 0);
+                    System.Runtime.InteropServices.Marshal.WriteInt32(buf, 0, ReplaceIfExists | PosixSemantics);
+                    System.Runtime.InteropServices.Marshal.WriteIntPtr(buf, rootAt, IntPtr.Zero);
+                    System.Runtime.InteropServices.Marshal.WriteInt32(buf, lengthAt, name.Length * 2);
+                    System.Runtime.InteropServices.Marshal.Copy(name.ToCharArray(), 0, new IntPtr(buf.ToInt64() + nameAt), name.Length);
+                    if (SetFileInformationByHandle(h, FileRenameInfoEx, buf, (uint)size)) return true;
+                    int err = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                    // 1 invalid function, 50 not supported, 87 invalid parameter, 124 invalid level: no POSIX rename here
+                    if (err == 1 || err == 50 || err == 87 || err == 124) { System.Threading.Thread.VolatileWrite(ref unsupported, 1); return false; }
+                    throw Refused(err, target);
+                }
+                finally { System.Runtime.InteropServices.Marshal.FreeHGlobal(buf); }
+            }
+        }
+
+        static IOException Refused(int err, string path)
+        {
+            return new IOException(new System.ComponentModel.Win32Exception(err).Message + " (" + path + ")", unchecked((int)0x80070000) | err);
+        }
+
+        /// <summary>Removes the old file of a File.Replace; a program that looks at it for a moment (an antivirus) only delays it.</summary>
+        internal static void DeleteSoon(string path)
+        {
+            for (int attempt = 1; attempt <= 100; attempt++)
+            {
+                try { File.Delete(path); return; }
+                catch (Exception e) when (e is IOException || e is UnauthorizedAccessException) { System.Threading.Thread.Sleep(Math.Min(attempt, 20)); }
+            }
+        }
+    }
+
     /// <summary>Write to a temporary name, flush to disk, then rename: a crash never leaves a half-written file.</summary>
     public static class Atomic
     {
@@ -336,12 +396,15 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
                 {
                     if (!File.Exists(path)) { File.Move(tmp, path); return; }
                     if (Environment.OSVersion.Platform != PlatformID.Win32NT) { File.Replace(tmp, path, null); return; }   // rename(): atomic
-                    // Bug 99 (QA shards, Windows): with no backup name, Windows keeps the old file as "<name>~RFxxxx.TMP" when a
-                    // reader has it open, and never removes it (1 MB left per write in the test). The old file gets our own name
-                    // and is deleted at once: a file open with FileShare.Delete is removed as soon as its reader closes it.
+                    // Bug 96b (QA shards, Windows): File.Replace moves the old file away before the new one is in - while a reader
+                    // holds it, the name is missing for a moment ("Unknown device"). The rename with POSIX semantics (Windows 10
+                    // 1809 / Server 2019 and later) swaps the name in one step: the file exists at every moment, a reader that has
+                    // it open keeps reading the old content, and nothing is left behind (bug 99: "<name>~RFxxxx.TMP" copies).
+                    if (WindowsRename.ReplaceAtOnce(tmp, path)) return;
+                    // older Windows (or a file system without it): the replace with our own name for the old file, removed after
                     var old = path + ".old" + Guid.NewGuid().ToString("N").Substring(0, 8);
                     File.Replace(tmp, path, old, true);
-                    try { File.Delete(old); } catch (Exception) { }
+                    WindowsRename.DeleteSoon(old);
                     return;
                 }
                 catch (Exception e) when ((e is IOException || e is UnauthorizedAccessException) && attempt < ReplaceAttempts && File.Exists(tmp))
