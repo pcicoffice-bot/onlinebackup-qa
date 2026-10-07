@@ -47,3 +47,4 @@
 13:30:17   waiting up to 20 min for a new Backup run
 13:30:55   waiting up to 20 min for a new Restore run
 13:31:04 end W14 PASS 
+13:31:08 start W15 Uninstall through the installer window, reinstall, sign in again, backup and restore
