@@ -1,0 +1,131 @@
+﻿{
+    "screen":  "Restore after restart - Restore started - dialog: Sign in",
+    "window":  "Sign in",
+    "rect":  {
+                 "y":  195,
+                 "w":  446,
+                 "h":  329,
+                 "x":  299
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Text",
+                         "name":  "Sign in",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  247,
+                                      "w":  392,
+                                      "h":  27,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Restoring and adding backups require your password.",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  282,
+                                      "w":  392,
+                                      "h":  19,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Password",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  313,
+                                      "w":  392,
+                                      "h":  21,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  338,
+                                      "w":  392,
+                                      "h":  27,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Verification code (if enabled)",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  377,
+                                      "w":  392,
+                                      "h":  21,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  402,
+                                      "w":  392,
+                                      "h":  27,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Sign-in failed: The user is locked after failed sign-ins. Contact your provider or try again later.",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  437,
+                                      "w":  392,
+                                      "h":  19,
+                                      "x":  326
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Sign in",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  467,
+                                      "w":  110,
+                                      "h":  36,
+                                      "x":  608
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Cancel",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  467,
+                                      "w":  110,
+                                      "h":  36,
+                                      "x":  488
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}
