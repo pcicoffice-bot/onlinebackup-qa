@@ -40,3 +40,4 @@
 12:36:27   waiting up to 20 min for a new Restore run
 12:36:52   waiting up to 20 min for a new Backup run
 12:36:59 end W12 PASS 
+12:37:01 start W13 Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back
