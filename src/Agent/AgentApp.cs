@@ -507,7 +507,11 @@ namespace OnlineBackup.Agent
                     if ((nowLocal - new DateTime(first)).TotalMinutes < s.MissedDelayMinutes) return false;
                 }
             }
-            if (attempt != DateTime.MinValue && (nowLocal - attempt).TotalMinutes < 15) return false;   // retry every 15 minutes
+            // retry every 15 minutes — a retry. Night soak: the wait also followed a SUCCESSFUL run, so a slot that came after
+            // that run had ended waited up to 15 minutes (a slot every 5 minutes ran every 15). A slot that came during the
+            // last run, or after a failed one, still waits as before.
+            bool slotAfterSuccess = attemptResult.StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal) && slot.Value > attempt;
+            if (attempt != DateTime.MinValue && (nowLocal - attempt).TotalMinutes < 15 && !slotAfterSuccess) return false;
             return true;
         }
 

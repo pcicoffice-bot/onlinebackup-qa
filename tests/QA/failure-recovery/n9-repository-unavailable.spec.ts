@@ -78,7 +78,7 @@ test('N9b the server stopped for the whole run → the run fails at once (time m
   world.killServer();
   await new Promise((r) => setTimeout(r, 1000));
   const port = Number(new URL(world.url).port);
-  const refused = await new Promise<string>((r) => { const s = net.connect({ port, host: 'localhost' }); s.on('connect', () => { s.destroy(); r('CONNECTED'); }); s.on('error', (e) => r(String(e))); });
+  const refused = await new Promise<string>((r) => { const s = net.connect({ port, host: 'localhost' }); s.on('connect', () => { s.destroy(); r('CONNECTED'); }); s.on('error', (e: any) => r([String(e), e.code, ...(e.errors || []).map((x: any) => x.code)].filter(Boolean).join(' '))); });   // localhost = ::1 and 127.0.0.1: both refused is an AggregateError (CI run 12)
   const ev: Record<string, unknown> = { proof: { process: sh('ps -p ' + pid + ' -o stat= || echo GONE'), port: refused } };
   evidence.step('PROOF: ' + JSON.stringify(ev.proof));
   expect(refused).toMatch(/ECONNREFUSED/);

@@ -32,7 +32,7 @@ namespace OnlineBackup.ClientApp
                 MessageBox.Show("The backup service on this computer is not running. Start it in Windows Services, or run Setup again.", "Backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return 1;
             }
-            return OnlineBackup.Agent.ClientForm.Run(url, args.Contains("--tray"));
+            return OnlineBackup.Agent.ClientForm.Run(url, args.Contains("--tray"), () => File.ReadAllText(ui));
         }
     }
 }

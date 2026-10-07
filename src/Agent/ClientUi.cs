@@ -134,7 +134,7 @@ namespace OnlineBackup.Agent
                 return;
             }
             if (!path.StartsWith("/api/")) { Send(ctx, 404, "text/plain", "not found"); return; }
-            if (req.Headers["X-Key"] != Key) { Reply(ctx, 403, new Msg().Set("message", "Wrong key: open the screen from the desktop shortcut.")); return; }
+            if (req.Headers["X-Key"] != Key) { Reply(ctx, 403, new Msg().Set("message", "Wrong key: open the screen from the desktop shortcut.").Set("code", "KEY")); return; }
             try
             {
                 var b = req.HttpMethod == "POST" ? Msg.Read(req.InputStream) : new Msg();

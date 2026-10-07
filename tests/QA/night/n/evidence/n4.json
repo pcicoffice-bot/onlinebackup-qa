@@ -1,59 +1,57 @@
 {
  "cores": 4,
- "baselineMs": 2545,
- "loadBefore": "1.54 1.94 2.17 5/761 11172",
+ "baselineMs": 2480,
+ "loadBefore": "1.16 1.01 1.23 2/377 7391",
  "cpu": {
-  "ms": 24147,
+  "ms": 12024,
   "hogsBefore": [
    {
     "state": "R",
-    "cpuTicks": 227
+    "cpuTicks": 296
    },
    {
     "state": "R",
-    "cpuTicks": 220
+    "cpuTicks": 293
    },
    {
     "state": "R",
-    "cpuTicks": 200
+    "cpuTicks": 295
    },
    {
     "state": "R",
-    "cpuTicks": 193
+    "cpuTicks": 287
    }
   ],
   "hogsAfter": [
    {
     "state": "R",
-    "cpuTicks": 1135
+    "cpuTicks": 1234
    },
    {
     "state": "R",
-    "cpuTicks": 1070
+    "cpuTicks": 1167
    },
    {
     "state": "R",
-    "cpuTicks": 1250
+    "cpuTicks": 1213
    },
    {
     "state": "R",
-    "cpuTicks": 1151
+    "cpuTicks": 1168
    }
   ],
   "loads": [
-   "3.04 2.24 2.27 17/905 11350",
-   "4.24 2.50 2.35 17/911 11378",
-   "5.02 2.69 2.42 29/929 11455",
-   "5.34 2.80 2.45 28/934 11498"
+   "2.16 1.23 1.30 12/469 7505",
+   "2.79 1.37 1.35 8/471 7511"
   ]
  },
  "memory": {
-  "freeBefore": 5296508928,
-  "availBefore": 9950019584,
-  "held": 2118603571,
-  "hogRss": 2172968960,
-  "availDuring": 7820509184,
-  "ms": 3254,
-  "hogRssAfter": 2173194240
+  "freeBefore": 8571432960,
+  "availBefore": 14095273984,
+  "held": 3428573184,
+  "hogRss": 3495727104,
+  "availDuring": 10677723136,
+  "ms": 1941,
+  "hogRssAfter": 3495727104
  }
 }

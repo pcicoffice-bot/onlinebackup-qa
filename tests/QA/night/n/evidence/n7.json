@@ -1,12 +1,12 @@
 {
  "proof": {
-  "modes": "0 root /tmp/obqa-eEF0b3/data/Documents/letter.txt\n0 root /tmp/obqa-eEF0b3/data/Many",
-  "readFile": "ERR 1 cat: /tmp/obqa-eEF0b3/data/Documents/letter.txt: Permission denied",
-  "listFolder": "ERR 2 ls: cannot open directory '/tmp/obqa-eEF0b3/data/Many': Permission denied",
-  "lockHolder": "13",
+  "modes": "0 root /tmp/obqa-asMWdW/data/Documents/letter.txt\n0 root /tmp/obqa-asMWdW/data/Many",
+  "readFile": "ERR 1 cat: /tmp/obqa-asMWdW/data/Documents/letter.txt: Permission denied",
+  "listFolder": "ERR 2 ls: cannot open directory '/tmp/obqa-asMWdW/data/Many': Permission denied",
+  "lockHolder": "4",
   "lockTest": "HELD"
  },
- "backup2": "BS_STOP_SUCCESS_WITH_ERROR new=1 upd=0 perm=0 del=0 bytes=490\nwarn:  Cannot list /tmp/obqa-eEF0b3/data/Many (files kept): Access to the path '/tmp/obqa-eEF0b3/data/Many' is denied.\nerr: /tmp/obqa-eEF0b3/data/Documents/letter.txt Cannot read file: Access to the path '/tmp/obqa-eEF0b3/data/Documents/letter.txt' is denied.\nerr: /tmp/obqa-eEF0b3/data/Binary/random.bin Cannot read file: The process cannot access the file '/tmp/obqa-eEF0b3/data/Binary/random.bin' because it is being used by another process.\nerr: /tmp/obqa-eEF0b3/data/Many Not backed up: this source could not be read now (its earlier backups are kept)\n",
+ "backup2": "BS_STOP_SUCCESS_WITH_ERROR new=1 upd=0 perm=0 del=0 bytes=490\nwarn:  Cannot list /tmp/obqa-asMWdW/data/Many (files kept): Access to the path '/tmp/obqa-asMWdW/data/Many' is denied.\nerr: /tmp/obqa-asMWdW/data/Documents/letter.txt Cannot read file: Access to the path '/tmp/obqa-asMWdW/data/Documents/letter.txt' is denied.\nerr: /tmp/obqa-asMWdW/data/Binary/random.bin Cannot read file: The process cannot access the file '/tmp/obqa-asMWdW/data/Binary/random.bin' because it is being used by another process.\nerr: /tmp/obqa-asMWdW/data/Many Not backed up: this source could not be read now (its earlier backups are kept)\n",
  "lockNamed": true,
  "lockAfterRelease": "FREE"
 }

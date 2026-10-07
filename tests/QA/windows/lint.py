@@ -112,6 +112,22 @@ if __name__ == '__main__':
             for m in re.finditer(r'(?:\$(\w+)\s*=(?!=)|foreach\s*\(\s*\$(\w+)\s+in)', l):
                 v = (m.group(1) or m.group(2)).lower()
                 if v in top: bad += 1; print('%s:%d: $%s is a script-level variable (names are not case-sensitive): a local of that name hides it:\n  %s' % (p, n, m.group(1) or m.group(2), l.strip()[:200]))
+        # Q19 (W1 run 12): a scriptblock given to a function runs inside it - every parameter and local of that function
+        # assigned before the call hides the caller's variable of the same name (Step's $t was read as the window's text).
+        # Such a function uses only names that start with __ up to the call (a [switch] is allowed).
+        for fm in re.finditer(r'^function ([\w-]+)\s*\(([^)]*)\)\s*\{', s, re.M):
+            params = re.findall(r'(\[[\w\]]*\]?)?\s*\$(\w+)', fm.group(2))
+            sbs = [n for typ, n in params if 'scriptblock' in typ.lower()]
+            if not sbs: continue
+            body_start = fm.end(); depth = 1; k = body_start
+            while k < len(s) and depth: depth += {'{': 1, '}': -1}.get(s[k], 0); k += 1
+            body = s[body_start:k]
+            call = min([x for x in (body.find('& $' + n) for n in sbs) if x >= 0] + [x for x in (body.find('Where-Object $' + n) for n in sbs) if x >= 0] + [len(body)])
+            names = [n for typ, n in params if 'switch' not in typ.lower()] + re.findall(r'\$(\w+)\s*=(?!=)', body[:call])
+            for n in names:
+                if not n.startswith('__') and n.lower() not in ('script', 'null', 'true', 'false', '_'):
+                    bad += 1; line = s[:fm.start()].count('\n') + 1
+                    print('%s:%d: %s runs a caller scriptblock: its $%s (before the call) hides the caller\'s variable of that name - use $__%s' % (p, line, fm.group(1), n, n))
         if t != s:
             bad += 1
             if '--fix' in sys.argv: open(p, 'w', encoding='utf-8').write(t); print(p, 'fixed')

@@ -55,16 +55,19 @@ function CheckResult($r) {
   $first = $(if ($n -gt 0 -and $null -ne @($r)[0]) { @($r)[0].GetType().Name } else { 'null' })
   return @($false, ('ROBOT ERROR: the check returned {0} item(s), the first a {1}, not @(bool, text): {2}' -f $n, $first, ((@($r) | ForEach-Object { [string]$_ }) -join ' | ')))
 }
-function Step([string]$what, [string]$expected, [scriptblock]$check, [switch]$NoShot) {
-  $t = Get-Date; $ok = $false; $actual = ''
-  try { $r = & $check; $c = CheckResult $r; $ok = $c[0]; $actual = $c[1] } catch { $actual = 'ERROR: ' + $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber }
-  $shot = ''; if (-not $NoShot) { $shot = Shot $what }
-  $row = [ordered]@{ step = $what; expected = $expected; actual = $actual; result = $(if ($ok) { 'PASS' } else { 'FAIL' }); seconds = [int]((Get-Date) - $t).TotalSeconds; screenshot = $shot; at = (Get-Date).ToString('HH:mm:ss') }
-  [void]$script:Journey.steps.Add($row)
-  Write-Host ('[{0}] {1} -- {2}' -f $row.result, $what, $actual)
+# Q19 (W1 run 12): a check runs INSIDE Step, so every variable of Step (its $t = Get-Date, $ok, $actual, its parameters)
+# hid the caller's variable of that name - W04 compared the window's text "$t" and got Step's start time. Step and
+# StepLook use only names that start with __ (the lint refuses anything else in them).
+function Step([string]$__what, [string]$__expected, [scriptblock]$__check, [switch]$NoShot) {
+  $__t0 = Get-Date; $__ok = $false; $__actual = ''
+  try { $__r = & $__check; $__c = CheckResult $__r; $__ok = $__c[0]; $__actual = $__c[1] } catch { $__actual = 'ERROR: ' + $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber }
+  $__shot = ''; if (-not $NoShot) { $__shot = Shot $__what }
+  $__row = [ordered]@{ step = $__what; expected = $__expected; actual = $__actual; result = $(if ($__ok) { 'PASS' } else { 'FAIL' }); seconds = [int]((Get-Date) - $__t0).TotalSeconds; screenshot = $__shot; at = (Get-Date).ToString('HH:mm:ss') }
+  [void]$script:Journey.steps.Add($__row)
+  Write-Host ('[{0}] {1} -- {2}' -f $__row.result, $__what, $__actual)
   # a failed step is also a GitHub annotation: the job log cannot always be fetched, the annotations can
-  if (-not $ok) { $a = ('{0}: {1}' -f $what, $actual) -replace '[\r\n]+', ' '; Write-Host ('::warning title=Windows QA step FAIL::' + $a.Substring(0, [Math]::Min(900, $a.Length))) }
-  return $ok
+  if (-not $__ok) { $__a = ('{0}: {1}' -f $__what, $__actual) -replace '[\r\n]+', ' '; Write-Host ('::warning title=Windows QA step FAIL::' + $__a.Substring(0, [Math]::Min(900, $__a.Length))) }
+  return $__ok
 }
 function Note([string]$what, [string]$text) {
   [void]$script:Journey.steps.Add([ordered]@{ step = $what; expected = ''; actual = $text; result = 'INFO'; seconds = 0; screenshot = ''; at = (Get-Date).ToString('HH:mm:ss') })
@@ -325,12 +328,12 @@ function UiaReport([string]$processName) {
 # matcher that needs a property ("wider than 300", "is a #32770 dialog") was never true: the client's window and the
 # removal's Yes/No question were "not found" in runs 8-10 while UI Automation had both; a "-ne" matcher was true for
 # anything. Where-Object gives the matcher the window as $_.
-function WindowMatches($w, [scriptblock]$match) { return (@($w | Where-Object $match).Count -gt 0) }
-function WaitWindow([string]$processName, [scriptblock]$match = { $true }, [int]$seconds = 60) {
-  $until = (Get-Date).AddSeconds($seconds)
+function WindowMatches($__w, [scriptblock]$__match) { return (@($__w | Where-Object $__match).Count -gt 0) }
+function WaitWindow([string]$__processName, [scriptblock]$__match = { $true }, [int]$__seconds = 60) {
+  $__until = (Get-Date).AddSeconds($__seconds)
   $script:LastWaitError = $null
-  while ((Get-Date) -lt $until) {
-    try { foreach ($w in (TopWindows $processName)) { if (WindowMatches $w $match) { return $w } } } catch { $script:LastWaitError = $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
+  while ((Get-Date) -lt $__until) {
+    try { foreach ($__w in (TopWindows $__processName)) { if (WindowMatches $__w $__match) { return $__w } } } catch { $script:LastWaitError = $_.Exception.GetType().Name + ': ' + $_.Exception.Message }
     Start-Sleep -Milliseconds 400
   }
   return $null
@@ -531,11 +534,11 @@ function Look($w, [string]$screen, [string]$lang = 'en', [string]$process = $nul
   return $shot
 }
 # A step that is also a screen: the functional check, then the look
-function StepLook([string]$what, [string]$expected, $window, [scriptblock]$check, [string]$lang = 'en', [string]$process = $null) {
-  $ok = Step $what $expected $check -NoShot
-  $shot = Look $window $what $lang $process
-  $script:Journey.steps[$script:Journey.steps.Count - 1].screenshot = $shot
-  return $ok
+function StepLook([string]$__what, [string]$__expected, $__window, [scriptblock]$__check, [string]$__lang = 'en', [string]$__process = $null) {
+  $__ok2 = Step $__what $__expected $__check -NoShot
+  $__shot2 = Look $__window $__what $__lang $__process
+  $script:Journey.steps[$script:Journey.steps.Count - 1].screenshot = $__shot2
+  return $__ok2
 }
 # UX: a fixed, written check of the flow (never the robot's taste): records a UX FAIL as a finding with its screenshot
 function UxCheck([string]$what, [string]$expected, [bool]$ok, [string]$actual, [string]$severity = 'Medium', [string]$recommend = '') {

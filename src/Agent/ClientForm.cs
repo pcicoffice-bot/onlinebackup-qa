@@ -16,37 +16,6 @@ using OnlineBackup.Core;
 namespace OnlineBackup.Agent
 {
     /// <summary>The customer's screen talks to the backup service on this computer (the same local API the service always served).</summary>
-    public interface IClientApi { Msg Call(string op, Msg body, IDictionary<string, string> query); }
-
-    /// <summary>The service's local API: http://127.0.0.1:port with the key from ui.txt (only this computer, only with the key).</summary>
-    public sealed class LocalApi : IClientApi
-    {
-        readonly string baseUrl, key;
-        public LocalApi(string uiUrl)
-        {
-            var u = new Uri(uiUrl.Trim());
-            baseUrl = "http://127.0.0.1:" + u.Port + "/api/"; key = u.Fragment.TrimStart('#');
-        }
-        public Msg Call(string op, Msg body, IDictionary<string, string> query)
-        {
-            var q = query == null || query.Count == 0 ? "" : "?" + string.Join("&", query.Select(kv => Uri.EscapeDataString(kv.Key) + "=" + Uri.EscapeDataString(kv.Value ?? "")).ToArray());
-            var r = (HttpWebRequest)WebRequest.Create(baseUrl + op + q);
-            r.Method = body == null ? "GET" : "POST"; r.Headers["X-Key"] = key; r.Timeout = 600000; r.ReadWriteTimeout = 600000; r.Proxy = null;
-            if (body != null) { var b = body.ToBytes(); r.ContentType = "application/xml"; r.ContentLength = b.Length; using (var s = r.GetRequestStream()) s.Write(b, 0, b.Length); }
-            try { using (var w = (HttpWebResponse)r.GetResponse()) using (var s = w.GetResponseStream()) return Msg.Read(s); }
-            catch (WebException e)
-            {
-                var w = e.Response as HttpWebResponse;
-                if (w == null) throw new AgentException(0, "SERVICE", "The backup service on this computer does not answer.");
-                // CLI-130 (owner's screen: "Cannot access a disposed object 'HttpWebResponse'"): the status is read before the
-                // response is closed — after it, .NET Framework throws and the real message was lost
-                var status = (int)w.StatusCode; Msg m;
-                using (w) using (var s = w.GetResponseStream()) { try { m = Msg.Read(s); } catch (Exception) { m = new Msg(); } }
-                throw new AgentException(status, m["code"] ?? m["error"] ?? "", m["message"] ?? ("Error " + status));
-            }
-        }
-    }
-
     /// <summary>
     /// CLI-100 (owner: "a real program, not a web page"): the customer's backup program as a Windows window — the
     /// product's name, logo and colours, a menu (backup status, restore, new backup, security, help), the backups with
@@ -744,10 +713,12 @@ namespace OnlineBackup.Agent
         // ---------------------------------------------------------------- start
 
         /// <summary>The desktop shortcut (and Windows start-up with --tray): the program, with the service's local API.</summary>
-        public static int Run(string uiUrl, bool hidden)
+        public static int Run(string uiUrl, bool hidden) { return Run(uiUrl, hidden, null); }
+        /// <param name="reread">reads ui.txt again (bug 89: the service has a new key after it restarts)</param>
+        public static int Run(string uiUrl, bool hidden, Func<string> reread)
         {
             Application.EnableVisualStyles(); Application.SetCompatibleTextRenderingDefault(false);
-            using (var f = new ClientForm(new LocalApi(uiUrl)) { StartHidden = hidden }) Application.Run(f);
+            using (var f = new ClientForm(new LocalApi(uiUrl, reread)) { StartHidden = hidden }) Application.Run(f);
             return 0;
         }
 

@@ -18,7 +18,10 @@ _(filled at the end)_
 |---|---|---|---|---|---|
 | xUnit (component + integration), full | 4c6deea, 42 m 40 s | 351 | 345 | 4 (test-side, fixed) | 2 (76/77, owner decision) |
 | xUnit, full | d28b90e, 43 m 59 s | 407 | 405 | 0 | 2 (76/77) |
-| Playwright E2E, full (journeys + failure/recovery) | 26368b0 | _running_ | | | |
+| Playwright E2E (36 spec files, ~60 tests): first pass on 26368b0 with the OLD harness | 26368b0 | 17 files | 16 | 1 (F7: could not inject its fault — Q15) | – |
+| Playwright E2E: every file again / the rest, with the fixed harness (Q15, Q16, L-8) | 26368b0 | 28 files | 27 files | 1 (N6b — N-1, NEEDS OWNER DECISION) | 0 |
+| xUnit full | 8b95455 (bug 88), 42 m 17 s | 417 | 415 | 0 | 2 (76/77) |
+| Playwright full (36 files) | 8b95455, 22:46-23:41 UTC | 36 files / 51 tests | 50 tests | 1 (N6b — N-1, NEEDS OWNER DECISION) | 0 |
 
 Caveats (true for every number above):
 - **65 xUnit tests start with a precondition guard** (`if (no restic / not Linux / no mount) return;`): xUnit reports them

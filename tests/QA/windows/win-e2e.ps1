@@ -29,14 +29,14 @@ $facts = [ordered]@{ phase = $Phase; windows = (Get-CimInstance Win32_OperatingS
 $facts | ConvertTo-Json | Set-Content (Join-Path $Out "facts-$Phase.json") -Encoding UTF8
 Write-Host ($facts | ConvertTo-Json)
 
-function Journey([string]$id, [string]$title, [scriptblock]$body) {
-  if ($Only -and $id -notmatch $Only) { return }
-  New-Journey $id $title $Out | Out-Null
-  $nt = ''
-  try { $r = @(& $body); $last = $(if ($r.Count) { $r[-1] } else { $null }); if ($last -is [string] -and $last -like 'NOT TESTED:*') { $nt = $last.Substring(11).Trim() } }
+function Journey([string]$__id, [string]$__title, [scriptblock]$__body) {
+  if ($Only -and $__id -notmatch $Only) { return }
+  New-Journey $__id $__title $Out | Out-Null
+  $__nt = ''
+  try { $__r = @(& $__body); $__last = $(if ($__r.Count) { $__r[-1] } else { $null }); if ($__last -is [string] -and $__last -like 'NOT TESTED:*') { $__nt = $__last.Substring(11).Trim() } }
   catch { [void]$script:Journey.steps.Add([ordered]@{ step = 'the journey stopped'; expected = 'no error'; actual = $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber; result = 'FAIL'; seconds = 0; screenshot = (Shot 'stopped'); at = (Get-Date).ToString('HH:mm:ss') }); Write-Host "[FAIL] stopped: $($_.Exception.Message) @ $($_.InvocationInfo.ScriptLineNumber)" }
   Evidence $script:Journey.dir
-  $j = Close-Journey $nt
+  $j = Close-Journey $__nt
   $vis = @($j.visual | Where-Object { $_ }); $ux = @($j.ux | Where-Object { $_ })
   $shots = @($j.steps | Where-Object { $_.screenshot -like '*.png' }).Count + $vis.Count
   $row = [ordered]@{ id = $j.id; title = $j.title; functional = $j.result; reason = $j.reason
@@ -94,7 +94,7 @@ function BackupChecked([string]$label, [string]$want = 'ok') {
   $t = Texts $w
   $res = $(if ($run) { $run['result'] } else { 'no run' })
   $statusOk = $(if ($want -eq 'not-ok') { $run -and $run['status'] -ne 'ok' } else { $run -and $run['status'] -eq $want })
-  StepLook "$label - result" "the server records a new run: $want; the window shows the result" $w { @(($statusOk -and $okUi), "server: $res (new $($run['new']), bytes $($run['bytes'])); window: $(($t -split '\|' | Where-Object { $_ -like '*last backup*' }) -join ';'); messages: $($msgs -join ' || ')") } 'en' $ClientProc | Out-Null
+  StepLook "$label - result" "the server records a new run: $want; the window shows the result" $w { @(($statusOk -and $okUi), "server: $res (new $(if ($run) { $run['new'] }), bytes $(if ($run) { $run['bytes'] })); window: $(($t -split '\|' | Where-Object { $_ -like '*last backup*' }) -join ';'); messages: $($msgs -join ' || ')") } 'en' $ClientProc | Out-Null
   UxCheck "$label - the window shows the result of the backup" 'the card says the result' (($t -like '*Completed*') -or ($t -like '*Failed*') -or ($t -like '*warnings*')) (($t -split '\|' | Where-Object { $_ -like '*last backup*' }) -join ';')
   return $run
 }
@@ -333,7 +333,7 @@ Journey 'W12' 'Permission denied: a folder the service may not read is an error,
   $sec = Join-Path $Data 'Documents'
   Step 'Deny the service (SYSTEM) reading one folder' 'icacls deny' { $ErrorActionPreference = 'Continue'; $o = & icacls $sec /deny 'NT AUTHORITY\SYSTEM:(OI)(CI)(R)' 2>&1 | Out-String; @(($LASTEXITCODE -eq 0), $o.Trim()) } -NoShot | Out-Null
   $run = BackupChecked 'Backup with a denied folder' 'bad'
-  Step 'The run is "completed with errors" and names the folder' 'BS_STOP_SUCCESS_WITH_ERROR' { @(($run['result'] -eq 'BS_STOP_SUCCESS_WITH_ERROR'), "result $($run['result'])") } -NoShot | Out-Null
+  Step 'The run is "completed with errors" and names the folder' 'BS_STOP_SUCCESS_WITH_ERROR' { $res = $(if ($run) { $run['result'] } else { 'no run' }); @(($res -eq 'BS_STOP_SUCCESS_WITH_ERROR'), "result $res") } -NoShot | Out-Null
   & icacls $sec /remove:d 'NT AUTHORITY\SYSTEM' | Out-Null
   RestoreChecked 'Restore: the denied folder''s files are still in the backup' $want | Out-Null
   BackupChecked 'Backup after the permission is back' | Out-Null

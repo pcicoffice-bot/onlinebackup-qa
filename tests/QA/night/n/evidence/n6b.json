@@ -1,27 +1,27 @@
 {
- "df": "1048576 1036288 12288  99% /tmp/obqa-1b5Obb/agent-qa-n6b-N6B-PC/sets/1791317594612",
- "backup1": "BS_STOP_BY_SYSTEM_ERROR new=163 upd=0 perm=0 del=0 bytes=24198424\nerr:  IOException: No space left on device : '/tmp/obqa-1b5Obb/agent-qa-n6b-N6B-PC/sets/1791317594612/state.txt.tmpb8f90a7e'\n",
+ "df": "1048576 1036288 12288  99% /tmp/obqa-fIV7OZ/agent-qa-n6b-N6B-PC/sets/1791321968900",
+ "backup1": "BS_STOP_BY_SYSTEM_ERROR new=163 upd=0 perm=0 del=0 bytes=24198424\nerr:  IOException: No space left on device : '/tmp/obqa-fIV7OZ/agent-qa-n6b-N6B-PC/sets/1791321968900/state.txt.tmp7bf4a049'\n",
  "serverRuns": [
   {
-   "time": "1791317597747",
+   "time": "1791321971629",
    "login": "qa-n6b",
-   "set": "1791317594612",
+   "set": "1791321968900",
    "setName": "Files",
    "computer": "N6B-PC",
    "kind": "Backup",
-   "job": "2026-10-06-20-13-15",
+   "job": "2026-10-06-21-26-09",
    "result": "BS_STOP_SUCCESS",
    "new": "163",
    "upd": "0",
    "del": "0",
    "bytes": "24198424",
-   "started": "1791317594988",
-   "log": "2026-10-06-20-13-15.log",
+   "started": "1791321969334",
+   "log": "2026-10-06-21-26-09.log",
    "status": "ok"
   }
  ],
  "points": [
-  "2026-10-06-20-13-15"
+  "2026-10-06-21-26-09"
  ],
  "agentOk": false,
  "serverOk": true

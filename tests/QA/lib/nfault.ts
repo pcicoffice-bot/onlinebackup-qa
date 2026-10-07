@@ -82,7 +82,9 @@ export function fill(dir: string, name = 'filler.bin') {
   const f = path.join(dir, name); spawnSync('sh', ['-c', 'dd if=/dev/zero of="' + f + '" bs=1M 2>/dev/null; dd if=/dev/zero of="' + f + '" bs=4k oflag=append conv=notrunc 2>/dev/null; true']); return f;
 }
 /** The root user's DAC override dropped (bounding set): permission bits then apply to this process as to any user. */
-export const NO_DAC = ['setpriv', '--bounding-set=-dac_override,-dac_read_search', '--'];
+// root reads anything: its DAC override is dropped so the permission bits apply to it. Not root (the CI runner): the bits
+// apply already, and setpriv cannot change the bounding set there ("Operation not permitted" — run 12) — nothing to drop.
+export const NO_DAC: string[] = process.getuid && process.getuid() === 0 ? ['setpriv', '--bounding-set=-dac_override,-dac_read_search', '--'] : [];
 
 /** Evidence kept after the run (the world folder is removed when a test passes): tests/QA/night/n/evidence/<name>.json */
 export function keep(name: string, obj: unknown) {

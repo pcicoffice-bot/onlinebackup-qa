@@ -204,7 +204,7 @@ namespace OnlineBackup.Agent
                                     using (var t = new System.Net.Sockets.TcpClient()) { t.Connect("127.0.0.1", new Uri(url).Port); }
 #if NET40
                                     // CLI-100 (owner): on Windows the customer's screen is a program window, not a web page
-                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"));
+                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => File.ReadAllText(ClientUi.UiFile));
 #endif
                                     Setup.OpenBrowser(url); return 0;
                                 }

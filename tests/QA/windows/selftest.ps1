@@ -40,6 +40,12 @@ $userField = FakeEl 434; $passField = FakeEl 498; $codeField = FakeEl 562
 Expect 'the field under "User name" is the user name field' ((FieldUnder (FakeEl 409 36 520 21) @($codeField, $passField, $userField)).Current.BoundingRectangle.Top) 434
 Expect 'the field under "Password" is the password field' ((FieldUnder (FakeEl 473 36 520 21) @($userField, $passField, $codeField)).Current.BoundingRectangle.Top) 498
 Expect 'no field far under a label is taken' ([bool](FieldUnder (FakeEl 300 36 520 21) @($userField))) $false
+# Q19 (W1 run 12): a check sees the caller's variables, not Step's own ($t was Step's start time, $ok Step's $false)
+$script:Journey = @{ id = 'selftest'; steps = (New-Object System.Collections.ArrayList) }
+$t = 'the window text'; $ok = $true; $actual = 'caller'; $what = 'caller what'
+[void](Step 'selftest Q19' 'the caller variables' { @((($t -eq 'the window text') -and ($ok -eq $true) -and ($actual -eq 'caller') -and ($what -eq 'caller what')), "t=$t ok=$ok actual=$actual what=$what") } -NoShot)
+Expect 'a check reads the caller''s $t, $ok, $actual, $what' $script:Journey.steps[0].result 'PASS'
+$script:Journey = $null
 Expect 'a check that returns one string is a FAIL' (CheckResult 'False; x')[0] $false
 Expect 'a check whose first item is not a bool is a FAIL' (CheckResult @('False', 'x'))[0] $false
 Expect 'a check with stray output before its result is a FAIL' (CheckResult @((Get-Item $PSScriptRoot), $false, 'x'))[0] $false
