@@ -1,0 +1,326 @@
+﻿{
+    "screen":  "Tour 1024x768 en page 3 New backup",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  0,
+                 "w":  1044,
+                 "h":  719,
+                 "x":  0
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  808,
+                                      "h":  608,
+                                      "x":  228
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  123,
+                                      "w":  735,
+                                      "h":  621,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "New backup",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  129,
+                                      "w":  735,
+                                      "h":  30,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  735,
+                                      "h":  36,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Backup type",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  735,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "Files and folders",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  240,
+                                      "w":  520,
+                                      "h":  27,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Backup name",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  279,
+                                      "w":  735,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Edit",
+                         "name":  "Documents",
+                         "cls":  "WindowsForms10.EDIT.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  304,
+                                      "w":  735,
+                                      "h":  27,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Folders to back up",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  343,
+                                      "w":  735,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Tree",
+                         "name":  "",
+                         "cls":  "WindowsForms10.SysTreeView32.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  372,
+                                      "w":  735,
+                                      "h":  240,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Daily backup time",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  624,
+                                      "w":  735,
+                                      "h":  21,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "22:00",
+                         "cls":  "WindowsForms10.SysDateTimePick32.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  653,
+                                      "w":  110,
+                                      "h":  25,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "msctls_updown32",
+                         "rect":  {
+                                      "y":  655,
+                                      "w":  17,
+                                      "h":  21,
+                                      "x":  347
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "New backup",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  686,
+                                      "w":  117,
+                                      "h":  36,
+                                      "x":  256
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  103,
+                                      "w":  220,
+                                      "h":  608,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Backup status",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  119,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Restore",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  167,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "New backup",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  215,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Security",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  263,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Button",
+                         "name":  "Help",
+                         "cls":  "WindowsForms10.BUTTON.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  311,
+                                      "w":  196,
+                                      "h":  42,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Version 0.2.25  ·  Check for updates",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  623,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "ComboBox",
+                         "name":  "English",
+                         "cls":  "WindowsForms10.COMBOBOX.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  663,
+                                      "w":  196,
+                                      "h":  23,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Text",
+                         "name":  "Powered by ITSguard Server Online",
+                         "cls":  "WindowsForms10.STATIC.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  647,
+                                      "w":  196,
+                                      "h":  20,
+                                      "x":  20
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "WindowsForms10.Window.8.app.0.34f5582_r6_ad1",
+                         "rect":  {
+                                      "y":  31,
+                                      "w":  1028,
+                                      "h":  72,
+                                      "x":  8
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

@@ -1,0 +1,66 @@
+﻿{
+    "screen":  "Update - dialog: ITSguard Server Online",
+    "window":  "ITSguard Server Online",
+    "rect":  {
+                 "y":  301,
+                 "w":  404,
+                 "h":  169,
+                 "x":  314
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  434,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  541
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "Cancel",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  434,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  625
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  350,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  338
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "Update to version 0.2.25\n\nThe backup stops for about a minute and starts again with the new version. Your backups and settings are kept.",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  350,
+                                      "w":  306,
+                                      "h":  54,
+                                      "x":  379
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}
