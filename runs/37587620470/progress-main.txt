@@ -1,0 +1,1 @@
+07:32:50 start W01 Server: install from the real package (Windows service) and sign in
