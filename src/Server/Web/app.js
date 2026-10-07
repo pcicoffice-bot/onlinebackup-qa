@@ -184,7 +184,7 @@
   function phoneHint() {
     const ph = svgFrom('<rect x="2" y="2" width="40" height="68" rx="8" fill="var(--card)" stroke="var(--line2)" stroke-width="2"/><rect x="16" y="6" width="12" height="3" rx="1.5" fill="var(--line2)"/>'
       + '<rect x="7" y="18" width="30" height="40" rx="4" fill="var(--sub)"/><circle cx="14" cy="27" r="4" fill="#1a73e8"/><circle cx="14" cy="27" r="1.6" fill="#fff"/>'
-      + '<rect x="21" y="25" width="12" height="3" rx="1.5" fill="var(--line2)"/><text x="22" y="46" font-size="9.5" font-weight="700" text-anchor="middle" fill="var(--brand)" font-family="ui-monospace,monospace">123 456</text>'
+      + '<rect x="21" y="25" width="12" height="3" rx="1.5" fill="var(--line2)"/><circle cx="11" cy="43" r="1.8" fill="var(--brand)"/><circle cx="15" cy="43" r="1.8" fill="var(--brand)"/><circle cx="19" cy="43" r="1.8" fill="var(--brand)"/><circle cx="25" cy="43" r="1.8" fill="var(--brand)"/><circle cx="29" cy="43" r="1.8" fill="var(--brand)"/><circle cx="33" cy="43" r="1.8" fill="var(--brand)"/>'
       + '<rect x="9" y="50" width="26" height="2.5" rx="1.25" fill="var(--accent)"/>');
     ph.setAttribute('viewBox', '0 0 44 72'); ph.setAttribute('class', 'phone'); ph.setAttribute('aria-hidden', 'true');
     return h('div', { class: 'otphint' }, ph, h('div', {}, h('b', {}, t('Two-step verification')), h('small', { class: 'apps', dir: 'ltr' }, 'Google Authenticator · Microsoft Authenticator'),

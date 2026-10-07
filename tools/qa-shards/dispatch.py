@@ -16,7 +16,7 @@ stay free for certification, and never more than certification leaves queued.
                                          gone - with the failure rate P measured BEFORE the fix, (1-P)^n <= 1-confidence
 
 Certification = every run of the private repository + the public mirror's qa.yml runs (qa-run* branches) and the gate.
-Discovery = the public mirror's qa-shards-* runs. A discovery run that waited in the queue until GitHub dropped it is
+Discovery = the public mirror's qa-shards-* and qa-pw-* (SAME proof) runs. A discovery run that waited in the queue until GitHub dropped it is
 NOT TESTED in its aggregate (the aggregator already says so); this tool never cancels anything.
 """
 import argparse, json, subprocess, sys, time
@@ -32,7 +32,8 @@ def api(path):
     return json.loads(out.stdout)
 
 def kind(repo, run):
-    return 'discovery' if repo == 'onlinebackup-qa' and (run.get('head_branch') or '').startswith('qa-shards-') else 'certification'
+    # qa-pw-* is the journeys' SAME proof (pw-shards.yml), not certification evidence - it gets no reserved room
+    return 'discovery' if repo == 'onlinebackup-qa' and (run.get('head_branch') or '').startswith(('qa-shards-', 'qa-pw-')) else 'certification'
 
 def jobs_now():
     """[(repo, kind, run id, job name, status)] for every job of every queued or running run."""

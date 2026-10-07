@@ -73,7 +73,7 @@ jobs:
           got=$(cd build-in && sha256sum build.tar | cut -d' ' -f1)
           [ "$got" = "${{ needs.build.outputs.build_sha }}" ] || { echo "not the run's build"; exit 1; }
           tar -xf build-in/build.tar
-          cd tests/QA && npm ci && timeout 900 npx playwright install --with-deps chromium
+          cd tests/QA && npm ci && sh ../../tools/qa-shards/pw-deps.sh
       - name: Journeys of ${{ matrix.id }}
         env: { FILES: '${{ matrix.files }}', ID: 'shard-${{ matrix.id }}' }
         run: tools/qa-shards/run-pw.sh
@@ -98,7 +98,7 @@ jobs:
         run: tools/qa-shards/restic.sh
       - name: Playwright and Chromium
         working-directory: tests/QA
-        run: npm ci && timeout 900 npx playwright install --with-deps chromium
+        run: npm ci && sh ../../tools/qa-shards/pw-deps.sh
       - name: The previous method - its own build (the journeys build it), every journey in this one job
         run: FILES="$(cat plan/control-files.txt)" ID=control OWN_BUILD=1 tools/qa-shards/run-pw.sh
       - uses: actions/upload-artifact@v4
