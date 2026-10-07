@@ -12,7 +12,10 @@ earlier aggregate) or, without it, by test count. --repeat R runs every shard R 
 intermittent failure: R independent repetitions at once instead of one after another).
 
 Writes DIR/matrix.json (the GitHub matrix) and DIR/expected.json (every job and the exact tests it must report - the
-aggregator marks anything missing NOT TESTED).
+aggregator marks anything missing NOT TESTED). With --known (tools/qa-shards/known-tests.txt, kept in the repository):
+DIR/disappeared.json - known tests (of the same selection) that are no longer in this build; the aggregator never lets
+that pass: a test removed on purpose is removed from known-tests.txt in the same commit, visibly. DIR/new.json - tests
+of this build not yet in known-tests.txt (reported, to be added).
 """
 import argparse, json, os, re, sys
 
@@ -67,6 +70,7 @@ def main():
     a.add_argument('--repeat', type=int, default=1); a.add_argument('--select', default='')
     a.add_argument('--durations', default=''); a.add_argument('--out', required=True)
     a.add_argument('--max-jobs', type=int, default=256)
+    a.add_argument('--known', default='')
     o = a.parse_args()
     durations = json.load(open(o.durations)) if o.durations and os.path.exists(o.durations) else {}
     jobs, expected, tests = plan(read_tests(o.tests), o.shards, max(1, o.repeat), o.select.split(), durations)
@@ -76,6 +80,19 @@ def main():
     json.dump(expected, open(os.path.join(o.out, 'expected.json'), 'w'), indent=1)
     # the serial control run: the same tests in ONE job, one after another (the proof that sharding changes nothing)
     open(os.path.join(o.out, 'control-filter.txt'), 'w').write('|'.join(sorted(set(j['filter'] for j in jobs if j['rep'] == 1))))
+    patterns = o.select.split()
+    if o.known and os.path.exists(o.known):
+        known = [l.strip() for l in open(o.known, encoding='utf-8') if l.strip() and not l.startswith('#')]
+        everything = set(read_tests(o.tests)); chosen = set(tests)
+        sel = lambda t: not patterns or any(p in t for p in patterns)
+        gone = sorted(t for t in known if sel(t) and t not in everything)
+        new = sorted(t for t in chosen if t not in set(known))
+    else:
+        gone, new = [], []
+    json.dump(gone, open(os.path.join(o.out, 'disappeared.json'), 'w'), indent=1)
+    json.dump(new, open(os.path.join(o.out, 'new.json'), 'w'), indent=1)
     for j in jobs: print('%s  ~%5.1f min  %3d tests' % (j['id'], j['est_min'], len(expected[j['id']])))
+    if gone: print('DISAPPEARED (known, no longer in this build): ' + ', '.join(gone))
+    if new: print('new (not yet in known-tests.txt): %d' % len(new))
 
 if __name__ == '__main__': main()

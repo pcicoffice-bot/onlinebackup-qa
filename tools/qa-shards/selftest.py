@@ -80,4 +80,42 @@ m2 = json.load(open(os.path.join(d, 'p2', 'matrix.json')))['include']; e2 = json
 check(rc == 0 and len(m2) == 30, 'two classes x 15 repetitions = 30 jobs (shards never more than classes)')
 check(all(set(j['filter'].split('|')) <= {'FullyQualifiedName=N.A.x', 'FullyQualifiedName=N.C.t'} for j in m2), 'part of a class -> exact method filters only')
 check(sorted(set(t for v in e2.values() for t in v)) == ['N.A.x', 'N.C.t(kind: "pre")'], 'exactly the selected tests are expected')
+# --- build once, machine check, disappeared tests, gate mode ---
+res5 = os.path.join(d, 'res5'); one2 = {k: v for k, v in e.items() if k.endswith('-r01')}
+json.dump(one2, open(os.path.join(d, 'one2.json'), 'w'))
+def meta5(j, **kw):
+    os.makedirs(os.path.join(res5, 'shard-' + j), exist_ok=True); json.dump(dict({'build_sha': 'aaa', 'preflight': 'ok'}, **kw), open(os.path.join(res5, 'shard-' + j, 'meta.json'), 'w'))
+j1, j2, j3 = sorted(one2)
+trx(os.path.join(res5, 'shard-' + j1, 'r.trx'), [(t, 'Passed', 'NOT TESTED: guard' if i == 0 else '', '') for i, t in enumerate(one2[j1])]); meta5(j1)
+trx(os.path.join(res5, 'shard-' + j2, 'r.trx'), [(t, 'Passed', '', '') for t in one2[j2]]); meta5(j2, build_sha='bbb')
+meta5(j3, preflight='failed: only 1 GB free')
+agg = lambda name, *extra: run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'one2.json'), '--results', res5, '--out', os.path.join(d, name), '--build-sha', 'aaa', *extra)
+rc, _ = agg('a5'); r = json.load(open(os.path.join(d, 'a5', 'results.json')))
+check(all(r['verdict'][t] == 'NOT TESTED' for t in one2[j2]), 'a job that ran ANOTHER build (SHA-256) -> its tests NOT TESTED, even though they passed')
+check(all(r['verdict'][t] == 'NOT TESTED' for t in one2[j3]), 'a machine that failed the pre-flight check -> NOT TESTED, never skipped or PASS')
+check(rc != 0, 'strict: not green')
+# gate mode keeps the gate's criteria: a declared NOT TESTED does not change the colour; a missing result does
+os.makedirs(os.path.join(d, 'p6'), exist_ok=True); json.dump([], open(os.path.join(d, 'p6', 'disappeared.json'), 'w'))
+res6 = os.path.join(d, 'res6')
+for j in one2:
+    trx(os.path.join(res6, 'shard-' + j, 'r.trx'), [(t, 'Passed', 'NOT TESTED: guard' if (j == j1 and i == 0) else '', '') for i, t in enumerate(one2[j])])
+    os.makedirs(os.path.join(res6, 'shard-' + j), exist_ok=True); json.dump({'build_sha': 'aaa', 'preflight': 'ok'}, open(os.path.join(res6, 'shard-' + j, 'meta.json'), 'w'))
+g = lambda name: run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'one2.json'), '--results', res6, '--out', os.path.join(d, name), '--build-sha', 'aaa', '--mode', 'gate', '--plan', os.path.join(d, 'p6'))[0]
+check(g('g1') == 0, 'gate: every test passed, one said NOT TESTED itself -> green, as the gate always was (listed, not hidden)')
+check('NOT TESTED' in open(os.path.join(d, 'g1', 'summary.md')).read(), 'gate: the declared NOT TESTED is in the summary')
+check(run(os.path.join(HERE, 'aggregate.py'), '--expected', os.path.join(d, 'one2.json'), '--results', res6, '--out', os.path.join(d, 's1'), '--build-sha', 'aaa', '--plan', os.path.join(d, 'p6'))[0] != 0, 'strict: the same results are NOT green (NOT TESTED is never PASS)')
+import shutil; shutil.rmtree(os.path.join(res6, 'shard-' + j3))
+check(g('g2') != 0, 'gate: a shard that left no results -> red')
+trx(os.path.join(res6, 'shard-' + j3, 'r.trx'), [(t, 'Passed', '', '') for t in one2[j3]])
+json.dump(['N.Gone.test'], open(os.path.join(d, 'p6', 'disappeared.json'), 'w'))
+check(g('g3') != 0, 'gate: a known test that disappeared from the build -> red')
+r = json.load(open(os.path.join(d, 'g3', 'results.json'))); check(r['verdict'].get('DISAPPEARED N.Gone.test') == 'DISAPPEARED', 'the disappeared test is named')
+json.dump([], open(os.path.join(d, 'p6', 'disappeared.json'), 'w'))
+trx(os.path.join(res6, 'shard-' + j3, 'r.trx'), [(t, 'Failed', '', 'boom') for t in one2[j3]])
+check(g('g4') != 0, 'gate: a failed test -> red')
+# plan: --known finds a test that is gone and the new ones
+open(os.path.join(d, 'known.txt'), 'w').write('# known\nN.A.x\nN.Gone.test\nN.Other.z\n')
+rc, _ = run(os.path.join(HERE, 'plan.py'), '--tests', lst, '--shards', '2', '--select', 'N.A. N.Gone', '--known', os.path.join(d, 'known.txt'), '--out', os.path.join(d, 'p7'))
+check(rc == 0 and json.load(open(os.path.join(d, 'p7', 'disappeared.json'))) == ['N.Gone.test'], 'plan: a known test of the selection that is gone is reported (one outside the selection is not)')
+check(json.load(open(os.path.join(d, 'p7', 'new.json'))) == ['N.A.y'], 'plan: a test not yet known is reported as new')
 print('SELFTEST PASS')

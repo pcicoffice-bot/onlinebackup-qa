@@ -23,9 +23,18 @@ env:
 jobs:
   tests:
     # 1. every unit and end-to-end test (backup → restore byte for byte, every engine and source type, security,
-    #    licensing, portal, translations, the layout lint)
+    #    licensing, portal, translations, the layout lint) - split over 4 isolated runners (QA shards; the engine is
+    #    shards-core.yml): ONE build whose SHA-256 every shard checks, a machine check before the tests, the tests of each
+    #    class exactly as one job ran them. The gate's criteria are kept exactly (mode gate): red on a failed test or a
+    #    result that is missing (a shard cancelled or crashed); a test that says NOT TESTED itself is listed, as before.
+    #    New: a known test that disappeared from the build is red (tools/qa-shards/known-tests.txt). One job of 58 min
+    #    against a 60 min limit became 4 of ~15 (CI-2).
+    uses: ./.github/workflows/shards-core.yml
+    with: { os: ubuntu-latest, shards: 4, max_parallel: 4, mode: gate, title: 'Quality gate - Linux tests' }
+  tests-extra:
+    # 1c. what the single tests job also did: the security scan and the load run
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -38,8 +47,6 @@ jobs:
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
       - name: Security scan — libraries with known flaws, secrets in the code (SEC-090)
         run: tools/security-scan.sh
-      - name: Tests
-        run: ./run-tests.sh
       - name: Load — 500 customers, 5,000 sets, 50 computers at once (LOAD-010)
         run: OB_LOAD=1 OB_LOAD_OUT=$PWD/load-report.txt dotnet test tests/Tests --filter "FullyQualifiedName~LoadTests"; r=$?; cat load-report.txt; exit $r
   windows:
@@ -186,7 +193,7 @@ jobs:
 
   package:
     # 4. only after 1–3 passed — including the browser QA: a version that fails any of them never becomes a package
-    needs: [tests, screens, website, qa]
+    needs: [tests, tests-extra, screens, website, qa]
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 30
