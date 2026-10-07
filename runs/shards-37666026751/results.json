@@ -1,0 +1,277 @@
+{
+ "title": "windows-latest, select 'ResticComponentTests DbHyperVTests AuditJ_ResticEngineTests Restic_LongChain WebRestoreTests', 5 shards x 1 - run 37666026751 (866df87bb4a21112cf12f7c53818557527e2b3c9)",
+ "mode": "strict",
+ "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+ "counts": {
+  "PASS": 7,
+  "FAIL": 11,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "FAIL",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "FAIL",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "FAIL",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "FAIL",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "FAIL",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "FAIL",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "FAIL",
+  "OnlineBackup.Tests.DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported": "FAIL",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "FAIL",
+  "OnlineBackup.Tests.DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase": "PASS",
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "FAIL",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 53.6473574,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 0.0779324,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obaj-17a43887\\src\\semi;colon,comma'quote\".txt'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 130.0196285,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 130.3400565,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0004728,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 83.4988737,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 86.3449268,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0222132,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-e4d2583f\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0032733,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-7f42a2d1\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0031091,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-067e1898\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0039454,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-b7c98ca9\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0029163,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-5127c859\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 0.0036006,
+    "note": "System.IO.IOException : The filename, directory name, or volume label syntax is incorrect. : 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrc-265deb41\\src\\a\\b\\Report [final] *v2*.docx'",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported": [
+   {
+    "job": "s03-r01",
+    "status": "FAIL",
+    "sec": 4.8805298,
+    "note": "1791397355618,start,,0,,,,0\n1791397355618,info,,0,\"Start [ Microsoft Windows NT 10.0.26100.0 (PC-agent), engine restic ]\",,,0\n1791397358030,info,,0,Repository created (restic),,,0\n1791397358038,err,,0,An error occurred trying to start process 'C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-99de4ba87f\\bin\\powershell' with working directory 'D:\\a\\onlinebackup-qa\\onlinebackup-qa\\tests\\Tests\\bin\\Debug",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": [
+   {
+    "job": "s03-r01",
+    "status": "FAIL",
+    "sec": 5.0503664,
+    "note": "Assert.Equal() Failure: Strings differ\r\n                   \u2193 (pos 8)\r\nExpected: \"BS_STOP_SUCCESS_WITH_WARNING\"\r\nActual:   \"BS_STOP_BY_SYSTEM_ERROR\"\r\n                   \u2191 (pos 8)",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0026451,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": [
+   {
+    "job": "s04-r01",
+    "status": "FAIL",
+    "sec": 1337.7371239,
+    "note": "System.IO.IOException : Access to the path '\\\\?\\C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obnp-312944b0\\restore-0\\C\\Users' is denied.",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": [
+   {
+    "job": "s05-r01",
+    "status": "FAIL",
+    "sec": 25.5325524,
+    "note": "OnlineBackup.Agent.AgentException : The restore failed: {\"message_type\":\"exit_error\",\"code\":1,\"message\":\"Fatal: All path filters must be absolute, starting with a forward slash '/'\"}",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001435",
+    "os": "Windows",
+    "sha": "866df87bb4a21112cf12f7c53818557527e2b3c9",
+    "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 9
+   },
+   "tests": 7
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001436",
+    "os": "Windows",
+    "sha": "866df87bb4a21112cf12f7c53818557527e2b3c9",
+    "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 6
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000001438",
+    "os": "Windows",
+    "sha": "866df87bb4a21112cf12f7c53818557527e2b3c9",
+    "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000001437",
+    "os": "Windows",
+    "sha": "866df87bb4a21112cf12f7c53818557527e2b3c9",
+    "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 23
+   },
+   "tests": 1
+  },
+  {
+   "job": "s05-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s05-r01",
+    "runner": "GitHub Actions 1000001434",
+    "os": "Windows",
+    "sha": "866df87bb4a21112cf12f7c53818557527e2b3c9",
+    "build_sha": "befb2b229bc86f2828c103ad30201e0202c090d80871192f16b90f9c319900fc",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
