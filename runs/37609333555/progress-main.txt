@@ -1,1 +1,2 @@
 10:47:59 start W01 Server: install from the real package (Windows service) and sign in
+10:48:22 end W01 PASS 
