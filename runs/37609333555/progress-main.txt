@@ -54,3 +54,4 @@
 11:27:21 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
 11:28:21 end W16 PASS 
 11:28:23 start W17 System State backup (Windows Server Backup)
+11:31:38   waiting up to 45 min for a new Backup run
