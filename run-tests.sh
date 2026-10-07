@@ -5,4 +5,5 @@ set -e
 cd "$(dirname "$0")"
 dotnet build src/Agent -nologo -v q
 dotnet build tests/Tests -nologo -v q
-dotnet test tests/Tests --no-build -nologo
+# every test with its time in the log: evidence of what really ran, and the slow tests for a Fast/Deep gate (CI-2)
+dotnet test tests/Tests --no-build -nologo --logger "console;verbosity=normal"

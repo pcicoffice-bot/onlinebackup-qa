@@ -74,10 +74,21 @@ client's window and the removal's Yes/No question were never matched. Runs 8-10 
 the change (496 KB, screenshot in run 14 W08) and the run ended in ~2 s, before it could be stopped/killed. Fixed (44d1c48)
 for run 16; service-stop and server-kill mid-backup on Windows remain NOT TESTED until then.
 
-## 6. C1 (client lifecycle on one Windows, one build, one run): **NOT VERIFIED** (so far)
-Proven on real Windows in one run so far: install through the installer window (W03), sign-in (W04), new set, backup,
-delete, restore through the window, SHA-256 112/112 (W05), backup after a service restart (W06, run 13). Not yet in one
-run: restore after the service restart, the real reboot (VM phase), backup/restore after it, uninstall. See run 14.
+## 6. C1 (client lifecycle on one Windows, one build, one run): **VERIFIED ONCE** (run 23, 07.10 13:49-14:00 UTC)
+Run 23 (qa.yml 37629190913, mirror 38dfe7e = product e41db96), the VM job on a CLEAN Windows 11 Pro (KVM), one machine,
+one build, one run - evidence in qa-evidence runs/37629190913/vm/:
+- W01 server from the real package, W03 client through the installer window, W04 sign-in + agent connected,
+  W05 set -> backup -> delete -> restore, SHA-256 112/112 - phase 1: 5 journeys, 5 PASS;
+- REAL restart #1 (boot 06:54:07): W19 - both services back by themselves, agent reconnected, no ghost run / lock,
+  schedule kept, backup -> delete -> restore SHA-256 112/112 - PASS;
+- REAL restart #2 (scale 150%, boot 06:57:14): W19 again - PASS (112/112);
+- W21 uninstall through the installer window: no service, no files, no programs entry; the backups stay on the server
+  (3 runs, 24,381,042 bytes before = after) - PASS.
+- W20 (visual tour after the restart): NOT TESTED - the VM's resolution cannot be changed.
+Not yet: **3 consecutive C1 passes on the final build** (the product changed again after run 23: bug 98). The hosted-Windows
+main job adds the crash/stop/kill journeys (W06-W12, W14, W15: 5 runs in a row W01-W12 PASS, runs 17-21).
+Why it took until now: the VM harness never started its driver (Q39) - found from run 22's live pictures.
+
 ## 7. C2 (crash / recovery): partly
 Linux end-to-end (real processes): F1 server killed mid-backup, F9 server killed mid-restore, J5 agent killed mid-backup,
 F4/F7 restore killed, N10 hung external process, F2/F10/N1 network cut — all PASS on 8b95455 twice, each with restore + SHA-256.
@@ -131,7 +142,7 @@ QA-system defects found tonight (each one could make a test PASS without testing
 | Q24 | **Critical (CI evidence)** | a test proxy's connect threw on a background thread: the CI gate's Linux test job ABORTED after 7 tests in 3 runs - no gate result at all | 9d23667 | reproduced (host crash) -> 18/18 PASS; same pattern fixed in 3 more files |
 | Q25 | **High (false PASS on Windows)** | AgentRig.Restored() read the SOURCE on Windows (Path.Combine with a rooted C:\ path): those tests compared the source with itself | cf39637 | one helper that refuses a path outside the restore folder; 3 tests; 64/65 of the affected classes PASS (65th = P-1) |
 | Q26 | Low | 19 schedule tests inject the zone with TZ, which Windows ignores | cf39637 | they now say "NOT TESTED on Windows" |
-| Q27 | Medium | screen checker (ui-check) crashes after 2 languages in the gate: 11 languages' layout NOT TESTED there | open | – |
+| Q27 | Medium | screen checker (ui-check) crashed after 2 languages: the product offers only en+he (I18N-050) and the robot read the 404 for the 3rd as JSON | harness fixed (status checked, walks the offered languages, names the skipped) | 11 languages NOT TESTED: not offered by the product |
 | Q28 | High (Windows evidence) | W08/W09 interrupted a backup that had already ended (see section 5) | 44d1c48 | run 16 |
 | pub | Medium | a worktree symlink committed in 17a4414 stopped the public snapshot: run 15 first ran the OLD build | ac742fe | snapshot verified before dispatch |
 
@@ -143,6 +154,8 @@ QA-system defects found tonight (each one could make a test PASS without testing
   tonight and killed every long run (the batched run on 30a6822 reached 2 of 16 batches). Last complete local xUnit: 17a4414
   (441: 438 PASS, 1 FAIL P-1, 2 skipped 76/77); Playwright last complete on 8b95455. The CI gate runs xUnit on Linux and
   hosted Windows per snapshot, but that is not the full regression (no Playwright failure-recovery as root, no soak).
+  **CI-2:** the gate's Linux xUnit job ran to the end in only 2 of the last 40 gates (the others were cancelled by the next
+  push) - a cancelled gate is NOT TESTED; and until now it printed no passed test, so a 'green' Linux job named nothing.
 - **ACTION BEFORE RELEASE: Move full regression to persistent CI and rerun from scratch before Release** (a runner that
   survives restarts and resumes instead of starting the hour again).
 - Hosted Windows xUnit: until Q25 its restore comparisons proved nothing; the gate on cf39637 is the first honest run.
@@ -213,6 +226,45 @@ Windows: W07-W09 (crash journeys) NOT TESTED yet with a working robot.
 - Soak: 127 restores identical. Round P: every point of 46-run chains, 31 restic snapshots, retention with gaps — all identical.
 - Windows (real Windows Server 2025, through the program's window): run 12 and 13 W05 — 112/112 files identical after delete
   and restore. Evidence: qa-evidence branch runs/37533243798 and runs/37552591713 (journey.json, screenshots, manifests).
+## CI cost (owner's rule, 07.10 13:35)
+**Rule.** A long test or VM that burns CI hours because of a harness/CI problem (not the product) gets two attempts to be
+investigated and fixed. If the same infrastructure problem keeps burning hours without new evidence, it is stopped before
+another expensive attempt, marked **DEFERRED / NOT TESTED** (never PASS), what is missing and what is needed is written here,
+and it moves to the next round on the public QA repository / a stable, cheaper runner. A run that is producing evidence, or
+a test chasing a real product bug, is never stopped for cost.
+
+**Measured, 06.10 17:00 - 07.10 13:40 UTC:**
+| Where | What | Hours |
+|---|---|---|
+| private repo golan-crm (billed) | 45 quality gates on every push to online-backup: Linux 36.1 h + **Windows 14.6 h** | **~3,900 billable min** (Windows x2) |
+| public mirror onlinebackup-qa (standard runners: free on a public repository; they take concurrency slots) | ~74 job-hours | 0 billed |
+
+Most private gates were started by pushes of notes and robot fixes the gate does not run. **Fixed:** the private gate now
+ignores pushes that change only docs/**, *.md, tests/QA/windows/**, tests/QA/night/** or qa.yml (product code, the gate's
+own tests and its workflow still start it); commits are batched. Same quality - the same tests run free on the mirror
+for every published snapshot.
+
+**The expensive tests (mirror, median per run):**
+| Job | Median | Max | Runs | Total | Notes |
+|---|---|---|---|---|---|
+| VM real restart (windows-reboot) | **300.7 min** (= its limit) | 300.8 | 6 | 25.5 h | every one ended at the 5-h limit with NO evidence (Q39 harness bug) - the biggest waste; now: live pictures, and the rule above |
+| Linux Playwright journeys (qa.yml) | 58.1 | 61.9 | 13 | 11.0 h | 10 root/mount tests skip on hosted runners |
+| Linux Playwright in the gate (qa) | 55.7 | 62.1 | 11 | 8.9 h | same suite twice per snapshot (gate + qa.yml) |
+| hosted Windows (gate xUnit ~47-56 min; QA journeys W01-W18 ~60-80 min) | 40.6 | 63.2 | 24 | 14.8 h | the gate's Windows xUnit hit 90 min once (raised to 180) |
+| Linux xUnit (tests) | 22.5 (full run ~58) | 59.4 | 15 | 7.4 h | |
+| screen checker (screens) | 21.6 | 22.9 | 15 | 5.4 h | Q27: crashed after 2 languages - harness fixed; only en+he are offered |
+
+**Inside the xUnit runs (hosted Windows), the slowest tests:** NightM_RaceTests.CommitAndVerifyAll (10 m 18 s),
+LicenseTests.WithoutALicence (5 m 27 s), NightP_RestoreChainTests.LongChain x6 (3 m 42 s - 4 m 33 s each, ~25 min together),
+NightM_RaceTests.RestoreOfTheLatestPoint x50 (3 m 39 s), NetworkTests.LineCut (2 m 17 s).
+Linux (local, restic present; the gate printed no per-test times before CI-2): NightP_RestoreChainTests.Restic_LongChain 11 m 39 s
+(31 backups with the server unreachable on purpose - each progress report retries for ~10 s).
+
+**Proposal for Fast Gate / Deep Gate (not applied - needs the owner):** Fast Gate on every product push: Linux xUnit
+without the NightM race / NightP long-chain / Load classes, Linux journeys smoke, package (~25 min, Linux only). Deep Gate
+nightly and before a release, on the public mirror: full xUnit Linux + Windows, all Playwright incl. root/mount (a
+privileged runner), Windows journeys W01-W18, the VM real restarts, the screen checker, the soak.
+
 ## 18. Critical capabilities FULLY VERIFIED (of 49)
 **Not recomputed on the final build — no number is claimed.** The last generated ledger (tests/QA/MASTER-QA-LEDGER.md,
 21:01 UTC, snapshot 8ffcd50) says PASS 5, PARTIAL 29, NOT TESTED 1, FAIL 14 — but its Windows column comes from runs 8-10,

@@ -92,6 +92,9 @@ namespace OnlineBackup.Agent
         /// <summary>Runs restic; secrets only in the environment of the child process, never on its command line or in logs.</summary>
         /// <summary>OPT-010 (tests): every restic command line, to prove that each setting reaches restic.</summary>
         public static Action<string[]> Trace;
+        static readonly string[] WaitsForLock = { "backup", "forget", "prune", "restore" };
+        /// <summary>How long a writing command waits for a lock another command holds (a forget --prune of a big repository).</summary>
+        public static string RetryLock = "10m";
 
         /// <summary>The restic program and its limits for this runner (tests set a stand-in and short limits).</summary>
         public string ExePath = Exe;
@@ -99,6 +102,11 @@ namespace OnlineBackup.Agent
 
         public Result Run(params string[] args)
         {
+            // Bug 98 (CI gate, J6): a backup that met the repository locked for a moment by another of the product's own
+            // commands (forget --prune after a run, the restore test) failed at once - "repository is already locked
+            // exclusively" - and the run was a system error. The commands that write wait for the lock (restic 0.16+).
+            if (args.Length > 0 && Array.IndexOf(WaitsForLock, args[0]) >= 0 && Array.IndexOf(args, "--retry-lock") < 0)
+                args = args.Concat(new[] { "--retry-lock", RetryLock }).ToArray();
             var trace = Trace; if (trace != null) trace(args);
             var psi = new ProcessStartInfo(ExePath, string.Join(" ", args.Select(Quote).ToArray()))
             { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 };

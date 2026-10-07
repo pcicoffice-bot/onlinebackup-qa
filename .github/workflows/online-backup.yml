@@ -4,6 +4,10 @@
 name: Online Backup — quality gate and package
 on:
   push:
+    # cost (owner, 07.10): a push that changes only notes, reports or the Windows robot (which this gate does not run) does
+    # not start the whole gate again - in one night ~3,900 billable minutes went on such pushes. Product code, the tests
+    # this gate runs and this workflow itself still start it every time; the nightly run and a manual run cover the rest.
+    paths-ignore: ['docs/**', '**/*.md', 'tests/QA/windows/**', 'tests/QA/night/**', '.github/workflows/qa.yml', '.github/workflows/qa-shards.yml', 'tools/qa-shards/**']
   pull_request:
   schedule:
     - cron: '17 1 * * *'   # every night, 01:17 UTC

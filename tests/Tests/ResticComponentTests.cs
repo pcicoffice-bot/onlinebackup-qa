@@ -105,6 +105,66 @@ namespace OnlineBackup.Tests
             }
         }
 
+        /// <summary>NOTE: this test did NOT reproduce bug 98 locally (it passes on the old code too: forget --prune holds its exclusive
+        /// lock only for part of its run, and the product prepares ~10 s before restic starts) - it is kept as a behaviour check,
+        /// not as the proof; the proof is the CI gate's J6 over several runs and the component test below.
+        /// Bug 98 (CI gate, Playwright J6): a backup that started while another restic command of the product held the
+        /// repository's exclusive lock (forget --prune after a run, the restore test's check) failed at once - "unable to create
+        /// lock in backend: repository is already locked exclusively" - and the run was BS_STOP_BY_SYSTEM_ERROR. A real,
+        /// running exclusive lock is held here by forget --prune deleting 160 MB.</summary>
+        [Fact]
+        public void ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes()
+        {
+            if (!Have) return;
+            using (var rig = new Rig())
+            {
+                Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
+                for (int i = 0; i < 20; i++) { var b = new byte[8 * 1024 * 1024]; new Random(300 + i).NextBytes(b); File.WriteAllBytes(Path.Combine(rig.Src, "big" + i + ".bin"), b); }
+                Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
+                foreach (var f in Directory.GetFiles(rig.Src, "big*.bin")) File.Delete(f);
+                Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);   // the 160 MB are now only in older snapshots
+                File.WriteAllText(Path.Combine(rig.Src, "a", "changed.txt"), "after the lock");
+                var locks = Path.Combine(rig.Repo, "restic-" + rig.Set.Id, "locks");
+                Directory.CreateDirectory(locks);
+                ResticRunner.Result held = null;
+                // an EXCLUSIVE lock, as in the gate: forget --prune deleting 160 MB (restic check takes a shared lock a backup can live with -
+                // the first version of this test held that one and passed on the old code: it tested nothing)
+                var holder = new System.Threading.Thread(() => held = rig.Runner().Run("forget", "--keep-last", "1", "--prune", "--tag", "set:" + rig.Set.Id));
+                holder.Start();
+                var until = DateTime.UtcNow.AddSeconds(30);
+                while (Directory.GetFiles(locks).Length == 0 && DateTime.UtcNow < until) System.Threading.Thread.Sleep(20);
+                Assert.True(Directory.GetFiles(locks).Length > 0, "the check never took its lock: nothing was tested");
+                var r = rig.Runner().Backup();
+                holder.Join();
+                Assert.True(held != null && held.Code == 0, "the lock holder failed: " + (held == null ? "-" : held.Err));
+                Assert.True(r.Result.StartsWith("BS_STOP_SUCCESS"), "a backup that found the repository locked for a moment must wait, not fail: " + r.Result + "\n" + string.Join("\n", r.LogLines));
+            }
+        }
+
+        /// <summary>Bug 98: every command of the product that writes to the repository waits for a lock held for a moment by
+        /// another of its own commands (restic's --retry-lock) instead of failing at once. Fails on the old code.</summary>
+        [Fact]
+        public void EveryWritingResticCommand_WaitsForALockedRepository()
+        {
+            if (!Have) return;
+            using (var rig = new Rig())
+            {
+                var seen = new System.Collections.Concurrent.ConcurrentQueue<string[]>();
+                var was = ResticRunner.Trace;
+                ResticRunner.Trace = a => seen.Enqueue(a);
+                try
+                {
+                    Assert.StartsWith("BS_STOP_SUCCESS", rig.Runner().Backup().Result);
+                    rig.Runner().RestoreMany(null, Path.Combine(rig.Root, "r98"), null, new List<string>());
+                }
+                finally { ResticRunner.Trace = was; }
+                var writing = seen.Where(a => a.Length > 0 && (a[0] == "backup" || a[0] == "forget" || a[0] == "prune" || a[0] == "restore")).ToList();
+                Assert.Contains(writing, a => a[0] == "backup");
+                Assert.Contains(writing, a => a[0] == "restore");
+                foreach (var a in writing) Assert.True(a.Contains("--retry-lock"), "restic " + string.Join(" ", a.Take(4)) + " ... does not wait for a lock");
+            }
+        }
+
         [Fact]
         public void StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical()
         {

@@ -1,0 +1,127 @@
+# QA shards (public mirror only, started by hand): the same xUnit tests split over isolated GitHub runners at once,
+# to shorten the WAIT - never the depth. Each job is its own fresh virtual machine: its own ports, temp folders,
+# repositories and state; nothing is shared between jobs except the read-only checkout. The tests inside a job run
+# exactly as in the serial run (one class after another, tests/Tests/xunit.runner.json).
+#   plan       lists the tests, splits them by class over N shards (x R repetitions for an intermittent failure)
+#   shard      one isolated runner per shard x repetition: restic (checked against the release's SHA256SUMS), build, test
+#   control    optional: the SAME tests in one job, one after another - the proof that sharding changes no result
+#   aggregate  one verdict; a job that was cancelled, did not start, crashed or skipped a test is NOT TESTED, never PASS
+# Chains that must keep state on one machine (C1: install -> backup -> restart -> restore) stay in qa.yml, serial.
+# No secrets: the shards read only; the aggregator alone writes, with this run's GITHUB_TOKEN, to the qa-evidence branch.
+name: QA shards
+on:
+  workflow_dispatch:
+    inputs:
+      os: { description: 'runner', type: choice, options: [ubuntu-latest, windows-latest], default: ubuntu-latest }
+      select: { description: 'space-separated parts of test names (empty: every test)', type: string, default: '' }
+      shards: { description: 'shards (split by class)', type: number, default: 4 }
+      repeat: { description: 'repetitions of every shard, each on its own runner', type: number, default: 1 }
+      max_parallel: { description: 'jobs at once (leave room for qa.yml runs)', type: number, default: 6 }
+      control: { description: 'also run the same tests serially in one job and compare', type: boolean, default: false }
+permissions: { contents: read }
+env:
+  RESTIC_VERSION: '0.18.1'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+jobs:
+  plan:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: The planner and the aggregator prove themselves first (every way of not testing ends NOT TESTED)
+        run: python3 tools/qa-shards/selftest.py
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: Plan
+        id: plan
+        env: { SELECT: '${{ inputs.select }}', SHARDS: '${{ inputs.shards }}', REPEAT: '${{ inputs.repeat }}' }
+        run: |
+          dotnet build tests/Tests -nologo -v q
+          dotnet test tests/Tests --no-build -nologo --list-tests > list.txt
+          python3 tools/qa-shards/plan.py --tests list.txt --shards "$SHARDS" --repeat "$REPEAT" --select "$SELECT" \
+            --durations tools/qa-shards/durations-${{ inputs.os }}.json --out plan | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with: { name: plan, path: plan, retention-days: 30 }
+
+  shard:
+    needs: plan
+    name: shard ${{ matrix.id }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false   # one shard's failure never stops another's evidence
+      max-parallel: ${{ fromJSON(inputs.max_parallel) }}
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: restic (checked against the release's SHA256SUMS)
+        shell: bash
+        run: tools/qa-shards/restic.sh
+      - name: Build
+        shell: bash
+        run: dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
+      - name: Tests of ${{ matrix.id }}
+        shell: bash
+        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}' }
+        run: tools/qa-shards/run-shard.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: 'shard-${{ matrix.id }}', path: 'out/shard-${{ matrix.id }}', retention-days: 30 }
+
+  control:
+    needs: plan
+    if: ${{ inputs.control }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/download-artifact@v4
+        with: { name: plan, path: plan }
+      - name: restic (checked against the release's SHA256SUMS)
+        shell: bash
+        run: tools/qa-shards/restic.sh
+      - name: Build
+        shell: bash
+        run: dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
+      - name: The same tests, serially in one job
+        shell: bash
+        env: { ID: 'control' }
+        run: F=$(cat plan/control-filter.txt) tools/qa-shards/run-shard.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: control, path: out/control, retention-days: 30 }
+
+  aggregate:
+    needs: [plan, shard, control]
+    if: ${{ always() && needs.plan.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions: { contents: write }   # only to keep the verdict in the qa-evidence branch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: results }
+      - name: One verdict (a missing, cancelled or skipped test is NOT TESTED)
+        id: agg
+        run: |
+          set +e
+          python3 tools/qa-shards/aggregate.py --expected results/plan/expected.json --results results --out verdict \
+            --title "QA shards run ${{ github.run_id }} (${{ inputs.os }}, ${{ github.sha }}; select '${{ inputs.select }}', ${{ inputs.shards }} shards x ${{ inputs.repeat }})" \
+            ${{ inputs.control && '--control' || '' }}
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          cat verdict/summary.md >> "$GITHUB_STEP_SUMMARY"
+          cp results/plan/expected.json verdict/
+      - name: Keep the verdict in qa-evidence (runs/shards-<run id>)
+        run: sh tools/qa-shards/keep.sh verdict "shards-${{ github.run_id }}" "${{ github.sha }}"
+      - uses: actions/upload-artifact@v4
+        with: { name: verdict, path: verdict, retention-days: 30 }
+      - name: Green only when every planned test was seen PASS
+        run: exit ${{ steps.agg.outputs.rc }}
