@@ -1,0 +1,179 @@
+﻿
+
+TimeCreated      : 10/7/2026 8:12:14 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/7/2026 8:04:53 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 8:04:53 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 8:04:51 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : update 0.1.24 → 0.2.24: OnlineBackup.Agent.exe, OnlineBackup.Client.exe, OnlineBackup.Core.dll, 
+                   version.txt
+
+TimeCreated      : 10/7/2026 8:04:51 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 8:03:32 AM
+ProviderName     : Application Error
+Id               : 1000
+LevelDisplayName : Error
+Message          : Faulting application name: OnlineBackup.Client.exe, version: 0.1.24.0, time stamp: 0x8e37ade7
+                   Faulting module name: KERNELBASE.dll, version: 10.0.26100.33438, time stamp: 0xace796d3
+                   Exception code: 0xe0434352
+                   Fault offset: 0x00000000000c75fa
+                   Faulting process id: 0x18EC
+                   Faulting application start time: 0x1DD56325849ABF4
+                   Faulting application path: C:\Program Files\ITSguard Server Online\OnlineBackup.Client.exe
+                   Faulting module path: C:\Windows\System32\KERNELBASE.dll
+                   Report Id: f367bc58-15a5-4227-bc9e-7756b151ab10
+                   Faulting package full name: 
+                   Faulting package-relative application ID: 
+
+TimeCreated      : 10/7/2026 8:03:32 AM
+ProviderName     : .NET Runtime
+Id               : 1026
+LevelDisplayName : Error
+Message          : Application: OnlineBackup.Client.exe
+                   Framework Version: v4.0.30319
+                   Description: The process was terminated due to an unhandled exception.
+                   Exception Info: System.IO.FileNotFoundException
+                      at OnlineBackup.ClientApp.Program.Main(System.String[])
+                   
+                   
+
+TimeCreated      : 10/7/2026 8:03:23 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 8:03:17 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 8:02:01 AM
+ProviderName     : Application Error
+Id               : 1000
+LevelDisplayName : Error
+Message          : Faulting application name: OnlineBackup.Client.exe, version: 0.1.24.0, time stamp: 0x8e37ade7
+                   Faulting module name: KERNELBASE.dll, version: 10.0.26100.33438, time stamp: 0xace796d3
+                   Exception code: 0xe0434352
+                   Fault offset: 0x00000000000c75fa
+                   Faulting process id: 0x5F4
+                   Faulting application start time: 0x1DD5632227A7217
+                   Faulting application path: C:\Program Files\ITSguard Server Online\OnlineBackup.Client.exe
+                   Faulting module path: C:\Windows\System32\KERNELBASE.dll
+                   Report Id: 08a3bd70-9724-4d50-96e5-9bfd7d852b94
+                   Faulting package full name: 
+                   Faulting package-relative application ID: 
+
+TimeCreated      : 10/7/2026 8:02:01 AM
+ProviderName     : .NET Runtime
+Id               : 1026
+LevelDisplayName : Error
+Message          : Application: OnlineBackup.Client.exe
+                   Framework Version: v4.0.30319
+                   Description: The process was terminated due to an unhandled exception.
+                   Exception Info: System.IO.FileNotFoundException
+                      at OnlineBackup.ClientApp.Program.Main(System.String[])
+                   
+                   
+
+TimeCreated      : 10/7/2026 8:00:13 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/7/2026 7:59:26 AM
+ProviderName     : Application Error
+Id               : 1000
+LevelDisplayName : Error
+Message          : Faulting application name: OnlineBackup.Client.exe, version: 0.1.24.0, time stamp: 0x8e37ade7
+                   Faulting module name: KERNELBASE.dll, version: 10.0.26100.33438, time stamp: 0xace796d3
+                   Exception code: 0xe0434352
+                   Fault offset: 0x00000000000c75fa
+                   Faulting process id: 0x1998
+                   Faulting application start time: 0x1DD5631C5BBEB72
+                   Faulting application path: C:\Program Files\ITSguard Server Online\OnlineBackup.Client.exe
+                   Faulting module path: C:\Windows\System32\KERNELBASE.dll
+                   Report Id: ef6bdf10-b4f0-4a14-9c7b-d4685ffa6371
+                   Faulting package full name: 
+                   Faulting package-relative application ID: 
+
+TimeCreated      : 10/7/2026 7:59:26 AM
+ProviderName     : .NET Runtime
+Id               : 1026
+LevelDisplayName : Error
+Message          : Application: OnlineBackup.Client.exe
+                   Framework Version: v4.0.30319
+                   Description: The process was terminated due to an unhandled exception.
+                   Exception Info: System.IO.FileNotFoundException
+                      at OnlineBackup.ClientApp.Program.Main(System.String[])
+                   
+                   
+
+TimeCreated      : 10/7/2026 7:59:14 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 7:50:23 AM
+ProviderName     : VSS
+Id               : 8225
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to shutdown event from the Service Control Manager. 
+
+TimeCreated      : 10/7/2026 7:48:02 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:47:45 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: No connection to the backup server: Unable to connect to the remote server
+
+TimeCreated      : 10/7/2026 7:45:14 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files: the previous backup was interrupted — reported
+
+TimeCreated      : 10/7/2026 7:45:14 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:44:30 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+
+

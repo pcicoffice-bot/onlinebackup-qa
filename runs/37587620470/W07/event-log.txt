@@ -1,0 +1,64 @@
+﻿
+
+TimeCreated      : 10/7/2026 7:37:53 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files: the previous backup was interrupted — reported
+
+TimeCreated      : 10/7/2026 7:37:53 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:35:25 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files restore test: 5/5
+
+TimeCreated      : 10/7/2026 7:35:25 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:35:25 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 7:33:33 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:33:33 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : waiting: This computer is not registered with a backup server.
+
+TimeCreated      : 10/7/2026 7:33:06 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/7/2026 7:33:05 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service stopped successfully.
+
+TimeCreated      : 10/7/2026 7:33:04 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+
+
