@@ -97,6 +97,8 @@ Product bugs fixed tonight (full rows in docs/R1-BUGLOG.md, each with root cause
 - 93 (Medium, Windows) a state/settings file write gave up when another program had the file open for a moment (File.Replace
   refused) — found by the CI gate's hosted-Windows xUnit job, which nobody had read before tonight (25 FAILs there:
   19 Q26, 3 Q25, 2 environment - no restic, no /dev/full - and this one).
+  **NOT FIXED on Windows:** the retry helps short readers only; the gate on cf39637 still fails it (bug 93b in the buglog:
+  the product's 51 plain readers must share delete access - open).
 
 QA-system defects found tonight (each one could make a test PASS without testing, or fail without the product failing):
 | Id | Severity | What | Fixed in | Proof |
