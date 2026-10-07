@@ -52,3 +52,4 @@
 10:28:15   waiting up to 20 min for a new Restore run
 10:28:20 end W15 PASS 
 10:28:22 start W16 Visual tour: every screen in English and Hebrew at 1920x1080, 1366x768 and 1024x768
+10:29:21 end W16 PASS 
