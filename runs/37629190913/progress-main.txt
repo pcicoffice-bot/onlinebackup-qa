@@ -46,3 +46,4 @@
 14:09:48   waiting up to 20 min for a new Backup run
 14:12:10   waiting up to 20 min for a new Backup run
 14:12:49   waiting up to 20 min for a new Restore run
+14:13:02 end W14 PASS 
