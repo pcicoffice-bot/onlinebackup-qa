@@ -208,5 +208,19 @@ namespace OnlineBackup.Tests
             foreach (var k in new[] { "A recovery copy of the key is kept by {0}.", "No recovery copy of the key is kept — keep the key in a safe place.", "Recovery copy of the key kept: {0}", "A backup on this computer still needs its encryption key — contact {0}." })
             { Assert.Contains("\"" + k + "\"", f); Assert.Contains("'" + k + "'", h); }
         }
+
+        /// <summary>UI-Q1 / UI-Q2 (engine merged 082a703): both windows check the destination before a restore
+        /// ("restorecheck"), ask Replace / Skip / Cancel when files exist (existing=overwrite|skip|cancel), restore to the
+        /// original location (own engine), match the error code EXISTS, and show the job's verification from its fields.</summary>
+        [Fact]
+        public void Q1_Q2_BothWindows_CheckTheDestination_AskForExistingFiles_ShowTheVerification()
+        {
+            var f = Form; var h = Html;
+            Assert.Contains("api.Call(\"restorecheck\"", f);
+            foreach (var k in new[] { "\"EXISTS\"", ".Set(\"existing\"", ".Set(\"location\", \"original\")", "ClientView.Existing(", "ClientView.RestoreResult(", "ClientView.OriginalLocationAvailable(" }) Assert.Contains(k, f);
+            Assert.Contains("api('restorecheck'", h);
+            foreach (var k in new[] { "'EXISTS'", "existing:", "location: 'original'", "verifiedSha256", "mismatch", "t('Replace existing')", "t('Skip existing')", "t('Verified (SHA-256): {0} files'", "t('Checked (chunks and size): {0} files'" }) Assert.Contains(k, h);
+            Assert.DoesNotContain("disabled: true, style: 'width:auto' }), ' ', t('To the original location')", h);
+        }
     }
 }

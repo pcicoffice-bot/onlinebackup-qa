@@ -1852,6 +1852,19 @@
   "A recovery copy of the key is kept by {0}.": "עותק שחזור של המפתח נשמר אצל {0}.",
   "No recovery copy of the key is kept — keep the key in a safe place.": "לא נשמר עותק שחזור של המפתח — שמרו את המפתח במקום בטוח.",
   "Recovery copy of the key kept: {0}": "עותק שחזור של המפתח נשמר: {0}",
-  "No": "לא"
+  "No": "לא",
+  "Restoring to the original location is available for the product's own engine only — choose a folder.": "שחזור למקום המקורי זמין רק במנוע של המוצר — בחרו תיקייה.",
+  "{0} of the {1} files already exist at the original location": "{0} מתוך {1} הקבצים כבר קיימים במקום המקורי",
+  "{0} of the {1} files already exist in the folder": "{0} מתוך {1} הקבצים כבר קיימים בתיקייה",
+  "Replace them with the files from the backup, skip them (they stay as they are), or cancel. Nothing was restored yet.": "החליפו אותם בקבצים מהגיבוי, דלגו עליהם (הם יישארו כמו שהם), או בטלו. עוד לא שוחזר דבר.",
+  "Replace existing": "החלף קיימים",
+  "Skip existing": "דלג על קיימים",
+  "Restored {0} · skipped {1} · failed {2}": "שוחזרו {0} · דולגו {1} · נכשלו {2}",
+  "Verified (SHA-256): {0} files": "אומת (SHA-256): {0} קבצים",
+  "Checked (chunks and size): {0} files": "נבדק (מקטעים וגודל): {0} קבצים",
+  "{0} files did not match the backup": "{0} קבצים לא תאמו לגיבוי",
+  "They were not put in place: the file already at the destination was kept.": "הם לא הוצבו במקומם: הקובץ שכבר היה ביעד נשמר.",
+  "The files go back where they were. If a file is already there, you are asked first.": "הקבצים חוזרים למקום שבו היו. אם קובץ כבר נמצא שם, תישאלו קודם.",
+  "If a file is already in the folder, you are asked first: replace, skip or cancel.": "אם קובץ כבר נמצא בתיקייה, תישאלו קודם: להחליף, לדלג או לבטל."
  }
 }

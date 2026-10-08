@@ -280,9 +280,67 @@ namespace OnlineBackup.Tests
             Assert.Equal(new[] { "Next: where to restore", "Cancel" }, ClientView.RestoreBar("en", 1, 0).Take(2).ToArray());
             Assert.Equal(new[] { "Open the folder", "Back to Home", "Restore more" }, ClientView.RestoreBar("en", 3, 0));
             Assert.DoesNotMatch("(?i)verif", string.Join(" ", ClientView.RestoreBar("en", 3, 0)));   // Q1
-            // Q2: the original location is offered but disabled with its reason until the local API restores there
-            Assert.False(ClientView.OriginalLocationAvailable);
-            Assert.False(string.IsNullOrEmpty(L.T("he", ClientView.OriginalLocationWhy)));
+            // Q2 (engine merged 082a703): the original location is offered for the product's own engine; a restic set keeps it
+            // disabled with its reason
+            Assert.True(ClientView.OriginalLocationAvailable(""));
+            Assert.False(ClientView.OriginalLocationAvailable("RESTIC"));
+            Assert.Matches("[א-ת]", L.T("he", ClientView.OriginalLocationWhy));
+        }
+
+        // ================================================================== UI-Q2: files that already exist — a decision in the window
+
+        [Fact]
+        public void Q2_ExistingFiles_AskReplaceSkipOrCancel_WithTheCountAndTheList()
+        {
+            var chk = new Msg().Set("total", 5).Set("existing", 2).Set("location", "original").Add("files", new Msg().Set("p", @"D:\Office\a.docx")).Add("files", new Msg().Set("p", @"D:\Office\b.xlsx"));
+            var q = ClientView.Existing("en", chk);
+            Assert.Equal("2 of the 5 files already exist at the original location", q.Title);
+            Assert.Equal(new[] { @"D:\Office\a.docx", @"D:\Office\b.xlsx" }, q.Files.ToArray());
+            Assert.Equal(new[] { "Replace existing", "Cancel", "Skip existing" }, q.Buttons);
+            Assert.Equal(new[] { "overwrite", "cancel", "skip" }, q.Decisions);
+            Assert.Equal("2 of the 5 files already exist in the folder", ClientView.Existing("en", chk.Set("location", "alternate")).Title);
+            Assert.Equal("2 מתוך 5 הקבצים כבר קיימים במקום המקורי", ClientView.Existing("he", chk.Set("location", "original")).Title);
+            Assert.Null(ClientView.Existing("en", new Msg().Set("total", 5).Set("existing", 0)));
+            // more than the 200 listed: said, never hidden
+            var many = new Msg().Set("total", 900).Set("existing", 450).Set("location", "original"); for (int i = 0; i < 200; i++) many.Add("files", new Msg().Set("p", "f" + i));
+            Assert.Equal("and 250 more", ClientView.Existing("en", many).More);
+        }
+
+        // ================================================================== UI-Q1: the result — "Verified" only when the job checked
+
+        static Msg Job(string state, params object[] kv) { var m = new Msg().Set("id", "r1").Set("kind", "restore").Set("state", state); for (int i = 0; i + 1 < kv.Length; i += 2) m.Set((string)kv[i], kv[i + 1]); return m; }
+
+        [Fact]
+        public void Q1_Result_VerifiedOnlyWhenChecked_Sha256ApartFromChunks_MismatchIsAnError()
+        {
+            var running = ClientView.RestoreResult("en", Job("running"), 2);
+            Assert.Equal(Tone.Info, running.Tone); Assert.Equal("Restoring…", running.Headline); Assert.Empty(running.Verification);
+            // whole-file SHA-256 for every file
+            var sha = ClientView.RestoreResult("en", Job("ok", "restored", 3, "skipped", 0, "failed", 0, "verified", 3, "verifiedSha256", 3, "mismatched", 0, "location", "alternate"), 3);
+            Assert.True(sha.Success); Assert.Equal(Tone.Ok, sha.Tone);
+            Assert.Equal(new[] { "Verified (SHA-256): 3 files" }, sha.Verification.ToArray());
+            Assert.Equal("Restored 3 · skipped 0 · failed 0", sha.Counts);
+            // an older backup without whole-file SHA-256: "Checked", never "Verified"
+            var chunks = ClientView.RestoreResult("en", Job("ok", "restored", 4, "skipped", 0, "failed", 0, "verified", 4, "verifiedSha256", 0, "mismatched", 0), 0);
+            Assert.Equal(new[] { "Checked (chunks and size): 4 files" }, chunks.Verification.ToArray());
+            Assert.DoesNotContain(chunks.Verification, v => v.Contains("Verified"));
+            var mixed = ClientView.RestoreResult("en", Job("ok", "restored", 5, "verified", 5, "verifiedSha256", 2, "mismatched", 0), 0);
+            Assert.Equal(new[] { "Verified (SHA-256): 2 files", "Checked (chunks and size): 3 files" }, mixed.Verification.ToArray());
+            // no "verified" field (restic without a count, an older service): nothing is claimed
+            var none = ClientView.RestoreResult("en", Job("ok", "detail", "Restored to D:\\R"), 0);
+            Assert.True(none.Success); Assert.Empty(none.Verification);
+            foreach (var r in new[] { running, none }) Assert.DoesNotMatch("(?i)verif|checked", r.Headline + string.Join(" ", r.Verification.ToArray()));
+            // a file that does not match the backup: NOT a success, an error naming the files; the existing file was kept
+            var bad = ClientView.RestoreResult("en", Job("failed", "restored", 3, "failed", 0, "verified", 1, "verifiedSha256", 1, "mismatched", 2, "location", "original").Add("mismatch", new Msg().Set("p", @"D:\x.pst")).Add("mismatch", new Msg().Set("p", @"D:\y.pst")), 3);
+            Assert.False(bad.Success); Assert.Equal(Tone.Bad, bad.Tone);
+            Assert.Equal("2 files did not match the backup", bad.Headline);
+            Assert.Equal(new[] { @"D:\x.pst", @"D:\y.pst" }, bad.Mismatch.ToArray());
+            Assert.Equal("They were not put in place: the file already at the destination was kept.", bad.MismatchNote);
+            var failed = ClientView.RestoreResult("en", Job("failed", "restored", 1, "failed", 2, "verified", 1, "verifiedSha256", 1, "mismatched", 0), 0);
+            Assert.False(failed.Success); Assert.Equal(Tone.Bad, failed.Tone); Assert.Equal("Some files were not restored", failed.Headline);
+            // Hebrew
+            Assert.Equal("אומת (SHA-256): 3 קבצים", ClientView.RestoreResult("he", Job("ok", "verified", 3, "verifiedSha256", 3), 3).Verification[0]);
+            Assert.Equal("נבדק (מקטעים וגודל): 4 קבצים", ClientView.RestoreResult("he", Job("ok", "verified", 4, "verifiedSha256", 0), 0).Verification[0]);
         }
 
         public static IEnumerable<object[]> Sizes()
@@ -491,7 +549,7 @@ namespace OnlineBackup.Tests
                 }
             }
             finally { if (changed) ChangeDisplaySettings(ref orig, 0); }
-            Assert.True(checkedShots >= 2 * 6 * 6, "only " + checkedShots + " screens were measured");
+            Assert.True(checkedShots >= 2 * 6 * 8, "only " + checkedShots + " screens were measured");
             Assert.True(problems.Count == 0, string.Join("\n", problems));
             if (notTested.Count > 0) throw NotTested.Because("these sizes were not given by Windows: " + string.Join("; ", notTested));
         }

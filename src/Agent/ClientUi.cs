@@ -29,7 +29,7 @@ namespace OnlineBackup.Agent
         readonly object gate = new object();
         readonly Dictionary<string, Job> jobs = new Dictionary<string, Job>();
 
-        sealed class Job { public string Id, Kind, Set, State = "running", Result = "", Detail = ""; public DateTime Started = SystemClock.UtcNow; }
+        sealed class Job { public string Id, Kind, Set, State = "running", Result = "", Detail = ""; public DateTime Started = SystemClock.UtcNow; public Msg Extra; }
 
         public ClientUi(AgentApp app, int port)
         {
@@ -195,7 +195,12 @@ namespace OnlineBackup.Agent
                     {
                         var m = new Msg();
                         lock (jobs) foreach (var j in jobs.Values.OrderByDescending(x => x.Started).Take(20))
-                            m.Add("jobs", new Msg().Set("id", j.Id).Set("kind", j.Kind).Set("set", j.Set).Set("state", j.State).Set("result", j.Result).Set("detail", j.Detail).Set("started", RunId.UnixMs(j.Started)));
+                        {
+                            var jm = new Msg().Set("id", j.Id).Set("kind", j.Kind).Set("set", j.Set).Set("state", j.State).Set("result", j.Result).Set("detail", j.Detail).Set("started", RunId.UnixMs(j.Started));
+                            var x = j.Extra;   // UI-Q1: a restore's counts and verification (own engine) — absent while it runs and for other jobs
+                            if (x != null) { foreach (var k in x.Keys) jm.Set(k, x[k]); foreach (var mm in x.List("mismatch")) jm.Add("mismatch", mm); }
+                            m.Add("jobs", jm);
+                        }
                         return m;
                     }
                 case "points": return Points(q["set"]);
@@ -209,6 +214,7 @@ namespace OnlineBackup.Agent
                     }
                 case "files": return Files(q["set"], q["point"]);
                 case "restore": return Restore(b);
+                case "restorecheck": return RestoreCheck(b);
                 case "addset": return AddSet(b);
                 case "editset": return EditSet(b);
                 case "help":
@@ -329,9 +335,10 @@ namespace OnlineBackup.Agent
             return sm;
         }
 
-        Msg Start(string kind, string set, Func<string[]> work)
+        Msg Start(string kind, string set, Func<string[]> work, Action<Job> created = null)
         {
             var j = new Job { Id = Bytes.Hex(Bytes.Random(6)), Kind = kind, Set = set };
+            if (created != null) created(j);
             lock (jobs)
             {
                 if (jobs.Values.Any(x => x.State == "running" && x.Set == set)) throw new AgentException(409, "BUSY", "Another action on this set is still running.");
@@ -388,15 +395,54 @@ namespace OnlineBackup.Agent
             return m;
         }
 
-        /// <summary>CLI-060: restore chosen files / folders (all when none) to a folder; a background job.</summary>
+        static Func<string, bool> PathFilter(List<string> paths)
+        {
+            return paths.Count == 0 ? null : (Func<string, bool>)(p => paths.Any(x => p.Equals(x, StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "\\", StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "/", StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>UI-Q2: before a restore — how many files it writes and which already exist at the destination: the original
+        /// location (location=original) or the folder in "target". Own engine only (the window offers only it in the pilot).
+        /// Answer: total, existing (count), files (the first 200 existing paths, "p"), location.</summary>
+        Msg RestoreCheck(Msg b)
+        {
+            var s = SetOf(b["set"]); var client = Session(); var pw = PasswordNow();
+            bool original = b["location"] == "original";
+            var target = original ? null : b["target"];
+            if (!original && string.IsNullOrEmpty(target)) throw new AgentException(400, "TARGET", "Choose a destination folder.");
+            if (s.Engine == "RESTIC") throw new AgentException(400, "ENGINE", "Checking the destination is available for the product's own engine.");
+            var paths = b.List("paths").Select(x => x["p"]).Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var c = app.RestoreFor(client, s.Id, pw).Conflicts(b["point"], target, PathFilter(paths));
+            var m = new Msg().Set("total", c.Total).Set("existing", c.Existing.Count).Set("location", original ? "original" : "alternate");
+            foreach (var p in c.Existing.Take(200)) m.Add("files", new Msg().Set("p", p));
+            return m;
+        }
+
+        /// <summary>CLI-060: restore chosen files / folders (all when none) to a folder; a background job.
+        /// UI-Q2 (additive): location=original restores to where the files were (own engine); then a decision for files that
+        /// already exist is required — existing=overwrite | skip | cancel; without one, when any exists, the answer is the
+        /// error EXISTS (with the count) and nothing runs. existing= may also be given for a folder (it then wins over overwrite=).</summary>
         Msg Restore(Msg b)
         {
             var s = SetOf(b["set"]); var client = Session(); var pw = PasswordNow();
-            var target = b["target"];
-            if (string.IsNullOrEmpty(target) && b["toM365"] != "1") throw new AgentException(400, "TARGET", "Choose a destination folder.");
+            bool original = b["location"] == "original";
+            var target = original ? null : b["target"];
+            if (original && s.Engine == "RESTIC") throw new AgentException(400, "ENGINE", "Restore to the original location is available for the product's own engine; choose a folder.");
+            if (string.IsNullOrEmpty(target) && !original && b["toM365"] != "1") throw new AgentException(400, "TARGET", "Choose a destination folder.");
             var paths = b.List("paths").Select(x => x["p"]).Where(x => !string.IsNullOrEmpty(x)).ToList();
             var point = b["point"]; bool overwrite = b["overwrite"] == "1";
-            return Start("restore", s.Id, () =>
+            var decision = b["existing"];
+            if (!string.IsNullOrEmpty(decision) && decision != "overwrite" && decision != "skip" && decision != "cancel") throw new AgentException(400, "EXISTING", "existing must be overwrite, skip or cancel.");
+            if (decision == "cancel") return new Msg().Set("cancelled", 1);
+            if (decision == "overwrite") overwrite = true; else if (decision == "skip") overwrite = false;
+            var mode = string.IsNullOrEmpty(decision) && original ? ExistingFiles.Ask : overwrite ? ExistingFiles.Overwrite : ExistingFiles.Skip;
+            if (mode == ExistingFiles.Ask)
+            {
+                // asked here, before the job: the window gets the question at once (the job checks again, and refuses, if a file appeared since)
+                var c = app.RestoreFor(client, s.Id, pw).Conflicts(point, null, PathFilter(paths));
+                if (c.Existing.Count > 0) throw new AgentException(409, "EXISTS", c.Existing.Count.ToString(CultureInfo.InvariantCulture) + " of the " + c.Total.ToString(CultureInfo.InvariantCulture) + " files already exist at the original location — choose to overwrite them, to skip them, or cancel. Nothing was restored.");
+            }
+            Job job = null;
+            var started = Start("restore", s.Id, () =>
             {
                 if (!string.IsNullOrEmpty(target)) Directory.CreateDirectory(target);
                 if (s.Type == "GWS" && b["toM365"] == "1")
@@ -411,14 +457,22 @@ namespace OnlineBackup.Agent
                 }
                 if (s.Engine == "RESTIC")
                 {
-                    app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>(), overwrite);
-                    return new[] { "OK", "Restored to " + target };
+                    var v = app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>(), overwrite);
+                    // UI-Q1: restic --verify (SHA-256 of every blob, read back from the disk); a count only when restic reported one
+                    if (job != null && v >= 0) job.Extra = new Msg().Set("verified", v).Set("verifiedSha256", v).Set("mismatched", 0).Set("location", "alternate");
+                    return new[] { "OK", "Restored to " + target + (v >= 0 ? "; verified " + v : "") };
                 }
                 var r = app.RestoreFor(client, s.Id, pw);
-                Func<string, bool> filter = paths.Count == 0 ? null : (Func<string, bool>)(p => paths.Any(x => p.Equals(x, StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "\\", StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "/", StringComparison.OrdinalIgnoreCase)));
-                r.Run(point, target, filter, overwrite);
-                return new[] { r.Failed == 0 ? "OK" : "FAILED", "Restored " + r.Restored + ", skipped " + r.Skipped + ", failed " + r.Failed };
-            });
+                r.Run(point, target, PathFilter(paths), mode);
+                // UI-Q1: the counts and the integrity check as numbers for the window; "verified" only counts files really checked
+                var x = new Msg().Set("restored", r.Restored).Set("skipped", r.Skipped).Set("failed", r.Failed).Set("verified", r.Verified)
+                    .Set("verifiedSha256", r.VerifiedSha256).Set("mismatched", r.Mismatched.Count).Set("location", original ? "original" : "alternate").Set("restoreResult", r.Result);
+                foreach (var p in r.Mismatched.Take(200)) x.Add("mismatch", new Msg().Set("p", p));
+                if (job != null) job.Extra = x;
+                return new[] { r.Failed == 0 ? "OK" : "FAILED", "Restored " + r.Restored + ", skipped " + r.Skipped + ", failed " + r.Failed + "; verified " + r.Verified
+                    + (r.Mismatched.Count > 0 ? "; did not match the backup (not put in place): " + string.Join(", ", r.Mismatched.Take(5).ToArray()) + (r.Mismatched.Count > 5 ? " …" : "") : "") };
+            }, j => job = j);
+            return started;
         }
 
         /// <summary>CLI-070: a new set of folders (restic on Windows 10 / 2016 and later, this product's engine before).</summary>

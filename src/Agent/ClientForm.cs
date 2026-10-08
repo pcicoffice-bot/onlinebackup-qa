@@ -186,7 +186,12 @@ namespace OnlineBackup.Agent
                         Cursor = Cursors.Default;
                         var ae = err as AgentException;
                         if (ae != null && ae.Status == 401) { if (SignIn()) Do(work, done, then, refresh, failed); else if (failed != null) failed(err); return; }
-                        if (err != null) { if (failed != null) failed(err); Message(L.Tr(lang, err.Message), true); return; }
+                        if (err != null)
+                        {
+                            if (failed != null) failed(err);
+                            if (!(ae != null && ae.Code == "EXISTS" && failed != null)) Message(L.Tr(lang, err.Message), true);   // UI-Q2: EXISTS is answered in the window
+                            return;
+                        }
                         if (done != null) Message(done, false);
                         if (then != null) then(r);
                         if (refresh) Refresh2(true);   // only after a change — a read (points, files) must not draw the page again (it would read again, forever)
@@ -1002,7 +1007,7 @@ namespace OnlineBackup.Agent
             }
         }
 
-        void RestoreReset() { rStep = 1; rChecked.Clear(); rPaths.Clear(); rJob = null; }
+        void RestoreReset() { rStep = 1; rChecked.Clear(); rPaths.Clear(); rJob = null; rCheck = null; }
 
         int RestoreStep1(int y, List<Msg> sets)
         {
@@ -1123,34 +1128,97 @@ namespace OnlineBackup.Agent
             return (n == 0 ? T("Everything in the point") : T("{0} selected", n)) + "  ·  " + T("from {0}", s["name"] ?? "") + (when.Length > 0 ? "  ·  " + when : "");
         }
 
+        // UI-Q2: where the files go (a new folder, or where they were - own engine), and the answer of "restorecheck" when files exist
+        string rLocation = "alternate"; Msg rCheck;
+
+        string EngineOf(List<Msg> sets) { return (sets.FirstOrDefault(x => x["id"] == rSetId) ?? new Msg())["engine"] ?? ""; }
+
+        Msg RestoreBody(List<Msg> sets, string decision)
+        {
+            var msg = new Msg().Set("set", rSetId).Set("point", rPointId);
+            if (rLocation == "original" && ClientView.OriginalLocationAvailable(EngineOf(sets))) msg.Set("location", "original");
+            else msg.Set("target", rTarget).Set("overwrite", rOverwrite ? "1" : "0");
+            if (decision != null) msg.Set("existing", decision);
+            foreach (var p in rPaths) msg.Add("paths", new Msg().Set("p", p));
+            return msg;
+        }
+
+        /// <summary>UI-Q2: check the destination first (own engine); files that exist are a question in the window, never silent.</summary>
+        void RestoreGo(List<Msg> sets)
+        {
+            var original = rLocation == "original" && ClientView.OriginalLocationAvailable(EngineOf(sets));
+            if (!original && string.IsNullOrEmpty(rTarget)) { Message(T("Choose a destination folder."), true); return; }
+            if (rPointId == null) return;
+            SetBarBusy(true);
+            if (EngineOf(sets) == "RESTIC") { RestoreStart(sets, null); return; }   // restic: no check in the local API; "Replace existing files" decides
+            var chk = new Msg().Set("set", rSetId).Set("point", rPointId);
+            if (original) chk.Set("location", "original"); else chk.Set("target", rTarget);
+            foreach (var p in rPaths) chk.Add("paths", new Msg().Set("p", p));
+            Do(() => api.Call("restorecheck", chk, null), null, r =>
+            {
+                if (ClientView.Existing(lang, r) != null) { rCheck = r; ShowFromTray(); Render(); }
+                else RestoreStart(sets, null);
+            }, false, ex => SetBarBusy(false));
+        }
+
+        void RestoreStart(List<Msg> sets, string decision)
+        {
+            SetBarBusy(true);
+            var body = RestoreBody(sets, decision);
+            // UX-1: no message box behind the window - the window comes to the front on its own result page
+            Do(() => api.Call("restore", body, null), null, r =>
+            {
+                if (r["cancelled"] == "1") { rCheck = null; Render(); return; }
+                rJob = r["job"]; rStep = 3; rCheck = null; ShowFromTray(); Render();
+            }, true, ex =>
+            {
+                SetBarBusy(false);
+                // a file appeared at the destination since the check: the API refuses with EXISTS - ask again
+                var ae = ex as AgentException; if (ae != null && ae.Code == "EXISTS") RestoreGo(sets);
+            });
+        }
+
+        void SetBarBusy(bool busy) { foreach (var b in bar.Controls.OfType<Button>()) if (!b.IsDisposed) b.Enabled = !busy; }
+
         int RestoreStep2(int y, List<Msg> sets)
         {
             int m = S(20);
+            if (rCheck != null) return RestoreExisting(y, sets);
             bool two = pageW >= S(760);
             int lw = two ? (pageW - S(16)) / 2 : pageW;
+            var engine = EngineOf(sets); bool origOk = ClientView.OriginalLocationAvailable(engine);
+            if (!origOk && rLocation == "original") rLocation = "alternate";
             if (string.IsNullOrEmpty(rTarget)) rTarget = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Restore " + DateTime.Now.ToString("yyyy-MM-dd HHmm", CultureInfo.InvariantCulture));
-            // where (owner Q2: the original location is offered, disabled with its reason, until the engine restores there)
+            // where (owner Q2: a new folder, recommended; or the original location - own engine)
             var where = Card(content, 0, y, lw, S(100));
             var q = Text2(where, T("Where to restore?"), 11f, true, Ink, m, m, lw - 2 * m);
-            var toNew = new RadioButton { Text = T("To a new folder (recommended)"), Checked = true, AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(10f, true), RightToLeft = Dir };
+            var toNew = new RadioButton { Text = T("To a new folder (recommended)"), Checked = rLocation != "original", AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(10f, true), RightToLeft = Dir, Name = "newFolder" };
             toNew.Location = new Point(m, q.Bottom + S(8)); where.Controls.Add(toNew);
             var h1 = Text2(where, T("The files on the computer stay as they are."), 8.5f, false, Muted, m + S(22), toNew.Bottom, lw - 2 * m - S(22));
             var tl = Text2(where, T("Restore to folder"), 9f, true, Muted, m + S(22), h1.Bottom + S(6), lw - 2 * m - S(22));
             var browse = Btn("…", false); browse.Width = S(48);
-            var target = new TextBox { Width = lw - 2 * m - S(22) - browse.Width - S(8), Font = F(10f), Text = rTarget, RightToLeft = RightToLeft.No, AccessibleName = T("Restore to folder"), Name = "restoreTarget" };
+            var target = new TextBox { Width = lw - 2 * m - S(22) - browse.Width - S(8), Font = F(10f), Text = rTarget, RightToLeft = RightToLeft.No, AccessibleName = T("Restore to folder"), Name = "restoreTarget", Enabled = rLocation != "original" };
             if (Rtl) target.TextAlign = HorizontalAlignment.Right;
             target.Location = new Point(MX(where, m + S(22), target.Width), tl.Bottom + S(2)); where.Controls.Add(target);
-            Place(where, browse, m + S(22) + target.Width + S(8), tl.Bottom + S(1)); browse.Height = target.Height + S(2);
+            Place(where, browse, m + S(22) + target.Width + S(8), tl.Bottom + S(1)); browse.Height = target.Height + S(2); browse.Enabled = target.Enabled;
             target.TextChanged += (o, e) => rTarget = target.Text;
             browse.Click += (o, e) => { using (var f = new FolderBrowserDialog { SelectedPath = target.Text }) if (f.ShowDialog(this) == DialogResult.OK) target.Text = f.SelectedPath; };
-            var orig = new RadioButton { Text = T("To the original location"), Checked = false, Enabled = ClientView.OriginalLocationAvailable, AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(10f, true), RightToLeft = Dir, Name = "originalLocation" };
+            var orig = new RadioButton { Text = T("To the original location"), Checked = rLocation == "original", Enabled = origOk, AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(10f, true), RightToLeft = Dir, Name = "originalLocation" };
             orig.Location = new Point(m, target.Bottom + S(14)); where.Controls.Add(orig);
-            var ow = Text2(where, T(ClientView.OriginalLocationWhy), 8.5f, false, Muted, m + S(22), orig.Bottom, lw - 2 * m - S(22));
-            var over = new CheckBox { Text = T(" Replace existing files").Trim(), Checked = rOverwrite, AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(9.5f), RightToLeft = Dir, Name = "replace" };
-            over.Location = new Point(m, ow.Bottom + S(10)); where.Controls.Add(over);
-            over.CheckedChanged += (o, e) => rOverwrite = over.Checked;
-            var oh = Text2(where, T("Unticked: a file that is already in the folder is not replaced."), 8.5f, false, Muted, m + S(22), over.Bottom, lw - 2 * m - S(22));
-            where.Height = oh.Bottom + m;
+            var ow = Text2(where, origOk ? T("The files go back where they were. If a file is already there, you are asked first.") : T(ClientView.OriginalLocationWhy), 8.5f, false, Muted, m + S(22), orig.Bottom, lw - 2 * m - S(22));
+            toNew.CheckedChanged += (o, e) => { if (toNew.Checked) { rLocation = "alternate"; target.Enabled = browse.Enabled = true; } };
+            orig.CheckedChanged += (o, e) => { if (orig.Checked) { rLocation = "original"; target.Enabled = browse.Enabled = false; } };
+            int wb = ow.Bottom;
+            if (!origOk)
+            {
+                // restic: the local API cannot check the folder first - "Replace existing files" decides, as before
+                var over = new CheckBox { Text = T(" Replace existing files").Trim(), Checked = rOverwrite, AutoSize = false, Width = lw - 2 * m, Height = S(26), Font = F(9.5f), RightToLeft = Dir, Name = "replace" };
+                over.Location = new Point(m, ow.Bottom + S(10)); where.Controls.Add(over);
+                over.CheckedChanged += (o, e) => rOverwrite = over.Checked;
+                wb = Text2(where, T("Unticked: a file that is already in the folder is not replaced."), 8.5f, false, Muted, m + S(22), over.Bottom, lw - 2 * m - S(22)).Bottom;
+            }
+            else wb = Text2(where, T("If a file is already in the folder, you are asked first: replace, skip or cancel."), 8.5f, false, Muted, m, ow.Bottom + S(10), lw - 2 * m).Bottom;
+            where.Height = wb + m;
             // what will be restored, and B5
             int sx = two ? lw + S(16) : 0, sy = two ? y : where.Bottom + S(16), sw = two ? pageW - lw - S(16) : pageW;
             var what = Card(content, sx, sy, sw, S(100));
@@ -1170,33 +1238,55 @@ namespace OnlineBackup.Agent
             var code = Text2(what, T("Your password (and the code, when two-step verification is on) is asked when you restore."), 8.5f, false, Muted, m, keeps.Bottom + S(10), sw - 2 * m);
             what.Height = code.Bottom + m;
             var sets2 = sets;
-            RestoreBar(ClientView.RestoreBar(lang, 2, rPaths.Count)[0], ClientView.RestoreBar(lang, 2, rPaths.Count)[1], null, () =>
-            {
-                if (string.IsNullOrEmpty(rTarget) || rPointId == null) { Message(T("Choose a destination folder."), true); return; }
-                var msg = new Msg().Set("set", rSetId).Set("point", rPointId).Set("target", rTarget).Set("overwrite", rOverwrite ? "1" : "0");
-                foreach (var p in rPaths) msg.Add("paths", new Msg().Set("p", p));
-                var pb = bar.Controls.OfType<Button>().FirstOrDefault(b => b.Name == "barPrimary"); if (pb != null) pb.Enabled = false;
-                // UX-1: no message box behind the window - the window comes to the front on its own result page
-                Do(() => api.Call("restore", msg, null), null, r => { rJob = r["job"]; rStep = 3; ShowFromTray(); Render(); }, true, ex => { if (pb != null && !pb.IsDisposed) pb.Enabled = true; });
-            }, () => { rStep = 1; Render(); }, null, true, SelectionInfo(sets2));
+            RestoreBar(ClientView.RestoreBar(lang, 2, rPaths.Count)[0], ClientView.RestoreBar(lang, 2, rPaths.Count)[1], null, () => RestoreGo(sets2), () => { rStep = 1; Render(); }, null, true, SelectionInfo(sets2));
             return Math.Max(where.Bottom, what.Bottom);
+        }
+
+        /// <summary>UI-Q2: files already exist at the destination - the count, the list, and Replace / Skip / Cancel in the fixed bar.</summary>
+        int RestoreExisting(int y, List<Msg> sets)
+        {
+            int m = S(20);
+            var q = ClientView.Existing(lang, rCheck);
+            var card = Card(content, 0, y, pageW, S(100), ToneFill(Tone.Warn), ToneColor(Tone.Warn)); card.Name = "existing";
+            var t = Text2(card, "⚠  " + q.Title, 12f, true, Ink, m, m, pageW - 2 * m, false, "existingTitle");
+            var tx = Text2(card, q.Text, 9.5f, false, Ink, m, t.Bottom + S(4), pageW - 2 * m);
+            // the list fills the room above the bar; it scrolls inside itself
+            int room = (frame == null ? S(400) : frame.Page.H) - (y + tx.Bottom + S(16)) - S(28) - S(60);
+            var box = new TextBox { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, WordWrap = false, BackColor = Color.White, Font = new Font("Consolas", (float)(9 * ui / sys)), Text = string.Join("\r\n", q.Files.ToArray()), Width = pageW - 2 * m, Height = Math.Max(S(90), Math.Min(S(320), room)), RightToLeft = RightToLeft.No, Name = "existingList", AccessibleName = q.Title };
+            box.Location = new Point(m, tx.Bottom + S(10)); card.Controls.Add(box);
+            int cy = box.Bottom;
+            if (q.More.Length > 0) cy = Text2(card, q.More, 9f, false, Muted, m, cy + S(4), pageW - 2 * m).Bottom;
+            card.Height = cy + m;
+            var sets2 = sets;
+            RestoreBar(q.Buttons[0], q.Buttons[1], q.Buttons[2], () => RestoreStart(sets2, q.Decisions[0]), () => RestoreStart(sets2, q.Decisions[1]), () => RestoreStart(sets2, q.Decisions[2]));
+            return card.Bottom;
         }
 
         int RestoreStep3(int y, List<Msg> sets)
         {
             int m = S(24);
             var job = jobs.FirstOrDefault(j => j["id"] == rJob);
-            var st = job == null || job["state"] == "running" ? "running" : job["state"];
-            var tone = st == "running" ? Tone.Info : st == "ok" ? Tone.Ok : Tone.Bad;
+            var v = ClientView.RestoreResult(lang, job, rPaths.Count);
             var card = Card(content, 0, y, pageW, S(100));
-            Badge(card, tone, st == "running" ? "↻" : st == "ok" ? "✓" : "✕", m, m, S(72));
+            Badge(card, v.Tone, v.Running ? "↻" : v.Success ? "✓" : "✕", m, m, S(72));
             int tx = m + S(92), tw = pageW - tx - m;
-            var cap = Text2(card, st == "running" ? T("The restore has started") : st == "ok" ? T("The restore finished") : T("The restore did not finish"), 9f, true, ToneColor(tone), tx, m, tw);
-            var big = Text2(card, st == "running" ? T("Restoring…") : st == "ok" ? (rPaths.Count == 0 ? T("Everything in the point was restored") : rPaths.Count == 1 ? T("1 selected item was restored") : T("{0} selected items were restored", rPaths.Count)) : T("Some files were not restored"), 18f, true, Ink, tx, cap.Bottom, tw, false, "state");
-            var where = Text2(card, T("To folder {0}", rTarget ?? ""), 9.5f, false, Muted, tx, big.Bottom + S(2), tw, true);
+            var cap = Text2(card, v.Caption, 9f, true, ToneColor(v.Tone), tx, m, tw);
+            var big = Text2(card, v.Headline, 18f, true, Ink, tx, cap.Bottom, tw, false, "state");
+            var where = Text2(card, rLocation == "original" && (job == null || job["location"] != "alternate") ? T("To the original location") : T("To folder {0}", rTarget ?? ""), 9.5f, false, Muted, tx, big.Bottom + S(2), tw, true);
             int cy = where.Bottom;
-            if (st == "running") { var pb = new ProgressBar { Style = ProgressBarStyle.Marquee, MarqueeAnimationSpeed = 30, Width = Math.Min(tw, S(420)), Height = S(6) }; pb.Location = new Point(MX(card, tx, pb.Width), cy + S(10)); card.Controls.Add(pb); cy = pb.Bottom; }
-            if (job != null && !string.IsNullOrEmpty(job["detail"])) cy = Text2(card, L.Tr(lang, job["detail"]), 10f, false, st == "failed" ? Bad : Ink, tx, cy + S(10), tw, false, st == "failed" ? "restoreError" : "restoreDetail").Bottom;
+            if (v.Running) { var pb = new ProgressBar { Style = ProgressBarStyle.Marquee, MarqueeAnimationSpeed = 30, Width = Math.Min(tw, S(420)), Height = S(6) }; pb.Location = new Point(MX(card, tx, pb.Width), cy + S(10)); card.Controls.Add(pb); cy = pb.Bottom; }
+            if (v.Counts.Length > 0) cy = Text2(card, v.Counts, 10f, false, Ink, tx, cy + S(10), tw, false, "restoreDetail").Bottom;
+            else if (job != null && !string.IsNullOrEmpty(job["detail"])) cy = Text2(card, L.Tr(lang, job["detail"]), 10f, false, v.Success ? Ink : Bad, tx, cy + S(10), tw, false, "restoreDetail").Bottom;
+            // UI-Q1: the verification - only what the job really checked
+            foreach (var line in v.Verification) cy = Text2(card, "✓  " + line, 10f, true, Ok, tx, cy + S(4), tw, false, "restoreVerified").Bottom;
+            if (v.Mismatch.Count > 0 || v.MismatchNote.Length > 0)
+            {
+                var err = Card(card, tx, cy + S(10), tw, S(40), ToneFill(Tone.Bad), ToneColor(Tone.Bad)); err.Name = "restoreError";
+                int ey = Text2(err, "✕  " + v.MismatchNote, 9.5f, true, Bad, S(12), S(10), tw - S(24)).Bottom;
+                foreach (var p in v.Mismatch.Take(10)) ey = Text2(err, p, 9f, false, Ink, S(30), ey + S(2), tw - S(42), true).Bottom;
+                if (v.Mismatch.Count > 10) ey = Text2(err, T("and {0} more", v.Mismatch.Count - 10), 9f, false, Muted, S(30), ey, tw - S(42)).Bottom;
+                err.Height = ey + S(10); cy = err.Bottom;
+            }
             cy = Math.Max(cy, m + S(72)) + S(16);
             Divider(card, m, cy, pageW - 2 * m); cy += S(14);
             var note = Card(card, m, cy, pageW - 2 * m, S(40), C("#EEF0F3"), Line);
@@ -1204,9 +1294,10 @@ namespace OnlineBackup.Agent
             note.Height = nl.Bottom + S(10);
             card.Height = note.Bottom + m;
             var bars = ClientView.RestoreBar(lang, 3, rPaths.Count);
+            var folder = rLocation == "original" ? null : rTarget;
             RestoreBar(bars[0], bars[1], bars[2],
-                () => { try { if (!string.IsNullOrEmpty(rTarget) && Directory.Exists(rTarget)) System.Diagnostics.Process.Start("explorer.exe", "\"" + rTarget + "\""); } catch (Exception e) { Message(e.Message, true); } },
-                () => { RestoreReset(); Go("home"); }, () => { RestoreReset(); Render(); }, st == "ok" || st == "failed");
+                () => { try { if (!string.IsNullOrEmpty(folder) && Directory.Exists(folder)) System.Diagnostics.Process.Start("explorer.exe", "\"" + folder + "\""); } catch (Exception e) { Message(e.Message, true); } },
+                () => { RestoreReset(); Go("home"); }, () => { RestoreReset(); Render(); }, !v.Running && folder != null);
             return card.Bottom;
         }
 
@@ -1630,6 +1721,7 @@ namespace OnlineBackup.Agent
                         };
                         restoreSteps(); shot("restore1", asked0, 1.0, null);
                         f.rPaths = f.rChecked.ToList(); f.rStep = 2; f.rTarget = @"D:\Restore\2026-10-08 0915"; shot("restore2", asked0, 1.0, null);
+                        f.rLocation = "original"; f.rCheck = sample.Call("restorecheck", new Msg().Set("location", "original"), null); shot("restore2_existing", asked0, 1.0, null); f.rCheck = null; f.rLocation = "alternate";
                         f.rJob = "r1"; f.rStep = 3; shot("restore3", asked0, 1.0, null);
                         if (matrix)
                         {
@@ -1652,9 +1744,12 @@ namespace OnlineBackup.Agent
                                     shot(tag + "sets", asked, scale, new[] { "title", "setBackup_*~", "newBackup~" }.Concat(navNames).ToArray());
                                     restoreSteps(); shot(tag + "restore1", asked, scale, new[] { "title", "barPrimary", "barSecondary", "restorePoint~", "restoreTree~" }.Concat(navNames).ToArray());
                                     f.rPaths = f.rChecked.ToList(); f.rStep = 2; f.rTarget = @"D:\Restore\2026-10-08 0915";
-                                    shot(tag + "restore2", asked, scale, new[] { "title", "barPrimary", "barSecondary", "restoreTarget~", "restoreKeeps~" }.Concat(navNames).ToArray());
+                                    shot(tag + "restore2", asked, scale, new[] { "title", "barPrimary", "barSecondary", "restoreTarget~", "restoreKeeps~", "originalLocation~" }.Concat(navNames).ToArray());
+                                    f.rLocation = "original"; f.rCheck = sample.Call("restorecheck", new Msg().Set("location", "original"), null);
+                                    shot(tag + "restore2_existing", asked, scale, new[] { "title", "existingTitle", "existingList", "barPrimary", "barSecondary", "barTertiary" }.Concat(navNames).ToArray());
+                                    f.rCheck = null; f.rLocation = "alternate";
                                     f.rJob = "r1"; f.rStep = 3;
-                                    shot(tag + "restore3", asked, scale, new[] { "title", "state", "barPrimary", "barSecondary", "barTertiary" }.Concat(navNames).ToArray());
+                                    shot(tag + "restore3", asked, scale, new[] { "title", "state", "restoreVerified~", "barPrimary", "barSecondary", "barTertiary" }.Concat(navNames).ToArray());
                                 }
                             File.WriteAllText(Path.Combine(outDir, "layout_" + L.Norm(lang) + ".txt"), layout.ToString(), new UTF8Encoding(false));
                         }
@@ -1720,7 +1815,8 @@ namespace OnlineBackup.Agent
                         {
                             var j = new Msg();
                             if (Mode == "running") j.Add("jobs", new Msg().Set("id", "b1").Set("kind", "backup").Set("set", "1").Set("state", "running").Set("started", now - 600000));
-                            j.Add("jobs", new Msg().Set("id", "r1").Set("kind", "restore").Set("set", "2").Set("state", "ok").Set("detail", "Restored 2, skipped 0, failed 0").Set("started", now - 3 * 3600000));
+                            j.Add("jobs", new Msg().Set("id", "r1").Set("kind", "restore").Set("set", "2").Set("state", "ok").Set("detail", "Restored 2, skipped 0, failed 0; verified 2").Set("started", now - 3 * 3600000)
+                                .Set("restored", 2).Set("skipped", 0).Set("failed", 0).Set("verified", 2).Set("verifiedSha256", 2).Set("mismatched", 0).Set("location", "alternate").Set("restoreResult", "OK"));
                             return j;
                         }
                     case "points":
@@ -1745,6 +1841,7 @@ namespace OnlineBackup.Agent
                             return m;
                         }
                     case "keyrecovery": return new Msg().Set("default", 1).Set("allowed", 1).Set("title", L.Tr(lang, KeyTexts.Title)).Set("keepLabel", L.Tr(lang, KeyTexts.KeepLabel)).Set("keepText", L.Tr(lang, KeyTexts.KeepText)).Set("noneLabel", L.Tr(lang, KeyTexts.NoneLabel)).Set("noneText", L.Tr(lang, KeyTexts.NoneText)).Set("offText", L.Tr(lang, KeyTexts.OffText));
+                    case "restorecheck": return new Msg().Set("total", 6).Set("existing", 2).Set("location", body != null && body["location"] == "original" ? "original" : "alternate").Add("files", new Msg().Set("p", @"D:\Users\dana\Documents\Contracts\Lease 2026.pdf")).Add("files", new Msg().Set("p", @"D:\Users\dana\Documents\Contracts\Offer - Sea Towers.pdf"));
                     case "security": return new Msg().Set("totp", 1);
                     case "update": return new Msg().Set("current", "0.1.80").Set("latest", "0.1.80").Set("available", 0);
                     case "help": return new Msg();

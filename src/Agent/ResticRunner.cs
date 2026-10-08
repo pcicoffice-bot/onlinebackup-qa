@@ -526,8 +526,11 @@ namespace OnlineBackup.Agent
         /// customer got a damaged file with no error. restic now restores into a fresh folder beside the files
         /// (".ob-restoring-…", same volume) and only a restore that ended well is moved into place, one rename per file or
         /// new folder; a cut restore leaves nothing under a real name, and its folder is removed then or by the next restore.
-        /// J-3: a restore that brought nothing (the chosen path is not in the point) is an error, not "OK".</summary>
-        public void RestoreMany(string snapshot, string target, IEnumerable<string> includes, List<string> log, bool overwrite = false)
+        /// J-3: a restore that brought nothing (the chosen path is not in the point) is an error, not "OK".
+        /// UI-Q1: restic restores with --verify — every restored file is read back from the disk and checked against the
+        /// SHA-256 of each of its blobs in the repository before anything is moved into place; a mismatch is a failed restore
+        /// (nothing placed). Returns the number of files restic reported verified (-1: restic did not report a count).</summary>
+        public int RestoreMany(string snapshot, string target, IEnumerable<string> includes, List<string> log, bool overwrite = false)
         {
             EnsureAccess();
             Directory.CreateDirectory(target);
@@ -535,19 +538,24 @@ namespace OnlineBackup.Agent
             { var why = OnlineBackup.Core.TempDirs.Remove(old); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             var stage = Path.Combine(target, StagePrefix + Guid.NewGuid().ToString("N").Substring(0, 12));
             Directory.CreateDirectory(stage);
+            int verified;
             try
             {
-                var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", stage, "--tag", "set:" + set.Id };
+                var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", stage, "--tag", "set:" + set.Id, "--verify" };
                 if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(OnlineBackup.Core.ResticPaths.Of(inc))); }   // bug 100: C:\... -> /C/...
                 var r = Run(args.ToArray());
                 log.Add(AhsayLog.Info(Clock(), "restic restore " + (snapshot ?? "latest") + " to " + target + ": exit " + r.Code));
                 if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err) + " — nothing was put in place; run the restore again");
+                var vm = Regex.Match(r.Out ?? "", "finished verifying (\\d+) files");
+                verified = vm.Success ? int.Parse(vm.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) : -1;
+                log.Add(AhsayLog.Info(Clock(), verified >= 0 ? "Integrity check after restore (restic --verify, SHA-256 of every blob): " + verified + " files verified" : "restic did not report the integrity check of the restored files"));
                 var c = new int[3];   // placed, kept (existed), replaced
                 Place(stage, target, overwrite, c);
                 if (c[0] + c[1] + c[2] == 0) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
                 log.Add(AhsayLog.Info(Clock(), "Restored: " + c[0] + " new, " + c[2] + " replaced, " + c[1] + " kept (already there" + (overwrite ? "" : "; 'Replace existing files' was not chosen") + ")"));
             }
             finally { var why = OnlineBackup.Core.TempDirs.Remove(stage); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The restore's staging folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
+            return verified;
         }
 
         const string StagePrefix = ".ob-restoring-";

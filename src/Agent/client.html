@@ -148,7 +148,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const r = await fetch('/api/' + op + (query ? '?' + new URLSearchParams(query) : ''), { method: body ? 'POST' : 'GET', headers: { 'X-Key': KEY, 'Content-Type': 'application/xml' }, body: body ? toXml(body) : undefined });
     const t = await r.text(); const m = t ? fromXml(new DOMParser().parseFromString(t, 'application/xml').documentElement) : {};
     if (r.status === 401) { const ok = await loginDialog(); if (ok) return api(op, body, query); throw new Error(t('Sign-in required')); }
-    if (!r.ok) throw new Error(tr(m.message) || t('Error {0}', r.status));
+    if (!r.ok) { const e = new Error(tr(m.message) || t('Error {0}', r.status)); e.code = m.code; throw e; }   // UI-Q2: the code (EXISTS) is matched, not the words
     return m;
   }
   function toast(msg, err) { const t = $('#toast'); t.textContent = msg; t.className = err ? 'err' : ''; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, err ? 7000 : 3500); }
@@ -194,7 +194,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
   function nav() {
     const cur = PAGE === 'add' || PAGE === 'edit' ? 'sets' : PAGE;
     const problems = homeView().problems.length;
-    put($('#nav'), ...PAGES.map(([k, label, g]) => h('button', { class: k === cur ? 'on' : '', onclick: () => { if (k === 'restore') R.step = 1; show(k); } }, h('span', { class: 'g' }, g), h('span', { class: 'l' }, label), k === 'sets' && problems ? h('span', { class: 'warn' }, ' ⚠') : null)),
+    put($('#nav'), ...PAGES.map(([k, label, g]) => h('button', { class: k === cur ? 'on' : '', onclick: () => { if (k === 'restore') { R.step = 1; R.check = null; } show(k); } }, h('span', { class: 'g' }, g), h('span', { class: 'l' }, label), k === 'sets' && problems ? h('span', { class: 'warn' }, ' ⚠') : null)),
       h('div', { class: 'navfoot' }, h('div', { class: 'pc' }, h('b', { class: 'ltr' }, ST.computer || ''), h('small', { class: ST.offline ? 'bad' : 'ok' }, '● ' + (ST.offline ? t('No connection') : t('Connected')))),
         h('button', { id: 'navHelp', class: PAGE === 'help' ? 'on' : '', onclick: () => show('help') }, h('span', { class: 'g' }, '?'), h('span', { class: 'l' }, t('Help from {0}', company())))));
   }
@@ -337,7 +337,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
   function download(name, text) { const a = h('a', { download: name }); a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' })); document.body.append(a); a.click(); a.remove(); }
 
   // ---- Restore in 3 steps (when and what · where and check · result), the buttons in a bar fixed at the bottom (UX-1, B5)
-  const R = { step: 1, set: null, point: null, paths: [], target: '', overwrite: false, job: null };
+  const R = { step: 1, set: null, point: null, paths: [], target: '', overwrite: false, job: null, location: 'alternate', check: null };
   function bar(...buttons) { put($('#rbar'), ...buttons); $('#rbar').hidden = false; }
   async function restore(m) {
     ST = await api('state');
@@ -353,7 +353,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const syncM365 = () => { const s = sets.find((x) => x.id === setSel.value); m365Row.hidden = !(s && (s.type === 'M365' || s.type === 'GWS')); };
     const box = h('div', { class: 'files' }); let files = [], points = [];
     const info = h('span', { class: 'muted' }), next = h('button', { class: 'primary', disabled: true, onclick: () => {
-      R.paths = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map((c) => c.getAttribute('data-p')); R.point = pointSel.value; R.set = setSel.value; R.toM365 = toM365.checked && !m365Row.hidden; R.step = 2; show('restore'); } }, t('Next: where to restore'));
+      R.paths = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map((c) => c.getAttribute('data-p')); R.point = pointSel.value; R.set = setSel.value; R.toM365 = toM365.checked && !m365Row.hidden; R.check = null; R.step = 2; show('restore'); } }, t('Next: where to restore'));
     const count = () => { const n = box.querySelectorAll('input[type=checkbox]:checked').length; info.textContent = (n ? t('{0} selected', n) : t('Everything in the point')) + ' · ' + t('from {0}', (sets.find((s) => s.id === setSel.value) || {}).name || ''); };
     const drawDays = () => {
       const by = new Map(); points.forEach((p) => { const d = parse(p.time) || parse(p.id); if (!d) return; const k = d.toDateString(); if (!by.has(k)) by.set(k, p); });
@@ -389,43 +389,87 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     bar(h('button', { class: 'sec', onclick: () => { R.paths = []; show('home'); } }, t('Cancel')), info, next);
     await loadPoints();
   }
+  // UI-Q2: the destination is checked first (own engine); files that exist are a question in the window — Replace / Skip / Cancel
+  const originalOk = (s) => s && s.engine !== 'RESTIC';
+  function restoreBody(s, decision) {
+    const b = { set: R.set, point: R.point, toM365: R.toM365 ? '1' : '0', paths: R.paths.map((p) => ({ p })) };
+    if (R.location === 'original' && originalOk(s)) Object.assign(b, { location: 'original' }); else Object.assign(b, { target: R.target, overwrite: R.overwrite ? '1' : '0' });
+    if (decision) Object.assign(b, { existing: decision });   // overwrite | skip | cancel
+    return b;
+  }
+  async function restoreGo(s) {
+    const original = R.location === 'original' && originalOk(s);
+    if (!original && !R.target.trim() && !R.toM365) throw new Error(t('Choose a destination folder.'));
+    if (!originalOk(s) || R.toM365) return restoreStart(s, null);   // restic: no check in the local API; "Replace existing files" decides
+    const c = await api('restorecheck', Object.assign({ set: R.set, point: R.point, paths: R.paths.map((p) => ({ p })) }, original ? { location: 'original' } : { target: R.target }));
+    if (Number(c.existing || 0) > 0) { R.check = c; show('restore'); return; }
+    return restoreStart(s, null);
+  }
+  async function restoreStart(s, decision) {
+    let r;
+    try { r = await api('restore', restoreBody(s, decision)); }
+    catch (x) { if (x.code === 'EXISTS') return restoreGo(s); throw x; }   // a file appeared since the check: ask again
+    R.check = null;
+    if (r.cancelled === '1') { show('restore'); return; }
+    R.job = r.job; R.step = 3; toast(t('The restore has started')); show('restore');
+  }
   async function restore2(m, sets, steps) {
     const s = sets.find((x) => x.id === R.set) || {};
-    const target = h('input', { class: 'ltr', placeholder: 'C:\\Restore', value: R.target }), overwrite = h('input', { type: 'checkbox', style: 'width:auto', checked: R.overwrite });
+    if (R.check) {
+      const c = R.check, n = Number(c.existing || 0), files = list(c.files).map((x) => x.p);
+      put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
+        h('section', { class: 'problem warn', id: 'existing' }, h('b', { id: 'existingTitle' }, '⚠ ' + (c.location === 'original' ? t('{0} of the {1} files already exist at the original location', n, c.total) : t('{0} of the {1} files already exist in the folder', n, c.total))),
+          h('p', {}, t('Replace them with the files from the backup, skip them (they stay as they are), or cancel. Nothing was restored yet.')),
+          h('div', { class: 'files', id: 'existingList' }, files.map((p) => h('div', { class: 'ltr path' }, h('span', {}, p)))), n > files.length ? h('small', { class: 'muted' }, t('and {0} more', n - files.length)) : null));
+      bar(h('button', { class: 'sec', onclick: wrap(() => restoreStart(s, 'cancel')) }, t('Cancel')), h('button', { class: 'sec', onclick: wrap(() => restoreStart(s, 'skip')) }, t('Skip existing')), h('button', { class: 'primary', onclick: wrap(() => restoreStart(s, 'overwrite')) }, t('Replace existing')));
+      return;
+    }
+    if (!originalOk(s) && R.location === 'original') R.location = 'alternate';
+    const target = h('input', { class: 'ltr', placeholder: 'C:\\Restore', value: R.target, disabled: R.location === 'original' }), overwrite = h('input', { type: 'checkbox', style: 'width:auto', checked: R.overwrite });
     target.oninput = () => { R.target = target.value; }; overwrite.onchange = () => { R.overwrite = overwrite.checked; };
-    const go = h('button', { class: 'primary', onclick: wrap(async () => {
-      if (!target.value.trim() && !R.toM365) { target.focus(); throw new Error(t('Choose a destination folder.')); }
-      go.disabled = true;
-      try {
-        const r = await api('restore', { set: R.set, point: R.point, target: target.value, overwrite: overwrite.checked ? '1' : '0', toM365: R.toM365 ? '1' : '0', paths: R.paths.map((p) => ({ p })) });
-        R.job = r.job; R.target = target.value; R.step = 3; toast(t('The restore has started')); show('restore');
-      } finally { go.disabled = false; }
-    }) }, R.paths.length === 0 ? t('Restore everything') : R.paths.length === 1 ? t('Restore 1 selected item') : t('Restore {0} selected items', R.paths.length));
+    const toNew = h('input', { type: 'radio', name: 'where', checked: R.location !== 'original', style: 'width:auto', onchange: () => { R.location = 'alternate'; target.disabled = false; } });
+    const toOrig = h('input', { type: 'radio', name: 'where', checked: R.location === 'original', disabled: !originalOk(s), style: 'width:auto', onchange: () => { R.location = 'original'; target.disabled = true; } });
+    const go = h('button', { class: 'primary', onclick: wrap(async () => { go.disabled = true; try { await restoreGo(s); } finally { go.disabled = false; } }) },
+      R.paths.length === 0 ? t('Restore everything') : R.paths.length === 1 ? t('Restore 1 selected item') : t('Restore {0} selected items', R.paths.length));
     put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
       h('div', { class: 'two' },
         h('section', { class: 'box' }, h('b', {}, t('Where to restore?')),
-          h('label', {}, h('input', { type: 'radio', name: 'where', checked: true, style: 'width:auto' }), ' ', t('To a new folder (recommended)')), h('small', { class: 'muted' }, t('The files on the computer stay as they are.')),
+          h('label', {}, toNew, ' ', t('To a new folder (recommended)')), h('small', { class: 'muted' }, t('The files on the computer stay as they are.')),
           h('label', {}, t('Restore to folder')), target,
-          h('label', { class: 'muted' }, h('input', { type: 'radio', name: 'where', disabled: true, style: 'width:auto' }), ' ', t('To the original location')), h('small', { class: 'muted' }, t('Restoring to the original location is not available in this version yet.')),
-          h('label', {}, h('span', {}, overwrite, t(' Replace existing files'))), h('small', { class: 'muted' }, t('Unticked: a file that is already in the folder is not replaced.'))),
+          h('label', { class: originalOk(s) ? '' : 'muted' }, toOrig, ' ', t('To the original location')),
+          h('small', { class: 'muted' }, originalOk(s) ? t('The files go back where they were. If a file is already there, you are asked first.') : t('Restoring to the original location is available for the product\'s own engine only — choose a folder.')),
+          originalOk(s) ? h('p', { class: 'muted' }, t('If a file is already in the folder, you are asked first: replace, skip or cancel.'))
+            : [h('label', {}, h('span', {}, overwrite, t(' Replace existing files'))), h('small', { class: 'muted' }, t('Unticked: a file that is already in the folder is not replaced.'))]),
         h('section', { class: 'box' }, h('b', {}, t('What will be restored')), h('p', {}, t('Backup') + ': ' + (s.name || '')), h('p', {}, t('Restore point (date)') + ': ' + when(R.point)),
           R.paths.length ? R.paths.slice(0, 6).map((p) => h('div', { class: 'ltr' }, '▫ ' + p)).concat(R.paths.length > 6 ? [h('small', { class: 'muted' }, t('and {0} more', R.paths.length - 6))] : []) : h('b', {}, t('Everything in the point')),
           h('div', { class: 'keeps', id: 'restoreKeeps' }, 'ⓘ ' + RESTORE_KEEPS),
           h('small', { class: 'muted' }, t('Your password (and the code, when two-step verification is on) is asked when you restore.')))));
     bar(h('button', { class: 'sec', onclick: () => { R.step = 1; show('restore'); } }, t('Back')), h('span', { class: 'muted' }, ''), go);
   }
+  // UI-Q1: "Verified" only when the job checked; whole-file SHA-256 apart from chunks + size ("Checked"); a mismatch is an error
+  function restoreView(j) {
+    if (!j || j.state === 'running') return { tone: 'info', running: true, caption: t('The restore has started'), head: t('Restoring…'), checks: [], mism: [] };
+    const mism = list(j.mismatch).map((x) => x.p), nm = Math.max(Number(j.mismatched || 0), mism.length), failed = Number(j.failed || 0);
+    const checks = [];
+    if (j.verified !== undefined) { const all = Number(j.verified), sha = Math.min(all, Number(j.verifiedSha256 || 0)); if (sha > 0) checks.push(t('Verified (SHA-256): {0} files', sha)); if (all - sha > 0) checks.push(t('Checked (chunks and size): {0} files', all - sha)); }
+    const ok = j.state === 'ok' && nm === 0 && failed === 0;
+    const head = nm ? t('{0} files did not match the backup', nm) : !ok ? t('Some files were not restored') : R.paths.length === 1 ? t('1 selected item was restored') : R.paths.length ? t('{0} selected items were restored', R.paths.length) : t('Everything in the point was restored');
+    return { tone: ok ? 'ok' : 'bad', ok, caption: ok ? t('The restore finished') : t('The restore did not finish'), head, checks, mism, nm,
+      counts: j.restored !== undefined ? t('Restored {0} · skipped {1} · failed {2}', j.restored, j.skipped || 0, failed) : '' };
+  }
   async function restore3(m, sets, steps) {
     JOBS = list((await api('jobs')).jobs);
-    const j = JOBS.find((x) => x.id === R.job) || { state: 'running' };
-    const tone = j.state === 'running' ? 'info' : j.state === 'ok' ? 'ok' : 'bad';
+    const j = JOBS.find((x) => x.id === R.job), v = restoreView(j);
     put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
-      h('section', { class: 'hero ' + tone }, h('div', { class: 'top' }, h('div', { class: 'badge ' + tone }, ICON[tone]), h('div', { class: 'grow' },
-        h('small', { class: tone }, j.state === 'running' ? t('The restore has started') : j.state === 'ok' ? t('The restore finished') : t('The restore did not finish')),
-        h('h2', { id: 'state' }, j.state === 'running' ? t('Restoring…') : j.state === 'ok' ? (R.paths.length === 1 ? t('1 selected item was restored') : R.paths.length ? t('{0} selected items were restored', R.paths.length) : t('Everything in the point was restored')) : t('Some files were not restored')),
-        h('p', { class: 'muted ltr' }, t('To folder {0}', R.target)), j.detail ? h('p', { class: j.state === 'failed' ? 'bad' : '' }, tr(j.detail)) : null))),
+      h('section', { class: 'hero ' + v.tone }, h('div', { class: 'top' }, h('div', { class: 'badge ' + v.tone }, ICON[v.tone]), h('div', { class: 'grow' },
+        h('small', { class: v.tone }, v.caption), h('h2', { id: 'state' }, v.head),
+        h('p', { class: 'muted ltr' }, R.location === 'original' ? t('To the original location') : t('To folder {0}', R.target)),
+        v.counts ? h('p', {}, v.counts) : j && j.detail ? h('p', { class: v.ok ? '' : 'bad' }, tr(j.detail)) : null,
+        v.checks.map((c) => h('p', { class: 'ok', id: 'restoreVerified' }, '✓ ' + c)),
+        v.nm ? h('div', { class: 'problem bad', id: 'restoreError' }, h('b', {}, '✕ ' + t('They were not put in place: the file already at the destination was kept.')), v.mism.slice(0, 10).map((p) => h('div', { class: 'ltr' }, p))) : null))),
       h('p', { class: 'keeps muted' }, 'ⓘ ' + t('Permissions and file attributes were not restored.')));
     bar(h('button', { class: 'sec', onclick: () => { R.step = 1; R.paths = []; show('home'); } }, t('Back to Home')), h('button', { class: 'sec', onclick: () => { R.step = 1; R.paths = []; show('restore'); } }, t('Restore more')), h('span', {}));
-    if (j.state === 'running') setTimeout(() => { if (PAGE === 'restore' && R.step === 3) show('restore'); }, 2000);
+    if (v.running) setTimeout(() => { if (PAGE === 'restore' && R.step === 3) show('restore'); }, 2000);
   }
 
   // ---- History: rows by day; a row opens in place (what happened, what was not backed up, what to do, the log)

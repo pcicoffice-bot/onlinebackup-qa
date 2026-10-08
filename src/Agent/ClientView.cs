@@ -25,6 +25,23 @@ namespace OnlineBackup.Agent
         public string[] Src = new string[0], Skip = new string[0];
     }
 
+    /// <summary>UI-Q2: the question when files already exist at the destination (from the local API's restorecheck).</summary>
+    public sealed class ExistingQuestion
+    {
+        public string Title = "", More = "", Text = "";
+        public List<string> Files = new List<string>();
+        /// <summary>The bar's buttons (primary, secondary, third) and what each sends as existing=.</summary>
+        public string[] Buttons = new string[0], Decisions = new string[0];
+    }
+
+    /// <summary>UI-Q1: a restore job as the result step shows it.</summary>
+    public sealed class RestoreView
+    {
+        public Tone Tone; public bool Success, Running;
+        public string Caption = "", Headline = "", Counts = "", MismatchNote = "";
+        public List<string> Verification = new List<string>(), Mismatch = new List<string>();
+    }
+
     public sealed class Fact { public string Label = "", Value = "", Sub = ""; public Tone Tone; }
 
     public sealed class HomeView
@@ -355,11 +372,10 @@ namespace OnlineBackup.Agent
         /// <summary>Owner Q5: the reason beside an action the IT company locked (the action is shown disabled).</summary>
         public const string Locked = "This setting is managed by your service provider";
 
-        /// <summary>Owner Q2: restore to the original location. The local API refuses an empty destination folder today (the
-        /// native engine could, restic cannot) and reports no "file exists" per file - so the choice is shown, disabled, with
-        /// this reason, until the engine's owner adds it (reported).</summary>
-        public const bool OriginalLocationAvailable = false;
-        public const string OriginalLocationWhy = "Restoring to the original location is not available in this version yet.";
+        /// <summary>Owner Q2 (engine merged 082a703): restore to the original location - the product's own engine only; a restic
+        /// set keeps the choice disabled with this reason.</summary>
+        public static bool OriginalLocationAvailable(string engine) { return engine != "RESTIC"; }
+        public const string OriginalLocationWhy = "Restoring to the original location is available for the product's own engine only — choose a folder.";
 
         public static string Company(string lang, Msg state)
         {
@@ -416,6 +432,59 @@ namespace OnlineBackup.Agent
             if (step == 1) return new[] { L.T(lang, "Next: where to restore"), L.T(lang, "Cancel"), "" };
             if (step == 2) return new[] { RestoreButton(lang, chosen), L.T(lang, "Back"), "" };
             return new[] { L.T(lang, "Open the folder"), L.T(lang, "Back to Home"), L.T(lang, "Restore more") };
+        }
+
+        /// <summary>UI-Q2: the question for files that already exist (null when none do). Replace / Cancel / Skip, never silent.</summary>
+        public static ExistingQuestion Existing(string lang, Msg check)
+        {
+            int existing = check.Int("existing"), total = check.Int("total");
+            if (existing <= 0) return null;
+            var q = new ExistingQuestion();
+            q.Title = check["location"] == "original" ? L.T(lang, "{0} of the {1} files already exist at the original location", existing, total) : L.T(lang, "{0} of the {1} files already exist in the folder", existing, total);
+            q.Text = L.T(lang, "Replace them with the files from the backup, skip them (they stay as they are), or cancel. Nothing was restored yet.");
+            q.Files = check.List("files").Select(x => x["p"] ?? "").Where(x => x.Length > 0).ToList();
+            if (existing > q.Files.Count) q.More = L.T(lang, "and {0} more", existing - q.Files.Count);
+            q.Buttons = new[] { L.T(lang, "Replace existing"), L.T(lang, "Cancel"), L.T(lang, "Skip existing") };
+            q.Decisions = new[] { "overwrite", "cancel", "skip" };
+            return q;
+        }
+
+        /// <summary>
+        /// UI-Q1: the result of a restore job. "Verified" only when the job has a verified count; whole-file SHA-256
+        /// (verifiedSha256) apart from the files checked by their chunks and size only (an older backup: "Checked" - the
+        /// headline wording for that case is an open owner question). A file that did not match the backup makes the restore
+        /// NOT successful, named, with the note that the file at the destination was kept.
+        /// </summary>
+        public static RestoreView RestoreResult(string lang, Msg job, int chosen)
+        {
+            var v = new RestoreView();
+            var st = job == null ? "running" : job["state"] ?? "running";
+            if (st == "running")
+            {
+                v.Running = true; v.Tone = Tone.Info; v.Caption = L.T(lang, "The restore has started"); v.Headline = L.T(lang, "Restoring…");
+                return v;
+            }
+            int mism = job.Int("mismatched"), failed = job.Int("failed");
+            v.Mismatch = job.List("mismatch").Select(x => x["p"] ?? "").Where(x => x.Length > 0).ToList();
+            if (mism < v.Mismatch.Count) mism = v.Mismatch.Count;
+            if (job["restored"] != null) v.Counts = L.T(lang, "Restored {0} · skipped {1} · failed {2}", job.Int("restored"), job.Int("skipped"), failed);
+            if (job["verified"] != null)
+            {
+                int all = job.Int("verified"), sha = Math.Min(all, job.Int("verifiedSha256")), chunks = all - sha;
+                if (sha > 0) v.Verification.Add(L.T(lang, "Verified (SHA-256): {0} files", sha));
+                if (chunks > 0) v.Verification.Add(L.T(lang, "Checked (chunks and size): {0} files", chunks));
+            }
+            v.Success = st == "ok" && mism == 0 && failed == 0;
+            v.Tone = v.Success ? Tone.Ok : Tone.Bad;
+            v.Caption = v.Success ? L.T(lang, "The restore finished") : L.T(lang, "The restore did not finish");
+            if (mism > 0)
+            {
+                v.Headline = L.T(lang, "{0} files did not match the backup", mism);
+                v.MismatchNote = L.T(lang, "They were not put in place: the file already at the destination was kept.");
+            }
+            else if (!v.Success) v.Headline = L.T(lang, "Some files were not restored");
+            else v.Headline = chosen == 0 ? L.T(lang, "Everything in the point was restored") : chosen == 1 ? L.T(lang, "1 selected item was restored") : L.T(lang, "{0} selected items were restored", chosen);
+            return v;
         }
 
         /// <summary>The restore points grouped by local day, newest first (the day strip of step 1).</summary>
