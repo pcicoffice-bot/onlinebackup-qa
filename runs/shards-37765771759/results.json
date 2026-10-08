@@ -1,0 +1,256 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.UpdaterTests OnlineBackup.Tests.ClientUpdateTests OnlineBackup.Tests.PilotChallengeInstallTests.IN04 OnlineBackup.Tests.PilotInstallComponentTests.IN04 OnlineBackup.Tests.PilotScopeAgentTests.WithTheSwitch_AFileSet', 1 shards x 2 - run 37765771759 (b9c2762ba952dd58f43a0c20b69cee1c33239f4f)",
+ "mode": "strict",
+ "build_sha": "9797c9c0c94ae0f1a218292e0a930ede70b952e0b562018264ae59c6cd4ab92c",
+ "counts": {
+  "PASS": 12,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.ClientUpdateTests.B1_WithThePilotSwitch_TheServerOffersNoClientUpdate_TheComputerDoesNotUpdateItself_WithoutItItDoes": "PASS",
+  "OnlineBackup.Tests.ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles": "PASS",
+  "OnlineBackup.Tests.PilotChallengeInstallTests.IN04_UpdateFromFiles_APackageTheVendorNeverSigned_IsRefused_NothingInstalled": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_AChangedPackage_AForgedOrMisplacedSignature_AreRefused_NothingInstalled_ThenTheGenuineOneInstalls": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_ASignedVersion_IsDownloaded_Checked_HandedToItsInstallerByteIdentical_SettingsAndDataUntouched": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused": "PASS",
+  "OnlineBackup.Tests.PilotScopeAgentTests.WithTheSwitch_AFileSetIsCreated_BackedUp_Restored_Tested_Kept_Encrypted_Updated_AndRecovered": "PASS",
+  "OnlineBackup.Tests.UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused": "PASS",
+  "OnlineBackup.Tests.UpdaterTests.PrivateStore_AVersionWithoutTheVendorsSignature_IsRefused_TheSignedOneInstalls_TheAuditSaysSignedOnlyThen": "PASS",
+  "OnlineBackup.Tests.UpdaterTests.PrivateStore_NewVersionFound_ReadWithTheKey_ShaChecked_KeyNeverShown": "PASS",
+  "OnlineBackup.Tests.UpdaterTests.UpdateFromFiles_OnlyWithTheVendorsSignature_UnsignedOrForgedRefused_TheAuditSaysSignedOnlyThen": "PASS",
+  "OnlineBackup.Tests.UpdaterTests.UpdateFromFiles_PartsJoinedInOrder_OnTheServerOnly_ANonPackageIsRefused": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.ClientUpdateTests.B1_WithThePilotSwitch_TheServerOffersNoClientUpdate_TheComputerDoesNotUpdateItself_WithoutItItDoes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.6727906,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.5117714,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientUpdateTests.TheServerListsItsClientFiles_TheComputerSeesWhatChanged_DownloadsOnlyListedFiles": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.5082939,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.4718959,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeInstallTests.IN04_UpdateFromFiles_APackageTheVendorNeverSigned_IsRefused_NothingInstalled": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1271316,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.1139049,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_AChangedPackage_AForgedOrMisplacedSignature_AreRefused_NothingInstalled_ThenTheGenuineOneInstalls": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3602009,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.3558402,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_ASignedVersion_IsDownloaded_Checked_HandedToItsInstallerByteIdentical_SettingsAndDataUntouched": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1881073,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.1801631,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1645505,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.1518629,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeAgentTests.WithTheSwitch_AFileSetIsCreated_BackedUp_Restored_Tested_Kept_Encrypted_Updated_AndRecovered": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.5756458,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 5.8135985,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UpdaterTests.NewSignedVersion_IsFound_Downloaded_Checked_AndHandedToItsInstaller_AForgedOneIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.9362456,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9148379,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UpdaterTests.PrivateStore_AVersionWithoutTheVendorsSignature_IsRefused_TheSignedOneInstalls_TheAuditSaysSignedOnlyThen": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.6503056,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.6112984,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UpdaterTests.PrivateStore_NewVersionFound_ReadWithTheKey_ShaChecked_KeyNeverShown": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.5072899,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.492108,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UpdaterTests.UpdateFromFiles_OnlyWithTheVendorsSignature_UnsignedOrForgedRefused_TheAuditSaysSignedOnlyThen": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3721848,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.3150544,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UpdaterTests.UpdateFromFiles_PartsJoinedInOrder_OnTheServerOnly_ANonPackageIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.8562608,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.7403935,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001792",
+    "os": "Windows",
+    "sha": "b9c2762ba952dd58f43a0c20b69cee1c33239f4f",
+    "build_sha": "9797c9c0c94ae0f1a218292e0a930ede70b952e0b562018264ae59c6cd4ab92c",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 12
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001791",
+    "os": "Windows",
+    "sha": "b9c2762ba952dd58f43a0c20b69cee1c33239f4f",
+    "build_sha": "9797c9c0c94ae0f1a218292e0a930ede70b952e0b562018264ae59c6cd4ab92c",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 12
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
