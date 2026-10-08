@@ -1,0 +1,104 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.Net48NativeTests', 1 shards x 1 - run 37769664502 (ee0a46ec12d55bc0815fa47cb13fde6d7faf122a)",
+ "mode": "strict",
+ "build_sha": "224fdb41c62e36ee653fd15bcafabf5ca1f219fd463f816fdda8ee7b8da5d584",
+ "counts": {
+  "PASS": 4,
+  "FAIL": 2,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net40\")": "FAIL",
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net48\")": "FAIL",
+  "OnlineBackup.Tests.Net48NativeTests.Net40LocalState_UpgradedToNet48_NothingChangesTwice_AndBackAgain": "PASS",
+  "OnlineBackup.Tests.Net48NativeTests.Net48Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net40\")": "PASS",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net48\")": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net40\")": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 13.9293197,
+    "note": "backup (1): BS_STOP_BY_SYSTEM_ERROR new=1 upd=0 perm=0 del=0 bytes=506\r\nerr:  PathTooLongException: The specified path, file name, or both are too long. The fully qualified file name must be less than 260 characters, and the directory name must be less than 248 characters.",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net48\")": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 14.3658136,
+    "note": "Assert.Contains() Failure: Sub-string not found\r\nString:    \"BS_STOP_SUCCESS_WITH_ERROR new=1 upd=0 pe\"\u00b7\u00b7\u00b7\r\nNot found: \"new=2 \"",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48NativeTests.Net40LocalState_UpgradedToNet48_NothingChangesTwice_AndBackAgain": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 30.348889,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48NativeTests.Net48Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 19.876361,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net40\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 18.3073241,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net48\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 18.4572431,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net40\")",
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net48\")",
+  "OnlineBackup.Tests.Net48NativeTests.Net40LocalState_UpgradedToNet48_NothingChangesTwice_AndBackAgain",
+  "OnlineBackup.Tests.Net48NativeTests.Net48Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net40\")",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net48\")"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001818",
+    "os": "Windows",
+    "sha": "ee0a46ec12d55bc0815fa47cb13fde6d7faf122a",
+    "build_sha": "224fdb41c62e36ee653fd15bcafabf5ca1f219fd463f816fdda8ee7b8da5d584",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 3
+   },
+   "tests": 6
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}

@@ -1,0 +1,10 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net40\")",
+  "OnlineBackup.Tests.Net48NativeTests.LongPath_Over260_BackedUpAndRestoredIdentical(tfm: \"net48\")",
+  "OnlineBackup.Tests.Net48NativeTests.Net40LocalState_UpgradedToNet48_NothingChangesTwice_AndBackAgain",
+  "OnlineBackup.Tests.Net48NativeTests.Net48Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net40\")",
+  "OnlineBackup.Tests.Net48NativeTests.PermissionOnlyChange_IsOnePermVersion(tfm: \"net48\")"
+ ]
+}
