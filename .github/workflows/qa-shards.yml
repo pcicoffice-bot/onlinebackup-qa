@@ -31,6 +31,7 @@ jobs:
       title: ${{ steps.req.outputs.title }}
       serial: ${{ steps.req.outputs.serial }}
       load: ${{ steps.req.outputs.load }}
+      suite: ${{ steps.req.outputs.suite }}
     steps:
       - uses: actions/checkout@v4
       - name: The request (the inputs of a manual run, or tools/qa-shards/request.json of a qa-shards-* branch)
@@ -52,6 +53,7 @@ jobs:
       title: ${{ needs.request.outputs.title }}
       serial: ${{ fromJSON(needs.request.outputs.serial) }}
       load: ${{ needs.request.outputs.load == 'true' }}
+      suite: ${{ needs.request.outputs.suite }}
 
   keep:
     needs: [request, run]
