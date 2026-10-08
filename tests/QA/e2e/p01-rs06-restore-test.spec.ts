@@ -104,7 +104,12 @@ test('P01 RS-06 the monthly restore test runs by itself on a real backup: Passed
   const times = (wrap: string[]) => spawnSync(wrap.length ? wrap[0] : 'stat', [...wrap.slice(1), ...(wrap.length ? ['stat'] : []), '-c', '%n %Y %s', ...[...atBackup.keys()].map((k) => path.join(src, k))], { encoding: 'utf8' }).stdout;
   const seen = 'stat now:\n' + times([]) + 'stat under ' + month.join(' ') + ':\n' + times(month);
   const b2 = agentRun(ag, ['backup', '--set', id], month);
-  expect(b2.out, b2.out + '\n--- index before the run:\n' + before + '\n--- ' + seen).toMatch(/^BS_STOP_SUCCESS .*upd=1 /m);
+  // the verdict keeps only the first 400 characters of a message: one short line per file first (name idx-size/idx-mtime
+  // stat-mtime faked-stat-mtime, ms and s), then the rest
+  const idx = new Map(before.split('\n').map((l) => l.split('\t')).filter((f) => f.length > 4).map((f) => [path.basename(f[1]), f[2] + '/' + f[3]]));
+  const faked = new Map(times(month).trim().split('\n').map((l) => l.split(' ')).map((f) => [path.basename(f[0]), f[1]]));
+  const brief = [...atBackup.keys()].map((k) => { const b = path.basename(k); return b + ' ' + idx.get(b) + ' ' + Math.floor(fs.statSync(path.join(src, k)).mtimeMs) + ' ' + faked.get(b); }).join('; ');
+  expect(b2.out, b2.out.trim() + ' | ' + brief + '\n--- index before the run:\n' + before + '\n--- ' + seen).toMatch(/^BS_STOP_SUCCESS .*upd=1 /m);
   const atBackup2 = manifest(src);
 
   evidence.step('FAULT: one stored object on the server\'s disk gets one byte flipped');
