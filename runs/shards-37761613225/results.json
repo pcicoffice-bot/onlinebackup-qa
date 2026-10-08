@@ -1,0 +1,307 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.BK05UnreadableTests', 1 shards x 2 - run 37761613225 (6c05b14052e9ce8f99cb09c535df4b3288be790a)",
+ "mode": "strict",
+ "build_sha": "c40d30fb9b542717218135d0cbeee5b650572a8b6566a4b76fb30f0a8c5fe858",
+ "counts": {
+  "PASS": 11,
+  "FAIL": 1,
+  "NOT TESTED": 3,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeletedBetweenScanAndRead_IsAnErrorNamingIt_TheEarlierVersionIsKept_AndItComesBackClean": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"RESTIC\")": "FAIL",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileLockedByAnotherProcess_VssOff_IsAnErrorNamingIt_AndItIsSentOnceReleased": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_ASubfolderDeniedByPermissions_IsAnErrorNamingIt_ItsFilesAreKept_AndItComesBackClean": "NOT TESTED",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADeniedFileInsideAnIncludeFilter_IsAnError_DeniedDataOutsideTheSelectionIsNot": "NOT TESTED",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADisconnectedNetworkSource_IsAnErrorNamingIt": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AFileNameWithATrailingDot_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AJunctionToADeniedFolder_IsAnError": "NOT TESTED",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AnUnchangedFileThatBecomesUnreadable_StaysRestorableInTheNewestPoint": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ShippedAgentOnWindows_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AllReadable_IsACleanSuccess_NoErrorNoWarning_RestoresIdentical": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_E2E_ShippedAgentOnWindows_AnAclDeniedFile_IsAnErrorOnAgentAndServer_TheRestRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_TheWholeSourceRemoved_IsAFailureNamingIt_ThePointStillRestores_AndItComesBackClean": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeletedBetweenScanAndRead_IsAnErrorNamingIt_TheEarlierVersionIsKept_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.7444068,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.8679834,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.6354289,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.7654444,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 7.7957757,
+    "note": "Assert.Equal() Failure: Strings differ\r\n                          \u2193 (pos 15)\r\nExpected: \"BS_STOP_SUCCESS_WITH_ERROR\"\r\nActual:   \"BS_STOP_SUCCESS\"",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 7.5756717,
+    "note": "Assert.Equal() Failure: Strings differ\r\n                          \u2193 (pos 15)\r\nExpected: \"BS_STOP_SUCCESS_WITH_ERROR\"\r\nActual:   \"BS_STOP_SUCCESS\"",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileLockedByAnotherProcess_VssOff_IsAnErrorNamingIt_AndItIsSentOnceReleased": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.9849805,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 4.1136623,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_ASubfolderDeniedByPermissions_IsAnErrorNamingIt_ItsFilesAreKept_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 1.7557241,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-7095c3f039\\docs\\HR did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 1.3818599,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-d435998ed3\\docs\\HR did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADeniedFileInsideAnIncludeFilter_IsAnError_DeniedDataOutsideTheSelectionIsNot": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 1.2354388,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-4af13a841f\\docs\\Private did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.9309647,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-a3d6e5dddc\\docs\\Private did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADisconnectedNetworkSource_IsAnErrorNamingIt": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.1222521,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.1109311,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AFileNameWithATrailingDot_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.4760859,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.043628,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AJunctionToADeniedFolder_IsAnError": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 1.2576071,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-cb84f16203\\shared-hr did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.8703609,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: the denial of C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obtest-c876fe9835\\shared-hr did not take effect for this process (it reads everything)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7585576,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.1325489,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AnUnchangedFileThatBecomesUnreadable_StaysRestorableInTheNewestPoint": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.8617636,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2895343,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ShippedAgentOnWindows_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.8385172,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 7.4687174,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AllReadable_IsACleanSuccess_NoErrorNoWarning_RestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.8109309,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3564551,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_E2E_ShippedAgentOnWindows_AnAclDeniedFile_IsAnErrorOnAgentAndServer_TheRestRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 12.6387263,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 9.1717721,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_TheWholeSourceRemoved_IsAFailureNamingIt_ThePointStillRestores_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.5380268,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.6016295,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001759",
+    "os": "Windows",
+    "sha": "6c05b14052e9ce8f99cb09c535df4b3288be790a",
+    "build_sha": "c40d30fb9b542717218135d0cbeee5b650572a8b6566a4b76fb30f0a8c5fe858",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 15
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001758",
+    "os": "Windows",
+    "sha": "6c05b14052e9ce8f99cb09c535df4b3288be790a",
+    "build_sha": "c40d30fb9b542717218135d0cbeee5b650572a8b6566a4b76fb30f0a8c5fe858",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 15
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
