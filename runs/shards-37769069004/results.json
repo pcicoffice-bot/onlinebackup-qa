@@ -1,0 +1,1152 @@
+{
+ "title": "[suite net48] windows-latest, select 'OnlineBackup.Tests.AgentTlsComponentTests. OnlineBackup.Tests.AtomicReplaceRefusedComponentTests. OnlineBackup.Tests.AtomicSharedReadComponentTests. OnlineBackup.Tests.AuditB_FilterTests. OnlineBackup.Tests.CoreFormatsTests. OnlineBackup.Tests.FolderSelectionComponentTests. OnlineBackup.Tests.LocalStateComponentTests. OnlineBackup.Tests.OpenRunComponentTests. OnlineBackup.Tests.PilotAgentNetworkComponentTests. OnlineBackup.Tests.PilotAgentSettingsComponentTests. OnlineBackup.Tests.PilotAgentTlsComponentTests. OnlineBackup.Tests.PilotFileBackupComponentTests. OnlineBackup.Tests.PilotDeltaChainComponentTests. OnlineBackup.Tests.PilotFilterComponentTests. OnlineBackup.Tests.PilotStopComponentTests. OnlineBackup.Tests.PilotResourcesComponentTests. OnlineBackup.Tests.PilotProcessComponentTests. OnlineBackup.Tests.PilotVssComponentTests. OnlineBackup.Tests.PilotMaxDurationComponentTests. OnlineBackup.Tests.PilotRebootComponentTests. OnlineBackup.Tests.PilotScopeComponentTests. OnlineBackup.Tests.ResticPathComponentTests. OnlineBackup.Tests.RestoreComponentTests. OnlineBackup.Tests.RestorePathMappingComponentTests. OnlineBackup.Tests.RetentionZoneComponentTests. OnlineBackup.Tests.RunRequestComponentTests. OnlineBackup.Tests.SetupPayloadTests. OnlineBackup.Tests.SystemStateTargetComponentTests. OnlineBackup.Tests.UnreadableComponentTests.', 2 shards x 1 - run 37769069004 (424be278ac80ea2c886b1e467c6c02b622a9e702)",
+ "mode": "strict",
+ "build_sha": "9b318e9b06b3051abf843a27672832ca54f7556437f2d0a44a5590d4ec2085f0",
+ "counts": {
+  "PASS": 109,
+  "FAIL": 0,
+  "NOT TESTED": 1,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.CoreFormatsTests.AMessage_ReadsBackExactly": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": "PASS",
+  "OnlineBackup.Tests.CoreFormatsTests.ATemporaryFile_IsKnownByItsName_NeverByItsPath": "PASS",
+  "OnlineBackup.Tests.FolderSelectionComponentTests.ALineWithNoFolder_IsRefused_ATickedFolderStays": "PASS",
+  "OnlineBackup.Tests.FolderSelectionComponentTests.ASubFolderUnticked_IsAnExclusion_AndTheParentUntickedClearsAll": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.ADeltaTheServerFailed_LeavesTheChainAsItWas_ThePointRestoresTheOldVersion_TheNextRunSendsTheDelta": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Differential_EachDeltaCarriesEveryChangeSinceTheFull_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Incremental_EachDeltaIsSmallAndHoldsOnlyNewChunks_EveryPointRestoresIdentical_PastTheLimitANewFullCopy": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": "PASS",
+  "OnlineBackup.Tests.PilotMaxDurationComponentTests.AtTheMaximumDuration_TheRunIsReportedAsStopped_NotAsASuccess": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_MaxStoresFarLessThanNone_BothRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_OfDataThatDoesNotCompress_StoresNoMoreThanWithout_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.UploadLimit_ARunNeverSendsFasterThanTheLimit_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"BAREMETAL\", name: \"bare-metal\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"DOMINO\", name: \"Domino\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"GWS\", name: \"Google Workspace\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"HYPERV\", name: \"Hyper-V\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"M365\", name: \"Microsoft 365\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"MSSQL\", name: \"SQL Server\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"MYSQL\", name: \"MySQL\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"ORACLE\", name: \"Oracle\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"POSTGRESQL\", name: \"PostgreSQL\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"SOMETHING\", name: \"SOMETHING\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"SYSTEMSTATE\", name: \"System State\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"VMWARE\", name: \"VMware\")": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"\", old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 10.0.19045.0\", old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 4.0.1381\", old: True)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 5.1.2600 Service Pac\"\u00b7\u00b7\u00b7, old: True)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 5.2.3790 Service Pac\"\u00b7\u00b7\u00b7, old: True)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 6.1.7601 Service Pac\"\u00b7\u00b7\u00b7, old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT x.y\", old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Unix 6.8.0.0\", old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: null, old: False)": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.TheOptionsOutside_AreNamed_AndAPlainFileSetIsInside": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.ThePilotSwitchValue": "PASS",
+  "OnlineBackup.Tests.PilotScopeComponentTests.TheRefusal_IsTranslated_ToHebrew_WithItsReason": "PASS",
+  "OnlineBackup.Tests.PilotStopComponentTests.AtTheMaximumDuration_WhatWasSentRestoresIdentical_NothingIsDeleted_TheNextRunSendsOnlyTheRest": "PASS",
+  "OnlineBackup.Tests.PilotStopComponentTests.ExactlyAtTheLimit_TheRunGoesOn_OneTickPast_ItStops_WithoutALimit_ItNeverStops": "PASS",
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.APathThatLeavesTheRestoreFolder_IsRefused_NotLookedForElsewhere": "PASS",
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.AWindowsDrivePath_IsMappedToTheDriveLetterFolder": "PASS",
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.TheSourceFolder_IsLookedForUnderTheRestoreFolder_NeverAtTheSourceItself": "PASS",
+  "OnlineBackup.Tests.RetentionZoneComponentTests.TheLastBackupOfAMonth_IsTheCustomersMonth_NotUtcs": "NOT TESTED",
+  "OnlineBackup.Tests.RunRequestComponentTests.ARequestWhoseBackupCouldNotStart_IsNotLost": "PASS",
+  "OnlineBackup.Tests.RunRequestComponentTests.AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.RunRequestComponentTests.AnOlderStop_OrAServerThatFails_NeverStopsARun": "PASS",
+  "OnlineBackup.Tests.RunRequestComponentTests.EachNewRequest_StartsExactlyOneRun_AnOldOrRepeatedOneNone": "PASS",
+  "OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatEnds_TheWriteWaitsAndSucceeds": "PASS",
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatNeverEnds_FailsLoudly_AndLeavesNoTemporaryFile": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": "PASS",
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": "PASS",
+  "OnlineBackup.Tests.AuditB_FilterTests.ALinkToItsOwnParent_IsNotWalkedForEver_EachFileIsBackedUpOnce": "PASS",
+  "OnlineBackup.Tests.AuditB_FilterTests.Control_LinksNotFollowed_EachFileOnce": "PASS",
+  "OnlineBackup.Tests.LocalStateComponentTests.ADamagedChunkList_DoesNotFailEveryLaterBackup": "PASS",
+  "OnlineBackup.Tests.LocalStateComponentTests.ADamagedIndexLine_DoesNotFailEveryLaterBackup": "PASS",
+  "OnlineBackup.Tests.LocalStateComponentTests.ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.OpenRunComponentTests.ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain": "PASS",
+  "OnlineBackup.Tests.OpenRunComponentTests.ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote": "PASS",
+  "OnlineBackup.Tests.OpenRunComponentTests.ASilentUpload_StillSendsASignOfLifeWithinAMinute": "PASS",
+  "OnlineBackup.Tests.OpenRunComponentTests.WhileARunIsOpen_TheNoteHoldsIt_AConfirmedEndRemovesIt": "PASS",
+  "OnlineBackup.Tests.PilotAgentNetworkComponentTests.AnObjectWhoseAnswerIsLost_IsSentAgain_CountedOnce_TheRunCompletes_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotAgentNetworkComponentTests.TheServerGoneMidRun_EndsAsAFailureWithTheReason_NothingCommitted_TheIndexDoesNotMove_TheNextRunCompletesAndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.ASetEditedOnTheServer_TheNextRunSendsExactlyTheNewSelection_AndTheNewestPointRestoresToIt": "PASS",
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.AnEditDuringARun_TheRunKeepsItsSettings_TheNextRunUsesTheEdit_ARemovedSetIsNoLongerBackedUp": "PASS",
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.TheSettingsCannotBeRead_NoRunBegins_NothingSent_TheIndexDoesNotMove_AndTheNextRunUsesTheNewSettings": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.ALinkedFolder_IsFollowedOnlyWithTheOption_AndALinkBackToItsParentIsNotWalkedAgain": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.AnIncludeOnlyFilter_KeepsOnlyItsFiles_InEveryFolder_AndTheyRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.SkippedFolderAndExcludeFilter_AreAbsentFromTheRestore_EverythingElseIdentical_ASiblingWithTheSamePrefixIsKept": "PASS",
+  "OnlineBackup.Tests.PilotProcessComponentTests.AStuckPreCommandWithAChild_IsStoppedAtTheLimitWithItsChild_TheBackupGoesOnAndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_ARebootInTheMiddleOfABackup_TheDeadRunIsReportedOnceWhenTheServerAnswers_TheNextRunCompletes_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_TheServiceStartsWithTheComputer_AndAfterAnIdleRestart_ThePendingBackupCompletes_NothingReportedAsInterrupted": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": "PASS",
+  "OnlineBackup.Tests.RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft": "PASS",
+  "OnlineBackup.Tests.RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile": "PASS",
+  "OnlineBackup.Tests.RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt": "PASS",
+  "OnlineBackup.Tests.SetupPayloadTests.AloneWholeAndCut": "PASS",
+  "OnlineBackup.Tests.SetupPayloadTests.NotAProgram_IsDamaged_NeverAnException": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.AFailureOnANearlyFullDisk_SaysTheDiskRanOutOfSpace": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.AFailureWithEnoughSpace_AddsNothing": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsAlreadyMade_NothingIsWritten": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsMissing_ItIsMade_AndTheLogSaysSo": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsZero_ItIsMadeOne": "PASS",
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheWindowsKeyIsTheDocumentedOne": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.CoreFormatsTests.AMessage_ReadsBackExactly": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.008,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.AStateFile_IsNeverSeenHalfWritten_AndTwoWritersNeverFail": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 5.866,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.CoreFormatsTests.ATemporaryFile_IsKnownByItsName_NeverByItsPath": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.009,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.FolderSelectionComponentTests.ALineWithNoFolder_IsRefused_ATickedFolderStays": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.FolderSelectionComponentTests.ASubFolderUnticked_IsAnExclusion_AndTheParentUntickedClearsAll": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.007,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.133,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.311,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.508,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.192,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.35,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.ADeltaTheServerFailed_LeavesTheChainAsItWas_ThePointRestoresTheOldVersion_TheNextRunSendsTheDelta": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.499,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Differential_EachDeltaCarriesEveryChangeSinceTheFull_EveryPointRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.686,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Incremental_EachDeltaIsSmallAndHoldsOnlyNewChunks_EveryPointRestoresIdentical_PastTheLimitANewFullCopy": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.709,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.171,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.072,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotMaxDurationComponentTests.AtTheMaximumDuration_TheRunIsReportedAsStopped_NotAsASuccess": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.032,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_MaxStoresFarLessThanNone_BothRestoreIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.167,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_OfDataThatDoesNotCompress_StoresNoMoreThanWithout_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.328,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.UploadLimit_ARunNeverSendsFasterThanTheLimit_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.061,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"BAREMETAL\", name: \"bare-metal\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"DOMINO\", name: \"Domino\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"GWS\", name: \"Google Workspace\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"HYPERV\", name: \"Hyper-V\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"M365\", name: \"Microsoft 365\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"MSSQL\", name: \"SQL Server\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"MYSQL\", name: \"MySQL\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"ORACLE\", name: \"Oracle\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"POSTGRESQL\", name: \"PostgreSQL\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"SOMETHING\", name: \"SOMETHING\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"SYSTEMSTATE\", name: \"System State\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.EveryTypeButFiles_IsOutside_WithItsName(type: \"VMWARE\", name: \"VMware\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"\", old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.006,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 10.0.19045.0\", old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 4.0.1381\", old: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 5.1.2600 Service Pac\"\u00b7\u00b7\u00b7, old: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 5.2.3790 Service Pac\"\u00b7\u00b7\u00b7, old: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT 6.1.7601 Service Pac\"\u00b7\u00b7\u00b7, old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Microsoft Windows NT x.y\", old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: \"1.0.0.0; Unix 6.8.0.0\", old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.OldWindows_IsNt5AndOlder(agent: null, old: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.TheOptionsOutside_AreNamed_AndAPlainFileSetIsInside": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.ThePilotSwitchValue": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeComponentTests.TheRefusal_IsTranslated_ToHebrew_WithItsReason": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.044,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStopComponentTests.AtTheMaximumDuration_WhatWasSentRestoresIdentical_NothingIsDeleted_TheNextRunSendsOnlyTheRest": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.183,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStopComponentTests.ExactlyAtTheLimit_TheRunGoesOn_OneTickPast_ItStops_WithoutALimit_ItNeverStops": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.143,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.APathThatLeavesTheRestoreFolder_IsRefused_NotLookedForElsewhere": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.011,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.AWindowsDrivePath_IsMappedToTheDriveLetterFolder": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.047,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestorePathMappingComponentTests.TheSourceFolder_IsLookedForUnderTheRestoreFolder_NeverAtTheSourceItself": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.03,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RetentionZoneComponentTests.TheLastBackupOfAMonth_IsTheCustomersMonth_NotUtcs": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.001,
+    "note": "outcome NotExecuted: NEEDS OWNER DECISION (bug 77, docs/PRODUCT-BENCHMARK.md): GFS day/month boundaries in the server time zone or UTC",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.RunRequestComponentTests.ARequestWhoseBackupCouldNotStart_IsNotLost": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.023,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RunRequestComponentTests.AStopNewerThanTheStart_EndsTheRunAsStopped_NothingDeleted_TheNextRunCompletes_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.107,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RunRequestComponentTests.AnOlderStop_OrAServerThatFails_NeverStopsARun": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.108,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RunRequestComponentTests.EachNewRequest_StartsExactlyOneRun_AnOldOrRepeatedOneNone": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.014,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatEnds_TheWriteWaitsAndSucceeds": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.161,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicReplaceRefusedComponentTests.ARefusalThatNeverEnds_FailsLoudly_AndLeavesNoTemporaryFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.025,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.AnotherProgramThatHoldsTheFileForAMoment_DelaysTheWrite_DoesNotFailIt": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.312,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheProductReadsItsOwnFiles_OnlyThroughTheSharedReaders": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.039,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.TheSharedReads_GiveExactlyWhatFileReadAllGives": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.025,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileReadersHoldIt_TheFileNeverDisappears_DuringAReplace": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.967,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AtomicSharedReadComponentTests.WhileTheProductsOwnReaderReadsWithoutPause_EveryWriteSucceeds_AndNoHalfFileIsSeen": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.67,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditB_FilterTests.ALinkToItsOwnParent_IsNotWalkedForEver_EachFileIsBackedUpOnce": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.008,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditB_FilterTests.Control_LinksNotFollowed_EachFileOnce": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.004,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.LocalStateComponentTests.ADamagedChunkList_DoesNotFailEveryLaterBackup": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.125,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.LocalStateComponentTests.ADamagedIndexLine_DoesNotFailEveryLaterBackup": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.114,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.LocalStateComponentTests.ALostIndex_IsRebuiltFromTheServer_OnlyTheChangedFileIsSent_AndEverythingRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.216,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.OpenRunComponentTests.ALostEnd_LeavesTheNote_TheIndexDoesNotMove_TheNextStartReportsItOnce_AndTheFilesAreSentAgain": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.076,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.OpenRunComponentTests.ANoteOfALiveProcess_IsNotReported_ADamagedNoteIsReportedAndRemoved_AnUnreachableServerKeepsTheNote": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 6.052,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.OpenRunComponentTests.ASilentUpload_StillSendsASignOfLifeWithinAMinute": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 65.026,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.OpenRunComponentTests.WhileARunIsOpen_TheNoteHoldsIt_AConfirmedEndRemovesIt": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.029,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentNetworkComponentTests.AnObjectWhoseAnswerIsLost_IsSentAgain_CountedOnce_TheRunCompletes_AndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 3.62,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentNetworkComponentTests.TheServerGoneMidRun_EndsAsAFailureWithTheReason_NothingCommitted_TheIndexDoesNotMove_TheNextRunCompletesAndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 10.43,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.ASetEditedOnTheServer_TheNextRunSendsExactlyTheNewSelection_AndTheNewestPointRestoresToIt": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.127,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.AnEditDuringARun_TheRunKeepsItsSettings_TheNextRunUsesTheEdit_ARemovedSetIsNoLongerBackedUp": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.102,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentSettingsComponentTests.TheSettingsCannotBeRead_NoRunBegins_NothingSent_TheIndexDoesNotMove_AndTheNextRunUsesTheNewSettings": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 6.095,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.ALinkedFolder_IsFollowedOnlyWithTheOption_AndALinkBackToItsParentIsNotWalkedAgain": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.049,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.AnIncludeOnlyFilter_KeepsOnlyItsFiles_InEveryFolder_AndTheyRestoreIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.041,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.SkippedFolderAndExcludeFilter_AreAbsentFromTheRestore_EverythingElseIdentical_ASiblingWithTheSamePrefixIsKept": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.055,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotProcessComponentTests.AStuckPreCommandWithAChild_IsStoppedAtTheLimitWithItsChild_TheBackupGoesOnAndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 3.618,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_ARebootInTheMiddleOfABackup_TheDeadRunIsReportedOnceWhenTheServerAnswers_TheNextRunCompletes_AndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 16.301,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_TheServiceStartsWithTheComputer_AndAfterAnIdleRestart_ThePendingBackupCompletes_NothingReportedAsInterrupted": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.113,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.335,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.576,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.002,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.499,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestoreComponentTests.ADamagedOrMissingObject_IsAFailedFile_TheOthersAreRestored_NoHalfFileLeft": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.048,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestoreComponentTests.EveryFile_Identical_WithItsTime_AndTheFilterGivesOnlyItsFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.033,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.RestoreComponentTests.OriginalPlace_WithoutOverwrite_KeepsTheFileAndSaysSo_WithOverwrite_ReplacesIt": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.034,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SetupPayloadTests.AloneWholeAndCut": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.032,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SetupPayloadTests.NotAProgram_IsDamaged_NeverAnException": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.01,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.AFailureOnANearlyFullDisk_SaysTheDiskRanOutOfSpace": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.AFailureWithEnoughSpace_AddsNothing": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsAlreadyMade_NothingIsWritten": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsMissing_ItIsMade_AndTheLogSaysSo": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheSettingIsZero_ItIsMadeOne": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SystemStateTargetComponentTests.TheWindowsKeyIsTheDocumentedOne": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.092,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.083,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.038,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001802",
+    "os": "Windows",
+    "sha": "424be278ac80ea2c886b1e467c6c02b622a9e702",
+    "build_sha": "9b318e9b06b3051abf843a27672832ca54f7556437f2d0a44a5590d4ec2085f0",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 53
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001803",
+    "os": "Windows",
+    "sha": "424be278ac80ea2c886b1e467c6c02b622a9e702",
+    "build_sha": "9b318e9b06b3051abf843a27672832ca54f7556437f2d0a44a5590d4ec2085f0",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 3
+   },
+   "tests": 57
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
