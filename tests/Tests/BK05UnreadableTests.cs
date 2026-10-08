@@ -230,7 +230,13 @@ namespace OnlineBackup.Tests
                 {
                     // restic on Windows reads with its backup privilege when the process holds it (first Windows run 37761613225:
                     // a clean success) - then the file must really be in the new point, in its NEW version: read, not lost
-                    var read = RestoreNewest(app, env, set, src, "r2read");
+                    // restic also restores the file's ACL - with the deny entry (Windows run 37762306694: the restored copy
+                    // could not be read by the test). Restore fidelity of permissions is decision B5, not judged here: the
+                    // entry is taken off the restored copy before its SHA-256 is compared
+                    var t2 = Path.Combine(env.Root, "r2read");
+                    app.Restic(set, Pw).Restore(null, t2, null, new List<string>());
+                    if (OperatingSystem.IsWindows()) Icacls("\"" + t2 + "\" /remove:d *" + Me() + " /T /C");
+                    var read = ResticTree(t2, src);
                     Assert.True(read.ContainsKey("payroll.xlsx") && read["payroll.xlsx"] == v2, "restic said BS_STOP_SUCCESS but the newest point does not hold payroll.xlsx v2: " + string.Join(" | ", r2.LogLines));
                     Assert.Equal(want, read);
                     return;
