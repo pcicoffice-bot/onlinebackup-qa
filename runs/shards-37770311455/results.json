@@ -1,0 +1,82 @@
+{
+ "title": "[suite net48] windows-latest, select 'OnlineBackup.Tests.Net48GuardTests.', 1 shards x 1 - run 37770311455 (9b2b26ce1065d4b23829430a014cc6ee188a5669)",
+ "mode": "strict",
+ "build_sha": "ad6aae73611cfa0be85c621ebcfbe9ae4cb397e115d8c8f857fb905f27254298",
+ "counts": {
+  "PASS": 4,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.Net48GuardTests.Attributes_IncludeThePermissions_OnWindows": "PASS",
+  "OnlineBackup.Tests.Net48GuardTests.Secrets_AreProtectedByDpapi_OnWindows": "PASS",
+  "OnlineBackup.Tests.Net48GuardTests.TheAgentAssembly_IsTheNet48Build": "PASS",
+  "OnlineBackup.Tests.Net48GuardTests.TheWindowsService_IsInTheBuild": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.Net48GuardTests.Attributes_IncludeThePermissions_OnWindows": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.016,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48GuardTests.Secrets_AreProtectedByDpapi_OnWindows": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.204,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48GuardTests.TheAgentAssembly_IsTheNet48Build": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Net48GuardTests.TheWindowsService_IsInTheBuild": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.214,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.Net48GuardTests.Attributes_IncludeThePermissions_OnWindows",
+  "OnlineBackup.Tests.Net48GuardTests.Secrets_AreProtectedByDpapi_OnWindows",
+  "OnlineBackup.Tests.Net48GuardTests.TheAgentAssembly_IsTheNet48Build",
+  "OnlineBackup.Tests.Net48GuardTests.TheWindowsService_IsInTheBuild"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001823",
+    "os": "Windows",
+    "sha": "9b2b26ce1065d4b23829430a014cc6ee188a5669",
+    "build_sha": "ad6aae73611cfa0be85c621ebcfbe9ae4cb397e115d8c8f857fb905f27254298",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 4
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
