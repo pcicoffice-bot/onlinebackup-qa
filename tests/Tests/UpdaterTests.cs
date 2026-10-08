@@ -110,10 +110,12 @@ namespace OnlineBackup.Tests
                     var zip = Path.Combine(env.Dir("zip"), "u.zip");
                     System.IO.Compression.ZipFile.CreateFromDirectory(Package(env, "9.9.9"), zip);
                     var bytes = File.ReadAllBytes(zip);
+                    string sha; using (var h = System.Security.Cryptography.SHA256.Create()) sha = Bytes.Hex(h.ComputeHash(bytes));
                     Func<byte[], HttpWebResponse> post = b =>
                     {
                         var r = (HttpWebRequest)WebRequest.Create(env.Url + "api/admin/update/upload");
                         r.Method = "POST"; r.Headers["X-Session"] = admin.Session; r.ContentType = "application/octet-stream";
+                        r.Headers["X-Update-Signature"] = VendorSigned("9.9.9", sha);   // owner decision 106 (A): the vendor's signature comes with the files
                         using (var s = r.GetRequestStream()) s.Write(b, 0, b.Length);
                         try { return (HttpWebResponse)r.GetResponse(); } catch (WebException e) { return (HttpWebResponse)e.Response; }
                     };
@@ -129,6 +131,124 @@ namespace OnlineBackup.Tests
                 }
             }
             finally { Updater.Launch = before; Updater.Reset(); }
+        }
+
+        /// <summary>The vendor's signature of a package (its version and SHA-256) — the key of the test servers (Env).</summary>
+        static string VendorSigned(string version, string sha)
+        {
+            using (var ec = System.Security.Cryptography.ECDsa.Create())
+            {
+                ec.ImportPkcs8PrivateKey(Convert.FromBase64String(Env.TestKey[0]), out _);
+                return Convert.ToBase64String(ec.SignData(System.Text.Encoding.UTF8.GetBytes("OBUPDATE|" + version + "|" + sha), System.Security.Cryptography.HashAlgorithmName.SHA256));
+            }
+        }
+
+        static string UpdateLog(Env env) { var d = Path.Combine(env.SystemHome, "logs", "Update"); return Directory.Exists(d) ? string.Join("\n", Directory.GetFiles(d).Select(Atomic.ReadShared)) : ""; }
+
+        /// <summary>
+        /// Owner decision 106 (A): an update brought as FILES must carry the vendor's signature, exactly like the portal's.
+        /// Through the website (the administrator on the server itself): the package's parts without a signature, with a
+        /// signature by another key, and with the vendor's signature of another version are each refused (400) and nothing is
+        /// handed to an installer; with the vendor's signature (X-Update-Signature) it installs, and only then does the
+        /// audit line say "signed".
+        /// </summary>
+        [Fact]
+        public void UpdateFromFiles_OnlyWithTheVendorsSignature_UnsignedOrForgedRefused_TheAuditSaysSignedOnlyThen()
+        {
+            var launched = new List<string>(); var before = Updater.Launch;
+            Updater.Launch = (exe, log) => { lock (launched) launched.Add(exe); };
+            Updater.Reset();
+            try
+            {
+                using (var env = new Env())
+                {
+                    var admin = env.Admin();
+                    var zip = Path.Combine(env.Dir("zip"), "u.zip");
+                    System.IO.Compression.ZipFile.CreateFromDirectory(Package(env, "9.9.7"), zip);
+                    var bytes = File.ReadAllBytes(zip);
+                    string sha; using (var h = System.Security.Cryptography.SHA256.Create()) sha = Bytes.Hex(h.ComputeHash(bytes));
+                    Func<string, HttpWebResponse> post = sig =>
+                    {
+                        var r = (HttpWebRequest)WebRequest.Create(env.Url + "api/admin/update/upload");
+                        r.Method = "POST"; r.Headers["X-Session"] = admin.Session; r.ContentType = "application/octet-stream";
+                        if (sig != null) r.Headers["X-Update-Signature"] = sig;
+                        using (var s = r.GetRequestStream()) s.Write(bytes, 0, bytes.Length);
+                        try { return (HttpWebResponse)r.GetResponse(); } catch (WebException e) { return (HttpWebResponse)e.Response; }
+                    };
+                    string forged; using (var ec = System.Security.Cryptography.ECDsa.Create()) { ec.ImportPkcs8PrivateKey(Convert.FromBase64String(License.KeyGen()[0]), out _); forged = Convert.ToBase64String(ec.SignData(System.Text.Encoding.UTF8.GetBytes("OBUPDATE|9.9.7|" + sha), System.Security.Cryptography.HashAlgorithmName.SHA256)); }
+                    foreach (var sig in new[] { null, "", forged, VendorSigned("9.9.6", sha), VendorSigned("9.9.7", new string('0', 64)) })
+                    {
+                        using (var w = post(sig)) Assert.Equal(400, (int)w.StatusCode);
+                        Assert.Empty(launched);
+                        Assert.NotEqual("installing", admin.Call("GET", "/api/admin/update")["state"]);
+                        Updater.Reset();
+                    }
+                    Assert.DoesNotContain("signed", UpdateLog(env).Split('\n').Where(l => l.Contains("→ 9.9.7")).FirstOrDefault() ?? "");
+                    using (var w = post(VendorSigned("9.9.7", sha))) Assert.Equal(200, (int)w.StatusCode);
+                    Assert.Equal("the new server 9.9.7", File.ReadAllText(Assert.Single(launched)));
+                    Assert.Contains(UpdateLog(env).Split('\n'), l => l.Contains("update from files 0 → 9.9.7") && l.Contains("signed"));
+                }
+            }
+            finally { Updater.Launch = before; Updater.Reset(); }
+        }
+
+        /// <summary>
+        /// Owner decision 106 (A): the owner's private store (GitHub) checks the vendor's signature too — a latest.json
+        /// without a signature, or with one by another key, is refused and nothing is handed to an installer (the audit
+        /// never says "signed" for it); with the vendor's signature it installs and the audit line says "signed".
+        /// </summary>
+        [Fact]
+        public void PrivateStore_AVersionWithoutTheVendorsSignature_IsRefused_TheSignedOneInstalls_TheAuditSaysSignedOnlyThen()
+        {
+            var launched = new List<string>(); var before = Updater.Launch; var api = Updater.GitHubApi;
+            Updater.Launch = (exe, log) => { lock (launched) launched.Add(exe); };
+            Updater.Reset();
+            var port = FreePort(); var listener = new HttpListener(); listener.Prefixes.Add("http://localhost:" + port + "/"); listener.Start();
+            try
+            {
+                using (var env = new Env())
+                {
+                    var zip = Path.Combine(env.Dir("z"), "p.zip");
+                    System.IO.Compression.ZipFile.CreateFromDirectory(Package(env, "9.9.8"), zip);
+                    var bytes = File.ReadAllBytes(zip);
+                    string sha; using (var h = System.Security.Cryptography.SHA256.Create()) sha = Bytes.Hex(h.ComputeHash(bytes));
+                    string signature = null;
+                    new Thread(() =>
+                    {
+                        while (listener.IsListening)
+                        {
+                            HttpListenerContext c; try { c = listener.GetContext(); } catch (Exception) { return; }
+                            var path = c.Request.Url.AbsolutePath;
+                            byte[] body = path.EndsWith("/latest.json") ? System.Text.Encoding.UTF8.GetBytes("{\"version\":\"9.9.8\",\"file\":\"p.zip\",\"sha256\":\"" + sha + "\"" + (signature == null ? "" : ",\"signature\":\"" + signature + "\"") + "}")
+                                : path.EndsWith("/p.zip") ? bytes : new byte[0];
+                            c.Response.StatusCode = body.Length == 0 ? 404 : 200; c.Response.OutputStream.Write(body, 0, body.Length); c.Response.Close();
+                        }
+                    }) { IsBackground = true }.Start();
+                    Updater.GitHubApi = "http://localhost:" + port;
+                    var admin = env.Admin();
+                    admin.Call("POST", "/api/admin/update/source", new Msg().Set("repo", "acme/crm@updates").Set("token", "github_pat_test_456").Set("auto", 0));
+                    string forged; using (var ec = System.Security.Cryptography.ECDsa.Create()) { ec.ImportPkcs8PrivateKey(Convert.FromBase64String(License.KeyGen()[0]), out _); forged = Convert.ToBase64String(ec.SignData(System.Text.Encoding.UTF8.GetBytes("OBUPDATE|9.9.8|" + sha), System.Security.Cryptography.HashAlgorithmName.SHA256)); }
+                    foreach (var sig in new[] { null, forged })
+                    {
+                        Updater.Reset(); signature = sig;
+                        Assert.Equal("1", admin.Call("GET", "/api/admin/update?check=1")["available"]);
+                        admin.Call("POST", "/api/admin/update");
+                        for (int i = 0; i < 100 && admin.Call("GET", "/api/admin/update")["state"] == "downloading"; i++) Thread.Sleep(100);
+                        var st = admin.Call("GET", "/api/admin/update");
+                        Assert.True(st["state"] == "failed", "a version without the vendor's signature: " + st["state"] + " " + st["message"]);
+                        Assert.Contains("not signed", st["message"]);
+                        Assert.Empty(launched);
+                    }
+                    Assert.DoesNotContain(UpdateLog(env).Split('\n'), l => l.Contains("→ 9.9.8") && l.Contains("signed,"));
+                    Updater.Reset(); signature = VendorSigned("9.9.8", sha);
+                    admin.Call("GET", "/api/admin/update?check=1"); admin.Call("POST", "/api/admin/update");
+                    for (int i = 0; i < 100 && admin.Call("GET", "/api/admin/update")["state"] == "downloading"; i++) Thread.Sleep(100);
+                    Assert.Equal("installing", admin.Call("GET", "/api/admin/update")["state"]);
+                    Assert.Equal("the new server 9.9.8", File.ReadAllText(Assert.Single(launched)));
+                    Assert.Contains(UpdateLog(env).Split('\n'), l => l.Contains("update 0 → 9.9.8") && l.Contains("signed"));
+                }
+            }
+            finally { listener.Stop(); Updater.Launch = before; Updater.GitHubApi = api; Updater.Reset(); }
         }
 
         [Fact]
@@ -155,7 +275,8 @@ namespace OnlineBackup.Tests
                             HttpListenerContext c; try { c = listener.GetContext(); } catch (Exception) { return; }
                             lock (auths) auths.Add(c.Request.Headers["Authorization"] + (c.Request.QueryString["ref"] == "updates" ? "" : " (no branch)"));
                             var path = c.Request.Url.AbsolutePath;
-                            byte[] body = path.EndsWith("/latest.json") ? System.Text.Encoding.UTF8.GetBytes("{\"version\":\"9.9.9\",\"file\":\"p.zip\",\"sha256\":\"" + (good ? sha : new string('0', 64)) + "\"}")
+                            // owner decision 106 (A): the private store's latest.json carries the vendor's signature too
+                            byte[] body = path.EndsWith("/latest.json") ? System.Text.Encoding.UTF8.GetBytes("{\"version\":\"9.9.9\",\"file\":\"p.zip\",\"sha256\":\"" + (good ? sha : new string('0', 64)) + "\",\"signature\":\"" + VendorSigned("9.9.9", good ? sha : new string('0', 64)) + "\"}")
                                 : path.EndsWith("/p.zip") ? bytes : new byte[0];
                             c.Response.StatusCode = body.Length == 0 ? 404 : 200; c.Response.OutputStream.Write(body, 0, body.Length); c.Response.Close();
                         }

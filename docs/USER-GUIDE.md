@@ -63,7 +63,7 @@ The numbers of the last 24 hours, a 14-day chart, active backups, what needs att
 
 ### 2.3 Sets — like Ahsay OBM
 - **Each set belongs to one computer**, with its own folders and settings. In a customer, the sets are shown by computer.
-- The same backup on another server: set → General → **Copy this set to another computer**. A set of its own is made for that computer, starting from the same settings, and you choose its folders. **Move to another computer** — when a computer was replaced.
+- The same backup on another server: set → General → **Copy this set to another computer**. A set of its own is made for that computer, starting from the same settings, and you choose its folders. That computer gets the set's key the first time the customer **signs in** to the program on it (from the recovery copy, or from the password for a password key) — until then its scheduled backup reports that the key is missing. **Move to another computer** — when a computer was replaced.
 - ▶ **Back up now** and ■ **Stop** reach the computer within a minute.
 
 ### 2.4 What to back up — the folder tree
@@ -127,6 +127,8 @@ Choose a type, a name, what to back up and a daily time:
 
 Database and cloud-account passwords are stored only on this computer, encrypted.
 
+**Recovery copy of the encryption key** (asked for each new backup; default: keep one). With a recovery copy, the IT company keeps a sealed copy of the backup's key on its server: if the computer is lost or the key forgotten, it can restore the files — and so it could read them. Without one, nobody can restore the backup if the key is lost. The choice is fixed with the key. A key is given out only after a sign-in with the password (and code) — never to a computer's automatic connection.
+
 #### Incremental or differential
 - **Windows 10 / Server 2016 or later, Linux and Mac** — every backup stores only what changed (incremental), yet every point in time is a complete restore point. Nothing to choose.
 - **Older Windows** — file backups show the choice **"Changes inside large files"**:
@@ -137,6 +139,9 @@ Database and cloud-account passwords are stored only on this computer, encrypted
 ### 3.4 Restore
 Choose a backup → a restore point (date) → files (or everything) → a target folder → **Restore**.
 "Restore directly to the cloud" puts Microsoft 365 / Google items back into a folder named "Restored" in the user's account.
+
+**What a restore brings back (Pilot 1):** the content of each file and its modified time. **Permissions (ACLs), attributes and the creation date are not restored**: a file restored to its original place takes the permissions of the folder it lands in; on a file server, check the shares' permissions after a restore.
+**A rename that only changes upper/lower case** (for example "Reports" → "REPORTS") is not a change for the backup: no data is lost, and the restored file keeps the spelling of its first backup.
 
 ![Restore](guide/client-2-restore.png)
 
@@ -194,6 +199,8 @@ Users → **Report** next to the customer. A report opens for printing or saving
 - Backup sets: schedule, version retention, encryption and last backup.
 - **Restore certificate**: the latest restore test of each set.
 - Security controls and the backup and restore procedure.
+
+**Privacy (what the provider sees):** the content of the files is encrypted on the computer before it is sent. **File names are visible to the IT company** in the run logs and reports (for support, failure details and the AI explanation); the product does not claim that file names are encrypted.
 
 The report supports audits under GDPR, the Israeli Privacy Protection (Data Security) Regulations and Amendment 13, and ISO 27001. It is not a legal opinion.
 

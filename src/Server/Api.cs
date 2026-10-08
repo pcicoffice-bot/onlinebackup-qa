@@ -18,7 +18,7 @@ namespace OnlineBackup.Server
     /// </summary>
     public sealed partial class Api : IDisposable
     {
-        Timer licenseTimer, updateTimer;
+        Timer licenseTimer, licenseNoticeTimer, updateTimer;
         readonly SystemConfig cfg;
         readonly Users users;
         readonly HttpListener listener = new HttpListener();
@@ -186,6 +186,9 @@ namespace OnlineBackup.Server
             // LIC-110: check in with the licensing centre soon after start, then daily
             licenseTimer = new Timer(_ => { try { LicenseCheckin.Run(cfg, users, mailer, cfg.Clock()); } catch (Exception e) { SysLog.Write(null, "System", "error: licence check-in " + e.Message); } },
                 null, TimeSpan.FromSeconds(20), TimeSpan.FromHours(24));
+            // L-1: the mail when an unconfirmed licence drops to the basic edition, and its daily reminder (checked every few minutes)
+            licenseNoticeTimer = new Timer(_ => { try { LicenseCheckin.Notice(cfg, mailer, cfg.Clock()); } catch (Exception e) { SysLog.Write(null, "System", "error: licence notice " + e.Message); } },
+                null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
             maintenance = new Timer(_ => { try { Maintenance(SystemClock.UtcNow); } catch (Exception e) { SysLog.Write(null, "System", "error: maintenance " + e.Message); } },
                 null, TimeSpan.FromHours(1), TimeSpan.FromHours(24));
             // UPD-040: the owner's automatic updates — checked every hour, installed only at night
@@ -201,7 +204,7 @@ namespace OnlineBackup.Server
             Replication.Stop();
             if (maintenance != null) maintenance.Dispose();
             if (sweepTimer != null) sweepTimer.Dispose();
-            if (licenseTimer != null) licenseTimer.Dispose(); if (updateTimer != null) updateTimer.Dispose();
+            if (licenseTimer != null) licenseTimer.Dispose(); if (licenseNoticeTimer != null) licenseNoticeTimer.Dispose(); if (updateTimer != null) updateTimer.Dispose();
             try { listener.Stop(); listener.Close(); } catch { }
         }
 
@@ -358,7 +361,10 @@ namespace OnlineBackup.Server
             Func<bool> requireInteractive = () => { if (!interactive) throw new ApiException(401, "SESSION", "This action requires signing in with a password and verification code."); return true; };
 
             // UPD-020: the client software on the computers updates itself from this server — the files of the Windows client
-            // this server carries (its own version), compared by SHA-256; only changed files are downloaded
+            // this server carries (its own version), compared by SHA-256; only changed files are downloaded.
+            // Owner decision B1 (pilot): off in Pilot 1 until agent updates are signed and refuse older versions — with the
+            // switch neither the list nor a file is offered (the computer's automatic update and its "Update" use these two)
+            if (seg[1] == "client" && seg.Length == 3 && (seg[2] == "files" || seg[2] == "file") && method == "GET") PilotScope.Check(cfg, PilotScope.ClientUpdate);
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "files" && method == "GET") { Reply(ctx, 200, ClientFiles.List()); return; }
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "file" && method == "GET")
             {
@@ -422,18 +428,20 @@ namespace OnlineBackup.Server
                 if (cfg.Pilot && (seg[3] == "points" || seg[3] == "files" || seg[3] == "object" || seg[3] == "restoretest" || seg[3] == "restorelog"
                     || (seg[3] == "jobs" && seg.Length > 5 && (seg[5] == "object" || seg[5] == "delete" || seg[5] == "commit"))))
                     PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(prof.FindSet(setId)));
-                var store = new SetStore(users.UserDir(login), setId);
+                // AZF-1: the routes that never touch the set's backups do not open (create) its store - a refused call changes nothing
+                var store = seg[3] == "key" || seg[3] == "settings" || seg[3] == "sharedkey" ? null : new SetStore(users.UserDir(login), setId);
                 switch (seg[3])
                 {
                     case "key":
                         requireInteractive();
-                        if (prof.Get("SAVE_ENCRYPT_KEY") == "Y")
+                        // owner decision A7: kept only when the IT company keeps recovery copies AND the customer chose it for this set
+                        if (prof.Get("SAVE_ENCRYPT_KEY") == "Y" && BackupSetInfo.FromXml(prof.FindSet(setId)).KeyRecovery)
                         {
                             var raw = Convert.FromBase64String(Body(ctx)["key"]);
                             Atomic.WriteBytes(Path.Combine(users.UserDir(login), "db", "keys", setId + ".bin"), KeyVault.Protect(cfg.SystemHome, raw));
                             SysLog.Write(ip, "Access", "encryption key saved for recovery " + login + "/" + setId);
                         }
-                        Reply(ctx, 200, new Msg().Set("saved", prof.Get("SAVE_ENCRYPT_KEY")));
+                        Reply(ctx, 200, new Msg().Set("saved", prof.Get("SAVE_ENCRYPT_KEY") == "Y" && BackupSetInfo.FromXml(prof.FindSet(setId)).KeyRecovery ? "Y" : "N"));
                         return;
                     case "settings":
                         {
@@ -448,6 +456,9 @@ namespace OnlineBackup.Server
                             // SET-020: a copy of a set on another computer of the same customer uses the first set's key. The server
                             // hands it only when the customer chose key recovery (the key is already kept here) — else the customer
                             // enters the encryption password on that computer.
+                            // Owner decision A7 / AZF-1: "the raw key is never handed to a device token" - only to the customer's
+                            // interactive sign-in (password + code) on that computer; the program asks for it once, at sign-in.
+                            requireInteractive();
                             var parent = (string)prof.FindSet(setId).Attribute("PARENT_SET");
                             var kp = string.IsNullOrEmpty(parent) ? null : Path.Combine(users.UserDir(login), "db", "keys", parent + ".bin");
                             if (kp == null || prof.Get("SAVE_ENCRYPT_KEY") != "Y" || !File.Exists(kp)) throw new ApiException(404, "NO_KEY", "Enter the set's encryption password on this computer (key recovery is off).");
@@ -1084,6 +1095,7 @@ namespace OnlineBackup.Server
                 long? quota = double.TryParse(b["quotaGB"], NumberStyles.Float, CultureInfo.InvariantCulture, out gb) ? (long)(gb * 1024 * 1024 * 1024) : (long?)null;
                 var lic = cfg.License;   // LIC-030: number of users in the licence
                 if (lic.MaxUsers > 0 && users.Logins().Count() >= lic.MaxUsers) throw new ApiException(402, "LICENSE", "You have reached the number of customers in the licence (" + lic.MaxUsers + "). To upgrade, contact the software vendor.");
+                LicenseCheckin.RefuseNewCustomer(lic, users);   // L-1: over the basic edition an unconfirmed licence dropped to
                 var owner = super ? (b["vendor"] ?? "") : vendor;
                 if (owner.Length > 0) Vendors.CheckLimits(cfg, users, owner, quota);
                 var p = users.Create(b["login"], b["password"], b["alias"], quota, b["quotaType"], b["email"], ip);
@@ -1447,7 +1459,7 @@ namespace OnlineBackup.Server
                 if (!super) throw new ApiException(403, "RIGHTS", "Only the server's administrator can update it.");
                 System.Net.IPAddress a;
                 if (!System.Net.IPAddress.TryParse(ip ?? "", out a) || !System.Net.IPAddress.IsLoopback(a)) throw new ApiException(403, "LOCAL_ONLY", "An update from files is done on the server itself: open https://localhost:8443/admin there.");
-                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip))); }
+                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip, ctx.Request.Headers["X-Update-Signature"]))); }
                 catch (InvalidOperationException e) { throw new ApiException(400, "UPDATE", e.Message); }
                 return;
             }
@@ -1864,7 +1876,9 @@ namespace OnlineBackup.Server
                 totalStored = users.Logins().Sum(l => { try { var p = users.LoadProfile(l); return p.GetLong("DATA_SIZE") + p.GetLong("RETAIN_SIZE"); } catch (Exception) { return 0L; } });
                 totalAt = SystemClock.UtcNow;
             }
-            if (totalStored >= (long)(lic.MaxStorageGB * 1024 * 1024 * 1024))
+            // L-1 (owner decision): after an unconfirmed licence dropped to the basic edition, existing sets keep backing up
+            // for LicenseCheckin.OverLimitGraceDays (new sets / customers are refused where they are made); after it, as before
+            if (totalStored >= (long)(lic.MaxStorageGB * 1024 * 1024 * 1024) && !LicenseCheckin.InOverLimitGrace(lic, cfg.Clock()))
                 throw new ApiException(507, "LICENSE_STORAGE", "The server's backup volume reached the licence limit (" + lic.MaxStorageGB + " GB). Existing backups are kept.");
         }
 

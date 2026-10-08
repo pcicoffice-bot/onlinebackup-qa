@@ -34,5 +34,7 @@ namespace OnlineBackup.Server
         public const string Signup = "Opening a new account from the client software";
         public const string MoveComputer = "Moving a computer to another customer";
         public const string Ai = "The AI assistant (explanations, insights and forecasts)";
+        /// <summary>Owner decision B1: the computers' update from this server (automatic every 6 hours, or "Update") — off in Pilot 1.</summary>
+        public const string ClientUpdate = "Updating the client software from the backup server";
     }
 }

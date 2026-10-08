@@ -487,10 +487,14 @@ namespace OnlineBackup.Agent
                     tee = new TeeStream(new StopCheckStream(throttle.On ? new ThrottledStream(s, throttle) : s, StopInsideObject), localStream);   // bug 119: also while one chunk is written
                     w = new BackupObject.Writer(tee, key) { Compression = set.Compression };
                     var storedHere = new HashSet<string>();
+                    // UI-Q1: the SHA-256 of the whole file as read, recorded inside the encrypted header ("fsha") so a restore can
+                    // check the file it wrote against it (the server never sees it)
+                    var fileSha = System.Security.Cryptography.SHA256.Create();
                     using (var fs = Open(src))
                         foreach (var c in Chunker.ForFileSize(entry.Size).Split(fs))
                         {
                             StopInsideObject();
+                            fileSha.TransformBlock(c, 0, c.Length, null, 0);
                             var id = BackupObject.ChunkId(key, c);
                             chunksOut.Add(new KeyValuePair<string, int>(id, c.Length));
                             if ((known == null || !known.Contains(id)) && storedHere.Add(id)) w.AddChunk(id, c);
@@ -500,7 +504,9 @@ namespace OnlineBackup.Agent
                     // point whose restore always refused the file as "size differs"
                     long read = 0; foreach (var c in chunksOut) read += c.Value;
                     if (read != entry.Size) Info("Changed while it was being backed up (" + entry.Size + " → " + read + " bytes): the point holds what was read; the next backup sends it again: " + path);
-                    var header = new Msg().Set("path", path).Set("size", read).Set("mtime", entry.Mtime).Set("attrs", entry.Attrs).Set("kind", kind).Set("seq", seq);
+                    fileSha.TransformFinalBlock(new byte[0], 0, 0);
+                    var header = new Msg().Set("path", path).Set("size", read).Set("mtime", entry.Mtime).Set("attrs", entry.Attrs).Set("kind", kind).Set("seq", seq).Set("fsha", Bytes.Hex(fileSha.Hash));
+                    ((IDisposable)fileSha).Dispose();
                     foreach (var c in chunksOut) header.Add("recipe", new Msg().Set("h", c.Key).Set("n", c.Value));
                     w.Finish(header);
                 });

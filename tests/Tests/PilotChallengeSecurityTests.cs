@@ -401,7 +401,7 @@ namespace OnlineBackup.Tests
                 var session = anna.Interactive("Anna-Real-Pass-1", null);
                 var en = session.Call("POST", "/api/totp/enable", new Msg());
                 var secret = en["secret"]; var codes = en.List("codes").Select(x => x["code"]).ToList();
-                session.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(secret, DateTime.UtcNow)));
+                session.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(secret, DateTime.UtcNow.AddSeconds(-30)))); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
                 Assert.Equal(401, st(() => c.Call("POST", "/api/login", new Msg().Set("login", "anna").Set("password", "Anna-Real-Pass-1").Set("otp", "Otp-Typo-Q6x"))));
                 var deviceSecret = anna.Home.DeviceToken.Split('.')[2];
                 var hash = Profile.Load(Path.Combine(env.HomeA, "anna", "db", "Profile.xml")).Get("HASHED_PWD");

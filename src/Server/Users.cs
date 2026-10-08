@@ -332,6 +332,7 @@ namespace OnlineBackup.Server
                 if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
                 p.SetAttr("TOTP_SECRET", pending); p.SetAttr("TOTP_BACKUP_CODES", p.Get("TOTP_PENDING_CODES"));
                 p.SetAttr("TOTP_PENDING", ""); p.SetAttr("TOTP_PENDING_CODES", "");
+                p.SetAttr("TOTP_LAST_STEP", step);   // owner decision 122 (A): the confirming code is used up, it opens no sign-in
                 SaveProfile(login, p);
                 SysLog.Write(ip, "Access", "2fa enabled " + login);
             }
@@ -572,6 +573,7 @@ namespace OnlineBackup.Server
                 // LIC-030: modules of the licence (the free edition: files and System State)
                 var lic = cfg.License;
                 if (!lic.Has(s.Type)) throw new ApiException(402, "LICENSE", "The server's licence does not include " + s.Type + " backup (" + (lic.Valid ? lic.Edition : "free edition") + ").");
+                LicenseCheckin.RefuseNewSet(lic, this);   // L-1: over the basic edition an unconfirmed licence dropped to
                 if (s.Type == "M365" && (s.Engine != "RESTIC" || string.IsNullOrEmpty(s.M365Tenant) || string.IsNullOrEmpty(s.M365ClientId))) throw new ApiException(400, "M365", "Microsoft 365 backup requires the restic engine, a tenant id and an application id.");
                 if (s.DestMode == "LOCAL" && s.Engine != "RESTIC") throw new ApiException(400, "DEST", "A local-only backup needs the restic engine (Windows 10 / Server 2016 or later, Linux, Mac).");
                 if ((s.DestMode == "BOTH" || s.DestMode == "LOCAL") && string.IsNullOrWhiteSpace(s.LocalCopyPath)) throw new ApiException(400, "DEST", "Choose the local disk or network folder.");

@@ -128,6 +128,88 @@ namespace OnlineBackup.Server
     {
         public const int GraceDays = 7;
 
+        /// <summary>
+        /// L-1 (owner decision): after an unconfirmed licence dropped to the basic edition, a server over the basic limits
+        /// keeps the existing customers backing up for this many days from the drop; new customers and new sets are refused.
+        /// OPEN OWNER QUESTION: the length is not defined anywhere (the decision, USER-GUIDE, the licence code). Until the
+        /// owner sets it, today's closest value is used: the licence's own grace (GraceDays, 7 days).
+        /// After it: today's behaviour (a stored volume over the licence answers 507 LICENSE_STORAGE to new backup data) -
+        /// the decision does not say what happens then (OPEN OWNER QUESTION).
+        /// </summary>
+        public const int OverLimitGraceDays = GraceDays;
+
+        /// <summary>L-1: inside the grace after the drop (only a licence that dropped for want of a confirmation has one).</summary>
+        public static bool InOverLimitGrace(License lic, DateTime nowUtc) { return lic.DroppedAt.HasValue && nowUtc <= lic.DroppedAt.Value.AddDays(OverLimitGraceDays); }
+
+        /// <summary>L-1: the server dropped to the basic edition and is over it: more computers than it allows, or its stored volume reached.</summary>
+        public static bool OverBasicLimit(License lic, Users users)
+        {
+            if (!lic.DroppedAt.HasValue) return false;
+            if (lic.MaxDevices > 0 && users.ActiveComputers() > lic.MaxDevices) return true;
+            if (lic.MaxStorageGB <= 0) return false;
+            long stored = users.Logins().Sum(l => { try { var p = users.LoadProfile(l); return p.GetLong("DATA_SIZE") + p.GetLong("RETAIN_SIZE"); } catch (Exception) { return 0L; } });
+            return stored >= (long)(lic.MaxStorageGB * 1024 * 1024 * 1024);
+        }
+
+        static string Limits(License lic) { return lic.MaxDevices.ToString(CultureInfo.InvariantCulture) + " computers, " + lic.MaxStorageGB.ToString(CultureInfo.InvariantCulture) + " GB"; }
+
+        /// <summary>L-1: a new customer (the administrators' page) is refused while the server is over the basic edition it dropped to.</summary>
+        public static void RefuseNewCustomer(License lic, Users users)
+        {
+            if (OverBasicLimit(lic, users))
+                throw new ApiException(402, "LICENSE", "The licence was not confirmed, so the server runs the basic edition (" + Limits(lic) + ") and is over its limits: new customers cannot be added. Existing customers keep backing up. Confirm the licence or contact the software vendor.");
+        }
+
+        /// <summary>L-1: a new backup set is refused while the server is over the basic edition it dropped to.</summary>
+        public static void RefuseNewSet(License lic, Users users)
+        {
+            if (OverBasicLimit(lic, users))
+                throw new ApiException(402, "LICENSE", "The licence was not confirmed, so the server runs the basic edition (" + Limits(lic) + ") and is over its limits: new backup sets cannot be added. Existing backup sets keep backing up. Confirm the licence or contact the software vendor.");
+        }
+
+        /// <summary>
+        /// L-1 (owner decision): when an unconfirmed licence drops to the basic edition, ONE mail to the administrators;
+        /// while it stays basic, one reminder a day - due whole days after the drop (not by the calendar, so midnight adds
+        /// nothing). Kept in system.xml (LICENSE DROP_NOTICE = TEMP_SINCE|day already told), so a restart or a check every
+        /// few minutes sends nothing twice. A confirmation clears TEMP_SINCE: no more reminders; a later unconfirmed period
+        /// has its own TEMP_SINCE and so its own drop mail. Called by the daily check-in and by the server every few minutes.
+        /// </summary>
+        public static void Notice(SystemConfig cfg, Mailer mailer, DateTime nowUtc)
+        {
+            License lic; string subject, body;
+            lock (cfg)
+            {
+                var el = cfg.Doc.Root.Element("LICENSE");
+                var since = el == null ? null : (string)el.Attribute("TEMP_SINCE");
+                if (string.IsNullOrEmpty(since)) return;
+                lic = License.Effective((string)el.Attribute("KEY"), cfg.ServerId, nowUtc, el);
+                if (!lic.DroppedAt.HasValue) return;
+                int day = (int)Math.Floor((nowUtc - lic.DroppedAt.Value).TotalDays), told = -1;
+                var mark = (string)el.Attribute("DROP_NOTICE") ?? ""; var bar = mark.LastIndexOf('|');
+                int t; if (bar > 0 && mark.Substring(0, bar) == since && int.TryParse(mark.Substring(bar + 1), NumberStyles.Integer, CultureInfo.InvariantCulture, out t)) told = t;
+                if (told >= 0 && day <= told) return;
+                // recorded before sending: a mail server that fails does not make it send again every few minutes (the Email log has it)
+                el.SetAttributeValue("DROP_NOTICE", since + "|" + day.ToString(CultureInfo.InvariantCulture)); cfg.Save();
+                var until = lic.DroppedAt.Value.AddDays(OverLimitGraceDays).ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) + " UTC";
+                var devices = lic.MaxDevices.ToString(CultureInfo.InvariantCulture); var gb = lic.MaxStorageGB.ToString(CultureInfo.InvariantCulture);
+                if (told < 0)
+                {
+                    subject = "✗ The licence was not confirmed: the server now runs the basic edition";
+                    body = "<p>" + Fmt.H(lic.Reason) + "</p><p>The licensing centre has not confirmed the licence for more than " + GraceDays + " days, so the server now runs the basic edition (up to " + devices + " computers and " + gb + " GB). "
+                        + "If the server is over these limits, existing customers keep backing up until " + until + "; new customers and new backup sets are refused. After that date, new backup data is refused while the stored volume is over the limit.</p>"
+                        + "<p>Confirm the licence (Licence page: check now) or contact the software vendor. A mail is sent every day until the licence is confirmed.</p>";
+                }
+                else
+                {
+                    subject = "⚠ Reminder: the licence is still not confirmed (basic edition, day " + day + ")";
+                    body = "<p>Reminder: the licence is still not confirmed - day " + day + " in the basic edition.</p><p>" + Fmt.H(lic.Reason) + "</p><p>The server still runs the basic edition (up to " + devices + " computers and " + gb + " GB). "
+                        + "If the server is over these limits, existing customers keep backing up until " + until + "; new customers and new backup sets are refused. After that date, new backup data is refused while the stored volume is over the limit.</p>"
+                        + "<p>Confirm the licence (Licence page: check now) or contact the software vendor.</p>";
+                }
+            }
+            mailer.Alert(subject, body);
+        }
+
         public static List<string> InternalAddresses()
         {
             var env = Environment.GetEnvironmentVariable("OB_LOCAL_IPS");
@@ -190,6 +272,7 @@ namespace OnlineBackup.Server
                 if (result == "REVOKED" && before != status) mailer.Alert("✗ The licence was revoked", "<p>" + Fmt.H(message) + "</p><p>The server switched to the basic edition.</p>");
                 cfg.Save(); cfg.ResetLicense();
             }
+            Notice(cfg, mailer, nowUtc);   // L-1: the drop to the basic edition and its daily reminder
             return result;
         }
 

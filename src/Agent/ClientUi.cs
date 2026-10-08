@@ -29,7 +29,7 @@ namespace OnlineBackup.Agent
         readonly object gate = new object();
         readonly Dictionary<string, Job> jobs = new Dictionary<string, Job>();
 
-        sealed class Job { public string Id, Kind, Set, State = "running", Result = "", Detail = ""; public DateTime Started = SystemClock.UtcNow; }
+        sealed class Job { public string Id, Kind, Set, State = "running", Result = "", Detail = ""; public DateTime Started = SystemClock.UtcNow; public Msg Extra; }
 
         public ClientUi(AgentApp app, int port)
         {
@@ -175,7 +175,7 @@ namespace OnlineBackup.Agent
                         // CLI-030: the customer's password (+ code) — a session of the server; the password stays in memory 15 minutes
                         var c = app.Interactive(b["password"], b["otp"]);
                         lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); }
-                        return new Msg().Set("ok", 1);
+                        return CopyKeys(new Msg().Set("ok", 1), c, b["password"]);
                     }
                 case "logout":
                     {
@@ -195,12 +195,26 @@ namespace OnlineBackup.Agent
                     {
                         var m = new Msg();
                         lock (jobs) foreach (var j in jobs.Values.OrderByDescending(x => x.Started).Take(20))
-                            m.Add("jobs", new Msg().Set("id", j.Id).Set("kind", j.Kind).Set("set", j.Set).Set("state", j.State).Set("result", j.Result).Set("detail", j.Detail).Set("started", RunId.UnixMs(j.Started)));
+                        {
+                            var jm = new Msg().Set("id", j.Id).Set("kind", j.Kind).Set("set", j.Set).Set("state", j.State).Set("result", j.Result).Set("detail", j.Detail).Set("started", RunId.UnixMs(j.Started));
+                            var x = j.Extra;   // UI-Q1: a restore's counts and verification (own engine) — absent while it runs and for other jobs
+                            if (x != null) { foreach (var k in x.Keys) jm.Set(k, x[k]); foreach (var mm in x.List("mismatch")) jm.Add("mismatch", mm); }
+                            m.Add("jobs", jm);
+                        }
                         return m;
                     }
                 case "points": return Points(q["set"]);
+                case "runlog":
+                    {
+                        // the last run's log of a set of this computer (its details, and "Export the log" for the IT company)
+                        var s = SetOf(q["set"]); string at; var lines = RunNotes.Log(app.Home.SetDir(s.Id), out at);
+                        var m = new Msg().Set("at", at).Set("text", RunNotes.Readable(lines));
+                        foreach (var l in lines) m.Add("lines", new Msg().Set("l", l));
+                        return m;
+                    }
                 case "files": return Files(q["set"], q["point"]);
                 case "restore": return Restore(b);
+                case "restorecheck": return RestoreCheck(b);
                 case "addset": return AddSet(b);
                 case "editset": return EditSet(b);
                 case "help":
@@ -215,6 +229,7 @@ namespace OnlineBackup.Agent
                         }
                         catch (AgentException e) when (e.Code == "OFF") { return new Msg().Set("off", 1); }
                     }
+                case "keyrecovery": return KeyRecoveryInfo(q["lang"]);
                 case "dirs": return Dirs(q["path"]);
                 // SETUP-C50: the program's sign-in screen on a computer not connected yet — the server's address (the
                 // package's, or another one), then an existing customer or a new one; only while not connected
@@ -236,8 +251,9 @@ namespace OnlineBackup.Agent
                         var said = new List<string>();
                         var login = Setup.Connect(app, b["server"], string.IsNullOrEmpty(b["pin"]) ? null : b["pin"], app.Home.Dir, k => answers.ContainsKey(k) ? answers[k] : null, k => k == "accept-contract" && (b["accept"] == "1" || PreAccepted(b["server"], b["pin"], b["contractVersion"])), said.Add);
                         // the password stays for this session (the first backup can be added at once)
-                        try { var c = app.Interactive(b["password"], b["otp"]); lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); } } catch (Exception) { }
-                        return new Msg().Set("login", login);
+                        var reply = new Msg().Set("login", login);
+                        try { var c = app.Interactive(b["password"], b["otp"]); lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); } CopyKeys(reply, c, b["password"]); } catch (Exception) { }
+                        return reply;
                     }
                 case "update":
                     {
@@ -282,17 +298,20 @@ namespace OnlineBackup.Agent
                 var pr = app.DeviceClient().Call("GET", "/api/profile");
                 var rights = pr.List("rights").FirstOrDefault() ?? new Msg();
                 m.Set("canAdd", rights["can_add_sets"] ?? "1").Set("canSources", rights["can_edit_sources"] ?? "1").Set("canSchedule", rights["can_edit_schedule"] ?? "1");
-                foreach (var s in app.Remember(Core.Profile.Parse(pr["profile"])).Sets)
+                var prof = app.Remember(Core.Profile.Parse(pr["profile"]));
+                bool recoveryKept = prof.Get("SAVE_ENCRYPT_KEY") == "Y";   // A7: the IT company keeps recovery copies at all
+                foreach (var s in prof.Sets)
                 {
                     var la = Path.Combine(app.Home.SetDir(s.Id), "last-attempt.txt");
                     string last = "", result = "";
                     if (File.Exists(la)) { var f = OnlineBackup.Core.Atomic.ReadAllText(la).Split('\t'); last = f[0]; result = f.Length > 1 ? f[1].Trim() : ""; }
                     bool mine = string.IsNullOrEmpty(s.Computer) || s.Computer.Equals(app.Home.Computer, StringComparison.OrdinalIgnoreCase);
-                    m.Add("sets", new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
+                    var sm = new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
                         .Set("computer", s.Computer).Set("mine", mine ? 1 : 0).Set("src", string.Join("\n", s.Sources.ToArray())).Set("skip", string.Join("\n", s.Deselected.ToArray()))
-                        .Set("hh", s.Hour).Set("mm", s.Minute)
+                        .Set("hh", s.Hour).Set("mm", s.Minute).Set("keyRecovery", s.KeyRecovery && recoveryKept ? 1 : 0)
                         .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result)
-                        .Set("blocked", app.Pilot ? Scope.Refusal(s) : null));   // PILOT-010: kept, not run — and why
+                        .Set("blocked", app.Pilot ? Scope.Refusal(s) : null);   // PILOT-010: kept, not run — and why
+                    m.Add("sets", WindowNotes(sm, app.Home.SetDir(s.Id), last, result, s));
                 }
             }
             catch (AgentException e) { m.Set("offline", e.Message); }
@@ -301,9 +320,25 @@ namespace OnlineBackup.Agent
             return m;
         }
 
-        Msg Start(string kind, string set, Func<string[]> work)
+        /// <summary>Owner decision B2, for the customer's window (additive fields; the others are unchanged): the last
+        /// complete run (clean runs only), the files the last run did not back up and why, the runs noted on this computer,
+        /// the last automatic restore test that reached the server, and the set's retention (owner Q8).</summary>
+        static Msg WindowNotes(Msg sm, string dir, string last, string result, BackupSetInfo s)
+        {
+            int count; var missed = RunNotes.Missed(dir, last, out count);
+            sm.Set("lastComplete", RunNotes.LastComplete(dir, last, result)).Set("missedCount", count);
+            foreach (var x in missed.Take(50)) sm.Add("missed", new Msg().Set("p", x.Key).Set("why", x.Value));
+            foreach (var r in RunNotes.Runs(dir).Skip(Math.Max(0, RunNotes.Runs(dir).Count - 30))) sm.Add("runs", new Msg().Set("t", r[0]).Set("r", r[1]).Set("e", r.Length > 2 ? r[2] : "0"));
+            try { var t = Path.Combine(dir, "last-restore-test.txt"); if (File.Exists(t)) sm.Set("lastTest", OnlineBackup.Core.Atomic.ReadAllText(t).Trim()); } catch (Exception) { }
+            var k = s.Retention;
+            if (k != null) sm.Set("retUnit", k.Unit).Set("retPeriod", k.Period).Set("retDaily", k.Daily).Set("retWeekly", k.Weekly).Set("retMonthly", k.Monthly).Set("retQuarterly", k.Quarterly).Set("retYearly", k.Yearly);
+            return sm;
+        }
+
+        Msg Start(string kind, string set, Func<string[]> work, Action<Job> created = null)
         {
             var j = new Job { Id = Bytes.Hex(Bytes.Random(6)), Kind = kind, Set = set };
+            if (created != null) created(j);
             lock (jobs)
             {
                 if (jobs.Values.Any(x => x.State == "running" && x.Set == set)) throw new AgentException(409, "BUSY", "Another action on this set is still running.");
@@ -360,15 +395,54 @@ namespace OnlineBackup.Agent
             return m;
         }
 
-        /// <summary>CLI-060: restore chosen files / folders (all when none) to a folder; a background job.</summary>
+        static Func<string, bool> PathFilter(List<string> paths)
+        {
+            return paths.Count == 0 ? null : (Func<string, bool>)(p => paths.Any(x => p.Equals(x, StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "\\", StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "/", StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>UI-Q2: before a restore — how many files it writes and which already exist at the destination: the original
+        /// location (location=original) or the folder in "target". Own engine only (the window offers only it in the pilot).
+        /// Answer: total, existing (count), files (the first 200 existing paths, "p"), location.</summary>
+        Msg RestoreCheck(Msg b)
+        {
+            var s = SetOf(b["set"]); var client = Session(); var pw = PasswordNow();
+            bool original = b["location"] == "original";
+            var target = original ? null : b["target"];
+            if (!original && string.IsNullOrEmpty(target)) throw new AgentException(400, "TARGET", "Choose a destination folder.");
+            if (s.Engine == "RESTIC") throw new AgentException(400, "ENGINE", "Checking the destination is available for the product's own engine.");
+            var paths = b.List("paths").Select(x => x["p"]).Where(x => !string.IsNullOrEmpty(x)).ToList();
+            var c = app.RestoreFor(client, s.Id, pw).Conflicts(b["point"], target, PathFilter(paths));
+            var m = new Msg().Set("total", c.Total).Set("existing", c.Existing.Count).Set("location", original ? "original" : "alternate");
+            foreach (var p in c.Existing.Take(200)) m.Add("files", new Msg().Set("p", p));
+            return m;
+        }
+
+        /// <summary>CLI-060: restore chosen files / folders (all when none) to a folder; a background job.
+        /// UI-Q2 (additive): location=original restores to where the files were (own engine); then a decision for files that
+        /// already exist is required — existing=overwrite | skip | cancel; without one, when any exists, the answer is the
+        /// error EXISTS (with the count) and nothing runs. existing= may also be given for a folder (it then wins over overwrite=).</summary>
         Msg Restore(Msg b)
         {
             var s = SetOf(b["set"]); var client = Session(); var pw = PasswordNow();
-            var target = b["target"];
-            if (string.IsNullOrEmpty(target) && b["toM365"] != "1") throw new AgentException(400, "TARGET", "Choose a destination folder.");
+            bool original = b["location"] == "original";
+            var target = original ? null : b["target"];
+            if (original && s.Engine == "RESTIC") throw new AgentException(400, "ENGINE", "Restore to the original location is available for the product's own engine; choose a folder.");
+            if (string.IsNullOrEmpty(target) && !original && b["toM365"] != "1") throw new AgentException(400, "TARGET", "Choose a destination folder.");
             var paths = b.List("paths").Select(x => x["p"]).Where(x => !string.IsNullOrEmpty(x)).ToList();
             var point = b["point"]; bool overwrite = b["overwrite"] == "1";
-            return Start("restore", s.Id, () =>
+            var decision = b["existing"];
+            if (!string.IsNullOrEmpty(decision) && decision != "overwrite" && decision != "skip" && decision != "cancel") throw new AgentException(400, "EXISTING", "existing must be overwrite, skip or cancel.");
+            if (decision == "cancel") return new Msg().Set("cancelled", 1);
+            if (decision == "overwrite") overwrite = true; else if (decision == "skip") overwrite = false;
+            var mode = string.IsNullOrEmpty(decision) && original ? ExistingFiles.Ask : overwrite ? ExistingFiles.Overwrite : ExistingFiles.Skip;
+            if (mode == ExistingFiles.Ask)
+            {
+                // asked here, before the job: the window gets the question at once (the job checks again, and refuses, if a file appeared since)
+                var c = app.RestoreFor(client, s.Id, pw).Conflicts(point, null, PathFilter(paths));
+                if (c.Existing.Count > 0) throw new AgentException(409, "EXISTS", c.Existing.Count.ToString(CultureInfo.InvariantCulture) + " of the " + c.Total.ToString(CultureInfo.InvariantCulture) + " files already exist at the original location — choose to overwrite them, to skip them, or cancel. Nothing was restored.");
+            }
+            Job job = null;
+            var started = Start("restore", s.Id, () =>
             {
                 if (!string.IsNullOrEmpty(target)) Directory.CreateDirectory(target);
                 if (s.Type == "GWS" && b["toM365"] == "1")
@@ -383,14 +457,22 @@ namespace OnlineBackup.Agent
                 }
                 if (s.Engine == "RESTIC")
                 {
-                    app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>(), overwrite);
-                    return new[] { "OK", "Restored to " + target };
+                    var v = app.Restic(s, pw).RestoreMany(point, target, paths.Count == 0 ? null : paths, new List<string>(), overwrite);
+                    // UI-Q1: restic --verify (SHA-256 of every blob, read back from the disk); a count only when restic reported one
+                    if (job != null && v >= 0) job.Extra = new Msg().Set("verified", v).Set("verifiedSha256", v).Set("mismatched", 0).Set("location", "alternate");
+                    return new[] { "OK", "Restored to " + target + (v >= 0 ? "; verified " + v : "") };
                 }
                 var r = app.RestoreFor(client, s.Id, pw);
-                Func<string, bool> filter = paths.Count == 0 ? null : (Func<string, bool>)(p => paths.Any(x => p.Equals(x, StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "\\", StringComparison.OrdinalIgnoreCase) || p.StartsWith(x.TrimEnd('\\', '/') + "/", StringComparison.OrdinalIgnoreCase)));
-                r.Run(point, target, filter, overwrite);
-                return new[] { r.Failed == 0 ? "OK" : "FAILED", "Restored " + r.Restored + ", skipped " + r.Skipped + ", failed " + r.Failed };
-            });
+                r.Run(point, target, PathFilter(paths), mode);
+                // UI-Q1: the counts and the integrity check as numbers for the window; "verified" only counts files really checked
+                var x = new Msg().Set("restored", r.Restored).Set("skipped", r.Skipped).Set("failed", r.Failed).Set("verified", r.Verified)
+                    .Set("verifiedSha256", r.VerifiedSha256).Set("mismatched", r.Mismatched.Count).Set("location", original ? "original" : "alternate").Set("restoreResult", r.Result);
+                foreach (var p in r.Mismatched.Take(200)) x.Add("mismatch", new Msg().Set("p", p));
+                if (job != null) job.Extra = x;
+                return new[] { r.Failed == 0 ? "OK" : "FAILED", "Restored " + r.Restored + ", skipped " + r.Skipped + ", failed " + r.Failed + "; verified " + r.Verified
+                    + (r.Mismatched.Count > 0 ? "; did not match the backup (not put in place): " + string.Join(", ", r.Mismatched.Take(5).ToArray()) + (r.Mismatched.Count > 5 ? " …" : "") : "") };
+            }, j => job = j);
+            return started;
         }
 
         /// <summary>CLI-070: a new set of folders (restic on Windows 10 / 2016 and later, this product's engine before).</summary>
@@ -485,11 +567,43 @@ namespace OnlineBackup.Agent
             // BKP-040: how changes inside large files are sent (own engine), and SQL Server's weekly full + daily differential
             s.DeltaType = b["deltaType"] == "D" ? "D" : "I";
             int fullDay; if (s.Type == "MSSQL" && int.TryParse(b["sqlFullDay"], out fullDay) && fullDay >= -1 && fullDay <= 6) s.SqlFullDay = fullDay;
-            var created = app.CreateSet(client, pw, s);
+            // owner decision A7: the customer's choice, shown with its disclosure (op "keyrecovery"); default: keep a recovery copy
+            bool recovery = b["keyRecovery"] != "0";
+            var created = app.CreateSet(client, pw, s, "PASSWORD", null, recovery);
             if (s.Type == "M365") app.Home.SaveSecret(created.Id + "-m365", b["secret"]);
             if (s.Type == "GWS") app.Home.SaveSecret(created.Id + "-gws", b["gwsKey"]);
             if ((s.Type == "MSSQL" || s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "ORACLE" || s.Type == "VMWARE") && !string.IsNullOrEmpty(b["dbPassword"])) app.Home.SaveSecret(created.Id + "-sql", b["dbPassword"]);
-            return new Msg().Set("id", created.Id).Set("engine", s.Engine);
+            bool kept = recovery && RecoveryAllowed();
+            return new Msg().Set("id", created.Id).Set("engine", s.Engine).Set("keyRecovery", kept ? 1 : 0);
+        }
+
+        bool RecoveryAllowed() { try { return app.Profile().Get("SAVE_ENCRYPT_KEY") == "Y"; } catch (AgentException) { return false; } }
+
+        /// <summary>SET-020 + A7: at the customer's sign-in here, the copies of sets added to this computer receive their key.</summary>
+        Msg CopyKeys(Msg reply, Client c, string password)
+        {
+            try
+            {
+                var before = app.Sets().Count(x => !string.IsNullOrEmpty(x.Parent) && app.Mine(x) && app.Home.LoadKey(x.Id) == null);
+                var missing = app.KeysForCopies(c, password);
+                reply.Set("keysReceived", before - missing.Count).Set("keysMissing", missing.Count);
+            }
+            catch (AgentException) { }
+            return reply;
+        }
+
+        /// <summary>
+        /// Owner decision A7: what the window shows when a set is made — the choice (default: keep a recovery copy), whether the
+        /// IT company keeps recovery copies at all, and the disclosure of each option, in the window's language (en / he).
+        /// </summary>
+        Msg KeyRecoveryInfo(string lang)
+        {
+            lang = L.Norm(string.IsNullOrEmpty(lang) ? (string)Branding().Attribute("LANGUAGE") : lang);
+            return new Msg().Set("default", 1).Set("allowed", RecoveryAllowed() ? 1 : 0).Set("lang", lang)
+                .Set("title", L.Tr(lang, KeyTexts.Title))
+                .Set("keepLabel", L.Tr(lang, KeyTexts.KeepLabel)).Set("keepText", L.Tr(lang, KeyTexts.KeepText))
+                .Set("noneLabel", L.Tr(lang, KeyTexts.NoneLabel)).Set("noneText", L.Tr(lang, KeyTexts.NoneText))
+                .Set("offText", L.Tr(lang, KeyTexts.OffText));
         }
 
         /// <summary>restic runs on Windows 10 / Server 2016 (build 14393) and later, and wherever restic is present (tests).</summary>
@@ -508,5 +622,16 @@ namespace OnlineBackup.Agent
             using (var s = typeof(ClientUi).Assembly.GetManifestResourceStream("OnlineBackup.Agent.client.html"))
             using (var r = new StreamReader(s, Encoding.UTF8)) return r.ReadToEnd().Replace("data-lang=\"en\"", "data-lang=\"" + L.Norm((string)Branding().Attribute("LANGUAGE")) + "\"");
         }
+    }
+
+    /// <summary>Owner decision A7: the disclosure of the key-recovery choice (English source; i18n/he.json translates it).</summary>
+    public static class KeyTexts
+    {
+        public const string Title = "Recovery copy of the encryption key";
+        public const string KeepLabel = "Keep a recovery copy with my IT provider (recommended)";
+        public const string KeepText = "Your IT provider keeps a sealed copy of this backup's encryption key on its server. If this computer is lost or the key is forgotten, the provider can restore your files - which also means the provider could read them. The copy is given out only after a sign-in with the password (and code), never to a computer's automatic connection.";
+        public const string NoneLabel = "Do not keep a copy - only I can open these backups";
+        public const string NoneText = "Without a recovery copy, nobody - not your IT provider either - can restore these backups if the key is lost. Keep the key (or the password it comes from) in a safe place. This choice cannot be changed later for this backup.";
+        public const string OffText = "Your IT provider does not keep recovery copies of encryption keys: keep the key in a safe place yourself.";
     }
 }

@@ -221,7 +221,9 @@ function Key($el, [int]$vk) { $h = [IntPtr]$el.Current.NativeWindowHandle; [void
 # the box of a folder: select it and press the space bar, as a person does with the keyboard (the program sees it as a tick)
 function Tick($tree, $node) { Select-Node $node; Key $tree 0x20; return 'space bar' }
 function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
-  Nav $w 'New backup'
+  # alternative C (owner, 08.10.2026): "New backup" is a button inside "Backups", not a menu item
+  Nav $w 'Backups'
+  Click (PageButton $w 'New backup'); Start-Sleep -Seconds 2
   StepLook 'Client 05 - New backup page' 'type, name, the folder tree, time, the button' $w { $t = Texts $w; @((($t -like '*Folders to back up*') -and ($t -like '*Backup name*')), $t) } 'en' $script:ClientProc | Out-Null
   TypeInto (Edit $w 'Backup name') $name
   $tree = @(Find $w $CT::Tree) | Select-Object -First 1
@@ -235,10 +237,10 @@ function NewSet-ViaUi($w, [string]$name, [string]$folder, [string]$password) {
   Note 'Messages when adding the backup' ($msgs -join ' || ')
   Start-Sleep -Seconds 2
   $t = Texts $w
-  return (StepLook 'Client 08 - The backup is listed on the status page' "a card '$name' with Back up now" $w { @((($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*')), ($t + ' || ' + ($msgs -join ' || '))) } 'en' $script:ClientProc)
+  return (StepLook 'Client 08 - The backup is listed on the Backups page' "a card '$name' with Back up now" $w { @((($t -like "*$name*") -and ($t -like '*Back up now*') -and (($msgs -join ' ') -like '*was added*')), ($t + ' || ' + ($msgs -join ' || '))) } 'en' $script:ClientProc)
 }
 function BackupNow-ViaUi($w, [string]$screen) {
-  Nav $w 'Backup status'
+  Nav $w 'Backups'
   $b = PageButton $w 'Back up now'
   Click $b
   $msgs = Answer-Dialogs $w $null "$screen - started" 15
@@ -263,10 +265,14 @@ function Restore-ViaUi($w, [string]$target, [string]$password, [string]$screen) 
     $until = (Get-Date).AddSeconds(30); while ((Get-Date) -lt $until -and (Texts $w) -notlike '*Latest*') { Start-Sleep -Seconds 1 }
   }
   StepLook "$screen - Restore page" 'the backup, the latest point, the files, the folder' $w { $t = Texts $w; @((($t -like '*Restore point*') -and ($t -like '*Latest*')), $t) } 'en' $script:ClientProc | Out-Null
+  # alternative C: restore in 3 steps - 1 when and what (nothing ticked = everything), 2 where and check, 3 the result
+  Click (PageButton $w 'Next: where to restore'); Start-Sleep -Seconds 2
   TypeInto (Edit $w 'Restore to folder') $target
   Look $w "$screen - Restore selection" 'en' $script:ClientProc | Out-Null
-  Click (PageButton $w 'Restore')
+  Click (PageButton $w 'Restore everything')
   $msgs = Answer-Dialogs $w $password "$screen - Restore started" 40
+  # the window shows "The restore has started" on its own result page (UX-1: no message box behind the window)
+  $tx = Texts $w; if ($tx -like '*restore has started*' -or $tx -like '*Restoring*' -or $tx -like '*restore finished*') { $msgs = @($msgs) + 'The restore has started (shown on the result page)' }
   Note "$screen - messages" ($msgs -join ' || ')
   Start-Sleep -Seconds 2
   return ,$msgs

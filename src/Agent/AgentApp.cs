@@ -126,32 +126,65 @@ namespace OnlineBackup.Agent
             return Home.LoadKey(s.Id) != null;
         }
 
-        public BackupSetInfo CreateSet(Client session, string password, BackupSetInfo s, string keyType = "PASSWORD", string customKey = null)
+        public BackupSetInfo CreateSet(Client session, string password, BackupSetInfo s, string keyType = "PASSWORD", string customKey = null, bool keyRecovery = true)
         {
             var salt = Bytes.Random(16);
             KeySet k = keyType == "DEFAULT" ? KeySet.Random() : KeySet.Derive(keyType == "CUSTOM" ? customKey : password, salt);
-            s.KeyType = keyType; s.KeySalt = Convert.ToBase64String(salt); s.KeyCheck = k.CheckValue();
+            s.KeyType = keyType; s.KeySalt = Convert.ToBase64String(salt); s.KeyCheck = k.CheckValue(); s.KeyRecovery = keyRecovery;
             if (string.IsNullOrEmpty(s.Computer)) s.Computer = Home.Computer;
             if (string.IsNullOrEmpty(s.Device) && string.Equals(s.Computer, Home.Computer, StringComparison.OrdinalIgnoreCase)) s.Device = DeviceId ?? "";
             var r = session.Call("POST", "/api/sets", new Msg().Set("set", s.ToXml().ToString(SaveOptions.DisableFormatting)));
             var created = BackupSetInfo.FromXml(XElement.Parse(r["set"]));
             Home.SaveKey(created.Id, k);
-            session.Call("POST", "/api/sets/" + created.Id + "/key", new Msg().Set("key", Convert.ToBase64String(k.ToRaw())));
+            // owner decision A7: the recovery copy goes to the server only when the customer chose it (the default)
+            if (keyRecovery) session.Call("POST", "/api/sets/" + created.Id + "/key", new Msg().Set("key", Convert.ToBase64String(k.ToRaw())));
             return created;
         }
 
+        /// <summary>
+        /// SET-020 + owner decision A7: the copies of a set added to THIS computer by the IT company get the first set's key at
+        /// the customer's interactive sign-in here (the program's sign-in): from this computer, from the server's recovery copy
+        /// (handed only to an interactive sign-in, never to the device token), or derived from the password (password key).
+        /// Kept here, so the scheduled runs need no sign-in afterwards. Returns the copies still without a key.
+        /// </summary>
+        public List<string> KeysForCopies(Client session, string password)
+        {
+            var missing = new List<string>();
+            foreach (var s in Sets().Where(x => !string.IsNullOrEmpty(x.Parent) && Mine(x) && Home.LoadKey(x.Id) == null))
+            {
+                var k = Home.LoadKey(s.Parent);
+                if ((k == null || k.CheckValue() != s.KeyCheck) && session != null && session.Session != null) k = SharedKey(session, s.Id);
+                if ((k == null || k.CheckValue() != s.KeyCheck) && password != null && s.KeyType == "PASSWORD" && !string.IsNullOrEmpty(s.KeySalt))
+                    k = KeySet.Derive(password, Convert.FromBase64String(s.KeySalt));
+                if (k != null && k.CheckValue() == s.KeyCheck) Home.SaveKey(s.Id, k); else missing.Add(s.Id);
+            }
+            return missing;
+        }
+
+        /// <summary>The first set's key from the server's recovery copy — with an interactive sign-in only (A7); null when none is kept.</summary>
+        static KeySet SharedKey(Client session, string copyId)
+        {
+            try { return KeySet.FromRaw(Convert.FromBase64String(session.Call("GET", "/api/sets/" + copyId + "/sharedkey")["key"])); }
+            catch (AgentException) { return null; }
+            catch (FormatException) { return null; }
+        }
+
+
         /// <summary>The set key: from this computer, or re-derived from the password / custom key (restore on a new computer).</summary>
-        public KeySet Key(BackupSetInfo s, string secret = null, byte[] recovered = null)
+        public KeySet Key(BackupSetInfo s, string secret = null, byte[] recovered = null, Client session = null)
         {
             KeySet k = recovered != null ? KeySet.FromRaw(recovered) : Home.LoadKey(s.Id);
             if (k == null && secret != null && s.KeyType != "DEFAULT") k = KeySet.Derive(secret, Convert.FromBase64String(s.KeySalt));
             if (k == null && !string.IsNullOrEmpty(s.Parent))
             {
-                // SET-020: a copy of a set added by the IT company — the first set's key, from this computer or (key recovery on) the server
+                // SET-020: a copy of a set added by the IT company — the first set's key, from this computer or (key recovery on) the
+                // server; owner decision A7 (AZF-1): from the server only with the customer's interactive sign-in, never the device token
                 k = Home.LoadKey(s.Parent);
-                if (k == null) try { k = KeySet.FromRaw(Convert.FromBase64String(DeviceClient().Call("GET", "/api/sets/" + s.Id + "/sharedkey")["key"])); } catch (AgentException) { }
+                if (k == null && session != null && session.Session != null) k = SharedKey(session, s.Id);
                 if (k != null && k.CheckValue() == s.KeyCheck) Home.SaveKey(s.Id, k);
             }
+            if (k == null && !string.IsNullOrEmpty(s.Parent))
+                throw new AgentException(0, "NO_KEY", "This computer does not have the key of this backup yet: sign in to the backup program on this computer once (with the password), or enter the set's encryption key.");
             if (k == null) throw new AgentException(0, "NO_KEY", "This computer does not have the set's encryption key. Enter the key or get it from your provider (key recovery).");
             if (k.CheckValue() != s.KeyCheck) throw new AgentException(0, "WRONG_KEY", "The encryption key is wrong.");
             // a replacement computer that proved the key (password, custom key or recovery) keeps it, as the first one did:
@@ -238,10 +271,13 @@ namespace OnlineBackup.Agent
                     // cut off by the internet: noted, so it starts again as soon as the server answers (MISS-020)
                     NoteOffline(SystemClock.UtcNow);
                     File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == "LOG" ? "last-log.txt" : "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\tNETWORK");
+                    if (mode != "LOG") RunNotes.Record(Home.SetDir(s.Id), "NETWORK", new List<string> { AhsayLog.Line(SystemClock.UtcNow, "err", message: e.Message) }, 1, SystemClock.UtcNow);
                     throw;
                 }
             }
             File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == "LOG" ? "last-log.txt" : "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\t" + run.Result);
+            // B2, the customer's window only: the notes of this run (last complete, files not backed up, the log); never changes the run
+            if (mode != "LOG") RunNotes.Record(Home.SetDir(s.Id), run.Result, run.LogLines, run.Errors, SystemClock.UtcNow);
             return run;
         }
 
@@ -391,7 +427,7 @@ namespace OnlineBackup.Agent
             var s = Remember(Core.Profile.Parse(session.Call("GET", "/api/profile")["profile"])).Sets.FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
             CheckScope(s);
-            return new Restore(session, s, Key(s, secret, recoveredKey), Path.Combine(Home.Dir, "temp"));
+            return new Restore(session, s, Key(s, secret, recoveredKey, session), Path.Combine(Home.Dir, "temp"));
         }
 
         /// <summary>Restore from the local copy (no internet): the key from this computer or from the password.</summary>

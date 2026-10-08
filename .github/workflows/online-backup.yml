@@ -1,3 +1,7 @@
+# Owner decision Fast/Deep (A, 2026-10-08): a plain push runs the FAST gate (the Linux tests only, ~20 min, for quick
+# feedback; no package; its verdict is titled FAST and is NEVER a Certification PASS). The DEEP gate - everything below -
+# runs every night, on a manual run, on a pull request, and on a push whose commit message contains [deep]; Certification,
+# Release and the Pilot need a DEEP PASS.
 # QA-010: the quality gate. Every push and every pull request runs all the checks; the installation package is built
 # ONLY when every check passed (a broken version never becomes a package). Every night the same checks run again, so a
 # change outside the code (a download, a browser, a certificate) is noticed the next morning, not on a customer's machine.
@@ -15,8 +19,9 @@ on:
   workflow_dispatch:
 # a newer push of the same branch replaces a run still going (only the latest version matters; saves Actions minutes)
 concurrency:
-  group: ob-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+  # fast and deep runs are separate groups: a fast push never cancels a deep run; a newer push replaces an older fast one
+  group: ob-${{ github.ref }}-${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) && 'deep' || 'fast' }}
+  cancel-in-progress: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[deep]') }}
 env:
   RESTIC_URL: https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_amd64.bz2
   RESTIC_SHA: 680838f19d67151adba227e1570cdd8af12c19cf1735783ed1ba928bc41f363d
@@ -30,8 +35,9 @@ jobs:
     #    New: a known test that disappeared from the build is red (tools/qa-shards/known-tests.txt). One job of 58 min
     #    against a 60 min limit became 4 of ~15 (CI-2).
     uses: ./.github/workflows/shards-core.yml
-    with: { os: ubuntu-latest, shards: 4, max_parallel: 4, mode: gate, title: 'Quality gate - Linux tests' }
+    with: { os: ubuntu-latest, shards: 4, max_parallel: 4, mode: gate, title: "${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) && 'Quality gate (DEEP) - Linux tests' || 'FAST gate (not Certification) - Linux tests' }}" }
   tests-extra:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 1c. what the single tests job also did: the security scan and the load run
     runs-on: ubuntu-latest
     timeout-minutes: 120   # CI-3: the load run had not run in the gate for a long time; its real duration is measured, then the limit set from it
@@ -50,6 +56,7 @@ jobs:
       - name: Load — 500 customers, 5,000 sets, 50 computers at once (LOAD-010)
         run: OB_LOAD=1 OB_LOAD_OUT=$PWD/load-report.txt dotnet test tests/Tests --filter "FullyQualifiedName~LoadTests"; r=$?; cat load-report.txt; exit $r
   windows:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 1b. the same tests on Windows Server — the system the server and most clients run on (paths, services,
     #     shadow copy, the Windows build of every program). Reported, not yet a gate: it starts as a look.
     runs-on: windows-latest
@@ -94,6 +101,7 @@ jobs:
       - name: Tests (Windows)
         run: dotnet test tests/Tests --no-build -nologo --logger "console;verbosity=normal"
   screens:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 2. UI-020: every screen of the product, every language, computer and phone — the report (with screenshots) is kept
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -129,6 +137,7 @@ jobs:
           path: ui-report
           retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
   website:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 3. SITE-010/020: the website is built in every language (a missing translation fails) and checked like the product
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -156,6 +165,7 @@ jobs:
           path: site-report
           retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
   qa:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 3b. the product used as a customer and a technician use it: the real server and agent programs as separate
     #     processes, the admin site in a real browser, every backup restored and checked by SHA-256, faults injected
     #     (server killed, line cut, disk full, agent killed, restore cut, schedule, retention, restic)
@@ -204,7 +214,7 @@ jobs:
   package:
     # 4. only after 1–3 passed — including the browser QA: a version that fails any of them never becomes a package
     needs: [tests, tests-extra, screens, website, qa]
-    if: github.event_name != 'pull_request'
+    if: github.event_name != 'pull_request' && (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]'))   # a package only after a DEEP pass
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

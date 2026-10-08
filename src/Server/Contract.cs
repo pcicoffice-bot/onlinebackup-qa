@@ -132,7 +132,8 @@ namespace OnlineBackup.Server
             int v = Version(cfg);
             if (v > 0 && (string)Load(cfg).Attribute("SIGNUP") != "N" && b.Int("contractVersion") != v) throw new ApiException(412, "CONTRACT", "Read and accept the contract.");
             var lic = cfg.License;
-            if (lic.MaxUsers > 0 && users.Logins().Count() >= lic.MaxUsers) throw new ApiException(402, "LICENSE", "The server cannot take new customers right now. Contact your IT provider.");
+            if ((lic.MaxUsers > 0 && users.Logins().Count() >= lic.MaxUsers) || LicenseCheckin.OverBasicLimit(lic, users))   // L-1: over the basic edition it dropped to
+                throw new ApiException(402, "LICENSE", "The server cannot take new customers right now. Contact your IT provider.");
             var p = users.Create(b["login"], b["password"], company, null, null, email, ip);
             var login = p.Get("LOGIN_NAME");
             lock (users.ProfileLock)

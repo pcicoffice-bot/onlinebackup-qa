@@ -10,19 +10,20 @@ class Fake : IClientApi {
   }
 }
 static class P {
+  static IEnumerable<Control> All(Control c) { foreach (Control x in c.Controls) { yield return x; foreach (var y in All(x)) yield return y; } }   // alternative C: the fields are inside cards
   [STAThread] static void Main(string[] a) {
     Application.EnableVisualStyles();
     var f = new ClientForm(new Fake());
     var content = (Panel)typeof(ClientForm).GetField("content", BindingFlags.NonPublic|BindingFlags.Instance).GetValue(f);
     var pageF = typeof(ClientForm).GetField("page", BindingFlags.NonPublic|BindingFlags.Instance);
     var render = typeof(ClientForm).GetMethod("Render", BindingFlags.NonPublic|BindingFlags.Instance);
-    var pages = new[] { "help", "new", "security", "restore", "status" }; int pi = 0, step = 0; List<TextBox> boxes = new List<TextBox>(); bool ok = true;
+    var pages = new[] { "help", "new", "settings", "restore", "home", "sets", "history" }; int pi = 0, step = 0; List<TextBox> boxes = new List<TextBox>(); bool ok = true;
     var t = new System.Windows.Forms.Timer { Interval = 1000 };
     t.Tick += (s, e) => {
       step++;
       if (step % 10 == 1) { if (pi >= pages.Length) { t.Stop(); Console.WriteLine(ok ? "ALL KEPT" : "LOST"); Application.Exit(); return; }
-        pageF.SetValue(f, pages[pi]); render.Invoke(f, null); boxes = content.Controls.OfType<TextBox>().Where(b => !b.ReadOnly).ToList(); foreach (var b in boxes) { b.Focus(); b.Text = "typed"; } }
-      if (step % 10 == 9) { int lost = boxes.Count(b => b.IsDisposed || b.Text != "typed"); Console.WriteLine(pages[pi] + ": " + (boxes.Count == 0 ? "no field" : lost == 0 ? "kept (" + boxes.Count + " fields)" : "LOST " + lost + " of " + boxes.Count)); ok &= lost == 0; pi++; }
+        pageF.SetValue(f, pages[pi]); render.Invoke(f, null); boxes = All(content).OfType<TextBox>().Where(b => !b.ReadOnly).ToList(); foreach (var b in boxes) { b.Focus(); b.Text = "typed"; } }
+      if (step % 10 == 9) { var now = All(content).OfType<TextBox>().ToList(); int lost = boxes.Count(b => (b.IsDisposed || b.Text != "typed") && !now.Any(c => c.Name.Length > 0 && c.Name == b.Name && c.Text == "typed"));   // a field drawn again must still hold the text Console.WriteLine(pages[pi] + ": " + (boxes.Count == 0 ? "no field" : lost == 0 ? "kept (" + boxes.Count + " fields)" : "LOST " + lost + " of " + boxes.Count)); ok &= lost == 0; pi++; }
     };
     f.Shown += (s, e) => t.Start();
     Application.Run(f);

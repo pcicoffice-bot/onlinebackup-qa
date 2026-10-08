@@ -257,11 +257,16 @@ namespace OnlineBackup.Tests
         /// RS-01, names: a case-only rename (Windows: "Report.txt" → "report.txt", the same file to Windows). Server-side
         /// names are case-insensitive (NameCipher.Segment lowercases) and the change test is size + time, so the rename is
         /// "unchanged": no upload, and every later point keeps the OLD spelling. On a case-sensitive disk the restored file
-        /// has another name than the source had at that run. Expected to FAIL on this snapshot (finding P-1).
+        /// has another name than the source had at that run. Finding P-1.
+        /// Owner decision P-1 (2026-10-08): Pilot 1 keeps this as a documented behaviour (option B, tested below by
+        /// CaseOnlyRename_Pilot_EveryFileRestoresIdentical_UnderTheEarlierSpelling); this requirement (option A, the new
+        /// spelling restored) applies AFTER the pilot - until then it is NOT TESTED, never PASS.
         /// </summary>
         [Fact]
         public void CaseOnlyRename_LaterPointsRestoreTheNewSpelling()
         {
+            throw NotTested.Because("owner decision P-1: case-only renames are a documented behaviour in Pilot 1; this requirement applies after the pilot");
+#pragma warning disable CS0162   // the test body stays as the requirement for after the pilot
             TimeMachine();
             using (var env = new Env())
             {
@@ -280,6 +285,39 @@ namespace OnlineBackup.Tests
                 output.WriteLine("run 2: " + r1.Result + " new=" + r1.New + " upd=" + r1.Updated + " del=" + r1.Deleted);
                 jump += TimeSpan.FromMinutes(1);
                 var bad = RestoreEveryPoint(env, app, pw, set.Id, src, manifests, "case");
+                Assert.True(bad.Count == 0, string.Join("\n", bad));
+            }
+#pragma warning restore CS0162
+        }
+
+        /// <summary>
+        /// Owner decision P-1, Pilot 1 (option B, documented behaviour): after a case-only rename ("Reports/Report.txt" →
+        /// "REPORTS/report.txt", content and time unchanged) no data is lost: every point restores every file with the same
+        /// content (SHA-256) and time; the restored names keep the spelling of the first backup (Windows treats both
+        /// spellings as the same file). Can fail: a file missing or different, or a spelling other than the documented one.
+        /// </summary>
+        [Fact]
+        public void CaseOnlyRename_Pilot_EveryFileRestoresIdentical_UnderTheEarlierSpelling()
+        {
+            TimeMachine();
+            using (var env = new Env())
+            {
+                const string user = "casepb", pw = "Customer-Pass-1";
+                env.CreateUser(user, pw, 1);
+                var app = env.Agent(user, pw);
+                var src = env.Dir("src");
+                Write(Path.Combine(src, "Reports", "Report.txt"), new byte[] { 1, 2, 3, 4 }, 0);
+                Write(Path.Combine(src, "Other.txt"), new byte[] { 5 }, 0);
+                var set = app.CreateSet(app.Interactive(pw, null), pw, new BackupSetInfo { Name = "CasePB", Sources = { src } });
+                jump += TimeSpan.FromSeconds(3); var r0 = app.Backup(set.Id);
+                var first = Manifest(src);
+                File.Move(Path.Combine(src, "Reports", "Report.txt"), Path.Combine(src, "Reports", "report.txt"));
+                Directory.Move(Path.Combine(src, "Reports"), Path.Combine(src, "reports-tmp")); Directory.Move(Path.Combine(src, "reports-tmp"), Path.Combine(src, "REPORTS"));
+                jump += TimeSpan.FromSeconds(3); var r1 = app.Backup(set.Id);
+                Assert.Equal("BS_STOP_SUCCESS", r1.Result);
+                jump += TimeSpan.FromMinutes(1);
+                // documented: every point restores the files of the first backup's spelling, identical in content and time
+                var bad = RestoreEveryPoint(env, app, pw, set.Id, src, new Dictionary<string, SortedDictionary<string, string>> { [r0.Job] = first, [r1.Job] = first }, "casepb");
                 Assert.True(bad.Count == 0, string.Join("\n", bad));
             }
         }
