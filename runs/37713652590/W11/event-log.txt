@@ -1,0 +1,16 @@
+﻿
+
+TimeCreated      : 10/8/2026 3:36:04 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/8/2026 3:32:34 AM
+ProviderName     : VSS
+Id               : 8225
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to shutdown event from the Service Control Manager. 
+
+
+

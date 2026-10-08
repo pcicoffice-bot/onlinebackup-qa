@@ -1,0 +1,105 @@
+﻿{
+    "id":  "W13",
+    "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W13",
+    "started":  "2026-10-08T04:14:53.7666928+00:00",
+    "result":  "FAIL",
+    "reason":  "Maintenance - Setup sees the installation (repair): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || After Repair: the file is back and the service runs: Stopped || the journey stopped: You cannot call a method on a null-valued expression. @ line 345",
+    "steps":  [
+                  {
+                      "step":  "The service cannot start (Windows says so)",
+                      "expected":  "Start-Service fails or the service stops again",
+                      "actual":  "error: Service \u0027ITSguard Server Online (OnlineBackupAgent)\u0027 cannot be started due to the following error: Cannot start service OnlineBackupAgent on computer \u0027.\u0027.; state Stopped",
+                      "result":  "PASS",
+                      "seconds":  8,
+                      "screenshot":  "",
+                      "at":  "04:15:04"
+                  },
+                  {
+                      "step":  "The program window",
+                      "expected":  "",
+                      "actual":  "not found; processes:  || desktop: explorer(7996) \u0027\u0027 Shell_TrayWnd 1024x48; WindowsTerminal(4412) \u0027C:\\ProgramData\\GitHub\\HostedComputeAgent\\hosted-compute-agent\u0027 CASCADIA_HOSTING_WINDOW_CLASS 1044x635; explorer(7996) \u0027\u0027 EdgeUiInputTopWndClass 1009x4; explorer(7996) \u0027Program Manager\u0027 Progman 1024x768;  || UIA per window: no process OnlineBackup.Client || last error while waiting: ",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "04:16:06"
+                  },
+                  {
+                      "step":  "Maintenance - Setup sees the installation (repair)",
+                      "expected":  "\"already installed\" with the choices",
+                      "actual":  "Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "03-Maintenance---Setup-sees-the-installation--repair-.png",
+                      "at":  "04:16:08"
+                  },
+                  {
+                      "step":  "After Repair: the file is back and the service runs",
+                      "expected":  "OnlineBackup.Agent.exe present, Running",
+                      "actual":  "Stopped",
+                      "result":  "FAIL",
+                      "seconds":  90,
+                      "screenshot":  "",
+                      "at":  "04:17:38"
+                  },
+                  {
+                      "step":  "The program window",
+                      "expected":  "",
+                      "actual":  "not found; processes:  || desktop: explorer(7996) \u0027\u0027 Shell_TrayWnd 1024x48; Setup(544) \u0027ITSguard Server Online\u0027 WindowsForms10.Window.8.app.0.1569a64_r6_ad1 786x709; WindowsTerminal(4412) \u0027C:\\ProgramData\\GitHub\\HostedComputeAgent\\hosted-compute-agent\u0027 CASCADIA_HOSTING_WINDOW_CLASS 1044x635; explorer(7996) \u0027\u0027 EdgeUiInputTopWndClass 1009x4; explorer(7996) \u0027Program Manager\u0027 Progman 1024x768;  || UIA per window: no process OnlineBackup.Client || last error while waiting: ",
+                      "result":  "INFO",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "04:18:41"
+                  },
+                  {
+                      "step":  "the journey stopped",
+                      "expected":  "no error",
+                      "actual":  "You cannot call a method on a null-valued expression. @ line 345",
+                      "result":  "FAIL",
+                      "seconds":  0,
+                      "screenshot":  "04-stopped.png",
+                      "at":  "04:18:41"
+                  }
+              ],
+    "visual":  [
+                   {
+                       "journey":  "W13",
+                       "screen":  "The program window while the service cannot start",
+                       "screenshot":  "01-The-program-window-while-the-service-cannot-start.png",
+                       "kind":  "VISUAL",
+                       "problem":  "The expected window is not on the screen",
+                       "expected":  "a window",
+                       "actual":  "none",
+                       "severity":  "High",
+                       "recommendation":  "Find why the window did not open",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   },
+                   {
+                       "journey":  "W13",
+                       "screen":  "Client: when the service is not running the window says so and what to do",
+                       "screenshot":  "02-ux-Client--when-the-service-is-not-running-the-window-says-so-and-what-to-do.png",
+                       "kind":  "UX",
+                       "problem":  "Client: when the service is not running the window says so and what to do",
+                       "expected":  "a clear message",
+                       "actual":  " ",
+                       "severity":  "Medium",
+                       "recommendation":  "",
+                       "resolution":  "1024x768",
+                       "dpi":  100
+                   }
+               ],
+    "ux":  [
+               {
+                   "step":  "UX: Client: when the service is not running the window says so and what to do",
+                   "expected":  "a clear message",
+                   "actual":  " ",
+                   "result":  "FAIL",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "04:16:06",
+                   "layer":  "UX"
+               }
+           ],
+    "ended":  "2026-10-08T04:18:41.8081958+00:00"
+}

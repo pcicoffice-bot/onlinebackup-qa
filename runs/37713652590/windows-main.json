@@ -1,0 +1,158 @@
+﻿{
+    "facts":  {
+                  "phase":  "main",
+                  "windows":  "Microsoft Windows Server 2025 Datacenter 10.0.26100 build 26100",
+                  "computer":  "runnervmfi6oq",
+                  "package":  "OnlineBackup-Server-0.1.32.zip",
+                  "commit":  "d63026ef1398ad7a8eb2eac93b3b4774faf57ff0",
+                  "run":  "37713652590",
+                  "started":  "2026-10-08T01:38:34.2747798+00:00",
+                  "resolution":  "1024x768",
+                  "dpi":  100,
+                  "powershell":  "5.1.26100.33438",
+                  "interactive":  true,
+                  "user":  "runnervmfi6oq\\runneradmin"
+              },
+    "journeys":  [
+                     {
+                         "id":  "W01",
+                         "title":  "Server: install from the real package (Windows service) and sign in",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W02",
+                         "title":  "Installer failure: a damaged Setup.exe installs nothing and says so",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "PASS",
+                         "ux":  "PASS",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W03",
+                         "title":  "Client installation through the installer window, proven by Windows",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "FAIL",
+                         "visualFindings":  1,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W04",
+                         "title":  "First run: sign in through the window, the agent connects to the server",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  12,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W05",
+                         "title":  "FULL CHAIN: backup set in the window -\u003e Back up now -\u003e delete the source -\u003e Restore in the window -\u003e SHA-256",
+                         "functional":  "PASS",
+                         "reason":  "",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  22,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W06",
+                         "title":  "Service restart: Windows restarts the backup service, then backup and restore again",
+                         "functional":  "FAIL",
+                         "reason":  "Restore after restart - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version —  ·  Check for updates | English | Powered by ITSguard Server Online || Restore after restart - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/112; differences 112: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  17,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W07",
+                         "title":  "Agent crash mid-backup: the process is killed; Windows brings it back; no ghost run; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "Restore after the crash - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version —  ·  Check for updates | English | Powered by ITSguard Server Online || Restore after the crash - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/113; differences 113: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  20,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W08",
+                         "title":  "Service stopped mid-backup: the run ends cleanly; start; backup and restore identical",
+                         "functional":  "FAIL",
+                         "reason":  "The backup is running: live=False || Stop the service (Windows service manager) while it backs up: Stopped; live job when stopped \u0027\u0027 || The stopped run is closed on the server (not running): live 0; job \u0027\u0027: not recorded || Restore after the stop - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.32  ·  Check for updates | English | Powered by ITSguard Server Online || Restore after the stop - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/113; differences 113: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  18,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W09",
+                         "title":  "Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical",
+                         "functional":  "FAIL",
+                         "reason":  "The backup is running: live=False || Kill the server process: pid 2608; live job \u0027\u0027 || No ghost run after the server came back: live 0; job \u0027\u0027: never closed (an open run left behind) || Restore after the server crash - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.32  ·  Check for updates | English | Powered by ITSguard Server Online || Restore after the server crash - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/113; differences 113: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W10",
+                         "title":  "VSS: a file locked by another program is backed up through the shadow copy; no shadow copy is left behind",
+                         "functional":  "FAIL",
+                         "reason":  "Restore with the locked file - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.32  ·  Check for updates | English | Powered by ITSguard Server Online || Restore with the locked file - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/114; differences 114: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  17,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W11",
+                         "title":  "VSS failure: the shadow copy service is disabled; the locked file is reported, never a silent success; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "The result names the problem (not a plain success): ERROR: Exception calling \"Matches\" with \"2\" argument(s): \"Value cannot be null.\r\nParameter name: input\" @ line 323 || Restore after VSS came back - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.32  ·  Check for updates | English | Powered by ITSguard Server Online || Restore after VSS came back - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/114; differences 114: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W12",
+                         "title":  "Permission denied: a folder the service may not read is an error, not a deletion; recovery",
+                         "functional":  "FAIL",
+                         "reason":  "Restore: the denied folder\u0027s files are still in the backup - Restore page: Sign in | Sign in | Restoring and adding backups require your password. | Password | Verification code (if enabled) | Sign in | Cancel | Restore | Backup | QA files | Restore point (date) | Files (none selected = everything) | Filter by file or folder name | Restore to folder | C:\\Users\\runneradmin\\Desktop\\Restore | … | Replace existing files | Restore | Backup status | Restore | New backup | Security | Help | Version 0.1.32  ·  Check for updates | English | Powered by ITSguard Server Online || Restore: the denied folder\u0027s files are still in the backup - ORACLE: every restored file has the SHA-256 of the original: server: no restore run; files 0/114; differences 114: MISSING Many\\file-093.csv; MISSING Many\\file-099.csv; MISSING Many\\file-078.csv; MISSING Many\\file-022.csv; MISSING Many\\file-038.csv; MISSING Many\\file-053.csv",
+                         "visual":  "FAIL",
+                         "ux":  "PASS",
+                         "visualFindings":  19,
+                         "uxFindings":  0
+                     },
+                     {
+                         "id":  "W13",
+                         "title":  "Service that does not start: its program file is missing (as after an antivirus quarantine); Repair in the installer window brings it back",
+                         "functional":  "FAIL",
+                         "reason":  "Maintenance - Setup sees the installation (repair): Welcome to the ITSguard Server Online setup | This installs ITSguard Server Online on this computer. It backs up your files to your provider\u0027s backup server, encrypted on this computer before they leave. | Computer: runnervmfi6oq | Click Next to continue, or Cancel to exit. | English | Next | Cancel || After Repair: the file is back and the service runs: Stopped || the journey stopped: You cannot call a method on a null-valued expression. @ line 345",
+                         "visual":  "FAIL",
+                         "ux":  "FAIL",
+                         "visualFindings":  1,
+                         "uxFindings":  1
+                     },
+                     {
+                         "id":  "W14",
+                         "title":  "Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after",
+                         "functional":  "FAIL",
+                         "reason":  "the journey stopped: You cannot call a method on a null-valued expression. @ line 369",
+                         "visual":  "NOT TESTED",
+                         "ux":  "NOT TESTED",
+                         "visualFindings":  0,
+                         "uxFindings":  0
+                     }
+                 ]
+}

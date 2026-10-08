@@ -1,0 +1,6 @@
+2026-10-08 01:38:57	-	server started https://+:8443/
+2026-10-08 01:38:58	-	server started https://+:8443/
+2026-10-08 02:02:16	::1	error: PUT /api/sets/1791423602477/jobs/2026-10-08-02-02-00/object: HttpListenerException The I/O operation has been aborted because of either a thread exit or an application request.
+2026-10-08 02:38:58	-	settings backup config-20261008-023858.zip
+2026-10-08 02:50:51	-	server started https://+:8443/
+2026-10-08 02:50:51	127.0.0.1	error: GET /api/profile: FileNotFoundException Could not find file 'C:\obqa\users\qa-win\db\devices.xml'.
