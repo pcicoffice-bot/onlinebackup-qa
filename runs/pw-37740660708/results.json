@@ -1,0 +1,772 @@
+{
+ "title": "Journeys (Playwright) - run 37740660708 (073356e44a66f501b06a02812be931450f7089fd)",
+ "mode": "strict",
+ "build_sha": "42b4da89301732f585e72f1143beb156fdf4d1fad7021829f0e44d2396d7e751",
+ "counts": {
+  "PASS": 70,
+  "FAIL": 1,
+  "NOT TESTED": 1,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "e2e/p03-sh05-ransomware.spec.ts > P03 SH-05 a mass rewrite on the computer: the site shows the suspicion, retention is frozen (the point before the attack survives 40 days of maintenance and restores identical), released only on the site": "PASS",
+  "e2e/p05-ui04-client-window.spec.ts > P05 UI-04 the client window in the browser: a wrong password refused, sign in, add a folder set, back up, restore one file to a new folder \u2014 identical": "PASS",
+  "e2e/p07-bk07-ag02-max-duration-and-stop.spec.ts > P07 BK-07/AG-02 a backup past its maximum duration ends Stopped; Stop on the site ends the service's run; the next run completes and restores identical": "PASS",
+  "e2e/p09-au01-sign-in-lock.spec.ts > P09 AU-01 a technician from the network: two-step set-up, wrong password and wrong code refused, locked after the threshold, unlocked on the site, signed-out session refused on every page": "PASS",
+  "e2e/p11-au06-reseller-sees-only-its-own.spec.ts > P11 AU-06 a reseller's administrator sees and changes only its own customers in the browser; the other reseller's customer stays untouched": "PASS",
+  "e2e/p13-au04-guard-blocks-an-address.spec.ts > P13 AU-04 an address that guesses passwords is blocked for everything, the administrator's own address is not, one alert mail, unblocked on the site": "NOT TESTED",
+  "e2e/q2-verify-damaged-object.spec.ts > Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical": "PASS",
+  "e2e/q4-replication.spec.ts > Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back": "PASS",
+  "e2e/q4-replication.spec.ts > Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer": "PASS",
+  "e2e/q5-service-follows-the-site.spec.ts > Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service": "PASS",
+  "failure-recovery/f1-server-crash.spec.ts > F1 server killed mid-backup \u2192 the run fails cleanly \u2192 server back \u2192 no ghost, not locked, next backup restores identical": "PASS",
+  "failure-recovery/f11-agent-chunk-lists-torn.spec.ts > F11 agent chunk lists torn between backups \u2192 next backup still correct \u2192 newest and first points restore identical": "PASS",
+  "failure-recovery/f13-client-clock-ahead.spec.ts > F13 client clock 3 h ahead of the server \u2192 the daily slot runs once, not again every 15 minutes \u2192 restore identical": "PASS",
+  "failure-recovery/f15-agent-index-lines-lost.spec.ts > F15 lines of the agent index lost between backups \u2192 next backup still correct \u2192 newest point has no deleted file back, first point identical": "PASS",
+  "failure-recovery/f3-two-at-once.spec.ts > F3 two backups of one set at once \u2192 one succeeds, the other is refused cleanly, the backup restores identical": "PASS",
+  "failure-recovery/f5-source-gone-ui.spec.ts > F5 source disappears \u2192 the site shows the failure truthfully \u2192 source back \u2192 backup restores identical": "PASS",
+  "failure-recovery/f7-restore-cut-mid-file.spec.ts > F7 restore killed in the middle of a large file \u2192 restore again without overwrite \u2192 identical, nothing half-written left": "PASS",
+  "failure-recovery/f9-server-restart-during-restore.spec.ts > F9 server killed and restarted during a restore \u2192 clear failure or full resume, never a false success \u2192 restore again identical": "PASS",
+  "failure-recovery/n2-commit-reply-lost-and-duplicated.spec.ts > N2a the commit reply is lost after the server committed \u2192 not recorded twice, no file lost \u2192 run 3 sends nothing \u2192 both points identical": "PASS",
+  "failure-recovery/n2-commit-reply-lost-and-duplicated.spec.ts > N2b the commit request arrives twice at once \u2192 answered the same, recorded once \u2192 run 3 sends nothing \u2192 both points identical": "PASS",
+  "failure-recovery/n4-cpu-and-memory-pressure.spec.ts > N4 CPU and memory pressure during backups \u2192 still success, only slower (durations recorded) \u2192 every set restores identical (SHA-256)": "PASS",
+  "failure-recovery/n7-permission-denied-and-locked.spec.ts > N7 unreadable folder, unreadable file, exclusively locked file \u2192 success WITH ERROR naming each, nothing deleted, old versions kept \u2192 fault removed \u2192 BS_STOP_SUCCESS \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n8-source-unavailable.spec.ts > N8a source folder renamed away DURING backup 2 \u2192 not a plain success, nothing deleted, newest point holds every file \u2192 folder back \u2192 backup 3 \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n8-source-unavailable.spec.ts > N8b source folder gone BEFORE backup 2 \u2192 failure (BK-05), nothing deleted, newest point = point 1 \u2192 folder back \u2192 backup 3 \u2192 restore identical (SHA-256)": "PASS",
+  "journeys/j2-edit-backup-set.spec.ts > J2 edit a backup set from the site: the change is saved and reaches the customer's computer": "PASS",
+  "journeys/j4-restore-after-loss.spec.ts > J4 backup \u2192 change \u2192 backup \u2192 delete the source \u2192 restore to the original place \u2192 identical; the first version too": "PASS",
+  "journeys/j6-restic-backup-now.spec.ts > J6 restic set: Back up now from the site \u2192 change \u2192 backup \u2192 restore identical (SHA-256), every point listed": "PASS",
+  "journeys/j8-retention.spec.ts > J8 retention keeps exactly the policy's points, and each kept point restores identical": "PASS",
+  "journeys/ui-01-every-screen.spec.ts > UI-01 sign-out in one tab ends the session for every tab (server check); a forged session shows the sign-in form": "PASS",
+  "journeys/ui-01-every-screen.spec.ts > UI-01 with real data: every customer tab, every set tab, run details and logs open without a console error or a failed request": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: 22:58 made on the computer is kept (the page has no :60 to round to)": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: a time made on the computer (22:33) is kept when the technician only looks at the Schedule tab and saves": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: unticking every day of the only time never turns into a daily backup at a time nobody chose": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 concurrency: two technicians edit different tabs of the same set \u2014 neither change is lost silently": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 every tab of the set editor: saved exactly (server API + Profile.xml on disk) and shown again after a reload": "PASS",
+  "journeys/ui-02-set-editor.spec.ts > UI-02 failure: a save the server refuses shows the reason, keeps the editor open, and stores nothing": "PASS",
+  "e2e/p01-rs06-restore-test.spec.ts > P01 RS-06 the monthly restore test runs by itself on a real backup: Passed 3/3 on the site, a changed source is not counted, a damaged object a month later is FAILED in red, no temp folder left": "PASS",
+  "e2e/p02-rs05-new-computer.spec.ts > P02 RS-05 a new computer: registered, the key given, every file of every point restores identical, the old computer's points listed, a wrong key refused": "PASS",
+  "e2e/p04-ag06-local-index-lost.spec.ts > P04 AG-06 the agent's local index is deleted between backups: the next backup is exact, the newest point restores identical, nothing deleted on the server": "PASS",
+  "e2e/p06-sh01-sh02-truth.spec.ts > P06 SH-01 SH-02 after a success, a failure and a killed agent, the site's history and \"running now\" are exact, and the last good backup time is kept": "PASS",
+  "e2e/p08-bk04-ag03-filters-from-the-site.spec.ts > P08 BK-04/AG-03 a skipped folder and filter rules set in the browser reach the running service: the next point holds exactly the kept files, identical; the first point everything": "PASS",
+  "e2e/p10-au02-device-revoked.spec.ts > P10 AU-02 a wrong customer password registers nothing; a computer disconnected on the site is refused at once (program and service); signed in again it backs up and restores identical": "PASS",
+  "e2e/p12-st06-server-disk-full-on-the-site.spec.ts > P12 ST-06 server disk full under Back up now from the site: Failed with the reason on the site, one alert mail, space given back, point 1 restorable, after space the next run completes and restores identical": "PASS",
+  "e2e/q1-recycle-bin.spec.ts > Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased": "PASS",
+  "e2e/q3-settings-backup.spec.ts > Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore": "PASS",
+  "e2e/q6-quota.spec.ts > Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete": "PASS",
+  "failure-recovery/f10-network-cut-during-restore.spec.ts > F10 network cut during a restore \u2192 missing files reported, nothing half-written \u2192 line back \u2192 restore again identical": "PASS",
+  "failure-recovery/f12-same-computer-name.spec.ts > F12 two computers with the same name \u2192 each set backed up on schedule by its own computer, nothing blocked or corrupted \u2192 both restore identical": "PASS",
+  "failure-recovery/f14-cloned-computer.spec.ts > F14 cloned computer (same registration, same set, own files) \u2192 no success with the other copy's content \u2192 each newest point restores identical": "PASS",
+  "failure-recovery/f2-network-cut.spec.ts > F2 network cut mid-backup \u2192 failure, not success \u2192 line back \u2192 next backup restores identical, no ghost": "PASS",
+  "failure-recovery/f4-restore-interrupted.spec.ts > F4 restore killed mid-way \u2192 restore again into the same folder \u2192 every file identical, no leftovers": "PASS",
+  "failure-recovery/f6-server-disk-full.spec.ts > F6 server disk full mid-backup \u2192 clear failure, no lock, space given back \u2192 smaller backup succeeds and restores identical": "PASS",
+  "failure-recovery/f8-client-disk-full-restore.spec.ts > F8 client disk full during a restore \u2192 reported failed, nothing half-written passes as whole \u2192 restore to a good disk identical": "PASS",
+  "failure-recovery/n1-network-breaks.spec.ts > N1a line down 5 s mid-upload \u2192 proven by the proxy log \u2192 run resumes or fails truthfully \u2192 next backup + restore identical (SHA-256)": "PASS",
+  "failure-recovery/n1-network-breaks.spec.ts > N1b line down longer than every retry \u2192 the agent gives up (time measured) \u2192 no false success, server not left locked \u2192 next backup + restore identical": "PASS",
+  "failure-recovery/n10-external-process-hang.spec.ts > N10a pre-command that never ends \u2192 stopped at the real 1-hour limit (agent clock 120\u00d7) with its child \u2192 backup completes \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n10-external-process-hang.spec.ts > N10b agent killed while its pre-command hangs (real clock) \u2192 observed: what the server shows during the hang, what is left running \u2192 next backup + restore identical (SHA-256)": "PASS",
+  "failure-recovery/n10-external-process-hang.spec.ts > N10c restic hangs silently during the backup \u2192 stopped at the real 30-min idle limit (agent clock 120\u00d7), nothing left running, no false success \u2192 real restic \u2192 backup \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n3-slow-line.spec.ts > N3 line throttled to 50 KB/s for a whole backup \u2192 succeeds, only slower (duration recorded) \u2192 new backup \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n5-server-disk-full-second-run.spec.ts > N5 server disk full during backup 2 \u2192 failed truthfully, point 1 intact and restorable DURING the fault \u2192 space freed \u2192 backup 3 \u2192 both points identical (SHA-256)": "PASS",
+  "failure-recovery/n6-agent-disk-full.spec.ts > N6a agent temp folder full \u2192 backup still correct; restore through the full temp fails truthfully, no half file \u2192 temp freed \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n6-agent-disk-full.spec.ts > N6b the set folder on the computer is full after the server committed \u2192 server and computer tell the truth \u2192 next run correct \u2192 restore identical (SHA-256)": "FAIL",
+  "failure-recovery/n9-repository-unavailable.spec.ts > N9a the server's set folder read-only for a whole run \u2192 no false success, point 1 restorable during the fault \u2192 writable again \u2192 backup \u2192 restore identical (SHA-256)": "PASS",
+  "failure-recovery/n9-repository-unavailable.spec.ts > N9b the server stopped for the whole run \u2192 the run fails at once (time measured), no false success \u2192 server back \u2192 no ghost \u2192 backup \u2192 restore identical (SHA-256)": "PASS",
+  "journeys/j1-login-navigation.spec.ts > J1 sign-in, every menu page opens without errors, reload keeps the session, sign-out ends it on the server": "PASS",
+  "journeys/j3-backup-now.spec.ts > J3 Back up now from the site \u2192 a real backup whose content restores identical (SHA-256)": "PASS",
+  "journeys/j5-kill-agent.spec.ts > J5 kill the agent during a backup \u2192 no ghost \"running\", the failure is shown, the next backup and its restore are right": "PASS",
+  "journeys/j7-schedule.spec.ts > J7 a scheduled backup runs on time, exactly once, also across a restart of the service, and restores identical": "PASS",
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 stopped by the technician: \"Stopped\" (never Succeeded), not running anywhere on the site": "PASS",
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 the computer dies during a backup and never comes back: the \"running\" row goes away and the run is shown Failed": "PASS",
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 the server crashes under a backup and comes back: the site shows the run Failed in red, nothing running": "PASS",
+  "seed.spec.ts > seed": "PASS"
+ },
+ "runs": {
+  "e2e/p03-sh05-ransomware.spec.ts > P03 SH-05 a mass rewrite on the computer: the site shows the suspicion, retention is frozen (the point before the attack survives 40 days of maintenance and restores identical), released only on the site": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.232,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p05-ui04-client-window.spec.ts > P05 UI-04 the client window in the browser: a wrong password refused, sign in, add a folder set, back up, restore one file to a new folder \u2014 identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 18.931,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p07-bk07-ag02-max-duration-and-stop.spec.ts > P07 BK-07/AG-02 a backup past its maximum duration ends Stopped; Stop on the site ends the service's run; the next run completes and restores identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 252.512,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p09-au01-sign-in-lock.spec.ts > P09 AU-01 a technician from the network: two-step set-up, wrong password and wrong code refused, locked after the threshold, unlocked on the site, signed-out session refused on every page": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 40.316,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p11-au06-reseller-sees-only-its-own.spec.ts > P11 AU-06 a reseller's administrator sees and changes only its own customers in the browser; the other reseller's customer stays untouched": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 80.622,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p13-au04-guard-blocks-an-address.spec.ts > P13 AU-04 an address that guesses passwords is blocked for everything, the administrator's own address is not, one alert mail, unblocked on the site": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.184,
+    "note": "outcome NotExecuted: NOT TESTED: this computer's address 10.1.0.183 is an office (private) address, which the Guard never blocks by design",
+    "kind": "declared"
+   }
+  ],
+  "e2e/q2-verify-damaged-object.spec.ts > Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 9.442,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q4-replication.spec.ts > Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 157.82999999999998,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q4-replication.spec.ts > Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 38.608,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q5-service-follows-the-site.spec.ts > Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 453.004,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f1-server-crash.spec.ts > F1 server killed mid-backup \u2192 the run fails cleanly \u2192 server back \u2192 no ghost, not locked, next backup restores identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 38.715,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f11-agent-chunk-lists-torn.spec.ts > F11 agent chunk lists torn between backups \u2192 next backup still correct \u2192 newest and first points restore identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 11.573,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f13-client-clock-ahead.spec.ts > F13 client clock 3 h ahead of the server \u2192 the daily slot runs once, not again every 15 minutes \u2192 restore identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 202.073,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f15-agent-index-lines-lost.spec.ts > F15 lines of the agent index lost between backups \u2192 next backup still correct \u2192 newest point has no deleted file back, first point identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.619,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f3-two-at-once.spec.ts > F3 two backups of one set at once \u2192 one succeeds, the other is refused cleanly, the backup restores identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 17.462,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f5-source-gone-ui.spec.ts > F5 source disappears \u2192 the site shows the failure truthfully \u2192 source back \u2192 backup restores identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 149.566,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f7-restore-cut-mid-file.spec.ts > F7 restore killed in the middle of a large file \u2192 restore again without overwrite \u2192 identical, nothing half-written left": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.966,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f9-server-restart-during-restore.spec.ts > F9 server killed and restarted during a restore \u2192 clear failure or full resume, never a false success \u2192 restore again identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 37.85,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n2-commit-reply-lost-and-duplicated.spec.ts > N2a the commit reply is lost after the server committed \u2192 not recorded twice, no file lost \u2192 run 3 sends nothing \u2192 both points identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.205,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n2-commit-reply-lost-and-duplicated.spec.ts > N2b the commit request arrives twice at once \u2192 answered the same, recorded once \u2192 run 3 sends nothing \u2192 both points identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 9.421,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n4-cpu-and-memory-pressure.spec.ts > N4 CPU and memory pressure during backups \u2192 still success, only slower (durations recorded) \u2192 every set restores identical (SHA-256)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 37.211,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n7-permission-denied-and-locked.spec.ts > N7 unreadable folder, unreadable file, exclusively locked file \u2192 success WITH ERROR naming each, nothing deleted, old versions kept \u2192 fault removed \u2192 BS_STOP_SUCCESS \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.679,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n8-source-unavailable.spec.ts > N8a source folder renamed away DURING backup 2 \u2192 not a plain success, nothing deleted, newest point holds every file \u2192 folder back \u2192 backup 3 \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 31.907,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n8-source-unavailable.spec.ts > N8b source folder gone BEFORE backup 2 \u2192 failure (BK-05), nothing deleted, newest point = point 1 \u2192 folder back \u2192 backup 3 \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.449,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j2-edit-backup-set.spec.ts > J2 edit a backup set from the site: the change is saved and reaches the customer's computer": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.511,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j4-restore-after-loss.spec.ts > J4 backup \u2192 change \u2192 backup \u2192 delete the source \u2192 restore to the original place \u2192 identical; the first version too": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.037,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j6-restic-backup-now.spec.ts > J6 restic set: Back up now from the site \u2192 change \u2192 backup \u2192 restore identical (SHA-256), every point listed": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 74.223,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j8-retention.spec.ts > J8 retention keeps exactly the policy's points, and each kept point restores identical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 12.546,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-01-every-screen.spec.ts > UI-01 sign-out in one tab ends the session for every tab (server check); a forged session shows the sign-in form": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.595,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-01-every-screen.spec.ts > UI-01 with real data: every customer tab, every set tab, run details and logs open without a console error or a failed request": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 9.096,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: 22:58 made on the computer is kept (the page has no :60 to round to)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.479,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: a time made on the computer (22:33) is kept when the technician only looks at the Schedule tab and saves": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.546,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 boundary: unticking every day of the only time never turns into a daily backup at a time nobody chose": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.59,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 concurrency: two technicians edit different tabs of the same set \u2014 neither change is lost silently": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 30.343,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 every tab of the set editor: saved exactly (server API + Profile.xml on disk) and shown again after a reload": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.241,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-02-set-editor.spec.ts > UI-02 failure: a save the server refuses shows the reason, keeps the editor open, and stores nothing": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.798,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p01-rs06-restore-test.spec.ts > P01 RS-06 the monthly restore test runs by itself on a real backup: Passed 3/3 on the site, a changed source is not counted, a damaged object a month later is FAILED in red, no temp folder left": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 12.022,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p02-rs05-new-computer.spec.ts > P02 RS-05 a new computer: registered, the key given, every file of every point restores identical, the old computer's points listed, a wrong key refused": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 14.129,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p04-ag06-local-index-lost.spec.ts > P04 AG-06 the agent's local index is deleted between backups: the next backup is exact, the newest point restores identical, nothing deleted on the server": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 10.687,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p06-sh01-sh02-truth.spec.ts > P06 SH-01 SH-02 after a success, a failure and a killed agent, the site's history and \"running now\" are exact, and the last good backup time is kept": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 76.946,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p08-bk04-ag03-filters-from-the-site.spec.ts > P08 BK-04/AG-03 a skipped folder and filter rules set in the browser reach the running service: the next point holds exactly the kept files, identical; the first point everything": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 68.189,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p10-au02-device-revoked.spec.ts > P10 AU-02 a wrong customer password registers nothing; a computer disconnected on the site is refused at once (program and service); signed in again it backs up and restores identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 72.268,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/p12-st06-server-disk-full-on-the-site.spec.ts > P12 ST-06 server disk full under Back up now from the site: Failed with the reason on the site, one alert mail, space given back, point 1 restorable, after space the next run completes and restores identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 102.445,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q1-recycle-bin.spec.ts > Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 12.128,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q3-settings-backup.spec.ts > Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 46.593,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "e2e/q6-quota.spec.ts > Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 13.729,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f10-network-cut-during-restore.spec.ts > F10 network cut during a restore \u2192 missing files reported, nothing half-written \u2192 line back \u2192 restore again identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 48.022,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f12-same-computer-name.spec.ts > F12 two computers with the same name \u2192 each set backed up on schedule by its own computer, nothing blocked or corrupted \u2192 both restore identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 13.668,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f14-cloned-computer.spec.ts > F14 cloned computer (same registration, same set, own files) \u2192 no success with the other copy's content \u2192 each newest point restores identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 8.403,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f2-network-cut.spec.ts > F2 network cut mid-backup \u2192 failure, not success \u2192 line back \u2192 next backup restores identical, no ghost": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 37.79,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f4-restore-interrupted.spec.ts > F4 restore killed mid-way \u2192 restore again into the same folder \u2192 every file identical, no leftovers": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.339,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f6-server-disk-full.spec.ts > F6 server disk full mid-backup \u2192 clear failure, no lock, space given back \u2192 smaller backup succeeds and restores identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.252,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/f8-client-disk-full-restore.spec.ts > F8 client disk full during a restore \u2192 reported failed, nothing half-written passes as whole \u2192 restore to a good disk identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 8.519,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n1-network-breaks.spec.ts > N1a line down 5 s mid-upload \u2192 proven by the proxy log \u2192 run resumes or fails truthfully \u2192 next backup + restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 35.944,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n1-network-breaks.spec.ts > N1b line down longer than every retry \u2192 the agent gives up (time measured) \u2192 no false success, server not left locked \u2192 next backup + restore identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 60.282,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n10-external-process-hang.spec.ts > N10a pre-command that never ends \u2192 stopped at the real 1-hour limit (agent clock 120\u00d7) with its child \u2192 backup completes \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 41.703,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n10-external-process-hang.spec.ts > N10b agent killed while its pre-command hangs (real clock) \u2192 observed: what the server shows during the hang, what is left running \u2192 next backup + restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 84.65,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n10-external-process-hang.spec.ts > N10c restic hangs silently during the backup \u2192 stopped at the real 30-min idle limit (agent clock 120\u00d7), nothing left running, no false success \u2192 real restic \u2192 backup \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 26.09,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n3-slow-line.spec.ts > N3 line throttled to 50 KB/s for a whole backup \u2192 succeeds, only slower (duration recorded) \u2192 new backup \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 209.184,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n5-server-disk-full-second-run.spec.ts > N5 server disk full during backup 2 \u2192 failed truthfully, point 1 intact and restorable DURING the fault \u2192 space freed \u2192 backup 3 \u2192 both points identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 10.576,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n6-agent-disk-full.spec.ts > N6a agent temp folder full \u2192 backup still correct; restore through the full temp fails truthfully, no half file \u2192 temp freed \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.675,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n6-agent-disk-full.spec.ts > N6b the set folder on the computer is full after the server committed \u2192 server and computer tell the truth \u2192 next run correct \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "FAIL",
+    "sec": 9.107,
+    "note": "Error: the computer and the server must tell the same outcome of one run\n\nexpect(received).toEqual(expected) // deep equality\n\n- Expected  - 1\n+ Received  + 1\n\n  Object {\n-   \"agentOk\": true,\n+   \"agentOk\": false,\n    \"serverOk\": true,\n  }",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n9-repository-unavailable.spec.ts > N9a the server's set folder read-only for a whole run \u2192 no false success, point 1 restorable during the fault \u2192 writable again \u2192 backup \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 10.048,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "failure-recovery/n9-repository-unavailable.spec.ts > N9b the server stopped for the whole run \u2192 the run fails at once (time measured), no false success \u2192 server back \u2192 no ghost \u2192 backup \u2192 restore identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 16.755,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j1-login-navigation.spec.ts > J1 sign-in, every menu page opens without errors, reload keeps the session, sign-out ends it on the server": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 5.596,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j3-backup-now.spec.ts > J3 Back up now from the site \u2192 a real backup whose content restores identical (SHA-256)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 71.849,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j5-kill-agent.spec.ts > J5 kill the agent during a backup \u2192 no ghost \"running\", the failure is shown, the next backup and its restore are right": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 135.464,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/j7-schedule.spec.ts > J7 a scheduled backup runs on time, exactly once, also across a restart of the service, and restores identical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 300.0,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 stopped by the technician: \"Stopped\" (never Succeeded), not running anywhere on the site": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 87.344,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 the computer dies during a backup and never comes back: the \"running\" row goes away and the run is shown Failed": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 429.727,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "journeys/ui-03-truth-after-failures.spec.ts > UI-03 the server crashes under a backup and comes back: the site shows the run Failed in red, nothing running": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 495.329,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "seed.spec.ts > seed": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.158,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001710",
+    "os": "Linux",
+    "sha": "073356e44a66f501b06a02812be931450f7089fd",
+    "build_sha": "",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 31
+   },
+   "tests": 36
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001711",
+    "os": "Linux",
+    "sha": "073356e44a66f501b06a02812be931450f7089fd",
+    "build_sha": "",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 44
+   },
+   "tests": 36
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
