@@ -76,7 +76,9 @@ jobs:
     needs: package
     if: ${{ !github.event.repository.private }}
     runs-on: windows-latest
-    timeout-minutes: 180
+    # Q22: W01-W21 with their failure-path waits did not fit in 180 min (run 14); 360 is the hosted runner's limit
+    timeout-minutes: 300
+    permissions: { contents: write }   # the robot's progress lines go to the qa-evidence branch while it runs
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -94,6 +96,7 @@ jobs:
         run: .\tests\QA\windows\selftest.ps1
       - name: Windows journeys (Windows PowerShell 5.1, as on any customer's Windows)
         shell: powershell
+        env: { QA_PROGRESS_TOKEN: '${{ secrets.GITHUB_TOKEN }}', QA_PROGRESS_REPO: '${{ github.repository }}', QA_RUN: '${{ github.run_id }}', QA_PHASE: main }
         run: |
           $z = Get-ChildItem pkg\OnlineBackup-Server-*.zip | Sort-Object { [version]($_.BaseName -replace '^OnlineBackup-Server-', '') }
           .\tests\QA\windows\win-e2e.ps1 -Package $z[0].FullName -Package2 $z[-1].FullName -Out "$PWD\win-out" -Phase main
@@ -109,12 +112,15 @@ jobs:
     if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     timeout-minutes: 330
+    permissions: { contents: write }
+    env: { QA_PROGRESS_TOKEN: '${{ secrets.GITHUB_TOKEN }}', QA_PROGRESS_REPO: '${{ github.repository }}', QA_RUN: '${{ github.run_id }}' }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with: { name: qa-package, path: pkg }
       - name: The machine (KVM, disk, memory)
         run: |
+          pip install --quiet vncdotool || echo "vncdotool not installed: no screen pictures"
           ls -l /dev/kvm && sudo chmod 666 /dev/kvm
           df -h / /mnt; free -g; nproc
           sudo mkdir -p /mnt/win && sudo chmod 777 /mnt/win
@@ -127,16 +133,28 @@ jobs:
       - name: Windows 11 Pro (downloaded from Microsoft, unattended installation)
         run: |
           docker run -d --name win -e VERSION=11 -e RAM_SIZE=10G -e CPU_CORES=4 -e DISK_SIZE=64G -e USERNAME=Docker -e PASSWORD=admin \
-            --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN -p 8006:8006 \
-            -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" --stop-timeout 120 docker.io/dockurr/windows
+            --device /dev/kvm --device /dev/net/tun --cap-add NET_ADMIN -p 8006:8006 -p 5900:5900 \
+            -v /mnt/win:/storage -v "$PWD/vm/oem:/oem" -v "$PWD/vm/shared:/shared" -v "$PWD/vm/shared:/data" --stop-timeout 120 docker.io/dockurr/windows
+          # the host's shared folder (\\host.lan\Data) is /data in some image versions and /shared in others: both, so the
+          # QA driver can always report (runs 14-16: no status in 5 h - possibly the share was never visible to Windows)
       - name: Installation, the journeys and two real restarts (the driver reports to the shared folder)
         run: |
           set +e   # a missing status file is normal until Windows reaches the QA driver
+          # each picture (and the VM's status) goes to the qa-evidence branch AT ONCE: a running job's log cannot be read, and
+          # waiting 5 hours for the artifact made every VM diagnosis cost a whole run (runs 14-16)
+          live() { [ -f "vm/shared/$1" ] || return 0; b=$(base64 -w0 "vm/shared/$1"); p="runs/$QA_RUN/vm-live/$1"
+            sha=$(curl -s -H "Authorization: Bearer $QA_PROGRESS_TOKEN" "https://api.github.com/repos/$QA_PROGRESS_REPO/contents/$p?ref=qa-evidence" | python3 -c 'import sys,json; print(json.load(sys.stdin).get("sha",""))' 2>/dev/null)
+            printf '{"message":"vm live %s","branch":"qa-evidence","content":"%s"%s}' "$1" "$b" "${sha:+,\"sha\":\"$sha\"}" > /tmp/live.json
+            curl -s -o /dev/null -X PUT -H "Authorization: Bearer $QA_PROGRESS_TOKEN" -d @/tmp/live.json "https://api.github.com/repos/$QA_PROGRESS_REPO/contents/$p" || true; }
           end=$((SECONDS + 300*60)); last=""
           while [ $SECONDS -lt $end ]; do
             [ -f vm/shared/done.txt ] && { echo "done"; break; }
-            s=$(tail -n 1 vm/shared/status.log 2>/dev/null); [ "$s" != "$last" ] && { echo "VM: $s"; last="$s"; }
+            s=$(tail -n 1 vm/shared/status.log 2>/dev/null); [ "$s" != "$last" ] && { echo "VM: $s"; last="$s"; live status.log; }
             docker ps -q -f name=win | grep -q . || { echo "the VM container stopped"; break; }
+            # the VM's screen every 20 min (QEMU monitor screendump): run 14's VM never reached the QA driver in 5 h and nothing
+            # showed where Windows stopped (installation, sign-in, the scheduled task, the shared folder)
+            # (run 16: the QEMU monitor port was not open - 15 x "monitor not reachable"; the container's VNC port is)
+            if [ $(( SECONDS / 900 )) != "${shot:-x}" ]; then shot=$(( SECONDS / 900 )); f="screen-$(date -u +%H%M).png"; timeout 90 vncdo -s 127.0.0.1::5900 capture "vm/shared/$f" >/dev/null 2>&1 && { echo "screen $f kept"; live "$f"; } || echo "no screen (VNC not reachable)"; fi
             sleep 30
           done
           cat vm/shared/status.log 2>/dev/null || echo "no status from Windows (it never reached the QA driver)"

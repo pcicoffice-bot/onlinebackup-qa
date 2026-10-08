@@ -205,7 +205,7 @@ namespace OnlineBackup.Agent
         {
             var p = Path.Combine(mirror, ".state", "g-" + M365Sync.Safe(user) + ".json"); var s = new State();
             if (!File.Exists(p)) return s;
-            var j = Json.Obj(Json.Parse(File.ReadAllText(p, Encoding.UTF8)));
+            var j = Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p, Encoding.UTF8)));
             s.Data = Json.Obj(j.ContainsKey("data") ? j["data"] : null); s.Items = Json.Obj(j.ContainsKey("items") ? j["items"] : null); s.Tags = Json.Obj(j.ContainsKey("tags") ? j["tags"] : null);
             return s;
         }
@@ -405,7 +405,7 @@ namespace OnlineBackup.Agent
                 string label;
                 if (!labels.TryGetValue(user, out label))
                     labels[user] = label = Json.Str(g.Call(user, "POST", "/gmail/v1/users/me/labels", Json.Write(new Dictionary<string, object> { { "name", name }, { "labelListVisibility", "labelShow" }, { "messageListVisibility", "show" } })), "id");
-                var raw = Convert.ToBase64String(File.ReadAllBytes(localFile)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+                var raw = Convert.ToBase64String(OnlineBackup.Core.Atomic.ReadAllBytes(localFile)).TrimEnd('=').Replace('+', '-').Replace('/', '_');
                 g.Call(user, "POST", "/gmail/v1/users/me/messages?internalDateSource=dateHeader", Json.Write(new Dictionary<string, object> { { "raw", raw }, { "labelIds", new List<object> { label } } }));
                 Mail++;
             }
@@ -418,7 +418,7 @@ namespace OnlineBackup.Agent
                 var meta = Json.Write(new Dictionary<string, object> { { "name", string.Join(" - ", parts.Skip(k + 2).ToArray()) }, { "parents", new List<object> { folder } } });
                 var head = Encoding.UTF8.GetBytes("--" + boundary + "\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n" + meta + "\r\n--" + boundary + "\r\nContent-Type: application/octet-stream\r\n\r\n");
                 var tail = Encoding.ASCII.GetBytes("\r\n--" + boundary + "--");
-                var body = head.Concat(File.ReadAllBytes(localFile)).Concat(tail).ToArray();
+                var body = head.Concat(OnlineBackup.Core.Atomic.ReadAllBytes(localFile)).Concat(tail).ToArray();
                 g.Upload(user, (g.Api.EndsWith("/") ? g.Api.TrimEnd('/') : g.Api) + "/upload/drive/v3/files?uploadType=multipart", body, "multipart/related; boundary=" + boundary);
                 Files++;
             }

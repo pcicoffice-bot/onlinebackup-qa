@@ -32,7 +32,9 @@ namespace OnlineBackup.Agent
 
         Dictionary<string, string> AuthHeaders()
         {
-            var h = new Dictionary<string, string>();
+            // PILOT-010 / AG-08: the agent always says what it runs on — also on Windows XP / 2003, whose requests go this way
+            // (built-in TLS) and said nothing, and before it has a device token (registration, sign-in)
+            var h = new Dictionary<string, string> { { "X-Agent", AgentInfo } };
             if (Device != null) h["X-Device"] = Device;
             if (Session != null) h["X-Session"] = Session;
             return h;
@@ -99,13 +101,17 @@ namespace OnlineBackup.Agent
         {
             baseUrl = serverUrl.TrimEnd('/');
             Pin = pin; string host = null; try { host = new Uri(baseUrl).Host; } catch (UriFormatException) { } UsePin(pin, host);
-            // TLS 1.2 where the OS offers it (2008 R2+ with updates). Windows 2003 needs the bundled TLS library (later phase).
-            try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch (NotSupportedException) { }
+            // Bug 129: TLS 1.2 only - the oldest supported system is Windows Server 2012 (owner decision), which has it; TLS 1.0
+            // was kept for 2003/2008 and let a man in the middle choose the old protocol
+            try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch (NotSupportedException) { }
             ServicePointManager.Expect100Continue = false;
         }
 
         // COMP-010: this computer's software version and operating system, shown in the admin site's computer list
         static readonly string AgentInfo = typeof(Client).Assembly.GetName().Version + "; " + Environment.OSVersion.VersionString;
+
+        /// <summary>The wait before the next try; none after the last one (bug 126: a failed call paused 1-4 s before saying so).</summary>
+        void Pause(int attempt) { if (attempt < Retries) System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
 
         HttpWebRequest Create(string method, string path)
         {
@@ -113,7 +119,8 @@ namespace OnlineBackup.Agent
             r.Method = method;
             r.Timeout = TimeoutMs; r.ReadWriteTimeout = TimeoutMs;
             r.KeepAlive = true;
-            if (Device != null) { r.Headers["X-Device"] = Device; r.Headers["X-Agent"] = AgentInfo; }
+            r.Headers["X-Agent"] = AgentInfo;
+            if (Device != null) r.Headers["X-Device"] = Device;
             if (Session != null) r.Headers["X-Session"] = Session;
             return r;
         }
@@ -143,9 +150,9 @@ namespace OnlineBackup.Agent
                     return ReadResponse(r);
                 }
                 catch (AgentException) { throw; }
-                catch (WebException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (IOException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (SocketException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
+                catch (WebException e) { last = e; Pause(attempt); }
+                catch (IOException e) { last = e; Pause(attempt); }
+                catch (SocketException e) { last = e; Pause(attempt); }
             }
             throw new AgentException(0, "NETWORK", "No connection to the backup server: " + (last == null ? "" : last.Message));
         }
@@ -176,7 +183,14 @@ namespace OnlineBackup.Agent
                 var h = AuthHeaders();
                 foreach (var kv in headers) h[kv.Key] = kv.Value;
                 h["Content-Type"] = "application/octet-stream";
-                try { return BuiltinMsg(Builtin_("PUT", path, h, null, write)); }
+                // bug 118 (was 104b): every IOException here was "the network" - also the SOURCE file's own (locked, unreadable),
+                // read inside write(): the file was sent again and again and the whole run ended in a system error. As on the
+                // system TLS path: the network stream is wrapped, a failure writing to it is the network's, anything else is the file's.
+                Exception source = null;
+                Action<Stream> w = s => { try { write(new NetStream(s)); } catch (NetStream.Failure) { throw; } catch (Exception e) { source = e; throw; } };
+                try { return BuiltinMsg(Builtin_("PUT", path, h, null, w)); }
+                catch (Exception) when (source != null) { throw source; }
+                catch (NetStream.Failure e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.InnerException.Message); }
                 catch (IOException e) { throw new AgentException(0, "NETWORK", "No connection to the backup server: " + e.Message); }
                 catch (SocketException e) { throw new AgentException(0, "NETWORK", "No connection to the backup server: " + e.Message); }
             }
@@ -190,7 +204,10 @@ namespace OnlineBackup.Agent
             try
             {
                 using (var s = r.GetRequestStream()) write(new NetStream(s));
-                return ReadResponse(r);
+                // bug 104: the object is sent; a connection cut while its answer comes back is the network's too (it was
+                // reported as "Cannot read file" of the customer's source and never sent again)
+                try { return ReadResponse(r); }
+                catch (IOException e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke while it answered: " + e.Message); }
             }
             catch (WebException e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.Message); }
             catch (NetStream.Failure e) { throw new AgentException(0, "NETWORK", "The connection to the backup server broke: " + e.InnerException.Message); }
@@ -248,10 +265,10 @@ namespace OnlineBackup.Agent
                 {
                     var resp = e.Response as HttpWebResponse;
                     if (resp != null && (int)resp.StatusCode < 500) ReadResponse(Create("GET", path));
-                    last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1));
+                    last = e; Pause(attempt);
                 }
-                catch (IOException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (SocketException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
+                catch (IOException e) { last = e; Pause(attempt); }
+                catch (SocketException e) { last = e; Pause(attempt); }
             }
             throw new AgentException(0, "NETWORK", "The download failed: " + (last == null ? "" : last.Message));
         }

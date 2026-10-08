@@ -144,7 +144,7 @@ namespace OnlineBackup.Server
             foreach (var bin in BinDirs())
                 try
                 {
-                    var r = XElement.Load(Path.Combine(bin, "RECYCLED.xml"));
+                    var r = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(bin, "RECYCLED.xml"));
                     long t; long.TryParse((string)r.Attribute("TIME"), out t);
                     var set = r.Element("BACKUP_SET");
                     list.Add(new Msg().Set("id", Path.GetFileName(bin) + (r.Attribute("KIND").Value == "set" ? "@" + (string)r.Attribute("LOGIN") : "")).Set("kind", (string)r.Attribute("KIND"))
@@ -183,7 +183,7 @@ namespace OnlineBackup.Server
             lock (gate)
             {
                 var bin = FindBin(id);
-                var r = XElement.Load(Path.Combine(bin, "RECYCLED.xml"));
+                var r = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(bin, "RECYCLED.xml"));
                 var login = (string)r.Attribute("LOGIN");
                 if ((string)r.Attribute("KIND") == "user")
                 {
@@ -219,7 +219,7 @@ namespace OnlineBackup.Server
             foreach (var bin in BinDirs().ToList())
                 try
                 {
-                    long t; long.TryParse((string)XElement.Load(Path.Combine(bin, "RECYCLED.xml")).Attribute("TIME"), out t);
+                    long t; long.TryParse((string)OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(bin, "RECYCLED.xml")).Attribute("TIME"), out t);
                     if ((nowUtc - RunId.FromUnixMs(t)).TotalDays < Recycle.KeepDays) continue;
                     Directory.Delete(bin, true); n++;
                     SysLog.Write(null, "System", "recycle bin: erased " + Path.GetFileName(bin) + " after " + Recycle.KeepDays + " days");

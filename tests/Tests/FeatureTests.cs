@@ -300,7 +300,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void MssqlFullAndLogBackupsWithNativeBackupFiles_RestoreGivesTheBakFiles()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 // A stand-in for sqlcmd: lists two databases and writes .bak / .trn files where BACKUP asks.
@@ -343,7 +343,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void MssqlWeeklyFullAndDailyDifferential_TheFullStaysInEveryPoint_AnotherProgramsFullForcesOurs()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var fake = Path.Combine(env.Root, "sqlcmd.sh");

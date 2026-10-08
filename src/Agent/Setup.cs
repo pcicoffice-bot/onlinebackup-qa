@@ -26,9 +26,9 @@ namespace OnlineBackup.Agent
 
         public static Result Run(string packageDir, Func<string, string> opt, Func<string, bool> flag, Action<string> say)
         {
-            var conn = XElement.Load(Path.Combine(packageDir, "connection.xml"));
+            var conn = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(packageDir, "connection.xml"));
             var brandPath = Path.Combine(packageDir, "branding.xml");
-            var brand = File.Exists(brandPath) ? XElement.Load(brandPath) : new XElement("BRANDING");
+            var brand = File.Exists(brandPath) ? OnlineBackup.Core.Atomic.LoadXElement(brandPath) : new XElement("BRANDING");
             var product = (string)brand.Attribute("PRODUCT"); if (string.IsNullOrEmpty(product)) product = "ITSguard Server Online";
             var folder = (string)conn.Attribute("FOLDER"); if (string.IsNullOrEmpty(folder)) folder = "OnlineBackup";
             bool windows = Environment.OSVersion.Platform == PlatformID.Win32NT;
@@ -215,7 +215,7 @@ namespace OnlineBackup.Agent
         {
             using (var k = Microsoft.Win32.Registry.LocalMachine.CreateSubKey(UninstallKey(folder)))
             {
-                var ver = ""; try { ver = File.ReadAllText(Path.Combine(r.InstallDir, "version.txt")).Trim(); } catch (Exception) { }
+                var ver = ""; try { ver = OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(r.InstallDir, "version.txt")).Trim(); } catch (Exception) { }
                 long kb = 0; try { kb = Directory.GetFiles(r.InstallDir).Sum(f => new FileInfo(f).Length) / 1024; } catch (Exception) { }
                 var agent = Path.Combine(r.InstallDir, "OnlineBackup.Agent.exe"); var gui = Path.Combine(r.InstallDir, "OnlineBackup.Client.exe");
                 k.SetValue("DisplayName", r.Product);

@@ -1,0 +1,69 @@
+MUTATION bug87
+FILTER FullyQualifiedName~ReadOnlyStoreComponentTests
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index d4c7ebb..19cda41 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -59,7 +59,7 @@ namespace OnlineBackup.Server
+                 using (var cmd = c.CreateCommand()) { cmd.CommandText = "PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;"; cmd.ExecuteNonQuery(); }
+                 return c;
+             }
+-            catch (SqliteException e) when ((e.SqliteErrorCode == 14 || e.SqliteErrorCode == 8) && File.Exists(IndexPath))
++            catch (SqliteException e) when (false && (e.SqliteErrorCode == 14 || e.SqliteErrorCode == 8) && File.Exists(IndexPath))
+             {
+                 // Agent N (N-4): storage that went read-only (a disk remounted after an error) could not even be READ —
+                 // every list of points and every restore answered 500. Read-only and immutable: the reads work, any write
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.24]   Discovered:  Tests
+[xUnit.net 00:00:00.25]   Starting:    Tests
+[xUnit.net 00:00:00.49]       Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+[xUnit.net 00:00:00.49]       Stack Trace:
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+[xUnit.net 00:00:00.49]            at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+[xUnit.net 00:00:00.49]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/SetStore.cs(59,0): at OnlineBackup.Server.SetStore.Open()
+[xUnit.net 00:00:00.49]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/SetStore.cs(47,0): at OnlineBackup.Server.SetStore..ctor(String userDir, String setId)
+[xUnit.net 00:00:00.49]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ReadOnlyStoreComponentTests.cs(42,0): at OnlineBackup.Tests.ReadOnlyStoreComponentTests.AReadOnlyStore_StillListsItsPoints_AndServesItsObjects()
+[xUnit.net 00:00:00.50]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.50]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.51]   Finished:    Tests
+  Failed OnlineBackup.Tests.ReadOnlyStoreComponentTests.AReadOnlyStore_StillListsItsPoints_AndServesItsObjects [168 ms]
+  Error Message:
+   Microsoft.Data.Sqlite.SqliteException : SQLite Error 14: 'unable to open database file'.
+  Stack Trace:
+     at Microsoft.Data.Sqlite.SqliteException.ThrowExceptionForRC(Int32 rc, sqlite3 db)
+   at Microsoft.Data.Sqlite.SqliteCommand.PrepareAndEnumerateStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteCommand.GetStatements()+MoveNext()
+   at Microsoft.Data.Sqlite.SqliteDataReader.NextResult()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader(CommandBehavior behavior)
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteReader()
+   at Microsoft.Data.Sqlite.SqliteCommand.ExecuteNonQuery()
+   at OnlineBackup.Server.SetStore.Open() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/SetStore.cs:line 59
+   at OnlineBackup.Server.SetStore..ctor(String userDir, String setId) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/SetStore.cs:line 47
+   at OnlineBackup.Tests.ReadOnlyStoreComponentTests.AReadOnlyStore_StillListsItsPoints_AndServesItsObjects() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/ReadOnlyStoreComponentTests.cs:line 42
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Total tests: 1
+     Failed: 1
+ Total time: 1.1947 Seconds
+[xUnit.net 00:00:00.49]     OnlineBackup.Tests.ReadOnlyStoreComponentTests.AReadOnlyStore_StillListsItsPoints_AndServesItsObjects [FAIL]
+Test Run Failed.

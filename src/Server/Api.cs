@@ -56,6 +56,9 @@ namespace OnlineBackup.Server
                 try
                 {
                     var login = m["login"]; var setId = m["set"];
+                    // bug 113: a set deleted (to the recycle bin) while its backup ran - opening its store here made a new empty
+                    // files/<set> folder, and the set could no longer come back from the bin
+                    if (!Directory.Exists(Path.Combine(users.UserDir(login), "files", setId))) continue;
                     var store = new SetStore(users.UserDir(login), setId);
                     store.ExpireStale(nowUtc);
                     if (!string.IsNullOrEmpty(m["job"])) { seen.Add(login + "/" + setId + "/" + m["job"]); RecordInterrupted(login, setId, m["job"], m.Long("started"), "no sign of life from the computer for " + (int)SetStore.Lease.TotalMinutes + " minutes"); }
@@ -110,8 +113,16 @@ namespace OnlineBackup.Server
         {
             var log = EndedLog(login, setId, job);
             if (!File.Exists(log)) return null;
-            try { var rp = ReplyFile(login, setId, job); if (File.Exists(rp)) return Msg.Parse(File.ReadAllBytes(rp)).Set("repeat", 1); } catch (Exception) { }
+            try { var rp = ReplyFile(login, setId, job); if (File.Exists(rp)) return Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(rp)).Set("repeat", 1); } catch (Exception) { }
             return new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1);
+        }
+
+        /// <summary>The first frame of the product's own code in an exception (the system log line of a server error).</summary>
+        static string Where(Exception e)
+        {
+            var st = e.StackTrace ?? "";
+            foreach (var l in st.Split('\n')) if (l.Contains("OnlineBackup.")) return l.Trim();
+            return st.Split('\n')[0].Trim();
         }
 
         void RecordInterrupted(string login, string setId, string job, long startedMs, string why)
@@ -221,10 +232,14 @@ namespace OnlineBackup.Server
                 if (Guard.IsBlocked(cfg, ip) && !Guard.Trusted(cfg, ip)) throw new ApiException(403, "BLOCKED", "Too many failed attempts from your address — it is blocked for a while. Ask your provider if this is a mistake.");
                 var path = ctx.Request.Url.AbsolutePath.TrimEnd('/');
                 var seg = path.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (seg.Length >= 1 && seg[0] == "admin") { AdminUi.Serve(ctx, seg); return; }
+                if (seg.Length >= 1 && seg[0] == "admin")
+                {
+                    if (seg.Length > 1 && (seg[1] == "restore.html" || seg[1] == "restore.js")) PilotScope.Check(cfg, PilotScope.WebRestore);   // bug 114: also under /admin
+                    AdminUi.Serve(ctx, seg); return;
+                }
                 // I18N-010; R1 (found by the AI QA): the fonts are one level deeper (/i18n/fonts/x.woff2) — every one was a 404
                 if (seg.Length >= 2 && seg.Length <= 3 && seg[0] == "i18n") { AdminUi.ServeI18n(ctx, string.Join("/", seg.Skip(1))); return; }
-                if (seg.Length >= 1 && seg[0] == "restore") { AdminUi.Serve(ctx, seg.Length == 1 ? new[] { "admin", "restore.html" } : new[] { "admin", seg[1] }); return; }   // WEB-010
+                if (seg.Length >= 1 && seg[0] == "restore") { PilotScope.Check(cfg, PilotScope.WebRestore); AdminUi.Serve(ctx, seg.Length == 1 ? new[] { "admin", "restore.html" } : new[] { "admin", seg[1] }); return; }   // WEB-010
                 if (seg.Length >= 1 && seg[0] == "restic") { Restic(ctx, seg, ip); return; }
                 if (seg.Length < 2 || seg[0] != "api") throw new ApiException(404, "NOT_FOUND", "Not found.");
                 if (seg[1] == "brand")
@@ -257,7 +272,7 @@ namespace OnlineBackup.Server
             }
             catch (Exception e)
             {
-                SysLog.Write(ip, "System", "error: " + ctx.Request.HttpMethod + " " + ctx.Request.Url.AbsolutePath + ": " + e.GetType().Name + " " + e.Message);
+                SysLog.Write(ip, "System", "error: " + ctx.Request.HttpMethod + " " + ctx.Request.Url.AbsolutePath + ": " + e.GetType().Name + " " + e.Message + " @ " + Where(e));   // where, so a 500 can be traced (run 37594312039)
                 Reply(ctx, 500, new Msg().Set("error", "SERVER").Set("message", "Server error. The details are in the system log."));
             }
         }
@@ -294,10 +309,12 @@ namespace OnlineBackup.Server
         void Agent(HttpListenerContext ctx, string[] seg, string ip)
         {
             string method = ctx.Request.HttpMethod;
+            PilotScope.CheckAgent(cfg, ctx.Request.Headers["X-Agent"]);   // PILOT-010 / AG-08: Windows XP / 2003
             // CONTRACT-010: the contract before sign-in (installer, sign-up); SIGNUP-010: a new customer from the client software
             if (seg[1] == "contract" && method == "GET") { Reply(ctx, 200, Contract.Public(cfg, Q(ctx, "lang"))); return; }
             if (seg[1] == "signup" && method == "POST")
             {
+                PilotScope.Check(cfg, PilotScope.Signup);   // PILOT-010 / AU-03
                 var b = Body(ctx);
                 var p = Contract.Signup(users, cfg, b, ip, SystemClock.UtcNow);
                 var newLogin = p.Get("LOGIN_NAME");
@@ -341,7 +358,10 @@ namespace OnlineBackup.Server
             Func<bool> requireInteractive = () => { if (!interactive) throw new ApiException(401, "SESSION", "This action requires signing in with a password and verification code."); return true; };
 
             // UPD-020: the client software on the computers updates itself from this server — the files of the Windows client
-            // this server carries (its own version), compared by SHA-256; only changed files are downloaded
+            // this server carries (its own version), compared by SHA-256; only changed files are downloaded.
+            // Owner decision B1 (pilot): off in Pilot 1 until agent updates are signed and refuse older versions — with the
+            // switch neither the list nor a file is offered (the computer's automatic update and its "Update" use these two)
+            if (seg[1] == "client" && seg.Length == 3 && (seg[2] == "files" || seg[2] == "file") && method == "GET") PilotScope.Check(cfg, PilotScope.ClientUpdate);
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "files" && method == "GET") { Reply(ctx, 200, ClientFiles.List()); return; }
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "file" && method == "GET")
             {
@@ -352,7 +372,7 @@ namespace OnlineBackup.Server
             }
             if (seg[1] == "quota" && method == "GET") { Reply(ctx, 200, QuotaNow(login)); return; }
             if (seg[1] == "folders" && seg.Length == 2 && method == "POST") { FolderTree.Save(users, login, Body(ctx)); Reply(ctx, 200, new Msg().Set("ok", 1)); return; }
-            if (seg[1] == "profile" && method == "GET") { var pr = users.LoadProfile(login); Reply(ctx, 200, new Msg().Set("profile", SafeProfile(pr)).Add("rights", SetControl.RightsMsg(pr))); return; }
+            if (seg[1] == "profile" && method == "GET") { var pr = users.LoadProfile(login); Reply(ctx, 200, new Msg().Set("profile", SafeProfile(pr, cfg.Pilot)).Add("rights", SetControl.RightsMsg(pr))); return; }
 
             if (seg[1] == "totp" && seg.Length == 3 && method == "POST")
             {
@@ -367,7 +387,7 @@ namespace OnlineBackup.Server
                 }
             }
 
-            if (seg[1] == "webrestore") { requireInteractive(); WebRestoreApi(ctx, seg, login, ip); return; }
+            if (seg[1] == "webrestore") { PilotScope.Check(cfg, PilotScope.WebRestore); requireInteractive(); WebRestoreApi(ctx, seg, login, ip); return; }
             // TICKETS-030: the customer opens a call from the client ("help") and sees its own calls — never another customer's
             if (seg[1] == "tickets" && seg.Length == 2)
             {
@@ -399,6 +419,12 @@ namespace OnlineBackup.Server
                 var setId = seg[2];
                 var prof = users.LoadProfile(login);
                 Need(prof.FindSet(setId) != null);
+                // bug 114 (scope challenge): a set outside the pilot was refused only at "begin" - its data could still be listed and
+                // downloaded, a run opened before the switch committed, and a restore test recorded. Refused here, on the server, for
+                // every route that reads or changes its data; "stop"-like routes (abort, interrupted, progress) stay open.
+                if (cfg.Pilot && (seg[3] == "points" || seg[3] == "files" || seg[3] == "object" || seg[3] == "restoretest" || seg[3] == "restorelog"
+                    || (seg[3] == "jobs" && seg.Length > 5 && (seg[5] == "object" || seg[5] == "delete" || seg[5] == "commit"))))
+                    PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(prof.FindSet(setId)));
                 var store = new SetStore(users.UserDir(login), setId);
                 switch (seg[3])
                 {
@@ -429,12 +455,13 @@ namespace OnlineBackup.Server
                             var kp = string.IsNullOrEmpty(parent) ? null : Path.Combine(users.UserDir(login), "db", "keys", parent + ".bin");
                             if (kp == null || prof.Get("SAVE_ENCRYPT_KEY") != "Y" || !File.Exists(kp)) throw new ApiException(404, "NO_KEY", "Enter the set's encryption password on this computer (key recovery is off).");
                             SysLog.Write(ip, "Access", "shared set key given to the copy " + login + "/" + setId + " (from " + parent + ")");
-                            Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(kp)))));
+                            Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(kp)))));
                             return;
                         }
                     case "restic":
                         {
                             // RST-030: a new access token of the set's restic repository (the previous one stops working)
+                            PilotScope.Check(cfg, PilotScope.Restic);   // PILOT-010 / RS-03
                             Need(method == "POST" && prof.FindSet(setId) != null && BackupSetInfo.FromXml(prof.FindSet(setId)).Engine == "RESTIC");
                             var rs = new ResticStore(users.UserDir(login), setId);
                             if (!Directory.Exists(rs.Dir)) rs.Create();
@@ -446,6 +473,7 @@ namespace OnlineBackup.Server
                     case "resticreport":
                         {
                             // RST-040: the agent's report of one restic run → the same job log, statistics, alerts and mail as any backup
+                            PilotScope.Check(cfg, PilotScope.Restic);   // PILOT-010 / RS-03
                             Need(method == "POST");
                             var b = Body(ctx); NormalizeResult(b);
                             var job = b["job"] ?? RunId.From(SystemClock.UtcNow);
@@ -458,7 +486,7 @@ namespace OnlineBackup.Server
                             while (File.Exists(EndedLog(login, setId, job)))
                             {
                                 var rp = ReplyFile(login, setId, job);
-                                if (File.Exists(rp) && Msg.Parse(File.ReadAllBytes(rp))["digest"] == digest) { Reply(ctx, 200, new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1)); return; }
+                                if (File.Exists(rp) && Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(rp))["digest"] == digest) { Reply(ctx, 200, new Msg().Set("ok", 1).Set("job", job).Set("repeat", 1)); return; }
                                 RunId.TryParse(job, out var jt); job = RunId.From(jt.AddSeconds(1)); b.Set("job", job);
                             }
                             KeepReply(login, setId, job, new Msg().Set("ok", 1).Set("job", job).Set("digest", digest), ip);
@@ -518,7 +546,7 @@ namespace OnlineBackup.Server
                         { var rb = Body(ctx); NormalizeRestoreResult(rb); var rl = WriteJobLog(login, setId, "Restore", RunId.From(SystemClock.UtcNow), rb); Runs.Add(SystemClock.UtcNow, login, BackupSetInfo.FromXml(prof.FindSet(setId)), "Restore", RunId.From(SystemClock.UtcNow), rb, rl); }
                         Reply(ctx, 200, new Msg().Set("ok", 1));
                         return;
-                    case "begin": Reply(ctx, 200, Begin(login, prof, store, ip, Q(ctx, "key"))); return;
+                    case "begin": PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(prof.FindSet(setId))); Reply(ctx, 200, Begin(login, prof, store, ip, Q(ctx, "key"))); return;
                     case "interrupted":
                         {
                             // R1: the agent found that its own previous run of this set died (power cut, reboot, killed):
@@ -579,9 +607,10 @@ namespace OnlineBackup.Server
         }
 
         /// <summary>The profile as the agent sees it: no password hashes, no 2FA secrets, no LAN passwords.</summary>
-        static string SafeProfile(Profile p)
+        static string SafeProfile(Profile p, bool pilot = false)
         {
             var d = new XDocument(p.Doc);
+            if (pilot) d.Root.SetAttributeValue("SERVER_SCOPE", Scope.Pilot);   // PILOT-010: the agent never runs a set outside the pilot
             var u = d.Root.Element("USER");
             u.SetAttributeValue("TOTP_ON", string.IsNullOrEmpty((string)u.Attribute("TOTP_SECRET")) ? "N" : "Y");
             foreach (var a in new[] { "HASHED_PWD", "PASSWORD", "TOTP_SECRET", "TOTP_BACKUP_CODES", "TOTP_PENDING", "TOTP_PENDING_CODES", "RESET_PWD" }) u.SetAttributeValue(a, null);
@@ -954,7 +983,7 @@ namespace OnlineBackup.Server
                                 lock (users.ProfileLock) { var p = users.LoadProfile(login); foreach (var rr in SetControl.Rights) if (b[rr[0].ToLowerInvariant()] != null) p.SetAttr(rr[0], b.Bool(rr[0].ToLowerInvariant()) ? "Y" : "N"); users.SaveProfile(login, p); }
                                 break;
                             case "template": r.Set("sets", Templates.Apply(cfg, users, b["template"], login, admin, ip)); break;
-                            case "run": { int n = 0; foreach (var st in users.LoadProfile(login).Sets) n += SetControl.Request(users, login, st.Id, true, admin, ip, SystemClock.UtcNow); r.Set("computers", n); break; }
+                            case "run": { int n = 0; foreach (var st in users.LoadProfile(login).Sets.Where(x => PilotScope.Why(cfg, x) == null)) n += SetControl.Request(users, login, st.Id, true, admin, ip, SystemClock.UtcNow); r.Set("computers", n); break; }
                             case "requiretotp": lock (users.ProfileLock) { var p = users.LoadProfile(login); p.SetAttr("REQUIRE_TOTP", b.Bool("on") ? "Y" : "N"); users.SaveProfile(login, p); } break;
                             default: throw new ApiException(400, "ACTION", "Unknown action.");
                         }
@@ -1004,7 +1033,7 @@ namespace OnlineBackup.Server
             if (seg.Length == 3 && seg[2] == "me" && method == "GET")
             {
                 // VND-065: who is signed in, and the branding the management screens show (the vendor's own, else the server's)
-                var me = new Msg().Set("admin", admin).Set("vendor", vendor).Set("enroll", s.Enroll ? 1 : 0);
+                var me = new Msg().Set("admin", admin).Set("vendor", vendor).Set("enroll", s.Enroll ? 1 : 0).Set("scope", cfg.Pilot ? Scope.Pilot : null);
                 var vv = Vendors.Find(cfg, vendor);
                 if (vv != null) me.Set("vendorName", (string)vv.Attribute("NAME"));
                 foreach (var a in Vendors.BrandAttrs)
@@ -1118,6 +1147,7 @@ namespace OnlineBackup.Server
             }
             if (seg.Length == 5 && seg[2] == "users" && seg[4] == "aidiagnose" && method == "POST")
             {
+                PilotScope.Check(cfg, PilotScope.Ai);   // PILOT-010 / UI-08
                 // AI-020: explain one job log (kept beside the log; "again" asks anew)
                 var login = Uri.UnescapeDataString(seg[3]);
                 var b = Body(ctx);
@@ -1126,7 +1156,7 @@ namespace OnlineBackup.Server
                 Need(set != null && new[] { "Backup", "Restore" }.Contains(b["cat"]) && !string.IsNullOrEmpty(b["file"]) && b["file"].IndexOfAny(new[] { '/', '\\' }) < 0 && !b["file"].Contains(".."));
                 var file = Path.Combine(users.UserDir(login), "logs", set.Id, b["cat"], b["file"]);
                 Need(File.Exists(file));
-                if (File.Exists(file + ".ai") && !b.Bool("again")) { Reply(ctx, 200, Msg.Parse(File.ReadAllBytes(file + ".ai")).Set("cached", 1)); return; }
+                if (File.Exists(file + ".ai") && !b.Bool("again")) { Reply(ctx, 200, Msg.Parse(OnlineBackup.Core.Atomic.ReadAllBytes(file + ".ai")).Set("cached", 1)); return; }
                 var d = Ai.Diagnose(cfg, L.Norm(b["lang"]), set.Type, set.Engine, Atomic.ReadLinesShared(file));
                 Atomic.WriteBytes(file + ".ai", d.ToBytes());
                 SysLog.Write(ip, "Admin", admin + " AI diagnosis " + login + "/" + set.Id + " " + b["file"]);
@@ -1135,10 +1165,12 @@ namespace OnlineBackup.Server
             }
             if (seg.Length == 3 && seg[2] == "insights" && method == "GET")
             {
+                PilotScope.Check(cfg, PilotScope.Ai);
                 Reply(ctx, 200, InsightsMsg(super ? null : vendor, SystemClock.UtcNow)); return;
             }
             if (seg.Length == 3 && seg[2] == "aitest" && method == "POST")
             {
+                PilotScope.Check(cfg, PilotScope.Ai);
                 var d = Ai.Diagnose(cfg, "en", "FILE", "", new[] { AhsayLog.Line(SystemClock.UtcNow, "err", message: "Test: access to C:\\Data\\report.xlsx is denied") });
                 Reply(ctx, 200, new Msg().Set("ok", 1).Set("summary", d["summary"])); return;
             }
@@ -1236,6 +1268,7 @@ namespace OnlineBackup.Server
                 if (seg[5] == "disconnect") { Reply(ctx, 200, new Msg().Set("revoked", users.Disconnect(login, b["computer"], admin, ip))); return; }
                 if (seg[5] == "move")
                 {
+                    PilotScope.Check(cfg, PilotScope.MoveComputer);   // PILOT-010 / SH-06
                     if (!super && !Owns(b["target"] ?? "", vendor)) throw new ApiException(403, "VENDOR", "This customer is not yours.");
                     var moved = users.MoveComputer(login, b["computer"], b["target"], admin, ip);
                     exporter.Profile(login, users.UserDir(login)); exporter.Profile(b["target"], users.UserDir(b["target"]));
@@ -1297,6 +1330,7 @@ namespace OnlineBackup.Server
                             // RST-070: puts back everything a restic prune / forget moved to the trash (e.g. after ransomware)
                             var sid = Q(ctx, "set");
                             Need(sid != null && users.LoadProfile(login).FindSet(sid) != null);
+                            PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(users.LoadProfile(login).FindSet(sid)));   // bug 114: a blocked restic set's repository stays as it is
                             int n = new ResticStore(users.UserDir(login), sid).RestoreTrash();
                             SysLog.Write(ip, "Admin", "restic trash restored " + login + "/" + sid + " files=" + n + " by " + admin);
                             Reply(ctx, 200, new Msg().Set("restored", n)); return;
@@ -1372,7 +1406,7 @@ namespace OnlineBackup.Server
                 var p = Path.Combine(users.UserDir(seg[3]), "db", "keys", seg[4] + ".bin");
                 if (!File.Exists(p)) throw new ApiException(404, "NO_KEY", "The key is not stored on the server (key storage is off for this user).");
                 SysLog.Write(ip, "Admin", admin + " READ ENCRYPTION KEY of " + seg[3] + "/" + seg[4]);
-                Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(p)))));
+                Reply(ctx, 200, new Msg().Set("key", Convert.ToBase64String(KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(p)))));
                 return;
             }
             if (seg.Length == 5 && seg[2] == "users" && seg[4] == "unfreeze" && method == "POST")
@@ -1393,6 +1427,8 @@ namespace OnlineBackup.Server
                 // PKG-010: the customer's installation in the IT company's name (vendor administrators: their own branding)
                 var os = ctx.Request.QueryString["os"] ?? "windows";   // PKG-060 linux, PKG-070 mac
                 bool linux = os == "linux", mac = os == "mac", asZip = os == "zip";   // SETUP-C60: Windows is one Setup.exe; the ZIP stays for technicians (silent installation)
+                if (linux) PilotScope.Check(cfg, "The Linux client");   // PILOT-010: Windows only
+                if (mac) PilotScope.Check(cfg, "The Mac client");
                 var zip = linux ? ClientPackage.BuildLinux(cfg, vendor) : mac ? ClientPackage.BuildMac(cfg, vendor) : asZip ? ClientPackage.Build(cfg, vendor) : ClientPackage.BuildExe(cfg, vendor);
                 SysLog.Write(ip, "Admin", admin + " downloaded the " + (linux ? "Linux " : mac ? "Mac " : asZip ? "Windows ZIP " : "Windows ") + "client package (" + zip.Length + " bytes)");
                 var res = ctx.Response;
@@ -1414,7 +1450,7 @@ namespace OnlineBackup.Server
                 if (!super) throw new ApiException(403, "RIGHTS", "Only the server's administrator can update it.");
                 System.Net.IPAddress a;
                 if (!System.Net.IPAddress.TryParse(ip ?? "", out a) || !System.Net.IPAddress.IsLoopback(a)) throw new ApiException(403, "LOCAL_ONLY", "An update from files is done on the server itself: open https://localhost:8443/admin there.");
-                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip))); }
+                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip, ctx.Request.Headers["X-Update-Signature"]))); }
                 catch (InvalidOperationException e) { throw new ApiException(400, "UPDATE", e.Message); }
                 return;
             }
@@ -1496,6 +1532,7 @@ namespace OnlineBackup.Server
             }
             if (seg.Length == 3 && seg[2] == "replicate" && method == "POST")
             {
+                PilotScope.Check(cfg, PilotScope.Replication);   // PILOT-010 / ST-07
                 if (!cfg.License.Has("REPLICATION")) throw new ApiException(402, "LICENSE", "A second server is not included in the licence.");
                 Reply(ctx, 200, new Msg().Set("sent", Replication.RunOnce()).Set("pending", Replication.Pending));
                 return;
@@ -1534,6 +1571,9 @@ namespace OnlineBackup.Server
         {
             var r = cfg.Doc.Root;
             Func<string, XElement> el = n => { var e = r.Element(n); if (e == null) { e = new XElement(n); r.Add(e); } return e; };
+            // PILOT-010: the second server (ST-07) and the AI assistant (UI-08) cannot be set up — refused before anything is saved
+            if (b.Bool("replicationOn") || !string.IsNullOrWhiteSpace(b["replicationUrl"]) || !string.IsNullOrEmpty(b["replicationToken"]) || !string.IsNullOrEmpty(b["replicaReceiverToken"])) PilotScope.Check(cfg, PilotScope.Replication);
+            if (b.Bool("aiOn") || !string.IsNullOrEmpty(b["aiKey"]) || b.Bool("aiAutoDiagnose") || b.Bool("aiSearch") || !string.IsNullOrWhiteSpace(b["aiTicketUrl"])) PilotScope.Check(cfg, PilotScope.Ai);
             if (b["host"] != null) r.SetAttributeValue("HOST_NAME", b["host"]);
             if (b["publicUrl"] != null)
             {
@@ -1602,6 +1642,9 @@ namespace OnlineBackup.Server
             if (!string.IsNullOrEmpty(login))
             {
                 if (!new[] { "Backup", "Restore", "Retention", "Rebuild" }.Contains(cat)) throw new ApiException(400, "BAD_CAT", "Invalid log type.");
+                // bug 123 (AU-07): the set went into the path unchecked - "../../bob/logs/<id>" or an absolute folder read another
+                // customer's job log. A set id is letters, digits, '-' and '_' only.
+                if (!string.IsNullOrEmpty(set) && !System.Text.RegularExpressions.Regex.IsMatch(set, "^[A-Za-z0-9_-]{1,64}$")) throw new ApiException(400, "BAD_SET", "Invalid backup set.");
                 dir = cat == "Rebuild" ? Path.Combine(users.UserDir(login), "logs", "Rebuild") : Path.Combine(users.UserDir(login), "logs", set ?? "", cat);
             }
             else
@@ -1626,6 +1669,7 @@ namespace OnlineBackup.Server
 
         void Replica(HttpListenerContext ctx, string[] seg, string ip)
         {
+            PilotScope.Check(cfg, PilotScope.Replication);   // PILOT-010 / ST-07: this server does not receive either
             Replicator.CheckToken(cfg, ctx.Request.Headers["X-Replica-Token"]);
             var method = ctx.Request.HttpMethod;
             if (seg.Length == 3 && seg[2] == "user" && method == "POST")
@@ -1715,6 +1759,15 @@ namespace OnlineBackup.Server
                 {
                     try
                     {
+                        // PILOT-010: a set outside the pilot is kept exactly as it is — no retention, no trash purge, no log removal,
+                        // no "did not run" alert (it is not run on purpose); one line in its retention log says why
+                        var outside = PilotScope.Why(cfg, s);
+                        if (outside != null)
+                        {
+                            Atomic.AppendLine(Path.Combine(users.UserDir(login), "logs", s.Id, "Retention", nowUtc.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) + ".log"),
+                                AhsayLog.Line(SystemClock.UtcNow, "warn", message: "Kept as it is, nothing deleted: " + outside));
+                            continue;
+                        }
                         MissedBackupCheck(login, p, s, nowUtc);
                         if (s.Engine == "RESTIC") { if (!replica) m.Add("sets", ResticMaintenance(login, p, s, nowUtc)); continue; }
                         var store = new SetStore(users.UserDir(login), s.Id);
@@ -1768,7 +1821,7 @@ namespace OnlineBackup.Server
             if (soon.Count == 0) return;
             var mark = Path.Combine(cfg.SystemHome, "stats", "disk-alert.txt");
             DateTime last;
-            if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Trim(), out last) && (nowUtc - last).TotalDays < 7) return;
+            if (File.Exists(mark) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(mark).Trim(), out last) && (nowUtc - last).TotalDays < 7) return;
             Atomic.WriteText(mark, RunId.From(nowUtc));
             mailer.Alert("⚠ Storage forecast — the backup disk fills up soon", string.Join("", soon.Select(d => "<p>" + Fmt.H(d["path"]) + ": " + Fmt.Size(d.Long("free")) + " free, full in about " + d["days"] + " days at the current pace.</p>")));
         }
@@ -1973,7 +2026,7 @@ namespace OnlineBackup.Server
                     var p = users.LoadProfile(login); var e = p.FindSet(set.Id);
                     int fails = (int?)e.Attribute("TICKET_FAILS") ?? 0, warns = (int?)e.Attribute("TICKET_WARNS") ?? 0;
                     var lines = body.List("log").Select(l => l["l"]).Where(l => !string.IsNullOrEmpty(l)).Reverse().Take(5).Reverse();
-                    Calls.BackupResult(login, set.Id, set.Name, set.Computer, body["result"] ?? "BS_STOP_BY_SYSTEM_ERROR", ref fails, ref warns, string.Join("\n", lines), p);
+                    Calls.BackupResult(login, set.Id, set.Name, set.Computer, body["result"] ?? "BS_STOP_BY_SYSTEM_ERROR", ref fails, ref warns, string.Join("\n", lines), p, body["stop"] == "duration");
                     e.SetAttributeValue("TICKET_FAILS", fails); e.SetAttributeValue("TICKET_WARNS", warns);
                     users.SaveProfile(login, p);
                 }
@@ -1982,6 +2035,25 @@ namespace OnlineBackup.Server
 
         string VendorOf(string login) { try { return users.LoadProfile(login).Get("OWNER"); } catch (Exception) { return null; } }
 
+        /// <summary>Bug 128: a set is late after 48 hours, or — when it runs less often than daily — after its longest gap plus a day.</summary>
+        public static int LateAfterHours(BackupSetInfo s) { int gap = LongestScheduleGapHours(s); return gap > 24 ? Math.Max(48, gap + 24) : 48; }
+
+        /// <summary>Bug 128: the longest time between two scheduled runs of the set over a week, in whole hours (0 = no
+        /// scheduled run). A daily set is 24; once a week is 168.</summary>
+        public static int LongestScheduleGapHours(BackupSetInfo s)
+        {
+            var slots = new[] { new ScheduleSlot { Days = s.Days ?? "", Hour = s.Hour, Minute = s.Minute } }.Concat(s.MoreSchedules ?? new List<ScheduleSlot>());
+            var at = new SortedSet<int>();   // minutes from Sunday 00:00
+            foreach (var slot in slots)
+                for (int d = 0; d < 7; d++)
+                    if (slot.Days != null && slot.Days.Length > d && slot.Days[d] != '-') at.Add(d * 1440 + slot.Hour * 60 + slot.Minute);
+            if (at.Count == 0) return 0;
+            var t = at.ToList();
+            int gap = t[0] + 7 * 1440 - t[t.Count - 1];
+            for (int i = 1; i < t.Count; i++) gap = Math.Max(gap, t[i] - t[i - 1]);
+            return (gap + 59) / 60;
+        }
+
         void MissedBackupCheck(string login, Profile p, BackupSetInfo s, DateTime nowUtc)
         {
             var e = p.FindSet(s.Id);
@@ -1989,9 +2061,12 @@ namespace OnlineBackup.Server
             long created; long.TryParse(s.Id, out created);
             var since = RunId.FromUnixMs(Math.Max(last, created));
             var ts = Calls.Read(p);   // TICKETS-020: a call after the customer's "hours without a backup"
-            if (ts.MissedHours > 0 && (nowUtc - since).TotalHours >= ts.MissedHours)
+            // Bug 128: a set that runs less often than daily is late only after its longest gap plus one day (a daily set: 48 h
+            // and the call's hours, as before) — a weekly set was reported every week, two days after each good backup
+            int late = LongestScheduleGapHours(s) > 24 ? LateAfterHours(s) : 0;
+            if (ts.MissedHours > 0 && (nowUtc - since).TotalHours >= Math.Max(ts.MissedHours, late))
                 TicketSafe(() => Calls.Auto("missed", login, s.Id, s.Name, s.Computer, "Backup did not run — " + s.Name, "no completed backup since " + since.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) + " UTC", p));
-            if ((nowUtc - since).TotalHours < 48) return;
+            if ((nowUtc - since).TotalHours < LateAfterHours(s)) return;
             // Agent M (M-6): two maintenance runs at once (the daily timer and an administrator's button) both read the old
             // mark and both alerted. The mark is checked and set in one step, on the profile as it is now
             lock (users.ProfileLock)

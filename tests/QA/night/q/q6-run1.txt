@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q6-quota.spec.ts:16:5 › Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete
+  1 passed (18.4s)
+EXIT 0

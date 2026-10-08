@@ -92,6 +92,9 @@ namespace OnlineBackup.Agent
         /// <summary>Runs restic; secrets only in the environment of the child process, never on its command line or in logs.</summary>
         /// <summary>OPT-010 (tests): every restic command line, to prove that each setting reaches restic.</summary>
         public static Action<string[]> Trace;
+        static readonly string[] WaitsForLock = { "backup", "forget", "prune", "restore" };
+        /// <summary>How long a writing command waits for a lock another command holds (a forget --prune of a big repository).</summary>
+        public static string RetryLock = "10m";
 
         /// <summary>The restic program and its limits for this runner (tests set a stand-in and short limits).</summary>
         public string ExePath = Exe;
@@ -99,6 +102,11 @@ namespace OnlineBackup.Agent
 
         public Result Run(params string[] args)
         {
+            // Bug 98 (CI gate, J6): a backup that met the repository locked for a moment by another of the product's own
+            // commands (forget --prune after a run, the restore test) failed at once - "repository is already locked
+            // exclusively" - and the run was a system error. The commands that write wait for the lock (restic 0.16+).
+            if (args.Length > 0 && Array.IndexOf(WaitsForLock, args[0]) >= 0 && Array.IndexOf(args, "--retry-lock") < 0)
+                args = args.Concat(new[] { "--retry-lock", RetryLock }).ToArray();
             var trace = Trace; if (trace != null) trace(args);
             var psi = new ProcessStartInfo(ExePath, string.Join(" ", args.Select(Quote).ToArray()))
             { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true, CreateNoWindow = true, StandardOutputEncoding = Encoding.UTF8, StandardErrorEncoding = Encoding.UTF8 };
@@ -192,7 +200,7 @@ namespace OnlineBackup.Agent
             var run = new BackupRun(app.DeviceClient(), app.Home, set, key);
             var log = run.Lines;
             var started = Clock();
-            string result = "BS_STOP_SUCCESS";
+            string result = "BS_STOP_SUCCESS"; bool byDuration = false;
             bool clean = false;   // restic finished normally: no lock of this run can be left behind
             Msg report = new Msg().Set("job", NewJobId(started)).Set("started", RunId.UnixMs(started));
             log.Add(AhsayLog.Line(started, "start"));
@@ -279,7 +287,7 @@ namespace OnlineBackup.Agent
                 if (fr.Code == 0) log.Add(AhsayLog.Info(Clock(), "Retention policy " + set.Retention.Describe() + " applied (removed data stays 14 days in the server trash)"));
                 if (set.DestMode == "BOTH") LocalCopy(args, run, log);
             }
-            catch (StoppedException e) { result = e.ByAdmin ? "BS_STOP_BY_USER" : "BS_STOP_SUCCESS_WITH_WARNING"; }
+            catch (StoppedException e) { result = e.ByAdmin || run.Errors == 0 ? "BS_STOP_BY_USER" : "BS_STOP_SUCCESS_WITH_ERROR"; if (!e.ByAdmin) byDuration = true; }   // bug 103: a duration stop is stopped, not a success
             catch (AgentException e)
             {
                 result = e.Code == "PRE" ? "BS_STOP_BY_PRE_COMMAND" : e.Message.Contains("(507)") ? StorageFull(log) : "BS_STOP_BY_SYSTEM_ERROR";
@@ -305,9 +313,10 @@ namespace OnlineBackup.Agent
             if (result.StartsWith("BS_STOP_SUCCESS", StringComparison.Ordinal))
                 try { var st = new LocalState(app.Home.SetDir(set.Id)); st.LastSuccess = report["job"]; st.LastSuccessLocalMs = RunId.UnixMs(started); st.Save(); }
                 catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "The time of this backup could not be saved: " + e.Message)); }
+            if (byDuration) report.Set("stop", "duration");   // bug 103: the server still counts a run that never finishes in its window
             report.Set("result", result).Set("new", run.New).Set("upd", run.Updated).Set("del", 0).Set("perm", 0).Set("bytes", run.BytesSent);
             var prev = Path.Combine(app.Home.SetDir(set.Id), "restic-files.txt");
-            long prevFiles; if (File.Exists(prev) && long.TryParse(File.ReadAllText(prev).Trim(), out prevFiles)) report.Set("prevFiles", prevFiles);
+            long prevFiles; if (File.Exists(prev) && long.TryParse(OnlineBackup.Core.Atomic.ReadAllText(prev).Trim(), out prevFiles)) report.Set("prevFiles", prevFiles);
             if (report["files"] != null) File.WriteAllText(prev, report["files"]);
             foreach (var l in log) report.Add("log", new Msg().Set("l", l));
             bool delivered = false;
@@ -325,7 +334,7 @@ namespace OnlineBackup.Agent
         {
             var f = Path.Combine(app.Home.SetDir(set.Id), "last-job.txt");
             DateTime last;
-            try { if (File.Exists(f) && RunId.TryParse(File.ReadAllText(f).Trim(), out last) && started <= last) started = last.AddSeconds(1); } catch (IOException) { }
+            try { if (File.Exists(f) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(f).Trim(), out last) && started <= last) started = last.AddSeconds(1); } catch (IOException) { }
             var id = RunId.From(started);
             Atomic.WriteText(f, id);
             return id;
@@ -394,7 +403,7 @@ namespace OnlineBackup.Agent
                 log.Add(AhsayLog.Info(Clock(), "Restored to Google Workspace: mail " + back.Mail + ", files " + back.Files + ", failed " + back.Failed));
                 return back;
             }
-            finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(tmp); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The temporary restore folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         /// <summary>M365-050: chosen items of a point back into Microsoft 365 ("Restored &lt;date&gt;" folders).</summary>
@@ -417,7 +426,7 @@ namespace OnlineBackup.Agent
                 log.Add(AhsayLog.Info(Clock(), "Restored to Microsoft 365: mail " + back.Mail + ", files " + back.Files + ", contacts " + back.Contacts + ", events " + back.Events + ", failed " + back.Failed));
                 return back;
             }
-            finally { try { Directory.Delete(tmp, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(tmp); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The temporary restore folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         string RunningFlag { get { return Path.Combine(app.Home.SetDir(set.Id), "restic-running.txt"); } }
@@ -469,7 +478,7 @@ namespace OnlineBackup.Agent
         bool? UnlockAfterDeadRun(List<string> log)
         {
             if (!File.Exists(RunningFlag)) return null;
-            if (FlagNamesLiveRun(File.ReadAllText(RunningFlag))) return false;
+            if (FlagNamesLiveRun(OnlineBackup.Core.Atomic.ReadAllText(RunningFlag))) return false;
             var u = Run("unlock", "--remove-all");
             log.Add(AhsayLog.Info(Clock(), "The previous run was interrupted: its repository locks were removed (" + (u.Code == 0 ? "ok" : Last(u.Err)) + ")"));
             return true;
@@ -523,13 +532,13 @@ namespace OnlineBackup.Agent
             EnsureAccess();
             Directory.CreateDirectory(target);
             foreach (var old in Directory.GetDirectories(target, StagePrefix + "*"))
-                try { Directory.Delete(old, true); } catch (Exception e) { log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + old + " (" + e.Message + ")")); }
+            { var why = OnlineBackup.Core.TempDirs.Remove(old); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "A folder of an earlier cut restore could not be removed: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             var stage = Path.Combine(target, StagePrefix + Guid.NewGuid().ToString("N").Substring(0, 12));
             Directory.CreateDirectory(stage);
             try
             {
                 var args = new List<string> { "restore", string.IsNullOrEmpty(snapshot) ? "latest" : snapshot, "--target", stage, "--tag", "set:" + set.Id };
-                if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(inc)); }
+                if (includes != null) foreach (var inc in includes) { args.Add("--include"); args.Add(GlobLiteral(OnlineBackup.Core.ResticPaths.Of(inc))); }   // bug 100: C:\... -> /C/...
                 var r = Run(args.ToArray());
                 log.Add(AhsayLog.Info(Clock(), "restic restore " + (snapshot ?? "latest") + " to " + target + ": exit " + r.Code));
                 if (r.Code != 0) throw new AgentException(0, "RESTIC", "restic restore: " + Last(r.Err) + " — nothing was put in place; run the restore again");
@@ -538,7 +547,7 @@ namespace OnlineBackup.Agent
                 if (c[0] + c[1] + c[2] == 0) throw new AgentException(0, "RESTIC", "Nothing was restored: the chosen files are not in this backup point");
                 log.Add(AhsayLog.Info(Clock(), "Restored: " + c[0] + " new, " + c[2] + " replaced, " + c[1] + " kept (already there" + (overwrite ? "" : "; 'Replace existing files' was not chosen") + ")"));
             }
-            finally { try { if (Directory.Exists(stage)) Directory.Delete(stage, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(stage); if (why != null) log.Add(AhsayLog.Line(Clock(), "warn", message: "The restore's staging folder stays: " + why)); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
         }
 
         const string StagePrefix = ".ob-restoring-";

@@ -4,10 +4,10 @@ obj/
 TestResults/
 out/
 ui-report/
-node_modules/
+node_modules
 site/dist/
 site-report/
-tests/QA/node_modules/
+tests/QA/node_modules
 tests/QA/artifacts/
 tests/QA/reports/html/
 tests/QA/reports/last-run.json

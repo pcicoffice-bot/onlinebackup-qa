@@ -59,7 +59,7 @@ namespace OnlineBackup.Server
                 string ret = r.Unit == "JOBS" ? T("{0} last backups", new object[] { r.Period }) : T("{0} days", new object[] { r.Period });
                 if (r.Advanced) ret += "<br><span class='muted'>" + T("daily {0}, weekly {1}, monthly {2}, quarterly {3}, yearly {4}", new object[] { r.Daily, r.Weekly, r.Monthly, r.Quarterly, r.Yearly }) + "</span>";
                 string enc = s.Set.KeyType == "DEFAULT" ? t1("AES-256, key generated on the customer's computer") : t1("AES-256, key from the customer's password");
-                bool late = !s.LastBackup.HasValue || (nowUtc - s.LastBackup.Value).TotalHours > 48;
+                bool late = !s.LastBackup.HasValue || (nowUtc - s.LastBackup.Value).TotalHours > Api.LateAfterHours(s.Set);   // bug 128: by the set's schedule
                 sb.Append("<tr><td>").Append(Fmt.H(s.Set.Name)).Append("</td><td>").Append(Fmt.H(s.Set.Type)).Append("</td><td>").Append(Schedule(lang, s.Set)).Append("</td><td>").Append(ret)
                   .Append("</td><td>").Append(enc).Append("</td><td class='").Append(late ? "bad" : "ok").Append("'><span class='num'>").Append(D(s.LastBackup)).Append("</span></td><td><span class='num'>")
                   .Append(s.Runs30).Append("</span></td></tr>");
@@ -72,9 +72,9 @@ namespace OnlineBackup.Server
               .Append(t1("Restores in the last 12 months")).Append("</th></tr>");
             foreach (var s in sets)
             {
-                bool ok = (s.TestResult ?? "").StartsWith("OK");
-                sb.Append("<tr><td>").Append(Fmt.H(s.Set.Name)).Append("</td><td><span class='num'>").Append(D(s.LastTest)).Append("</span></td><td class='").Append(s.LastTest.HasValue ? (ok ? "ok" : "bad") : "").Append("'>")
-                  .Append(s.LastTest.HasValue ? (ok ? t1("Passed") : t1("Failed")) + " <span class='num'>" + Fmt.H((s.TestResult ?? "").Replace("OK ", "").Replace("FAILED ", "")) + "</span>" : t1("Not tested yet"))
+                bool ok = (s.TestResult ?? "").StartsWith("OK"), none = (s.TestResult ?? "").StartsWith("NOT_CHECKED");   // bug 110: nothing to compare is not "Failed"
+                sb.Append("<tr><td>").Append(Fmt.H(s.Set.Name)).Append("</td><td><span class='num'>").Append(D(s.LastTest)).Append("</span></td><td class='").Append(s.LastTest.HasValue ? (ok ? "ok" : none ? "" : "bad") : "").Append("'>")
+                  .Append(s.LastTest.HasValue ? (none ? t1("Nothing to compare") : (ok ? t1("Passed") : t1("Failed")) + " <span class='num'>" + Fmt.H((s.TestResult ?? "").Replace("OK ", "").Replace("FAILED ", "")) + "</span>") : t1("Not tested yet"))
                   .Append("</td><td><span class='num'>").Append(s.RestoresYear).Append("</span></td></tr>");
             }
             sb.Append("</table>");

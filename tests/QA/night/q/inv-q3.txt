@@ -1,0 +1,66 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q3.spec.ts:20:5 › INVERTED q3 — Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore
+e2e/zz-inv-q3.spec.ts:20:5 › INVERTED q3 — Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore
+Q3 FACT (not asserted, owner decision Q-D2): runs in the server's history before the loss 1, after the settings came back 0
+
+  1) e2e/zz-inv-q3.spec.ts:20:5 › INVERTED q3 — Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "UNEXPECTED Documents/after-the-settings-came-back.txt",
+    + ]
+
+      81 |   const t = path.join(world.dir, 'restore');
+      82 |   const r = ag.restore(id, t); expect(r.code, r.out).toBe(0);
+    > 83 |   expect(compare(before, manifest(restoredPath(t, src)))).toEqual([]);
+         |                                                           ^
+      84 |   evidence.step('ORACLE: the point made before the loss still restores exactly the first version');
+      85 |   const points = ag.cli(['points', '--set', id]).out.trim().split('\n').filter((l) => /^\d{4}-/.test(l)).map((l) => l.split(/\s/)[0]).sort();
+      86 |   expect(points.length, points.join(',')).toBe(2);
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q3.spec.ts:83:59
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/attachments/server-log-e3f0849753792503478de376cfa18af812057ddc.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-CFG-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/attachments/agent-CFG-PC1-log-f0d2de01e4e5d31a6bfe2a133e3850e5e8a8629e.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/attachments/system-xml-2e3d3e3f5d6c6a1bd1cccde3000b5dcac0770af3.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/error-context.md
+
+    attachment #8: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q3-INVERTED-q3--e3189-tion-key-backup-and-restore/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q3.spec.ts:20:5 › INVERTED q3 — Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore 
+EXIT 1

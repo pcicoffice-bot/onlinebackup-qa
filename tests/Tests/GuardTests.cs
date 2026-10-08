@@ -12,6 +12,7 @@ using Xunit;
 namespace OnlineBackup.Tests
 {
     /// <summary>GUARD-010: an address that guesses passwords, sprays names or scans the server is blocked.</summary>
+    [Collection("Guard")]   // Guard's state is one per process: these classes never run at the same time
     public class GuardTests
     {
         static Env Server()
@@ -121,8 +122,9 @@ namespace OnlineBackup.Tests
                 Guard.Block(env.Cfg, "203.0.113.9", "test", "test", 24);
                 Assert.True(Guard.IsBlocked(env.Cfg, "203.0.113.9"));
                 var at = DateTime.UtcNow;
+                var was = Guard.Clock;   // QA defect (night 07.10): it "restored" DateTime.UtcNow - every later test lost SystemClock in Guard
                 try { Guard.Clock = () => at.AddHours(25); Assert.False(Guard.IsBlocked(env.Cfg, "203.0.113.9")); }
-                finally { Guard.Clock = () => DateTime.UtcNow; }
+                finally { Guard.Clock = was; }
             }
         }
 

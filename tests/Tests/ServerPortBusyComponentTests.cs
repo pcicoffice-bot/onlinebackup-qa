@@ -25,7 +25,7 @@ namespace OnlineBackup.Tests
             using (var env = new Env())
             {
                 // another program holds the port (a plain socket, as a server process that has not let go of it yet)
-                var busy = new TcpListener(IPAddress.Loopback, 0); busy.Start(); var port = ((IPEndPoint)busy.LocalEndpoint).Port;
+                var busy = TcpListener.Create(0); busy.Start(); var port = ((IPEndPoint)busy.LocalEndpoint).Port;   // Q32: IPv4 AND IPv6 (on the CI runner the server binds IPv6; an IPv4-only holder left its port free)
                 try
                 {
                     var cfg = env.Cfg;

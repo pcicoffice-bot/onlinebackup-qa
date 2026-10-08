@@ -181,7 +181,7 @@ namespace OnlineBackup.Server
             }
             all.Sort((a, b) => string.CompareOrdinal(a.Value, b.Value));
             var posFile = Path.Combine(Dir, ".scrub");
-            var pos = File.Exists(posFile) ? File.ReadAllText(posFile).Trim() : "";
+            var pos = File.Exists(posFile) ? OnlineBackup.Core.Atomic.ReadAllText(posFile).Trim() : "";
             var todo = all.Where(x => string.CompareOrdinal(x.Value, pos) > 0).Concat(all.Where(x => string.CompareOrdinal(x.Value, pos) <= 0)).ToList();
             long done = 0; int checkedN = 0, bad = 0; string last = pos;
             foreach (var x in todo)
@@ -225,7 +225,7 @@ namespace OnlineBackup.Server
         {
             var p = TokenPath(userDir, setId);
             if (string.IsNullOrEmpty(token) || !File.Exists(p)) return false;
-            var want = File.ReadAllText(p).Trim();
+            var want = OnlineBackup.Core.Atomic.ReadAllText(p).Trim();
             var got = Bytes.Hex(Bytes.Sha256(Encoding.UTF8.GetBytes(token)));
             return CryptographicOperations.FixedTimeEquals(Encoding.ASCII.GetBytes(want), Encoding.ASCII.GetBytes(got));
         }

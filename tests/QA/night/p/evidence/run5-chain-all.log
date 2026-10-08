@@ -1,0 +1,75 @@
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.21]   Discovered:  Tests
+[xUnit.net 00:00:00.22]   Starting:    Tests
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 7, shrinkToZero: True) [21 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @3928179→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @6405314→8336402, 5:same size, one byte @6713845→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5128777→6291799, 11:insert 777 @2311964→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @2823746→6239576, 15:same size, one byte @3583304→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4544180→6291799, 21:insert 777 @3077899→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @2511689→6239576, 25:same size, one byte @3171358→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @3424506→6291799, 31:insert 777 @1679267→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @628683→6239576, 35:same size, one byte @967018→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @160751→6291799, 41:insert 777 @898737→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2169869→6239576, 45:same size, one byte @5460242→6239576
+ longest chain 7 objects; first run sent 8394433, largest insert-run sent 4823476
+ chain-D7s: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: True) [23 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @1166173→6291799, 11:insert 777 @4917007→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @1037276→6239576, 15:same size, one byte @5037242→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4108685→6291799, 21:insert 777 @2324070→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @6109348→6239576, 25:same size, one byte @4028254→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1798951→6291799, 31:insert 777 @1781705→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1168326→6239576, 35:same size, one byte @4480252→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @2546832→6291799, 41:insert 777 @3724608→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4244928→6239576, 45:same size, one byte @1544720→6239576
+ longest chain 12 objects; first run sent 8394598, largest insert-run sent 3853998
+ chain-D100s: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 7, shrinkToZero: True) [20 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @3843823→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4938620→8336402, 5:same size, one byte @2924750→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2953775→6291799, 11:insert 777 @1910790→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @781089→6239576, 15:same size, one byte @105586→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4588420→6291799, 21:insert 777 @5472906→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @4316099→6239576, 25:same size, one byte @1137569→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @563307→6291799, 31:insert 777 @2361312→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1933061→6239576, 35:same size, one byte @1893916→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @897919→6291799, 41:insert 777 @5718775→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2348556→6239576, 45:same size, one byte @2968595→6239576
+ longest chain 7 objects; first run sent 8394417, largest insert-run sent 1826570
+ chain-I7s: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: False) [53 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @3310166→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2477190→6291799, 11:insert 777 @3781446→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @4949633→6239576, 15:same size, one byte @2254641→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @796238→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @1777290→6291799, 21:insert 777 @2586533→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @581042→6239576, 25:same size, one byte @1622693→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @5138086→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @4871348→6291799, 31:insert 777 @3158975→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @3275718→6239576, 35:same size, one byte @5610406→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @4082968→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @4593916→6291799, 41:insert 777 @5300511→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2419758→6239576, 45:same size, one byte @3512372→6239576
+ longest chain 46 objects; first run sent 8394598, largest insert-run sent 6294461
+ chain-D100: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: True) [20 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5282970→6291799, 11:insert 777 @4515833→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @5237195→6239576, 15:same size, one byte @1559523→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4152925→6291799, 21:insert 777 @4719077→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @1671181→6239576, 25:same size, one byte @1994465→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @5229551→6291799, 31:insert 777 @2463750→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @2472704→6239576, 35:same size, one byte @5407150→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @3283999→6291799, 41:insert 777 @2252846→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4423615→6239576, 45:same size, one byte @5292649→6239576
+ longest chain 12 objects; first run sent 8394433, largest insert-run sent 1669450
+ chain-I100s: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: False) [42 s]
+  Standard Output Messages:
+ edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @6051257→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @6138816→6291799, 11:insert 777 @3227296→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @6197241→6239576, 15:same size, one byte @2352980→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @1350129→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @6018781→6291799, 21:insert 777 @5580177→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @5708437→6239576, 25:same size, one byte @2026162→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @2162561→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1247233→6291799, 31:insert 777 @3255077→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @88238→6239576, 35:same size, one byte @1777539→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @1945477→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @373846→6291799, 41:insert 777 @5942383→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4487642→6239576, 45:same size, one byte @3750577→6239576
+ longest chain 46 objects; first run sent 8394433, largest insert-run sent 1444378
+ chain-I100: restored 46 points, 0 bad
+
+
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "I") [17 s]
+  Standard Output Messages:
+ runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+ maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030150.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">29</f><f n="freed">37286992</f><f n="login">retp</f><f n="set">1791342095842</f><l n="expired"><i><f n="id">2026-10-08-03-01-36</f></i><i><f n="id">2026-10-09-03-01-38</f></i><i><f n="id">2026-10-10-03-01-39</f></i><i><f n="id">2026-10-11-03-01-42</f></i><i><f n="id">2026-10-12-03-01-43</f></i><i><f n="id">2026-10-13-03-01-45</f></i><i><f n="id">2026-10-14-03-01-46</f></i><i><f n="id">2026-10-15-03-01-47</f></i><i><f n="id">2026-10-16-03-01-47</f></i>
+ ret1-I: restored 3 points, 0 bad
+ ret2-I: restored 3 points, 0 bad
+
+
+[xUnit.net 00:03:29.09]   Finished:    Tests
+  Passed OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "D") [9 s]
+  Standard Output Messages:
+ runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+ maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030159.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">29</f><f n="freed">53212836</f><f n="login">retp</f><f n="set">1791342113682</f><l n="expired"><i><f n="id">2026-10-08-03-01-53</f></i><i><f n="id">2026-10-09-03-01-54</f></i><i><f n="id">2026-10-10-03-01-54</f></i><i><f n="id">2026-10-11-03-01-54</f></i><i><f n="id">2026-10-12-03-01-54</f></i><i><f n="id">2026-10-13-03-01-55</f></i><i><f n="id">2026-10-14-03-01-55</f></i><i><f n="id">2026-10-15-03-01-56</f></i><i><f n="id">2026-10-16-03-01-56</f></i>
+ ret1-D: restored 3 points, 0 bad
+ ret2-D: restored 3 points, 0 bad
+
+
+
+Test Run Successful.
+Total tests: 8
+     Passed: 8
+ Total time: 3.4952 Minutes

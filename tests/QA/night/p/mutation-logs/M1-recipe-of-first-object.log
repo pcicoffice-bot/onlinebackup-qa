@@ -1,0 +1,404 @@
+MUTATION M1-recipe-of-first-object
+FILTER FullyQualifiedName~NightP_RestoreChainTests.ChunkerEdges|FullyQualifiedName~NightP_RestoreChainTests.NamesReused|FullyQualifiedName~NightP_RestoreChainTests.LongChain
+diff --git a/src/Agent/Restore.cs b/src/Agent/Restore.cs
+index bec2540..4f646d2 100644
+--- a/src/Agent/Restore.cs
++++ b/src/Agent/Restore.cs
+@@ -137,7 +137,7 @@ namespace OnlineBackup.Agent
+                     {
+                         var h = BackupObject.ReadHeader(streams[i], key);
+                         foreach (var kv in BackupObject.ChunkOffsets(streams[i], h)) where[kv.Key] = new KeyValuePair<int, long>(i, kv.Value);
+-                        header = h;
++                        if (i == 0) header = h;
+                     }
+                     Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(dest)));
+                     // Bug 74 (RS-02, Agent B note): "<name>.restoring" with FileMode.Create overwrote, then moved away, a customer's
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.23]   Discovered:  Tests
+[xUnit.net 00:00:00.24]   Starting:    Tests
+[xUnit.net 00:00:22.39]       44 of 46 points differ from the source at their run:
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-25 (run 1): failed=0 differs data/big.mdb want cb9efe245e92|1772352060138 got 26749cd31784|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-28 (run 2): failed=0 differs data/big.mdb want 7121219c9d6a|1772352120139 got 26749cd31784|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-32 (run 3): failed=0 differs data/big.mdb want 2bc3941372cc|1772352180140 got 26749cd31784|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-35 (run 4): failed=0 differs data/big.mdb want ba2822876c42|1772352240141 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-38 (run 5): failed=0 differs data/big.mdb want 0b05f89f841b|1772352300142 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-41 (run 6): failed=0 differs data/big.mdb want 488fe0232dab|1772352360143 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-45 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-48 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-52 (run 9): failed=0 differs data/big.mdb want 0241c310221c|1772352540146 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-55 (run 10): failed=0 differs data/big.mdb want 800eb41d1070|1772352600147 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-02-58 (run 11): failed=0 differs data/big.mdb want d8f5aed42c95|1772352660148 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-03-01 (run 12): failed=0 differs data/big.mdb want 00d14f8660e2|1772352720149 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-03-05 (run 13): failed=0 differs data/big.mdb want 1a807d11999a|1772352780150 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-03-08 (run 14): failed=0 differs data/big.mdb want 34e4620cf1f4|1772352840151 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       chain-D7s point 2026-10-07-03-03-11 (run 15): failed=0 differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:22.39]       Stack Trace:
+[xUnit.net 00:00:22.39]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:00:22.39]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:22.39]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:22.39]       Output:
+[xUnit.net 00:00:22.39]         edits: 1:insert 777 @3928179→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @6405314→8336402, 5:same size, one byte @6713845→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5128777→6291799, 11:insert 777 @2311964→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @2823746→6239576, 15:same size, one byte @3583304→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4544180→6291799, 21:insert 777 @3077899→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @2511689→6239576, 25:same size, one byte @3171358→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @3424506→6291799, 31:insert 777 @1679267→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @628683→6239576, 35:same size, one byte @967018→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @160751→6291799, 41:insert 777 @898737→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2169869→6239576, 45:same size, one byte @5460242→6239576
+[xUnit.net 00:00:22.39]         longest chain 7 objects; first run sent 8394433, largest insert-run sent 4823476
+[xUnit.net 00:00:22.39]         chain-D7s: restored 46 points, 44 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 7, shrinkToZero: True) [22 s]
+  Error Message:
+   44 of 46 points differ from the source at their run:
+chain-D7s point 2026-10-07-03-02-25 (run 1): failed=0 differs data/big.mdb want cb9efe245e92|1772352060138 got 26749cd31784|1772352000137
+chain-D7s point 2026-10-07-03-02-28 (run 2): failed=0 differs data/big.mdb want 7121219c9d6a|1772352120139 got 26749cd31784|1772352000137
+chain-D7s point 2026-10-07-03-02-32 (run 3): failed=0 differs data/big.mdb want 2bc3941372cc|1772352180140 got 26749cd31784|1772352000137
+chain-D7s point 2026-10-07-03-02-35 (run 4): failed=0 differs data/big.mdb want ba2822876c42|1772352240141 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-38 (run 5): failed=0 differs data/big.mdb want 0b05f89f841b|1772352300142 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-41 (run 6): failed=0 differs data/big.mdb want 488fe0232dab|1772352360143 got 26749cd31784|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-45 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-48 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-52 (run 9): failed=0 differs data/big.mdb want 0241c310221c|1772352540146 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-55 (run 10): failed=0 differs data/big.mdb want 800eb41d1070|1772352600147 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-02-58 (run 11): failed=0 differs data/big.mdb want d8f5aed42c95|1772352660148 got 39890b1f5322|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-03-01 (run 12): failed=0 differs data/big.mdb want 00d14f8660e2|1772352720149 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-03-05 (run 13): failed=0 differs data/big.mdb want 1a807d11999a|1772352780150 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-03-08 (run 14): failed=0 differs data/big.mdb want 34e4620cf1f4|1772352840151 got 39890b1f5322|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D7s point 2026-10-07-03-03-11 (run 15): failed=0 differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Standard Output Messages:
+ edits: 1:insert 777 @3928179→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @6405314→8336402, 5:same size, one byte @6713845→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5128777→6291799, 11:insert 777 @2311964→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @2823746→6239576, 15:same size, one byte @3583304→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4544180→6291799, 21:insert 777 @3077899→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @2511689→6239576, 25:same size, one byte @3171358→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @3424506→6291799, 31:insert 777 @1679267→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @628683→6239576, 35:same size, one byte @967018→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @160751→6291799, 41:insert 777 @898737→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2169869→6239576, 45:same size, one byte @5460242→6239576
+ longest chain 7 objects; first run sent 8394433, largest insert-run sent 4823476
+ chain-D7s: restored 46 points, 44 bad
+
+
+[xUnit.net 00:00:44.40]       45 of 46 points differ from the source at their run:
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-02-47 (run 1): failed=0 differs data/big.mdb want 61035e565cf7|1772352060138 got 4d6883d19377|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-02-50 (run 2): failed=0 differs data/big.mdb want 59b84901fa7c|1772352120139 got 4d6883d19377|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-02-53 (run 3): failed=0 differs data/big.mdb want 03648bcd3318|1772352180140 got 4d6883d19377|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-02-56 (run 4): failed=0 differs data/big.mdb want 4a5ec4468091|1772352240141 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-00 (run 5): failed=0 differs data/big.mdb want 2ac55123699c|1772352300142 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-03 (run 6): failed=0 differs data/big.mdb want 411549c5d72b|1772352360143 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-06 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-09 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-13 (run 9): failed=0 differs data/big.mdb want c593b66acc03|1772352540146 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-16 (run 10): failed=0 differs data/big.mdb want 8a82a34648bc|1772352600147 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-19 (run 11): failed=0 differs data/big.mdb want 56d8b94e3eff|1772352660148 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-22 (run 12): failed=0 differs data/big.mdb want 0936ab32ae9d|1772352720149 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-26 (run 13): failed=0 differs data/big.mdb want 0316d1e2e783|1772352780150 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-29 (run 14): failed=0 differs data/big.mdb want 1e2c8c5882b6|1772352840151 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       chain-D100s point 2026-10-07-03-03-32 (run 15): failed=0 differs data/big.mdb want 1d391b54bcb6|1772352900152 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:00:44.40]       Stack Trace:
+[xUnit.net 00:00:44.40]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:00:44.40]            at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:00:44.40]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:44.40]       Output:
+[xUnit.net 00:00:44.40]         edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @1166173→6291799, 11:insert 777 @4917007→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @1037276→6239576, 15:same size, one byte @5037242→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4108685→6291799, 21:insert 777 @2324070→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @6109348→6239576, 25:same size, one byte @4028254→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1798951→6291799, 31:insert 777 @1781705→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1168326→6239576, 35:same size, one byte @4480252→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @2546832→6291799, 41:insert 777 @3724608→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4244928→6239576, 45:same size, one byte @1544720→6239576
+[xUnit.net 00:00:44.40]         longest chain 12 objects; first run sent 8394598, largest insert-run sent 3853998
+[xUnit.net 00:00:44.40]         chain-D100s: restored 46 points, 45 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: True) [21 s]
+  Error Message:
+   45 of 46 points differ from the source at their run:
+chain-D100s point 2026-10-07-03-02-47 (run 1): failed=0 differs data/big.mdb want 61035e565cf7|1772352060138 got 4d6883d19377|1772352000137
+chain-D100s point 2026-10-07-03-02-50 (run 2): failed=0 differs data/big.mdb want 59b84901fa7c|1772352120139 got 4d6883d19377|1772352000137
+chain-D100s point 2026-10-07-03-02-53 (run 3): failed=0 differs data/big.mdb want 03648bcd3318|1772352180140 got 4d6883d19377|1772352000137
+chain-D100s point 2026-10-07-03-02-56 (run 4): failed=0 differs data/big.mdb want 4a5ec4468091|1772352240141 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-00 (run 5): failed=0 differs data/big.mdb want 2ac55123699c|1772352300142 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-03 (run 6): failed=0 differs data/big.mdb want 411549c5d72b|1772352360143 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-06 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-09 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-13 (run 9): failed=0 differs data/big.mdb want c593b66acc03|1772352540146 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-16 (run 10): failed=0 differs data/big.mdb want 8a82a34648bc|1772352600147 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-19 (run 11): failed=0 differs data/big.mdb want 56d8b94e3eff|1772352660148 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-22 (run 12): failed=0 differs data/big.mdb want 0936ab32ae9d|1772352720149 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-26 (run 13): failed=0 differs data/big.mdb want 0316d1e2e783|1772352780150 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-29 (run 14): failed=0 differs data/big.mdb want 1e2c8c5882b6|1772352840151 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100s point 2026-10-07-03-03-32 (run 15): failed=0 differs data/big.mdb want 1d391b54bcb6|1772352900152 got 81e4f62c2caf|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @1166173→6291799, 11:insert 777 @4917007→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @1037276→6239576, 15:same size, one byte @5037242→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4108685→6291799, 21:insert 777 @2324070→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @6109348→6239576, 25:same size, one byte @4028254→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1798951→6291799, 31:insert 777 @1781705→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1168326→6239576, 35:same size, one byte @4480252→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @2546832→6291799, 41:insert 777 @3724608→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4244928→6239576, 45:same size, one byte @1544720→6239576
+ longest chain 12 objects; first run sent 8394598, largest insert-run sent 3853998
+ chain-D100s: restored 46 points, 45 bad
+
+
+[xUnit.net 00:01:03.68]       44 of 46 points differ from the source at their run:
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-09 (run 1): failed=0 differs data/big.mdb want cd1a574fca70|1772352060138 got 87e6efb68e03|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-12 (run 2): failed=0 differs data/big.mdb want 8e1d67e24f80|1772352120139 got 87e6efb68e03|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-15 (run 3): failed=0 differs data/big.mdb want 4db813cd57e3|1772352180140 got 87e6efb68e03|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-18 (run 4): failed=0 differs data/big.mdb want 4bd122300334|1772352240141 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-21 (run 5): failed=0 differs data/big.mdb want 6d2139b2309b|1772352300142 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-25 (run 6): failed=0 differs data/big.mdb want 36e282e82292|1772352360143 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-28 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-31 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-35 (run 9): failed=0 differs data/big.mdb want e671bb2c33c0|1772352540146 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-38 (run 10): failed=0 differs data/big.mdb want f283c41f0c0e|1772352600147 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-41 (run 11): failed=0 differs data/big.mdb want 00d5df9b135a|1772352660148 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-44 (run 12): failed=0 differs data/big.mdb want 58497cb1137c|1772352720149 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-47 (run 13): failed=0 differs data/big.mdb want 2de368ba8f72|1772352780150 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-50 (run 14): failed=0 differs data/big.mdb want ec2f1cb11fb7|1772352840151 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       chain-I7s point 2026-10-07-03-03-54 (run 15): failed=0 differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:03.68]       Stack Trace:
+[xUnit.net 00:01:03.68]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:01:03.68]            at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:01:03.68]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:01:03.68]       Output:
+[xUnit.net 00:01:03.68]         edits: 1:insert 777 @3843823→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4938620→8336402, 5:same size, one byte @2924750→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2953775→6291799, 11:insert 777 @1910790→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @781089→6239576, 15:same size, one byte @105586→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4588420→6291799, 21:insert 777 @5472906→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @4316099→6239576, 25:same size, one byte @1137569→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @563307→6291799, 31:insert 777 @2361312→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1933061→6239576, 35:same size, one byte @1893916→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @897919→6291799, 41:insert 777 @5718775→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2348556→6239576, 45:same size, one byte @2968595→6239576
+[xUnit.net 00:01:03.68]         longest chain 7 objects; first run sent 8394417, largest insert-run sent 1826570
+[xUnit.net 00:01:03.68]         chain-I7s: restored 46 points, 44 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 7, shrinkToZero: True) [19 s]
+  Error Message:
+   44 of 46 points differ from the source at their run:
+chain-I7s point 2026-10-07-03-03-09 (run 1): failed=0 differs data/big.mdb want cd1a574fca70|1772352060138 got 87e6efb68e03|1772352000137
+chain-I7s point 2026-10-07-03-03-12 (run 2): failed=0 differs data/big.mdb want 8e1d67e24f80|1772352120139 got 87e6efb68e03|1772352000137
+chain-I7s point 2026-10-07-03-03-15 (run 3): failed=0 differs data/big.mdb want 4db813cd57e3|1772352180140 got 87e6efb68e03|1772352000137
+chain-I7s point 2026-10-07-03-03-18 (run 4): failed=0 differs data/big.mdb want 4bd122300334|1772352240141 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-21 (run 5): failed=0 differs data/big.mdb want 6d2139b2309b|1772352300142 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-25 (run 6): failed=0 differs data/big.mdb want 36e282e82292|1772352360143 got 87e6efb68e03|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-28 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-31 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-35 (run 9): failed=0 differs data/big.mdb want e671bb2c33c0|1772352540146 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-38 (run 10): failed=0 differs data/big.mdb want f283c41f0c0e|1772352600147 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-41 (run 11): failed=0 differs data/big.mdb want 00d5df9b135a|1772352660148 got d819506030d4|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-44 (run 12): failed=0 differs data/big.mdb want 58497cb1137c|1772352720149 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-47 (run 13): failed=0 differs data/big.mdb want 2de368ba8f72|1772352780150 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-50 (run 14): failed=0 differs data/big.mdb want ec2f1cb11fb7|1772352840151 got d819506030d4|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I7s point 2026-10-07-03-03-54 (run 15): failed=0 differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ edits: 1:insert 777 @3843823→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4938620→8336402, 5:same size, one byte @2924750→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2953775→6291799, 11:insert 777 @1910790→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @781089→6239576, 15:same size, one byte @105586→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4588420→6291799, 21:insert 777 @5472906→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @4316099→6239576, 25:same size, one byte @1137569→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @563307→6291799, 31:insert 777 @2361312→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @1933061→6239576, 35:same size, one byte @1893916→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @897919→6291799, 41:insert 777 @5718775→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2348556→6239576, 45:same size, one byte @2968595→6239576
+ longest chain 7 objects; first run sent 8394417, largest insert-run sent 1826570
+ chain-I7s: restored 46 points, 44 bad
+
+
+[xUnit.net 00:01:52.16]       45 of 46 points differ from the source at their run:
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-28 (run 1): failed=0 differs data/big.mdb want 61035e565cf7|1772352060138 got 4d6883d19377|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-31 (run 2): failed=0 differs data/big.mdb want 59b84901fa7c|1772352120139 got 4d6883d19377|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-34 (run 3): failed=0 differs data/big.mdb want 03648bcd3318|1772352180140 got 4d6883d19377|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-38 (run 4): failed=0 differs data/big.mdb want 4a5ec4468091|1772352240141 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-41 (run 5): failed=0 differs data/big.mdb want 2ac55123699c|1772352300142 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-44 (run 6): failed=0 differs data/big.mdb want 411549c5d72b|1772352360143 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-48 (run 7): failed=0 differs data/big.mdb want 5c0bb5e415a7|1772352420144 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-51 (run 8): failed=0 differs data/big.mdb want 0fed6010168d|1772352480145 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-55 (run 9): failed=0 differs data/big.mdb want 04874169d87b|1772352540146 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-03-58 (run 10): failed=0 differs data/big.mdb want c32240298e23|1772352600147 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-04-01 (run 11): failed=0 differs data/big.mdb want bcf168b72291|1772352660148 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-04-05 (run 12): failed=0 differs data/big.mdb want 4847388f5a91|1772352720149 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-04-08 (run 13): failed=0 differs data/big.mdb want ac9c8f3077ae|1772352780150 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-04-12 (run 14): failed=0 differs data/big.mdb want 961f1681834d|1772352840151 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       chain-D100 point 2026-10-07-03-04-15 (run 15): failed=0 differs data/big.mdb want 76a8fcf09c04|1772352900152 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:01:52.17]       Stack Trace:
+[xUnit.net 00:01:52.17]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:01:52.17]            at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:01:52.17]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:01:52.17]       Output:
+[xUnit.net 00:01:52.17]         edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @3310166→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2477190→6291799, 11:insert 777 @3781446→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @4949633→6239576, 15:same size, one byte @2254641→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @796238→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @1777290→6291799, 21:insert 777 @2586533→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @581042→6239576, 25:same size, one byte @1622693→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @5138086→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @4871348→6291799, 31:insert 777 @3158975→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @3275718→6239576, 35:same size, one byte @5610406→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @4082968→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @4593916→6291799, 41:insert 777 @5300511→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2419758→6239576, 45:same size, one byte @3512372→6239576
+[xUnit.net 00:01:52.17]         longest chain 46 objects; first run sent 8394598, largest insert-run sent 6294461
+[xUnit.net 00:01:52.17]         chain-D100: restored 46 points, 45 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: False) [48 s]
+  Error Message:
+   45 of 46 points differ from the source at their run:
+chain-D100 point 2026-10-07-03-03-28 (run 1): failed=0 differs data/big.mdb want 61035e565cf7|1772352060138 got 4d6883d19377|1772352000137
+chain-D100 point 2026-10-07-03-03-31 (run 2): failed=0 differs data/big.mdb want 59b84901fa7c|1772352120139 got 4d6883d19377|1772352000137
+chain-D100 point 2026-10-07-03-03-34 (run 3): failed=0 differs data/big.mdb want 03648bcd3318|1772352180140 got 4d6883d19377|1772352000137
+chain-D100 point 2026-10-07-03-03-38 (run 4): failed=0 differs data/big.mdb want 4a5ec4468091|1772352240141 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-41 (run 5): failed=0 differs data/big.mdb want 2ac55123699c|1772352300142 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-44 (run 6): failed=0 differs data/big.mdb want 411549c5d72b|1772352360143 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-48 (run 7): failed=0 differs data/big.mdb want 5c0bb5e415a7|1772352420144 got 4d6883d19377|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-51 (run 8): failed=0 differs data/big.mdb want 0fed6010168d|1772352480145 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-55 (run 9): failed=0 differs data/big.mdb want 04874169d87b|1772352540146 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-03-58 (run 10): failed=0 differs data/big.mdb want c32240298e23|1772352600147 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-04-01 (run 11): failed=0 differs data/big.mdb want bcf168b72291|1772352660148 got 4d6883d19377|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-04-05 (run 12): failed=0 differs data/big.mdb want 4847388f5a91|1772352720149 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-04-08 (run 13): failed=0 differs data/big.mdb want ac9c8f3077ae|1772352780150 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-04-12 (run 14): failed=0 differs data/big.mdb want 961f1681834d|1772352840151 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-D100 point 2026-10-07-03-04-15 (run 15): failed=0 differs data/big.mdb want 76a8fcf09c04|1772352900152 got 4d6883d19377|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ edits: 1:insert 777 @5714607→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @4143011→8336402, 5:same size, one byte @1260615→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @3310166→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @2477190→6291799, 11:insert 777 @3781446→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @4949633→6239576, 15:same size, one byte @2254641→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @796238→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @1777290→6291799, 21:insert 777 @2586533→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @581042→6239576, 25:same size, one byte @1622693→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @5138086→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @4871348→6291799, 31:insert 777 @3158975→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @3275718→6239576, 35:same size, one byte @5610406→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @4082968→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @4593916→6291799, 41:insert 777 @5300511→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @2419758→6239576, 45:same size, one byte @3512372→6239576
+ longest chain 46 objects; first run sent 8394598, largest insert-run sent 6294461
+ chain-D100: restored 46 points, 45 bad
+
+
+[xUnit.net 00:02:12.39]       45 of 46 points differ from the source at their run:
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-16 (run 1): failed=0 differs data/big.mdb want ac96762982a1|1772352060138 got cc1a31638199|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-20 (run 2): failed=0 differs data/big.mdb want 8e494ee61aad|1772352120139 got cc1a31638199|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-23 (run 3): failed=0 differs data/big.mdb want 35494dc8a6b3|1772352180140 got cc1a31638199|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-26 (run 4): failed=0 differs data/big.mdb want 63d4d52ec715|1772352240141 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-29 (run 5): failed=0 differs data/big.mdb want ba3f90d20bce|1772352300142 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-33 (run 6): failed=0 differs data/big.mdb want da5c87a14b7a|1772352360143 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-36 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-39 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-42 (run 9): failed=0 differs data/big.mdb want 1eb36c1f2fc3|1772352540146 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-46 (run 10): failed=0 differs data/big.mdb want 05ab061ebb42|1772352600147 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-49 (run 11): failed=0 differs data/big.mdb want fe6bad0d6bc4|1772352660148 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-52 (run 12): failed=0 differs data/big.mdb want a168bb5d2fc4|1772352720149 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-55 (run 13): failed=0 differs data/big.mdb want c13354037d95|1772352780150 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-04-58 (run 14): failed=0 differs data/big.mdb want 5b317420a4aa|1772352840151 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       chain-I100s point 2026-10-07-03-05-01 (run 15): failed=0 differs data/big.mdb want ef1c5420ad04|1772352900152 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:12.39]       Stack Trace:
+[xUnit.net 00:02:12.39]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:02:12.39]            at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:02:12.39]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:02:12.39]       Output:
+[xUnit.net 00:02:12.39]         edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5282970→6291799, 11:insert 777 @4515833→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @5237195→6239576, 15:same size, one byte @1559523→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4152925→6291799, 21:insert 777 @4719077→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @1671181→6239576, 25:same size, one byte @1994465→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @5229551→6291799, 31:insert 777 @2463750→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @2472704→6239576, 35:same size, one byte @5407150→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @3283999→6291799, 41:insert 777 @2252846→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4423615→6239576, 45:same size, one byte @5292649→6239576
+[xUnit.net 00:02:12.39]         longest chain 12 objects; first run sent 8394433, largest insert-run sent 1669450
+[xUnit.net 00:02:12.39]         chain-I100s: restored 46 points, 45 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: True) [20 s]
+  Error Message:
+   45 of 46 points differ from the source at their run:
+chain-I100s point 2026-10-07-03-04-16 (run 1): failed=0 differs data/big.mdb want ac96762982a1|1772352060138 got cc1a31638199|1772352000137
+chain-I100s point 2026-10-07-03-04-20 (run 2): failed=0 differs data/big.mdb want 8e494ee61aad|1772352120139 got cc1a31638199|1772352000137
+chain-I100s point 2026-10-07-03-04-23 (run 3): failed=0 differs data/big.mdb want 35494dc8a6b3|1772352180140 got cc1a31638199|1772352000137
+chain-I100s point 2026-10-07-03-04-26 (run 4): failed=0 differs data/big.mdb want 63d4d52ec715|1772352240141 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-29 (run 5): failed=0 differs data/big.mdb want ba3f90d20bce|1772352300142 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-33 (run 6): failed=0 differs data/big.mdb want da5c87a14b7a|1772352360143 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-36 (run 7): failed=0 differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-39 (run 8): failed=0 differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-42 (run 9): failed=0 differs data/big.mdb want 1eb36c1f2fc3|1772352540146 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-46 (run 10): failed=0 differs data/big.mdb want 05ab061ebb42|1772352600147 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-49 (run 11): failed=0 differs data/big.mdb want fe6bad0d6bc4|1772352660148 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-52 (run 12): failed=0 differs data/big.mdb want a168bb5d2fc4|1772352720149 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-55 (run 13): failed=0 differs data/big.mdb want c13354037d95|1772352780150 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-04-58 (run 14): failed=0 differs data/big.mdb want 5b317420a4aa|1772352840151 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100s point 2026-10-07-03-05-01 (run 15): failed=0 differs data/big.mdb want ef1c5420ad04|1772352900152 got 8650afe3fe3b|1772352480145; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:shrink to 0→0, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @5282970→6291799, 11:insert 777 @4515833→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @5237195→6239576, 15:same size, one byte @1559523→6239576, 16:same size, all new bytes→6239576, 17:shrink to 0→0, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @4152925→6291799, 21:insert 777 @4719077→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @1671181→6239576, 25:same size, one byte @1994465→6239576, 26:same size, all new bytes→6239576, 27:shrink to 0→0, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @5229551→6291799, 31:insert 777 @2463750→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @2472704→6239576, 35:same size, one byte @5407150→6239576, 36:same size, all new bytes→6239576, 37:shrink to 0→0, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @3283999→6291799, 41:insert 777 @2252846→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4423615→6239576, 45:same size, one byte @5292649→6239576
+ longest chain 12 objects; first run sent 8394433, largest insert-run sent 1669450
+ chain-I100s: restored 46 points, 45 bad
+
+
+[xUnit.net 00:02:53.44]       45 of 46 points differ from the source at their run:
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-37 (run 1): failed=0 differs data/big.mdb want ac96762982a1|1772352060138 got cc1a31638199|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-40 (run 2): failed=0 differs data/big.mdb want 8e494ee61aad|1772352120139 got cc1a31638199|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-43 (run 3): failed=0 differs data/big.mdb want 35494dc8a6b3|1772352180140 got cc1a31638199|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-46 (run 4): failed=0 differs data/big.mdb want 63d4d52ec715|1772352240141 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-49 (run 5): failed=0 differs data/big.mdb want ba3f90d20bce|1772352300142 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-53 (run 6): failed=0 differs data/big.mdb want da5c87a14b7a|1772352360143 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-56 (run 7): failed=0 differs data/big.mdb want bbae04c2d90b|1772352420144 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-04-59 (run 8): failed=0 differs data/big.mdb want f73452d27a99|1772352480145 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-03 (run 9): failed=0 differs data/big.mdb want d683ebde79a3|1772352540146 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-06 (run 10): failed=0 differs data/big.mdb want 64e00d842fd9|1772352600147 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-09 (run 11): failed=0 differs data/big.mdb want 58b92bd1f89b|1772352660148 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-12 (run 12): failed=0 differs data/big.mdb want 92754f391126|1772352720149 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-15 (run 13): failed=0 differs data/big.mdb want 18a253126bbf|1772352780150 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-19 (run 14): failed=0 differs data/big.mdb want 104fb07bef7f|1772352840151 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       chain-I100 point 2026-10-07-03-05-22 (run 15): failed=0 differs data/big.mdb want 143f16bbff3e|1772352900152 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+[xUnit.net 00:02:53.44]       Stack Trace:
+[xUnit.net 00:02:53.44]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(183,0): at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero)
+[xUnit.net 00:02:53.44]            at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:02:53.44]            at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:02:53.44]       Output:
+[xUnit.net 00:02:53.44]         edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @6051257→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @6138816→6291799, 11:insert 777 @3227296→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @6197241→6239576, 15:same size, one byte @2352980→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @1350129→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @6018781→6291799, 21:insert 777 @5580177→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @5708437→6239576, 25:same size, one byte @2026162→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @2162561→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1247233→6291799, 31:insert 777 @3255077→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @88238→6239576, 35:same size, one byte @1777539→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @1945477→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @373846→6291799, 41:insert 777 @5942383→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4487642→6239576, 45:same size, one byte @3750577→6239576
+[xUnit.net 00:02:53.44]         longest chain 46 objects; first run sent 8394433, largest insert-run sent 1444378
+[xUnit.net 00:02:53.44]         chain-I100: restored 46 points, 45 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: False) [41 s]
+  Error Message:
+   45 of 46 points differ from the source at their run:
+chain-I100 point 2026-10-07-03-04-37 (run 1): failed=0 differs data/big.mdb want ac96762982a1|1772352060138 got cc1a31638199|1772352000137
+chain-I100 point 2026-10-07-03-04-40 (run 2): failed=0 differs data/big.mdb want 8e494ee61aad|1772352120139 got cc1a31638199|1772352000137
+chain-I100 point 2026-10-07-03-04-43 (run 3): failed=0 differs data/big.mdb want 35494dc8a6b3|1772352180140 got cc1a31638199|1772352000137
+chain-I100 point 2026-10-07-03-04-46 (run 4): failed=0 differs data/big.mdb want 63d4d52ec715|1772352240141 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-04-49 (run 5): failed=0 differs data/big.mdb want ba3f90d20bce|1772352300142 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-04-53 (run 6): failed=0 differs data/big.mdb want da5c87a14b7a|1772352360143 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-04-56 (run 7): failed=0 differs data/big.mdb want bbae04c2d90b|1772352420144 got cc1a31638199|1772352000137; differs data/zeros.img want 58441ac5ea23|1772352240141 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-04-59 (run 8): failed=0 differs data/big.mdb want f73452d27a99|1772352480145 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-03 (run 9): failed=0 differs data/big.mdb want d683ebde79a3|1772352540146 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-06 (run 10): failed=0 differs data/big.mdb want 64e00d842fd9|1772352600147 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-09 (run 11): failed=0 differs data/big.mdb want 58b92bd1f89b|1772352660148 got cc1a31638199|1772352000137; differs data/zeros.img want 3cb454222642|1772352480145 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-12 (run 12): failed=0 differs data/big.mdb want 92754f391126|1772352720149 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-15 (run 13): failed=0 differs data/big.mdb want 18a253126bbf|1772352780150 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-19 (run 14): failed=0 differs data/big.mdb want 104fb07bef7f|1772352840151 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+chain-I100 point 2026-10-07-03-05-22 (run 15): failed=0 differs data/big.mdb want 143f16bbff3e|1772352900152 got cc1a31638199|1772352000137; differs data/zeros.img want 470610150847|1772352720149 got bbd05cf6097a|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(String deltaType, Int32 maxDeltaNo, Boolean shrinkToZero) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 183
+   at InvokeStub_NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ edits: 1:insert 777 @5630251→8389402, 2:append 50000→8439402, 3:truncate -100000→8339402, 4:cut 3000 @2676317→8336402, 5:same size, one byte @5807922→8336402, 6:same size, all new bytes→8336402, 7:insert 777 @6051257→8337179, 8:grow from 0 to 6MB→6291789, 9:prepend 10→6291799, 10:overwrite 1000 @6138816→6291799, 11:insert 777 @3227296→6292576, 12:append 50000→6342576, 13:truncate -100000→6242576, 14:cut 3000 @6197241→6239576, 15:same size, one byte @2352980→6239576, 16:same size, all new bytes→6239576, 17:insert 777 @1350129→6240353, 18:grow from 0 to 6MB→6291789, 19:prepend 10→6291799, 20:overwrite 1000 @6018781→6291799, 21:insert 777 @5580177→6292576, 22:append 50000→6342576, 23:truncate -100000→6242576, 24:cut 3000 @5708437→6239576, 25:same size, one byte @2026162→6239576, 26:same size, all new bytes→6239576, 27:insert 777 @2162561→6240353, 28:grow from 0 to 6MB→6291789, 29:prepend 10→6291799, 30:overwrite 1000 @1247233→6291799, 31:insert 777 @3255077→6292576, 32:append 50000→6342576, 33:truncate -100000→6242576, 34:cut 3000 @88238→6239576, 35:same size, one byte @1777539→6239576, 36:same size, all new bytes→6239576, 37:insert 777 @1945477→6240353, 38:grow from 0 to 6MB→6291789, 39:prepend 10→6291799, 40:overwrite 1000 @373846→6291799, 41:insert 777 @5942383→6292576, 42:append 50000→6342576, 43:truncate -100000→6242576, 44:cut 3000 @4487642→6239576, 45:same size, one byte @3750577→6239576
+ longest chain 46 objects; first run sent 8394433, largest insert-run sent 1444378
+ chain-I100: restored 46 points, 45 bad
+
+
+[xUnit.net 00:02:56.79]       names point 2026-10-07-03-05-17 (run 1): failed=0 differs big.vhd want 4c454841ed06|1772352060138 got 3440141ea6a9|1772352000137
+[xUnit.net 00:02:56.79]       names point 2026-10-07-03-05-27 (run 4): failed=0 differs big.vhd want dbe8338e2743|1772352240141 got 3440141ea6a9|1772352000137
+[xUnit.net 00:02:56.79]       names point 2026-10-07-03-05-30 (run 5): failed=0 differs big.vhd want dbe8338e2743|1772352240141 got 3440141ea6a9|1772352000137
+[xUnit.net 00:02:56.79]       Stack Trace:
+[xUnit.net 00:02:56.79]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(252,0): at OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion()
+[xUnit.net 00:02:56.79]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:02:56.79]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:02:56.79]       Output:
+[xUnit.net 00:02:56.79]         names: restored 6 points, 3 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion [3 s]
+  Error Message:
+   names point 2026-10-07-03-05-17 (run 1): failed=0 differs big.vhd want 4c454841ed06|1772352060138 got 3440141ea6a9|1772352000137
+names point 2026-10-07-03-05-27 (run 4): failed=0 differs big.vhd want dbe8338e2743|1772352240141 got 3440141ea6a9|1772352000137
+names point 2026-10-07-03-05-30 (run 5): failed=0 differs big.vhd want dbe8338e2743|1772352240141 got 3440141ea6a9|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 252
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ names: restored 6 points, 3 bad
+
+
+[xUnit.net 00:03:09.36]       cdc point 2026-10-07-03-05-24 (run 1): failed=0 differs rep/repeat.bin want 6704adb7edd9|1772352060138 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+[xUnit.net 00:03:09.37]       cdc point 2026-10-07-03-05-28 (run 2): failed=0 differs rep/repeat.bin want 2ea87774edcc|1772352120139 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs same/copy5.dat want 2ea87774edcc|1772352120139 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+[xUnit.net 00:03:09.37]       cdc point 2026-10-07-03-05-32 (run 3): failed=0 differs rep/repeat.bin want 1b0804a74fee|1772352180140 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs same/copy5.dat want 2ea87774edcc|1772352120139 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+[xUnit.net 00:03:09.37]       Stack Trace:
+[xUnit.net 00:03:09.37]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(407,0): at OnlineBackup.Tests.NightP_RestoreChainTests.ChunkerEdges_EveryPointRestoresIdentical()
+[xUnit.net 00:03:09.37]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:03:09.37]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:03:09.37]       Output:
+[xUnit.net 00:03:09.37]         run 0: new 26 upd 0 sent 56761390
+[xUnit.net 00:03:09.37]         run 1: new 0 upd 5 sent 5034327
+[xUnit.net 00:03:09.37]         run 2: new 0 upd 4 sent 6774673
+[xUnit.net 00:03:09.37]         run 3: new 0 upd 2 sent 3508110
+[xUnit.net 00:03:09.37]         cdc: restored 4 points, 3 bad
+[xUnit.net 00:03:09.37]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.ChunkerEdges_EveryPointRestoresIdentical [12 s]
+  Error Message:
+   cdc point 2026-10-07-03-05-24 (run 1): failed=0 differs rep/repeat.bin want 6704adb7edd9|1772352060138 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+cdc point 2026-10-07-03-05-28 (run 2): failed=0 differs rep/repeat.bin want 2ea87774edcc|1772352120139 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs same/copy5.dat want 2ea87774edcc|1772352120139 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+cdc point 2026-10-07-03-05-32 (run 3): failed=0 differs rep/repeat.bin want 1b0804a74fee|1772352180140 got 7e661119561c|1772352000137; differs same/copy3.dat want 7ba9a4a22cc1|1772352060138 got c3e0d54318f1|1772352000137; differs same/copy5.dat want 2ea87774edcc|1772352120139 got c3e0d54318f1|1772352000137; differs size/8388607.bin want 7e8b3422fe4c|1772352060138 got bfc49cd1269f|1772352000137; differs size/8388608.bin want 981f009a3548|1772352060138 got a1cb3ad14965|1772352000137; differs zero/z20m.bin want 1c7dd1d8f296|1772352060138 got 346477655324|1772352000137
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.ChunkerEdges_EveryPointRestoresIdentical() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 407
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ run 0: new 26 upd 0 sent 56761390
+ run 1: new 0 upd 5 sent 5034327
+ run 2: new 0 upd 4 sent 6774673
+ run 3: new 0 upd 2 sent 3508110
+ cdc: restored 4 points, 3 bad
+
+
+
+Total tests: 8
+     Failed: 8
+ Total time: 3.1664 Minutes
+[xUnit.net 00:00:22.39]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 7, shrinkToZero: True) [FAIL]
+[xUnit.net 00:00:44.40]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: True) [FAIL]
+[xUnit.net 00:01:03.68]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 7, shrinkToZero: True) [FAIL]
+[xUnit.net 00:01:52.16]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "D", maxDeltaNo: 100, shrinkToZero: False) [FAIL]
+[xUnit.net 00:02:12.39]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: True) [FAIL]
+[xUnit.net 00:02:53.44]     OnlineBackup.Tests.NightP_RestoreChainTests.LongChain_EveryPointRestoresIdentical(deltaType: "I", maxDeltaNo: 100, shrinkToZero: False) [FAIL]
+[xUnit.net 00:02:56.79]     OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion [FAIL]
+[xUnit.net 00:03:09.36]     OnlineBackup.Tests.NightP_RestoreChainTests.ChunkerEdges_EveryPointRestoresIdentical [FAIL]
+Test Run Failed.

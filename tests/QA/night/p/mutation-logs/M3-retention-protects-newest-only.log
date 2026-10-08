@@ -1,0 +1,100 @@
+MUTATION M3-retention-protects-newest-only
+FILTER FullyQualifiedName~NightP_RestoreChainTests.RetentionWithGaps
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index d4c7ebb..0e986bf 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -860,7 +860,7 @@ namespace OnlineBackup.Server
+                     foreach (var folder in Query(c, "SELECT removed, MIN(job) FROM objects WHERE removed IS NOT NULL GROUP BY removed").ToList())
+                     {
+                         string removed = (string)folder[0], minCreated = (string)folder[1];
+-                        bool needed = kept.Any(p => string.CompareOrdinal(p, minCreated) >= 0 && string.CompareOrdinal(p, removed) < 0);
++                        bool needed = kept.Skip(kept.Count - 1).Any(p => string.CompareOrdinal(p, minCreated) >= 0 && string.CompareOrdinal(p, removed) < 0);
+                         if (needed) continue;
+                         foreach (var r in Query(c, "SELECT loc,size FROM objects WHERE removed=$0", removed))
+                         {
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.11]   Discovering: Tests
+[xUnit.net 00:00:00.22]   Discovered:  Tests
+[xUnit.net 00:00:00.23]   Starting:    Tests
+[xUnit.net 00:00:09.58]       ret1-I point 2026-10-17-03-06-09 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+[xUnit.net 00:00:09.58]       ret1-I point 2026-10-24-03-06-11 (run 16): failed=0 missing small.txt
+[xUnit.net 00:00:09.58]       ret2-I point 2026-10-17-03-06-09 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+[xUnit.net 00:00:09.58]       ret2-I point 2026-10-24-03-06-11 (run 16): failed=0 missing small.txt
+[xUnit.net 00:00:09.58]       Stack Trace:
+[xUnit.net 00:00:09.58]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(478,0): at OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(String deltaType)
+[xUnit.net 00:00:09.58]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:09.58]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+[xUnit.net 00:00:09.58]       Output:
+[xUnit.net 00:00:09.58]         runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+[xUnit.net 00:00:09.58]         maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030612.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">40</f><f n="freed">52842951</f><f n="login">retp</f><f n="set">1791342366775</f><l n="expired"><i><f n="id">2026-10-08-03-06-06</f></i><i><f n="id">2026-10-09-03-06-07</f></i><i><f n="id">2026-10-10-03-06-07</f></i><i><f n="id">2026-10-11-03-06-07</f></i><i><f n="id">2026-10-12-03-06-08</f></i><i><f n="id">2026-10-13-03-06-08</f></i><i><f n="id">2026-10-14-03-06-08</f></i><i><f n="id">2026-10-15-03-06-09</f></i><i><f n="id">2026-10-16-03-06-09</f></i>
+[xUnit.net 00:00:09.58]         ret1-I: restored 3 points, 2 bad
+[xUnit.net 00:00:09.58]         ret2-I: restored 3 points, 2 bad
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "I") [9 s]
+  Error Message:
+   ret1-I point 2026-10-17-03-06-09 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+ret1-I point 2026-10-24-03-06-11 (run 16): failed=0 missing small.txt
+ret2-I point 2026-10-17-03-06-09 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+ret2-I point 2026-10-24-03-06-11 (run 16): failed=0 missing small.txt
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(String deltaType) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 478
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)
+  Standard Output Messages:
+ runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+ maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030612.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">40</f><f n="freed">52842951</f><f n="login">retp</f><f n="set">1791342366775</f><l n="expired"><i><f n="id">2026-10-08-03-06-06</f></i><i><f n="id">2026-10-09-03-06-07</f></i><i><f n="id">2026-10-10-03-06-07</f></i><i><f n="id">2026-10-11-03-06-07</f></i><i><f n="id">2026-10-12-03-06-08</f></i><i><f n="id">2026-10-13-03-06-08</f></i><i><f n="id">2026-10-14-03-06-08</f></i><i><f n="id">2026-10-15-03-06-09</f></i><i><f n="id">2026-10-16-03-06-09</f></i>
+ ret1-I: restored 3 points, 2 bad
+ ret2-I: restored 3 points, 2 bad
+
+
+[xUnit.net 00:00:19.03]       ret1-D point 2026-10-17-03-06-19 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+[xUnit.net 00:00:19.03]       ret1-D point 2026-10-24-03-06-21 (run 16): failed=0 missing small.txt
+[xUnit.net 00:00:19.03]       ret2-D point 2026-10-17-03-06-19 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+[xUnit.net 00:00:19.03]       ret2-D point 2026-10-24-03-06-21 (run 16): failed=0 missing small.txt
+[xUnit.net 00:00:19.03]       Stack Trace:
+[xUnit.net 00:00:19.03]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(478,0): at OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(String deltaType)
+[xUnit.net 00:00:19.03]            at InvokeStub_NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(Object, Span`1)
+[xUnit.net 00:00:19.03]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:19.03]       Output:
+[xUnit.net 00:00:19.03]         runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+[xUnit.net 00:00:19.03]         maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030621.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">40</f><f n="freed">70283845</f><f n="login">retp</f><f n="set">1791342375826</f><l n="expired"><i><f n="id">2026-10-08-03-06-15</f></i><i><f n="id">2026-10-09-03-06-16</f></i><i><f n="id">2026-10-10-03-06-16</f></i><i><f n="id">2026-10-11-03-06-16</f></i><i><f n="id">2026-10-12-03-06-17</f></i><i><f n="id">2026-10-13-03-06-17</f></i><i><f n="id">2026-10-14-03-06-17</f></i><i><f n="id">2026-10-15-03-06-18</f></i><i><f n="id">2026-10-16-03-06-18</f></i>
+[xUnit.net 00:00:19.03]         ret1-D: restored 3 points, 2 bad
+[xUnit.net 00:00:19.03]         ret2-D: restored 3 points, 2 bad
+[xUnit.net 00:00:19.04]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "D") [9 s]
+  Error Message:
+   ret1-D point 2026-10-17-03-06-19 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+ret1-D point 2026-10-24-03-06-21 (run 16): failed=0 missing small.txt
+ret2-D point 2026-10-17-03-06-19 (run 9): failed=0 missing b/big2.bak; missing big.pst; missing small.txt
+ret2-D point 2026-10-24-03-06-21 (run 16): failed=0 missing small.txt
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(String deltaType) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 478
+   at InvokeStub_NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+  Standard Output Messages:
+ runs 10-08,10-09,10-10,10-11,10-12,10-13,10-14,10-15,10-16,10-17,10-18,10-19,10-20,10-21,10-22,10-23,10-24,10-25; policy keeps 10-17,10-24,10-25
+ maintenance: <m><f n="recycleErased">0</f><f n="settingsBackup">config-20261025-030621.zip</f><l n="sets"><i><f n="expiredPoints">15</f><f n="deletedObjects">40</f><f n="freed">70283845</f><f n="login">retp</f><f n="set">1791342375826</f><l n="expired"><i><f n="id">2026-10-08-03-06-15</f></i><i><f n="id">2026-10-09-03-06-16</f></i><i><f n="id">2026-10-10-03-06-16</f></i><i><f n="id">2026-10-11-03-06-16</f></i><i><f n="id">2026-10-12-03-06-17</f></i><i><f n="id">2026-10-13-03-06-17</f></i><i><f n="id">2026-10-14-03-06-17</f></i><i><f n="id">2026-10-15-03-06-18</f></i><i><f n="id">2026-10-16-03-06-18</f></i>
+ ret1-D: restored 3 points, 2 bad
+ ret2-D: restored 3 points, 2 bad
+
+
+
+Total tests: 2
+     Failed: 2
+ Total time: 19.6345 Seconds
+[xUnit.net 00:00:09.58]     OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "I") [FAIL]
+[xUnit.net 00:00:19.03]     OnlineBackup.Tests.NightP_RestoreChainTests.RetentionWithGaps_EveryKeptPointRestoresIdentical(deltaType: "D") [FAIL]
+Test Run Failed.

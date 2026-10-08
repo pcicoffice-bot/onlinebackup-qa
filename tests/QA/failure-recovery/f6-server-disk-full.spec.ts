@@ -4,14 +4,14 @@
 import { test, expect } from '../lib/fixtures';
 import { World, goldenDataset, manifest, compare, restoredPath } from '../lib/world';
 import { execSync } from 'child_process';
+import { smallDisk, unmount } from '../lib/fault';
 import * as fs from 'fs';
 import * as path from 'path';
 
 test('F6 server disk full mid-backup → clear failure, no lock, space given back → smaller backup succeeds and restores identical', async ({ evidence }, info) => {
   const world = new World();
   world.usersDir = path.join(world.dir, 'small-disk'); fs.mkdirSync(world.usersDir);
-  try { execSync('mount -t tmpfs -o size=12m tmpfs "' + world.usersDir + '"'); }
-  catch { test.skip(true, 'NOT TESTED: this machine does not allow mounting a small disk'); }
+  if (!smallDisk(world.usersDir, 12)) test.skip(true, 'NOT TESTED: this machine does not allow mounting a small disk (neither root nor passwordless sudo)');
   try {
     await world.start();
     world.addCustomer('qa-f6');
@@ -37,7 +37,7 @@ test('F6 server disk full mid-backup → clear failure, no lock, space given bac
     expect(compare(now, manifest(restoredPath(target, src)))).toEqual([]);
   } finally {
     await world.stop();
-    try { execSync('umount "' + world.usersDir + '"'); } catch { }
+    unmount(world.usersDir);
     if (info.status === info.expectedStatus) fs.rmSync(world.dir, { recursive: true, force: true });
   }
 });

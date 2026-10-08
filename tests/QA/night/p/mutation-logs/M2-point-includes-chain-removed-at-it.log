@@ -1,0 +1,63 @@
+MUTATION M2-point-includes-chain-removed-at-it
+FILTER FullyQualifiedName~NightP_RestoreChainTests.NamesReused
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index d4c7ebb..648d681 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -600,7 +600,7 @@ namespace OnlineBackup.Server
+             using (var c = Open())
+             {
+                 if (Query(c, "SELECT 1 FROM jobs WHERE id=$0 AND status='OK' AND expired=0", point).Count == 0) throw new ApiException(404, "NO_POINT", "The restore point does not exist or has expired.");
+-                var rows = Query(c, "SELECT rel,seq,kind,job,loc,size,orig,mtime,sha,enc,perm FROM objects WHERE job<=$0 AND (removed IS NULL OR removed>$0) ORDER BY rel, seq", point);
++                var rows = Query(c, "SELECT rel,seq,kind,job,loc,size,orig,mtime,sha,enc,perm FROM objects WHERE job<=$0 AND (removed IS NULL OR removed>=$0) ORDER BY rel, seq", point);
+                 // B-4: versions lost to damage that this point held (a later full copy of the file replaces them)
+                 var lost = Query(c, "SELECT rel,job,enc,orig,mtime FROM lost WHERE job<=$0 AND (removed IS NULL OR removed>$0)", point)
+                     .GroupBy(r => (string)r[0]).ToDictionary(g => g.Key, g => g.ToList());
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.12]   Discovering: Tests
+[xUnit.net 00:00:00.23]   Discovered:  Tests
+[xUnit.net 00:00:00.23]   Starting:    Tests
+[xUnit.net 00:00:04.77]       names point 2026-10-07-03-05-53 (run 1): failed=2 missing swap2/inner.txt; extra a/x.txt; extra deep/er/f.bin; extra doc.txt; extra swap2 log: 1791342426254,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap2/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap2' already exists.,,,0 / 1791342426279,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap' already exists.,,,0
+[xUnit.net 00:00:04.77]       names point 2026-10-07-03-05-56 (run 2): failed=1 missing swap/inner.txt; extra big.vhd; extra swap log: 1791342426466,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-56/tmp/obtest-86c33602ca/src/swap/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-56/tmp/obtest-86c33602ca/src/swap' already exists.,,,0
+[xUnit.net 00:00:04.77]       names point 2026-10-07-03-05-59 (run 3): failed=1  log: 1791342426589,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-59/tmp/obtest-86c33602ca/src/swap2/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-59/tmp/obtest-86c33602ca/src/swap2' already exists.,,,0
+[xUnit.net 00:00:04.78]       names point 2026-10-07-03-06-02 (run 4): failed=0 extra a/x2.txt
+[xUnit.net 00:00:04.78]       Stack Trace:
+[xUnit.net 00:00:04.78]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(252,0): at OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion()
+[xUnit.net 00:00:04.78]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:04.78]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:04.78]       Output:
+[xUnit.net 00:00:04.78]         names: restored 6 points, 4 bad
+[xUnit.net 00:00:04.79]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion [4 s]
+  Error Message:
+   names point 2026-10-07-03-05-53 (run 1): failed=2 missing swap2/inner.txt; extra a/x.txt; extra deep/er/f.bin; extra doc.txt; extra swap2 log: 1791342426254,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap2/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap2' already exists.,,,0 / 1791342426279,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-53/tmp/obtest-86c33602ca/src/swap' already exists.,,,0
+names point 2026-10-07-03-05-56 (run 2): failed=1 missing swap/inner.txt; extra big.vhd; extra swap log: 1791342426466,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-56/tmp/obtest-86c33602ca/src/swap/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-56/tmp/obtest-86c33602ca/src/swap' already exists.,,,0
+names point 2026-10-07-03-05-59 (run 3): failed=1  log: 1791342426589,err,/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-59/tmp/obtest-86c33602ca/src/swap2/inner.txt,0,The file '/tmp/obtest-86c33602ca/names-r-2026-10-07-03-05-59/tmp/obtest-86c33602ca/src/swap2' already exists.,,,0
+names point 2026-10-07-03-06-02 (run 4): failed=0 extra a/x2.txt
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 252
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ names: restored 6 points, 4 bad
+
+
+
+Total tests: 1
+     Failed: 1
+ Total time: 5.4849 Seconds
+[xUnit.net 00:00:04.77]     OnlineBackup.Tests.NightP_RestoreChainTests.NamesReusedAcrossRuns_EveryPointGivesItsOwnVersion [FAIL]
+Test Run Failed.

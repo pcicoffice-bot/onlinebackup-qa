@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q2-verify-damaged-object.spec.ts:17:5 › Q2 ST-04 a damaged object on the server is found by verify on the site, quarantined, sent again, and the next restore is identical
+  1 passed (16.4s)
+EXIT 0

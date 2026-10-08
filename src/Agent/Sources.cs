@@ -200,7 +200,7 @@ namespace OnlineBackup.Agent
                             if (big.Length > 0) info("Large database (" + Gb(size) + "): larger buffers for a faster backup");
                             bool diff = set.SqlFullDay >= 0 && (int)SystemClock.Now.DayOfWeek != set.SqlFullDay && File.Exists(marker) && db != "master";
                             if (diff)
-                                try { if (lastFull() != File.ReadAllText(marker).Trim()) { warn("Another program made a full backup of " + instance + "\\" + db + " — this run makes a full backup"); diff = false; } }
+                                try { if (lastFull() != OnlineBackup.Core.Atomic.ReadAllText(marker).Trim()) { warn("Another program made a full backup of " + instance + "\\" + db + " — this run makes a full backup"); diff = false; } }
                                 catch (Exception) { diff = false; }
                             if (diff)
                             {
@@ -289,6 +289,7 @@ namespace OnlineBackup.Agent
                 {
                     var target = System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp)).TrimEnd('\\');
                     info("[System State Backup] wbadmin to " + target);
+                    AllowTargetOnSystemVolume(RegGet, RegSet, info);
                     Exec("wbadmin", "start systemstatebackup -backupTarget:" + target + " -quiet");
                     var root = System.IO.Path.Combine(target + "\\", "WindowsImageBackup");
                     foreach (var f in new DirectoryInfo(root).GetFiles("*", SearchOption.AllDirectories))
@@ -303,13 +304,43 @@ namespace OnlineBackup.Agent
                 }
                 info("[System State Backup] Found (" + items.Count + ") files.");
             }
-            catch (Exception e) { warn("System State backup failed: " + e.Message); unreachable.Add("System State"); }
+            catch (Exception e) { warn("System State backup failed: " + e.Message + SpaceNote(temp)); unreachable.Add("System State"); }
             return items;
+        }
+
+        /// <summary>Bug 97 (Windows run 20, W17): wbadmin filled C: (10.7 GB free before, 1.0 GB after) and the customer saw only
+        /// "wbadmin exit code -4". When the target volume is nearly full after a failure, the log says so in plain words.</summary>
+        public static string SpaceNote(string temp)
+        {
+            try { return SpaceNote(System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp)), new DriveInfo(System.IO.Path.GetPathRoot(System.IO.Path.GetFullPath(temp))).AvailableFreeSpace); }
+            catch (Exception) { return ""; }
+        }
+        public static string SpaceNote(string volume, long freeBytes)
+        {
+            const long low = 2L * 1024 * 1024 * 1024;
+            if (freeBytes >= low) return "";
+            return " - the disk " + volume.TrimEnd('\\') + " where Windows writes the System State has only " + (freeBytes / (1024.0 * 1024 * 1024)).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture) +
+                " GB free: it probably ran out of space (a System State backup needs several GB; free space on that disk and run the backup again)";
         }
 
         static void Exec(string exe, string args)
         {
             ProcessRunner.Check(new ProcessStartInfo(exe, args), Limits.SystemState);   // R1: stopped at the limit, an error if it fails
         }
+
+        /// <summary>Bug 95 (Windows run 17, W17): wbadmin refuses a System State backup to a volume that is part of the system
+        /// state ("You cannot use a volume that is included in the backup as a storage location") unless Windows' documented
+        /// setting AllowSSBToAnyVolume=1 is present - so on a server with one disk (C:) every System State backup failed. The
+        /// setting is made once, and said in the log.</summary>
+        public const string WbengineKey = @"HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\wbengine\SystemStateBackup";
+        public static void AllowTargetOnSystemVolume(Func<string, object> get, Action<string, object> set, Action<string> info)
+        {
+            object v = null; try { v = get("AllowSSBToAnyVolume"); } catch (Exception) { }
+            if (v is int && (int)v == 1) return;
+            set("AllowSSBToAnyVolume", 1);
+            info("[System State Backup] Windows setting AllowSSBToAnyVolume=1 made (wbadmin may then keep the System State on the system disk)");
+        }
+        static object RegGet(string name) { return Microsoft.Win32.Registry.GetValue(WbengineKey, name, null); }
+        static void RegSet(string name, object value) { Microsoft.Win32.Registry.SetValue(WbengineKey, name, value, Microsoft.Win32.RegistryValueKind.DWord); }
     }
 }

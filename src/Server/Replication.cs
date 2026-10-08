@@ -29,7 +29,8 @@ namespace OnlineBackup.Server
         public Replicator(SystemConfig cfg, Users users) { this.cfg = cfg; this.users = users; }
 
         XElement Conf { get { return cfg.Doc.Root.Element("REPLICATION"); } }
-        public bool Enabled { get { return Conf != null && (string)Conf.Attribute("ENABLED") == "Y" && !string.IsNullOrEmpty((string)Conf.Attribute("URL")); } }
+        /// <summary>PILOT-010 / ST-07: never with the pilot switch — nothing is queued or sent; a queue left from before is kept.</summary>
+        public bool Enabled { get { return !cfg.Pilot && Conf != null && (string)Conf.Attribute("ENABLED") == "Y" && !string.IsNullOrEmpty((string)Conf.Attribute("URL")); } }
 
         public void Start() { timer = new Timer(_ => { try { RunOnce(); } catch (Exception e) { SysLog.Write(null, "System", "error: replication " + e.Message); } }, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(60)); }
         public void Stop() { if (timer != null) timer.Dispose(); }
@@ -52,7 +53,7 @@ namespace OnlineBackup.Server
                 int done = 0;
                 foreach (var f in Directory.GetFiles(QueueDir, "*.xml").OrderBy(x => x, StringComparer.Ordinal))
                 {
-                    var ev = Msg.Parse(File.ReadAllText(f));
+                    var ev = Msg.Parse(OnlineBackup.Core.Atomic.ReadAllText(f));
                     try { Send(ev); }
                     catch (Exception e)
                     {
@@ -66,14 +67,33 @@ namespace OnlineBackup.Server
             }
         }
 
+        // QA round Q (Q-F1, High): a customer that existed before replication was switched on (or was made with `adduser`)
+        // had no "user" event: the second server answered "The user does not exist." to its first commit, the queue stops at
+        // the first failure — so nothing more was ever copied, for ANY customer. Before a customer's first event of this
+        // process the second server is asked to have the user (idempotent) and gets its settings (db).
+        readonly HashSet<string> ensured = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        void EnsureOnReplica(string login)
+        {
+            long quota = 0;
+            try { long.TryParse(users.LoadProfile(login).Get("QUOTA") ?? "0", NumberStyles.Integer, CultureInfo.InvariantCulture, out quota); } catch (Exception) { }
+            Call("POST", "/api/replica/user", new Msg().Set("login", login).Set("quota", quota));
+            ensured.Add(login);
+        }
+
         void Send(Msg ev)
         {
             var login = ev["login"];
+            if (ev["type"] != "user" && !string.IsNullOrEmpty(login) && !ensured.Contains(login))
+            {
+                EnsureOnReplica(login);
+                if (ev["type"] != "db") Send(new Msg().Set("type", "db").Set("login", login));
+            }
             var userDir = users.UserDir(login);
             switch (ev["type"])
             {
                 case "user":
                     Call("POST", "/api/replica/user", new Msg().Set("login", login).Set("quota", ev["quota"]));
+                    ensured.Add(login);
                     break;
                 case "db":
                     foreach (var f in Directory.GetFiles(Path.Combine(userDir, "db"), "*", SearchOption.AllDirectories).Where(x => !Atomic.IsTemp(x)))   // bug 35: by the file's name, never the path
@@ -83,7 +103,7 @@ namespace OnlineBackup.Server
                         {
                             // Saved keys are protected per machine (DPAPI): sent unprotected over TLS and protected again by the second server.
                             var tmp = Path.GetTempFileName();
-                            try { File.WriteAllBytes(tmp, KeyVault.Unprotect(cfg.SystemHome, File.ReadAllBytes(f))); PutFile(login, rel, tmp, true, true); }
+                            try { File.WriteAllBytes(tmp, KeyVault.Unprotect(cfg.SystemHome, OnlineBackup.Core.Atomic.ReadAllBytes(f))); PutFile(login, rel, tmp, true, true); }
                             finally { File.Delete(tmp); }
                         }
                         else PutFile(login, rel, f, true);
@@ -175,7 +195,7 @@ namespace OnlineBackup.Server
             var p = Path.Combine(cfg.SystemHome, "replication", "pending-deletes.log");
             if (!File.Exists(p)) return 0;
             var keep = new List<string>(); int done = 0;
-            foreach (var line in File.ReadAllLines(p).Where(l => l.Length > 0))
+            foreach (var line in OnlineBackup.Core.Atomic.ReadAllLines(p).Where(l => l.Length > 0))
             {
                 var x = line.Split('\t');
                 if (string.CompareOrdinal(x[0], RunId.From(nowUtc)) > 0) { keep.Add(line); continue; }

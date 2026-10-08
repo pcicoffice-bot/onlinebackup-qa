@@ -167,19 +167,23 @@ namespace OnlineBackup.Tests
                     Random(Path.Combine(src, "a.bin"), 64 * 1024, 1);
                     Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);          // the repository exists: only the data is timed below
 
+                    // T-3 (QA shards, Windows, 10 of 10 runs): restic on Windows costs ~5-6 s per run whatever the data (start,
+                    // Defender's scan of restic.exe); with 1.5 MB that fixed cost decided the ratio below. 6 MB keeps both
+                    // checks exactly as they were (the same 75 % of the theoretical time, the same "under half") with the fixed
+                    // cost small beside the data's time.
                     Change(env, "bwlimit", set.Id, s => { s.BandwidthKbps = 256; s.Compression = "NONE"; });
-                    Random(Path.Combine(src, "b.bin"), 1536 * 1024, 2);
+                    Random(Path.Combine(src, "b.bin"), 6 * 1024 * 1024, 2);
                     var sw = Stopwatch.StartNew();
                     var r = app.Backup(set.Id);
                     var limited = sw.Elapsed.TotalSeconds;
                     Assert.True(r.Result == "BS_STOP_SUCCESS", string.Join("\n", r.LogLines));
-                    Assert.True(limited >= 4.5, engine + ": 1.5 MB at 256 KB/s took only " + limited.ToString("0.0") + " s — the limit does not work");
+                    Assert.True(limited >= 18, engine + ": 6 MB at 256 KB/s took only " + limited.ToString("0.0") + " s — the limit does not work");
 
                     Change(env, "bwlimit", set.Id, s => s.BandwidthKbps = 0);
-                    Random(Path.Combine(src, "c.bin"), 1536 * 1024, 3);
+                    Random(Path.Combine(src, "c.bin"), 6 * 1024 * 1024, 3);
                     sw.Restart();
                     Assert.Equal("BS_STOP_SUCCESS", app.Backup(set.Id).Result);
-                    Assert.True(sw.Elapsed.TotalSeconds < limited / 2, engine + ": without the limit it took " + sw.Elapsed.TotalSeconds.ToString("0.0") + " s");
+                    Assert.True(sw.Elapsed.TotalSeconds < limited / 2, engine + ": without the limit it took " + sw.Elapsed.TotalSeconds.ToString("0.0") + " s, with it " + limited.ToString("0.0") + " s");
                 }
         }
 
@@ -266,7 +270,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void Links_FollowedOnlyWhenTheOptionIsOn()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT) return;   // a folder link needs rights on Windows; the same code path
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT) throw NotTested.Because("a folder link needs administrator rights on Windows");   // a folder link needs rights on Windows; the same code path
             using (var env = new Env())
             {
                 env.CreateUser("lnk", "Customer-Pass-1");
@@ -304,7 +308,7 @@ namespace OnlineBackup.Tests
             long none = Stored("NONE"), max = Stored("MAX");
             Assert.True(max * 4 < none, "MAX " + max + " vs NONE " + none);
 
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             var lines = new List<string[]>();
             ResticRunner.Trace = a => { lock (lines) lines.Add(a); };
             try
@@ -333,7 +337,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void SqlLogin_LikeSa_PasswordNeverOnTheCommandLine()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             var dir = Path.Combine(Path.GetTempPath(), "obsql-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(dir);
             var fake = Path.Combine(dir, "sqlcmd"); File.WriteAllText(fake, "#!/bin/sh\necho \"ARGS:$*\"\necho \"PW:$SQLCMDPASSWORD\"\n");
             Process.Start("chmod", "+x \"" + fake + "\"").WaitForExit();

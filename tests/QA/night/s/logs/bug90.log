@@ -1,0 +1,54 @@
+MUTATION bug90
+FILTER FullyQualifiedName~NightR_IsolationTests
+diff --git a/src/Server/Users.cs b/src/Server/Users.cs
+index 6c8977d..f39c5ed 100644
+--- a/src/Server/Users.cs
++++ b/src/Server/Users.cs
+@@ -467,7 +467,7 @@ namespace OnlineBackup.Server
+             if (!s.Admin)
+             {
+                 string now; try { now = LoadProfile(s.Login).Get("ACCOUNT_ID") ?? ""; } catch (Exception) { now = null; }
+-                if (now == null || string.IsNullOrEmpty(s.Account) || now != s.Account) { EndSession(token); return null; }
++                if (false) { EndSession(token); return null; }
+             }
+             // SEC-130: in use → 2 more hours (written down at most every 10 minutes, so a restart keeps it)
+             if (s.Admin && s.Sliding && s.Expires < SystemClock.UtcNow.AddMinutes(110)) { s.Expires = SystemClock.UtcNow.AddHours(2); Keep(token, s); }
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Users.cs(470,30): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.20]   Discovered:  Tests
+[xUnit.net 00:00:00.21]   Starting:    Tests
+  Passed OnlineBackup.Tests.NightR_IsolationTests.CustomerSession_AfterLogout_IsRejected [1 s]
+[xUnit.net 00:00:02.35]       the deleted customer's session token still authenticates after the login name was reused: GET /api/profile returned 200 reaching the re-provisioned account owned by another reseller. profile=<ROOT><USER LOGIN_NAME="reuse2026" ALIAS="BetaCustomer" LANGUAGE="iw" TYPE="PAID" STATUS="ENABLE" TIMEZONE="GMT+02:00 (IDT)" DISABLED="N" REGISTRATION_DATE="1791341887098" CLIENT_TYPE="OBM" QUOTA="1073741824" QUOTA_TYPE="COMPRESSED" QUOTA_REMIND_PERCENTAGE="90" ENABLED_MSSQL="Y" ENABLED_SHADOW_COPY="Y" ENABLED_DELTA_BLOCK="Y" SAVE_ENCRYPT_KEY="Y" EMAIL_NOTIFY="ALL" SEND_WELCOME_MAIL="Y" UPGRADE="Auto" BANDWIDTH="0" LOGIN_FAILURE_COUNT="0" USER_LOCKED_TIME="-1" OWNER="beta" MAX_BACKUP_SET="10" DATA_SIZE="0" DATA_FILE="0" RETAIN_SIZE="0" RETAIN_FILE="0" TOTAL_UNCOMPRESS_FILE_SIZE="0" TOTAL_RETAIN_UNCOMPRESS="0" LAST_BACKUP="0" LAST_LOGIN="0" LAST_STORAGE_REBUILD="0" Notes="" ACCOUNT_ID="5e136ccac9f5de703159366fecc92aff" REQUIRE_TOTP="N" TOTP_ON="N" /></ROOT>
+[xUnit.net 00:00:02.35]       Stack Trace:
+[xUnit.net 00:00:02.35]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightR_IsolationTests.cs(78,0): at OnlineBackup.Tests.NightR_IsolationTests.CustomerSession_SurvivesDeletion_AndReachesAReusedLoginOfAnotherReseller()
+[xUnit.net 00:00:02.35]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:02.35]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:02.36]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightR_IsolationTests.CustomerSession_SurvivesDeletion_AndReachesAReusedLoginOfAnotherReseller [922 ms]
+  Error Message:
+   the deleted customer's session token still authenticates after the login name was reused: GET /api/profile returned 200 reaching the re-provisioned account owned by another reseller. profile=<ROOT><USER LOGIN_NAME="reuse2026" ALIAS="BetaCustomer" LANGUAGE="iw" TYPE="PAID" STATUS="ENABLE" TIMEZONE="GMT+02:00 (IDT)" DISABLED="N" REGISTRATION_DATE="1791341887098" CLIENT_TYPE="OBM" QUOTA="1073741824" QUOTA_TYPE="COMPRESSED" QUOTA_REMIND_PERCENTAGE="90" ENABLED_MSSQL="Y" ENABLED_SHADOW_COPY="Y" ENABLED_DELTA_BLOCK="Y" SAVE_ENCRYPT_KEY="Y" EMAIL_NOTIFY="ALL" SEND_WELCOME_MAIL="Y" UPGRADE="Auto" BANDWIDTH="0" LOGIN_FAILURE_COUNT="0" USER_LOCKED_TIME="-1" OWNER="beta" MAX_BACKUP_SET="10" DATA_SIZE="0" DATA_FILE="0" RETAIN_SIZE="0" RETAIN_FILE="0" TOTAL_UNCOMPRESS_FILE_SIZE="0" TOTAL_RETAIN_UNCOMPRESS="0" LAST_BACKUP="0" LAST_LOGIN="0" LAST_STORAGE_REBUILD="0" Notes="" ACCOUNT_ID="5e136ccac9f5de703159366fecc92aff" REQUIRE_TOTP="N" TOTP_ON="N" /></ROOT>
+  Stack Trace:
+     at OnlineBackup.Tests.NightR_IsolationTests.CustomerSession_SurvivesDeletion_AndReachesAReusedLoginOfAnotherReseller() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightR_IsolationTests.cs:line 78
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Total tests: 2
+     Passed: 1
+     Failed: 1
+ Total time: 2.9919 Seconds
+[xUnit.net 00:00:02.35]     OnlineBackup.Tests.NightR_IsolationTests.CustomerSession_SurvivesDeletion_AndReachesAReusedLoginOfAnotherReseller [FAIL]
+Test Run Failed.

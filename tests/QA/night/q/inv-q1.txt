@@ -1,0 +1,56 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q1.spec.ts:14:5 › INVERTED q1 — Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased
+  1) e2e/zz-inv-q1.spec.ts:14:5 › INVERTED q1 — Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased 
+
+    Error: the bin after 15 days
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: true
+    Received: false
+
+      109 |   expect(m15.status, m15.text).toBe(200);
+      110 |   evidence.step('ORACLE (disk): the bin folder and its bytes are gone; the site\'s bin is empty');
+    > 111 |   expect(fs.existsSync(binDir), 'the bin after 15 days').toBe(true);
+          |                                                          ^
+      112 |   expect(fs.existsSync(store)).toBe(false);
+      113 |   // the backed-up data of the set (objects, restic repository, run logs) — not the key in db/keys (kept for copies of
+      114 |   // the set) and not stats/<set>.tsv (per-run numbers for Insights; noted in night/q/README.md, run 1)
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q1.spec.ts:111:58
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/attachments/server-log-a164875bd7903123bbf131cacee769473ed472e1.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-RB-PC1.log (text/plain) ───────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/attachments/agent-RB-PC1-log-1b41568aecc660f56a0709a70942aeb75a1f5581.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/attachments/system-xml-3e4495da968df9cfc5402a30d0bf8122c44967c3.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q1-INVERTED-q1--6b3a2-ys-the-bin-is-really-erased/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q1.spec.ts:14:5 › INVERTED q1 — Q1 ST-09 a set and a customer deleted on the site come back from the recycle bin intact; after 14 days the bin is really erased 
+EXIT 1

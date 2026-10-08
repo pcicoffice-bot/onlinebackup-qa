@@ -19,7 +19,7 @@ namespace OnlineBackup.Tests
         [Fact(Skip = "NEEDS OWNER DECISION (bug 76, docs/PRODUCT-BENCHMARK.md): skip, warn or fail a SIMPLE-recovery database in log mode")]
         public void LogMode_AllDatabases_ASimpleRecoveryDatabaseIsSkipped_NotAnErrorEveryRun()
         {
-            if (Environment.OSVersion.Platform != PlatformID.Unix) return;
+            if (Environment.OSVersion.Platform != PlatformID.Unix) throw NotTested.Because("needs Linux (the stand-in tools are shell scripts)");
             using (var env = new Env())
             {
                 var fake = Path.Combine(env.Root, "sqlcmd.sh");

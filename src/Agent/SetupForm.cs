@@ -65,9 +65,9 @@ namespace OnlineBackup.Agent
         public SetupForm(string packageDir)
         {
             this.packageDir = packageDir;
-            conn = XElement.Load(Path.Combine(packageDir, "connection.xml"));
+            conn = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(packageDir, "connection.xml"));
             var bp = Path.Combine(packageDir, "branding.xml");
-            brand = File.Exists(bp) ? XElement.Load(bp) : new XElement("BRANDING");
+            brand = File.Exists(bp) ? OnlineBackup.Core.Atomic.LoadXElement(bp) : new XElement("BRANDING");
             product = (string)brand.Attribute("PRODUCT"); if (string.IsNullOrEmpty(product)) product = "Backup";
             brandColor = ParseColor((string)brand.Attribute("COLOR"), Color.FromArgb(79, 70, 229));
             accent = ParseColor((string)brand.Attribute("ACCENT"), Color.FromArgb(249, 115, 22));
@@ -289,7 +289,7 @@ namespace OnlineBackup.Agent
             ResumeLayout(true);
         }
 
-        string PackageVersion { get { try { return File.ReadAllText(Path.Combine(packageDir, "version.txt")).Trim(); } catch (Exception) { return ""; } } }
+        string PackageVersion { get { try { return OnlineBackup.Core.Atomic.ReadAllText(Path.Combine(packageDir, "version.txt")).Trim(); } catch (Exception) { return ""; } } }
         bool IsNewer { get { return existing != null && PackageVersion.Length > 0 && PackageVersion != (existing.Server ?? ""); } }
 
         void UpdateButtons()
@@ -317,13 +317,13 @@ namespace OnlineBackup.Agent
                 var cp = Path.Combine(packageDir, "contract.xml");
                 if (File.Exists(cp))
                 {
-                    var c = XElement.Load(cp); var texts = c.Elements("TEXT").ToList();
+                    var c = OnlineBackup.Core.Atomic.LoadXElement(cp); var texts = c.Elements("TEXT").ToList();
                     var t = texts.FirstOrDefault(x => (string)x.Attribute("LANG") == lang) ?? texts.FirstOrDefault(x => (string)x.Attribute("LANG") == "en") ?? texts.FirstOrDefault();
                     if (t != null && t.Value.Trim().Length > 0) { text = t.Value; contractVersion = (string)c.Attribute("VERSION"); }
                 }
             }
             catch (Exception) { }
-            try { if (text == null && File.Exists(own)) text = File.ReadAllText(own); } catch (Exception) { }
+            try { if (text == null && File.Exists(own)) text = OnlineBackup.Core.Atomic.ReadAllText(own); } catch (Exception) { }
             if (string.IsNullOrEmpty(text))
                 text = string.Join("\n\n", new[]
                 {

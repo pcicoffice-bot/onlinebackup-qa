@@ -48,7 +48,7 @@ namespace OnlineBackup.Server
         public Dictionary<string, object> Record(string licenseId)
         {
             var p = RecordPath(licenseId);
-            return File.Exists(p) ? Json.Obj(Json.Parse(File.ReadAllText(p))) : null;
+            return File.Exists(p) ? Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p))) : null;
         }
         void Save(string licenseId, Dictionary<string, object> r) { Atomic.WriteText(RecordPath(licenseId), Json.Write(r)); }
 

@@ -1,0 +1,15 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q5-service-follows-the-site.spec.ts:26:5 › Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service
+e2e/q5-service-follows-the-site.spec.ts:26:5 › Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service
+Q5 FACT schedule: slot 2026-10-07T03:20:00, the service's run ended 2026-10-07T03:20:39 BS_STOP_SUCCESS
+
+Q5 FACT upload limit 200 KB/s: measured on the server disk 188.2 KB/s over 15 s
+
+Q5 FACT stop: BS_STOP_BY_USER 6 s after the press; files of the 40 new ones not in the stopped point: 24
+
+  Slow test file: e2e/q5-service-follows-the-site.spec.ts (7.6m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 passed (7.6m)
+EXIT 0

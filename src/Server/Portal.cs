@@ -54,7 +54,7 @@ namespace OnlineBackup.Server
         {
             var s = new Settings();
             if (!File.Exists(SettingsPath)) return s;
-            var j = Json.Obj(Json.Parse(File.ReadAllText(SettingsPath)));
+            var j = Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(SettingsPath)));
             s.Package = Json.Str(j, "package") ?? ""; s.CenterUrl = Json.Str(j, "centerUrl") ?? ""; s.OwnerHash = Json.Str(j, "ownerHash") ?? "";
             s.SignupOpen = Json.Str(j, "signupOpen") != "False";
             if (j.ContainsKey("trialDays")) s.TrialDays = (int)Json.Num(j, "trialDays");
@@ -99,9 +99,9 @@ namespace OnlineBackup.Server
         // ------------------------------------------------------------------ accounts
 
         string AccountPath(string id) { return Path.Combine(dir, "accounts", new string((id ?? "").Where(c => char.IsLetterOrDigit(c) || c == '-').ToArray()) + ".json"); }
-        public Dictionary<string, object> Account(string id) { var p = AccountPath(id); return File.Exists(p) ? Json.Obj(Json.Parse(File.ReadAllText(p))) : null; }
+        public Dictionary<string, object> Account(string id) { var p = AccountPath(id); return File.Exists(p) ? Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p))) : null; }
         void SaveAccount(Dictionary<string, object> a) { Atomic.WriteText(AccountPath(Json.Str(a, "id")), Json.Write(a)); }
-        public IEnumerable<Dictionary<string, object>> Accounts() { return Directory.GetFiles(Path.Combine(dir, "accounts"), "*.json").Select(f => Json.Obj(Json.Parse(File.ReadAllText(f)))); }
+        public IEnumerable<Dictionary<string, object>> Accounts() { return Directory.GetFiles(Path.Combine(dir, "accounts"), "*.json").Select(f => Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(f)))); }
         Dictionary<string, object> ByEmail(string email) { return Accounts().FirstOrDefault(a => string.Equals(Json.Str(a, "email"), email, StringComparison.OrdinalIgnoreCase)); }
 
         static readonly Regex EmailRx = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
@@ -199,7 +199,7 @@ namespace OnlineBackup.Server
             var st = Load();
             var root = ServerPackageDir(st);
             var vf = System.IO.Path.Combine(st.Package, "version.txt");
-            var version = File.Exists(vf) ? File.ReadAllText(vf).Trim() : "0";
+            var version = File.Exists(vf) ? OnlineBackup.Core.Atomic.ReadAllText(vf).Trim() : "0";
             var dir = System.IO.Path.Combine(this.dir, "updates"); Directory.CreateDirectory(dir);
             var zip = System.IO.Path.Combine(dir, "OnlineBackup-Server-" + new string(version.Where(ch => char.IsLetterOrDigit(ch) || ch == '.' || ch == '-').ToArray()) + ".zip");
             lock (gate)

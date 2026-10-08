@@ -1,0 +1,47 @@
+MUTATION bug83
+FILTER FullyQualifiedName~NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet
+diff --git a/src/Agent/AgentApp.cs b/src/Agent/AgentApp.cs
+index d1f6d18..6d2b110 100644
+--- a/src/Agent/AgentApp.cs
++++ b/src/Agent/AgentApp.cs
+@@ -493,7 +493,7 @@ namespace OnlineBackup.Agent
+                 if (cutOff && off != null && off.Item2 > attempt) return true;           // back since the run was cut off: now
+                 if (!cutOff && attempt < off.Item2) return true;                          // missed while offline: when back
+             }
+-            else if (late > 15 && !BusyWithAnotherSet(s, UtcOf(slot.Value)))
++            else if (late > 15)
+             {
+                 if (!s.RunMissed) return false;
+                 if (s.MissedMinHours > 0 && lastOk > nowLocal.AddHours(-s.MissedMinHours)) return false;
+
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.12]   Discovering: Tests
+[xUnit.net 00:00:00.23]   Discovered:  Tests
+[xUnit.net 00:00:00.24]   Starting:    Tests
+[xUnit.net 00:00:01.28]       runMissed=False: B's runs per night 0,0,0 (B ran at ; A at 2026-06-01 19:00Z, 2026-06-02 19:00Z, 2026-06-03 19:00Z)
+[xUnit.net 00:00:01.28]       Stack Trace:
+[xUnit.net 00:00:01.28]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs(303,0): at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(Boolean runMissed)
+[xUnit.net 00:00:01.28]            at InvokeStub_NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(Object, Span`1)
+[xUnit.net 00:00:01.28]            at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+[xUnit.net 00:00:01.29]   Finished:    Tests
+  Passed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(runMissed: True) [525 ms]
+  Failed OnlineBackup.Tests.NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(runMissed: False) [430 ms]
+  Error Message:
+   runMissed=False: B's runs per night 0,0,0 (B ran at ; A at 2026-06-01 19:00Z, 2026-06-02 19:00Z, 2026-06-03 19:00Z)
+  Stack Trace:
+     at OnlineBackup.Tests.NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(Boolean runMissed) in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_ScheduleBoundaryTests.cs:line 303
+   at InvokeStub_NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithOneArg(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+
+Total tests: 2
+     Passed: 1
+     Failed: 1
+ Total time: 1.9915 Seconds
+[xUnit.net 00:00:01.28]     OnlineBackup.Tests.NightM_ScheduleBoundaryTests.ASetDueWhileTheServiceIsBusyWithAnotherSet_RunsThatNight_EvenWithRunMissedOff(runMissed: False) [FAIL]
+Test Run Failed.

@@ -26,13 +26,13 @@ namespace OnlineBackup.Server
             {
                 // most requests: seen less than 10 minutes ago from the same address — only a read, no lock (LOAD-010)
                 {
-                    var d0 = XDocument.Load(path).Root.Elements("DEVICE").FirstOrDefault(x => (string)x.Attribute("ID") == deviceId);
+                    var d0 = OnlineBackup.Core.Atomic.LoadXml(path).Root.Elements("DEVICE").FirstOrDefault(x => (string)x.Attribute("ID") == deviceId);
                     long last0; long.TryParse(d0 == null ? null : (string)d0.Attribute("LAST_SEEN"), out last0);
                     if (d0 == null || (RunId.UnixMs(nowUtc) - last0 < 10 * 60 * 1000L && (string)d0.Attribute("LAST_IP") == ip && (agent == null || (string)d0.Attribute("AGENT") == agent))) return;
                 }
                 lock (gate)
                 {
-                    var doc = XDocument.Load(path);
+                    var doc = OnlineBackup.Core.Atomic.LoadXml(path);
                     var d = doc.Root.Elements("DEVICE").FirstOrDefault(x => (string)x.Attribute("ID") == deviceId);
                     if (d == null) return;
                     long last; long.TryParse((string)d.Attribute("LAST_SEEN"), out last);
@@ -53,7 +53,7 @@ namespace OnlineBackup.Server
             lock (gate)
             {
                 var path = DevicesPath(login);
-                var devs = File.Exists(path) ? XDocument.Load(path).Root.Elements("DEVICE").ToList() : new List<XElement>();
+                var devs = File.Exists(path) ? OnlineBackup.Core.Atomic.LoadXml(path).Root.Elements("DEVICE").ToList() : new List<XElement>();
                 var p = LoadProfile(login);
                 var names = devs.Select(d => (string)d.Attribute("NAME") ?? "").Concat(p.SetElements.Select(e => (string)e.Attribute("SCHEDULE_HOST") ?? ""))
                     .Where(n => n.Length > 0 && !n.StartsWith("~", StringComparison.Ordinal)).Distinct(StringComparer.OrdinalIgnoreCase).OrderBy(n => n, StringComparer.OrdinalIgnoreCase);
@@ -84,7 +84,7 @@ namespace OnlineBackup.Server
             {
                 var path = DevicesPath(login);
                 if (!File.Exists(path)) return 0;
-                var doc = XDocument.Load(path);
+                var doc = OnlineBackup.Core.Atomic.LoadXml(path);
                 foreach (var d in doc.Root.Elements("DEVICE").Where(x => (string)x.Attribute("REVOKED") != "Y" && string.Equals((string)x.Attribute("NAME"), computer, StringComparison.OrdinalIgnoreCase)))
                 { d.SetAttributeValue("REVOKED", "Y"); n++; }
                 Atomic.WriteText(path, doc.ToString());
@@ -134,7 +134,7 @@ namespace OnlineBackup.Server
                 var path = DevicesPath(login);
                 if (File.Exists(path))
                 {
-                    var doc = XDocument.Load(path);
+                    var doc = OnlineBackup.Core.Atomic.LoadXml(path);
                     foreach (var d in doc.Root.Elements("DEVICE").Where(x => string.Equals((string)x.Attribute("NAME"), computer, StringComparison.OrdinalIgnoreCase))) d.SetAttributeValue("REVOKED", "Y");
                     Atomic.WriteText(path, doc.ToString());
                 }

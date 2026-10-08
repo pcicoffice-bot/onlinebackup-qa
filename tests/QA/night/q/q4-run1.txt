@@ -1,0 +1,114 @@
+
+Running 2 tests using 1 worker
+
+[1/2] e2e/q4-replication.spec.ts:28:5 › Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back
+  1) e2e/q4-replication.spec.ts:28:5 › Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back 
+
+    Error: dotnet OnlineBackup.Agent.dll points --home /tmp/obqa-48EP53/agent-qa-rep-DR-PC1 --set 1791341234872 → exit 1
+    error: The device was revoked or is unknown.
+
+
+       at lib/world.ts:69
+
+      67 |   const r = spawnSync('dotnet', [dll, ...args], { encoding: 'utf8', env: { ...process.env, ...(opts.env || {}) }, timeout: 15 * 60 * 1000 });
+      68 |   const out = (r.stdout || '') + (r.stderr || '');
+    > 69 |   if (r.status !== 0 && !opts.allowFail) throw new Error('dotnet ' + path.basename(dll) + ' ' + args.join(' ') + ' → exit ' + r.status + '\n' + out);
+         |                                                ^
+      70 |   return { code: r.status ?? -1, out };
+      71 | }
+      72 |
+        at run (/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/lib/world.ts:69:48)
+        at Agent.cli (/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/lib/world.ts:169:15)
+        at points (/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/q4-replication.spec.ts:26:73)
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/q4-replication.spec.ts:94:12
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/attachments/server-log-9cb52c86275ad25f0e98b1e6e9bfd1147166fb16.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-REP-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/attachments/agent-REP-PC1-log-a52426ac3df33e031f9d0f0d468bcbb5d98f4149.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/attachments/system-xml-5febb881a7518a83d3866d2f2feb98ffa942eb19.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-q4-replication-Q4a-ST--e7c59-ond-server-down-behind-back/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+[2/2] e2e/q4-replication.spec.ts:104:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer
+  2) e2e/q4-replication.spec.ts:104:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer 
+
+    Error: Error: timeout (240 s) waiting for: the new customer's set on the second server
+    waiting to copy on the first server: 8
+    its log:
+    2026-10-07 02:50:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 02:51:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 02:52:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 02:53:18	-	replication waiting (commit qa-old): The user does not exist.
+
+      131 |       const logs = path.join(A.sys, 'logs', 'System');
+      132 |       why = fs.readdirSync(logs).map((f) => fs.readFileSync(path.join(logs, f), 'utf8')).join('').split('\n').filter((l) => /replication/.test(l)).slice(-5).join('\n');
+    > 133 |       throw new Error(String(e) + '\nwaiting to copy on the first server: ' + (await pending(A)) + '\nits log:\n' + why);
+          |             ^
+      134 |     }
+      135 |     const dr = B.agent('qa-new', 'DR-PC2'); dr.register();
+      136 |     const t = path.join(B.dir, 'restore');
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/q4-replication.spec.ts:133:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/server-log-57acdbd22d886ae2e5b959fa0045d05c3eb724a0.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-OLD-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/agent-OLD-PC1-log-1742e006781c95e4dc9bbe14b4db5392bebff471.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: agent-NEW-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/agent-NEW-PC1-log-09f6d255051a3f262f3ec9fe6defbebe154e07c1.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/system-xml-232ee2eb4414ca06e9dde15f2e1ec7e6e283d3cd.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/error-context.md
+
+    attachment #8: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2 failed
+    e2e/q4-replication.spec.ts:28:5 › Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back 
+    e2e/q4-replication.spec.ts:104:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer 
+EXIT 1

@@ -84,7 +84,8 @@ namespace OnlineBackup.Setup
                 var temp = Path.Combine(Path.GetTempPath(), "OnlineBackup-Setup-" + Guid.NewGuid().ToString("N").Substring(0, 12));
                 Directory.CreateDirectory(temp);
                 using (var gz = new GZipStream(new Bounded(f, len), CompressionMode.Decompress))
-                using (var br = new BinaryReader(gz, Encoding.UTF8))
+                using (var hs = new Hashing(gz))
+                using (var br = new BinaryReader(hs, Encoding.UTF8))
                 {
                     var count = br.ReadInt32();
                     if (count < 1 || count > 500) throw new InvalidDataException("count");
@@ -100,12 +101,35 @@ namespace OnlineBackup.Setup
                             while (size > 0) { var n = br.Read(buf, 0, (int)Math.Min(buf.Length, size)); if (n <= 0) throw new EndOfStreamException(); o.Write(buf, 0, n); size -= n; }
                         }
                     }
+                    // bug 109: the SHA-256 of every byte above follows them - a damaged payload is never installed as a shorter file
+                    var sum = hs.Finish(); var stored = new byte[32]; Read(gz, stored);
+                    for (int i = 0; i < 32; i++)
+                        if (stored[i] != sum[i]) { try { Directory.Delete(temp, true); } catch (Exception) { } throw new InvalidDataException("the setup file is damaged (its check sum does not match)"); }
                 }
                 return temp;
             }
         }
 
         static void Read(Stream s, byte[] b) { int o = 0; while (o < b.Length) { var n = s.Read(b, o, b.Length - o); if (n <= 0) throw new EndOfStreamException(); o += n; } }
+
+        /// <summary>Bug 109: a read-through stream that hashes what was read (SHA-256), until Finish.</summary>
+        sealed class Hashing : Stream
+        {
+            readonly Stream s; readonly System.Security.Cryptography.SHA256 h = new System.Security.Cryptography.SHA256Managed();
+            public Hashing(Stream s) { this.s = s; }
+            public byte[] Finish() { h.TransformFinalBlock(new byte[0], 0, 0); return h.Hash; }
+            public override int Read(byte[] buffer, int offset, int count) { var n = s.Read(buffer, offset, count); if (n > 0) h.TransformBlock(buffer, offset, n, null, 0); return n; }
+            public override bool CanRead { get { return true; } }
+            public override bool CanSeek { get { return false; } }
+            public override bool CanWrite { get { return false; } }
+            public override long Length { get { throw new NotSupportedException(); } }
+            public override long Position { get { throw new NotSupportedException(); } set { throw new NotSupportedException(); } }
+            public override void Flush() { }
+            public override long Seek(long offset, SeekOrigin origin) { throw new NotSupportedException(); }
+            public override void SetLength(long value) { throw new NotSupportedException(); }
+            public override void Write(byte[] buffer, int offset, int count) { throw new NotSupportedException(); }
+            protected override void Dispose(bool disposing) { if (disposing) h.Dispose(); base.Dispose(disposing); }
+        }
 
         /// <summary>A window on the file: only the appended part.</summary>
         sealed class Bounded : Stream

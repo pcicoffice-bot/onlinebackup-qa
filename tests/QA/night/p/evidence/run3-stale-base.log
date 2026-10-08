@@ -1,0 +1,48 @@
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/bin/Debug/net8.0/Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.10]   Discovering: Tests
+[xUnit.net 00:00:00.21]   Discovered:  Tests
+[xUnit.net 00:00:00.22]   Starting:    Tests
+[xUnit.net 00:00:25.04]     OnlineBackup.Tests.NightP_RestoreChainTests.DifferentialAfterAnIncrementalFullCopy_EveryPointRestoresIdentical [FAIL]
+[xUnit.net 00:00:25.04]       runs: 0:BS_STOP_SUCCESS upd=0 sent=8390216 | 1:BS_STOP_SUCCESS upd=1 sent=1322442 | 2:BS_STOP_SUCCESS upd=1 sent=8390216 | 3:BS_STOP_SUCCESS upd=1 sent=3325695
+[xUnit.net 00:00:25.04]       base point 2026-10-07-02-56-12 (run 3): failed=1 missing ledger.mdb log: 1791341833360,err,/tmp/obtest-827472e48f/base-r-2026-10-07-02-56-12/tmp/obtest-827472e48f/src/ledger.mdb,0,A chunk of the file is missing from the backup chain.,,,0
+[xUnit.net 00:00:25.04]       Stack Trace:
+[xUnit.net 00:00:25.04]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs(340,0): at OnlineBackup.Tests.NightP_RestoreChainTests.DifferentialAfterAnIncrementalFullCopy_EveryPointRestoresIdentical()
+[xUnit.net 00:00:25.04]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:25.04]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:25.05]       Output:
+[xUnit.net 00:00:25.05]         0:BS_STOP_SUCCESS upd=0 sent=8390216
+[xUnit.net 00:00:25.05]         1:BS_STOP_SUCCESS upd=1 sent=1322442
+[xUnit.net 00:00:25.05]         2:BS_STOP_SUCCESS upd=1 sent=8390216
+[xUnit.net 00:00:25.05]         3:BS_STOP_SUCCESS upd=1 sent=3325695
+[xUnit.net 00:00:25.05]         objects in Current: .000, .001
+[xUnit.net 00:00:25.05]         base: restored 4 points, 1 bad
+[xUnit.net 00:00:25.06]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightP_RestoreChainTests.DifferentialAfterAnIncrementalFullCopy_EveryPointRestoresIdentical [24 s]
+  Error Message:
+   runs: 0:BS_STOP_SUCCESS upd=0 sent=8390216 | 1:BS_STOP_SUCCESS upd=1 sent=1322442 | 2:BS_STOP_SUCCESS upd=1 sent=8390216 | 3:BS_STOP_SUCCESS upd=1 sent=3325695
+base point 2026-10-07-02-56-12 (run 3): failed=1 missing ledger.mdb log: 1791341833360,err,/tmp/obtest-827472e48f/base-r-2026-10-07-02-56-12/tmp/obtest-827472e48f/src/ledger.mdb,0,A chunk of the file is missing from the backup chain.,,,0
+  Stack Trace:
+     at OnlineBackup.Tests.NightP_RestoreChainTests.DifferentialAfterAnIncrementalFullCopy_EveryPointRestoresIdentical() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-p/tests/Tests/NightP_RestoreChainTests.cs:line 340
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ 0:BS_STOP_SUCCESS upd=0 sent=8390216
+ 1:BS_STOP_SUCCESS upd=1 sent=1322442
+ 2:BS_STOP_SUCCESS upd=1 sent=8390216
+ 3:BS_STOP_SUCCESS upd=1 sent=3325695
+ objects in Current: .000, .001
+ base: restored 4 points, 1 bad
+
+
+
+Test Run Failed.
+Total tests: 1
+     Failed: 1
+ Total time: 25.6145 Seconds

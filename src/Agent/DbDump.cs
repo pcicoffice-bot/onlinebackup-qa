@@ -151,7 +151,7 @@ namespace OnlineBackup.Agent
             {
                 Run(Tool("OB_MYSQL", "mysql", new[] { "MySQL", "MariaDB" }), conn.Concat(new[] { "-e", "CREATE DATABASE IF NOT EXISTS `" + intoDb.Replace("`", "") + "`" }), env);
                 // the dump names its database (--databases): load it into the chosen one instead
-                var text = File.ReadAllText(sqlFile, Encoding.UTF8);
+                var text = OnlineBackup.Core.Atomic.ReadAllText(sqlFile, Encoding.UTF8);
                 text = System.Text.RegularExpressions.Regex.Replace(text, @"^(CREATE DATABASE|USE) [^\n]*\n", "", System.Text.RegularExpressions.RegexOptions.Multiline);
                 var tmp = sqlFile + ".load.sql"; File.WriteAllText(tmp, text, new UTF8Encoding(false));
                 try { Run(Tool("OB_MYSQL", "mysql", new[] { "MySQL", "MariaDB" }), conn.Concat(new[] { intoDb, "-e", "source " + tmp.Replace('\\', '/') }), env); }
@@ -160,7 +160,7 @@ namespace OnlineBackup.Agent
             else
             {
                 Run(Tool("OB_PSQL", "psql", new[] { "PostgreSQL" }), conn.Concat(new[] { "-d", "postgres", "-c", "CREATE DATABASE \"" + intoDb.Replace("\"", "") + "\"" }), env);
-                var text = File.ReadAllText(sqlFile, Encoding.UTF8);
+                var text = OnlineBackup.Core.Atomic.ReadAllText(sqlFile, Encoding.UTF8);
                 text = System.Text.RegularExpressions.Regex.Replace(text, @"^(CREATE DATABASE|\\connect|ALTER DATABASE) [^\n]*\n", "", System.Text.RegularExpressions.RegexOptions.Multiline);
                 var tmp = sqlFile + ".load.sql"; File.WriteAllText(tmp, text, new UTF8Encoding(false));
                 try { Run(Tool("OB_PSQL", "psql", new[] { "PostgreSQL" }), conn.Concat(new[] { "-d", intoDb, "-v", "ON_ERROR_STOP=1", "-f", tmp }), env); }

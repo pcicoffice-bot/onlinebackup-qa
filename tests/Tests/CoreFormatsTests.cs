@@ -78,6 +78,8 @@ namespace OnlineBackup.Tests
             Assert.False(Atomic.IsTemp(Path.Combine("users", "acme.tmp", "objects", "R1")));      // a customer called acme.tmp
             Assert.False(Atomic.IsTemp(Path.Combine("D:", "Backup.tmp", "users", "u", "x.chk")));  // a storage root with .tmp
             Assert.False(Atomic.IsTemp("report.tmpl")); Assert.False(Atomic.IsTemp("a.tmp")); Assert.False(Atomic.IsTemp("a.tmp0123ABCD"));
+            Assert.True(Atomic.IsTemp("Profile.xml.old0123abcd"));   // bug 99: the old file of a Windows replace, if the process stopped right then
+            Assert.False(Atomic.IsTemp("x.old")); Assert.False(Atomic.IsTemp("Profile.old.xml")); Assert.False(Atomic.IsTemp(Path.Combine("users", "a.old0123abcd", "x.chk")));
             // and what Atomic itself leaves behind is recognised: the name it would use
             var dir = Path.Combine(Path.GetTempPath(), "obtmp-" + Guid.NewGuid().ToString("N").Substring(0, 8)); Directory.CreateDirectory(dir);
             try { Atomic.WriteText(Path.Combine(dir, "a.txt"), "x"); Assert.Empty(Directory.GetFiles(dir).Where(Atomic.IsTemp)); }

@@ -10,6 +10,7 @@ namespace OnlineBackup.Server
     ///                           --user-home "E:\users|UNLIMITED" [--user-home "F:\users|150"]
     /// OnlineBackup.Server run  --system-home D:\Backup\system --prefix https://+:8443/
     /// OnlineBackup.Server config  --system-home D:\Backup\system [--public-url https://backup.company.co.il:8443] [--cert-pin SHA256]
+    /// OnlineBackup.Server scope [pilot|full] --system-home DIR          (PILOT-010: the pilot "Windows File Backup" switch)
     /// OnlineBackup.Server server-id --system-home DIR                    (the id a licence is issued for)
     /// OnlineBackup.Server license-keygen [--out license-private.key]     (product owner, once)
     /// OnlineBackup.Server license-issue --key license-private.key --server-id OB-… --company "…" [--edition PRO] [--users 100] [--computers 500] [--storage-gb 5000] [--modules FILE,MSSQL,…] [--days 365] [--center http://license.example.com:9443]
@@ -92,6 +93,21 @@ namespace OnlineBackup.Server
                             Console.WriteLine("saved");
                             return 0;
                         }
+                    case "scope":
+                        {
+                            // PILOT-010: the pilot "Windows File Backup" — "pilot" refuses everything outside it, "full" is the whole
+                            // product; on the server only (no web route changes it). Without a value: shows it. Run it with the server
+                            // service stopped: a running server keeps its own copy of system.xml and writes it back when it saves.
+                            var cfgs = SystemConfig.Load(one("system-home"));
+                            var want = args.Length > 1 && !args[1].StartsWith("--", StringComparison.Ordinal) ? args[1].ToLowerInvariant() : null;
+                            if (want == "pilot") cfgs.Doc.Root.SetAttributeValue("SCOPE", OnlineBackup.Core.Scope.Pilot);
+                            else if (want == "full") cfgs.Doc.Root.SetAttributeValue("SCOPE", null);
+                            else if (want != null) { Console.Error.WriteLine("usage: scope [pilot|full] --system-home DIR"); return 2; }
+                            if (want != null) cfgs.Save();
+                            Console.WriteLine(cfgs.Pilot ? "pilot (Windows file backup only)" : "full");
+                            if (want != null) Console.WriteLine("start the server service again (it reads the scope when it starts)");
+                            return 0;
+                        }
                     case "server-id":
                         Console.WriteLine(SystemConfig.Load(one("system-home")).ServerId);
                         return 0;
@@ -107,7 +123,7 @@ namespace OnlineBackup.Server
                         }
                     case "license-issue":
                         {
-                            var key = System.IO.File.ReadAllText(one("key")).Trim();
+                            var key = OnlineBackup.Core.Atomic.ReadAllText(one("key")).Trim();
                             var mods = (one("modules") ?? string.Join(",", License.AllModules)).Split(',');
                             Console.WriteLine(License.Issue(key, one("id") ?? ("L-" + SystemClock.UtcNow.ToString("yyyyMMddHHmmss")), one("company") ?? "", one("edition") ?? "PRO",
                                 one("server-id"), int.Parse(one("users") ?? "0"), double.Parse(one("storage-gb") ?? "0", System.Globalization.CultureInfo.InvariantCulture), mods,
@@ -130,7 +146,7 @@ namespace OnlineBackup.Server
                         }
                         {
                             // the product owner's licensing centre
-                            using (var c = new LicenseCenter(System.IO.File.ReadAllText(one("key")).Trim(), one("data"), one("prefix") ?? "http://+:9443/"))
+                            using (var c = new LicenseCenter(OnlineBackup.Core.Atomic.ReadAllText(one("key")).Trim(), one("data"), one("prefix") ?? "http://+:9443/"))
                             {
                                 Console.WriteLine("licensing centre listening " + (one("prefix") ?? "http://+:9443/"));
                                 var done = new ManualResetEvent(false);
@@ -159,14 +175,14 @@ namespace OnlineBackup.Server
                             return 0;
                         }
                     case "license-center-list":
-                        foreach (var f in System.IO.Directory.GetFiles(one("data"), "*.json")) Console.WriteLine(System.IO.Path.GetFileNameWithoutExtension(f) + "\t" + System.IO.File.ReadAllText(f));
+                        foreach (var f in System.IO.Directory.GetFiles(one("data"), "*.json")) Console.WriteLine(System.IO.Path.GetFileNameWithoutExtension(f) + "\t" + OnlineBackup.Core.Atomic.ReadAllText(f));
                         return 0;
                     case "license-center-approve":
                     case "license-center-revoke":
                         {
                             // works on the centre's data folder (also while the centre runs)
                             var p2 = System.IO.Path.Combine(one("data"), one("license") + ".json");
-                            var rec = System.IO.File.Exists(p2) ? OnlineBackup.Core.Json.Obj(OnlineBackup.Core.Json.Parse(System.IO.File.ReadAllText(p2))) : new Dictionary<string, object>();
+                            var rec = System.IO.File.Exists(p2) ? OnlineBackup.Core.Json.Obj(OnlineBackup.Core.Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p2))) : new Dictionary<string, object>();
                             rec[args[0] == "license-center-approve" ? "approved" : "revoked"] = true;
                             OnlineBackup.Core.Atomic.WriteText(p2, OnlineBackup.Core.Json.Write(rec));
                             Console.WriteLine("saved");

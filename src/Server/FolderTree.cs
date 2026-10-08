@@ -38,7 +38,7 @@ namespace OnlineBackup.Server
             var f = FileOf(users, login, computer);
             var m = new Msg().Set("computer", computer);
             if (!File.Exists(f)) return m.Set("dirs", "").Set("at", null);
-            var lines = File.ReadAllText(f).Split('\n');
+            var lines = OnlineBackup.Core.Atomic.ReadAllText(f).Split('\n');
             m.Set("sep", lines[0]).Set("dirs", string.Join("\n", lines.Skip(1))).Set("at", RunId.UnixMs(File.GetLastWriteTimeUtc(f)));
             lock (users.ProfileLock)
             {

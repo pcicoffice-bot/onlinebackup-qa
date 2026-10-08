@@ -190,7 +190,7 @@ namespace OnlineBackup.Agent
             var p = Path.Combine(mirror, ".state", userId + ".json");
             var s = new UserState();
             if (!File.Exists(p)) return s;
-            var j = Json.Obj(Json.Parse(File.ReadAllText(p, Encoding.UTF8)));
+            var j = Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(p, Encoding.UTF8)));
             s.Delta = Json.Obj(j.ContainsKey("delta") ? j["delta"] : null);
             s.Items = Json.Obj(j.ContainsKey("items") ? j["items"] : null);
             s.Tags = Json.Obj(j.ContainsKey("tags") ? j["tags"] : null);
@@ -323,7 +323,7 @@ namespace OnlineBackup.Agent
             var messages = new Dictionary<string, object>();
             object oldRel;
             if (st.Items.TryGetValue(jsonId, out oldRel) && File.Exists(Full((string)oldRel)))
-                try { messages = Json.Obj(Json.Parse(File.ReadAllText(Full((string)oldRel), Encoding.UTF8))); } catch (FormatException) { }
+                try { messages = Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(Full((string)oldRel), Encoding.UTF8))); } catch (FormatException) { }
             string newest = null;
             foreach (var m in changed)
             {
@@ -410,7 +410,7 @@ namespace OnlineBackup.Agent
             if (st.Items.TryGetValue(id, out old) && (string)old != rel) Remove(st, id);
             var full = Full(rel);
             var bytes = Encoding.UTF8.GetBytes(text);
-            if (File.Exists(full) && File.ReadAllBytes(full).SequenceEqual(bytes)) { st.Items[id] = rel; return false; }
+            if (File.Exists(full) && OnlineBackup.Core.Atomic.ReadAllBytes(full).SequenceEqual(bytes)) { st.Items[id] = rel; return false; }
             Directory.CreateDirectory(Path.GetDirectoryName(full));
             Atomic.WriteText(full, text);
             st.Items[id] = rel;
@@ -642,7 +642,7 @@ namespace OnlineBackup.Agent
                 string fid;
                 if (!contactFolders.TryGetValue(userId, out fid))
                     contactFolders[userId] = fid = Json.Str(g.Call("POST", "/users/" + E(userId) + "/contactFolders", Json.Write(new Dictionary<string, object> { { "displayName", folderName } })), "id");
-                g.Call("POST", "/users/" + E(userId) + "/contactFolders/" + E(fid) + "/contacts", Json.Write(Writable(Json.Obj(Json.Parse(File.ReadAllText(localFile, Encoding.UTF8))), ContactFields)));
+                g.Call("POST", "/users/" + E(userId) + "/contactFolders/" + E(fid) + "/contacts", Json.Write(Writable(Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(localFile, Encoding.UTF8))), ContactFields)));
                 Contacts++;
                 return;
             }
@@ -651,7 +651,7 @@ namespace OnlineBackup.Agent
                 string cid;
                 if (!calendars.TryGetValue(userId, out cid))
                     calendars[userId] = cid = Json.Str(g.Call("POST", "/users/" + E(userId) + "/calendars", Json.Write(new Dictionary<string, object> { { "name", folderName } })), "id");
-                var ev = Json.Obj(Json.Parse(File.ReadAllText(localFile, Encoding.UTF8)));
+                var ev = Json.Obj(Json.Parse(OnlineBackup.Core.Atomic.ReadAllText(localFile, Encoding.UTF8)));
                 var w = Writable(ev, EventFields);
                 var who = Json.Arr(ev.ContainsKey("attendees") ? ev["attendees"] : null).Select(a => Json.Str(Json.Child(Json.Obj(a), "emailAddress"), "address")).Where(a => !string.IsNullOrEmpty(a)).ToList();
                 if (who.Count > 0)
@@ -673,7 +673,7 @@ namespace OnlineBackup.Agent
                     var f = g.Call("POST", "/users/" + userId + "/mailFolders", Json.Write(new Dictionary<string, object> { { "displayName", folderName } }));
                     mailFolders[userId] = fid = Json.Str(f, "id");
                 }
-                var mime = Encoding.ASCII.GetBytes(Convert.ToBase64String(File.ReadAllBytes(localFile)));
+                var mime = Encoding.ASCII.GetBytes(Convert.ToBase64String(OnlineBackup.Core.Atomic.ReadAllBytes(localFile)));
                 g.Raw("POST", "/users/" + userId + "/mailFolders/" + fid + "/messages", mime, "text/plain");
                 Mail++;
             }
@@ -689,7 +689,7 @@ namespace OnlineBackup.Agent
         void Upload(string localFile, string target)
         {
             var len = new FileInfo(localFile).Length;
-            if (len <= 4 * 1024 * 1024) { g.Raw("PUT", target + ":/content", File.ReadAllBytes(localFile), "application/octet-stream"); return; }
+            if (len <= 4 * 1024 * 1024) { g.Raw("PUT", target + ":/content", OnlineBackup.Core.Atomic.ReadAllBytes(localFile), "application/octet-stream"); return; }
             var session = g.Call("POST", target + ":/createUploadSession", Json.Write(new Dictionary<string, object> { { "item", new Dictionary<string, object> { { "@microsoft.graph.conflictBehavior", "rename" } } } }));
             var url = Json.Str(session, "uploadUrl");
             const int part = 10 * 327680;   // a multiple of 320 KiB

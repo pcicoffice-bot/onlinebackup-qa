@@ -1,0 +1,25 @@
+FullyQualifiedName~NightM_RaceTests.RestoreOfTheLatestPoint
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.12]   Discovering: Tests
+[xUnit.net 00:00:00.22]   Discovered:  Tests
+[xUnit.net 00:00:00.23]   Starting:    Tests
+  Passed OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_WhileABackupCommits_GetsThatPointsBytes [313 ms]
+[xUnit.net 00:00:08.26]   Finished:    Tests
+  Passed OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_ConcurrentWithACommit_50Iterations [7 s]
+
+Test Run Successful.
+Total tests: 2
+     Passed: 2
+ Total time: 8.8842 Seconds

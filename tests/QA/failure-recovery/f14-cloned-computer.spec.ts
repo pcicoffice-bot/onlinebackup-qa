@@ -4,17 +4,17 @@
 // Expected: neither copy silently damages the other's backups — after each copy's backup, its newest point restores
 // identical (SHA-256) to that copy's files; if the product cannot keep the two apart it must say so (a failed or
 // refused run), never report success with another computer's content in the point.
-// Each copy sees its own folder at the same path through a private mount namespace (unshare -m, needs root).
+// Each copy sees its own folder at the same path through a private mount namespace (unshare -m, needs root; with
+// passwordless sudo only the namespace is made as root, the agent itself runs as the normal user — lib/fault privateView).
 import { test, expect } from '../lib/fixtures';
 import { goldenDataset, manifest, compare, restoredPath } from '../lib/world';
-import { agentRun, hasProgram } from '../lib/fault';
-import { spawnSync } from 'child_process';
+import { agentRun, privateView } from '../lib/fault';
 import * as fs from 'fs';
 import * as path from 'path';
 
 test('F14 cloned computer (same registration, same set, own files) → no success with the other copy\'s content → each newest point restores identical', async ({ world, evidence }) => {
-  const nsOk = hasProgram('unshare') && spawnSync('unshare', ['-m', 'true']).status === 0;
-  test.skip(!nsOk, 'NOT TESTED: this machine does not allow a private mount namespace (unshare -m needs root)');
+  const nsOk = privateView(world.dir, world.dir) !== null;
+  test.skip(!nsOk, 'NOT TESTED: this machine does not allow a private mount namespace (unshare -m needs root or passwordless sudo)');
   world.addCustomer('qa-f14');
   const a = world.agent('qa-f14', 'CLONED-PC'); a.register();
   const src = path.join(world.dir, 'data'); const dataA = goldenDataset(src);
@@ -28,7 +28,7 @@ test('F14 cloned computer (same registration, same set, own files) → no succes
   const disk = path.join(world.dir, 'clone-disk');
   fs.cpSync(src, disk, { recursive: true, preserveTimestamps: true });
   // the clone sees its own disk at the same path
-  const onClone = ['unshare', '-m', '--', 'sh', '-c', 'mount --bind "$0" "$1" && shift && exec "$@"', disk, src];
+  const onClone = privateView(disk, src)!;
 
   evidence.step('the clone\'s files diverge: 2 edited, 1 deleted, 1 new');
   fs.writeFileSync(path.join(disk, 'Documents/letter.txt'), 'the CLONE\'s own letter\n');

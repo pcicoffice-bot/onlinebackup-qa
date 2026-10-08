@@ -6,8 +6,10 @@ using System.Text;
 namespace OnlineBackup.Core
 {
     /// <summary>
-    /// The three keys of one backup set. The server never sees them: content, file names and paths are
-    /// encrypted on the client before anything leaves it.
+    /// The three keys of one backup set. Content, and the names and paths inside the stored objects, are encrypted on the
+    /// client before anything leaves it. Owner decision S-1 (2026-10-08): the run logs the server keeps list file names in
+    /// plain text (support, reports, the AI explanation) - the product does not claim that file names are encrypted.
+    /// The key itself reaches the server only as the key-recovery copy the customer agreed to (owner decision A7).
     /// </summary>
     public sealed class KeySet
     {

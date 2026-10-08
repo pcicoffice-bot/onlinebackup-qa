@@ -35,9 +35,9 @@ namespace OnlineBackup.Agent
         public SetupUi(string packageDir, int port = 0)
         {
             this.packageDir = packageDir;
-            conn = XElement.Load(Path.Combine(packageDir, "connection.xml"));
+            conn = OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(packageDir, "connection.xml"));
             var bp = Path.Combine(packageDir, "branding.xml");
-            brand = File.Exists(bp) ? XElement.Load(bp) : new XElement("BRANDING");
+            brand = File.Exists(bp) ? OnlineBackup.Core.Atomic.LoadXElement(bp) : new XElement("BRANDING");
             Key = Bytes.Hex(Bytes.Random(16));
             Exception last = null;
             for (int i = 0; i < 30; i++)

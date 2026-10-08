@@ -29,7 +29,8 @@ namespace OnlineBackup.Server
         public static string Attr(SystemConfig cfg, string a) { return (string)El(cfg).Attribute(a); }
 
         /// <summary>On = switched on and a key entered.</summary>
-        public static bool On(SystemConfig cfg) { return Attr(cfg, "ENABLED") == "Y" && !string.IsNullOrEmpty(Attr(cfg, "KEY_ENC")); }
+        /// <summary>PILOT-010 / UI-08: never on with the pilot switch (no explanation, no search, no automatic diagnosis).</summary>
+        public static bool On(SystemConfig cfg) { return !cfg.Pilot && Attr(cfg, "ENABLED") == "Y" && !string.IsNullOrEmpty(Attr(cfg, "KEY_ENC")); }
         public static bool AutoDiagnose(SystemConfig cfg) { return On(cfg) && Attr(cfg, "AUTO_DIAGNOSE") != "N"; }
         public static bool Search(SystemConfig cfg) { return On(cfg) && Attr(cfg, "SEARCH") != "N"; }
         public static string Model(SystemConfig cfg) { var m = Attr(cfg, "MODEL"); return string.IsNullOrEmpty(m) ? DefaultModel : m; }
@@ -149,6 +150,7 @@ namespace OnlineBackup.Server
         /// <summary>Explains a job log for a technician, in the given language. Returns summary / cause / steps / severity / category / needsTechnician.</summary>
         public static Msg Diagnose(SystemConfig cfg, string lang, string setType, string engine, IEnumerable<string> logLines)
         {
+            PilotScope.Check(cfg, PilotScope.Ai);
             var system = "You are the support engineer of an online backup product used by IT service companies. "
                 + "You read the log of one backup or restore job and explain it to a technician: what happened, the most likely cause and how to fix it. "
                 + "Base everything on the log; when the log does not show the cause, say so and give the checks that would find it. "

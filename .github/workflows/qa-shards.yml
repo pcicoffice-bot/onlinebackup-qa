@@ -1,0 +1,67 @@
+# QA shards (public mirror only): independent xUnit tests split over isolated GitHub runners at once - shortens the
+# WAIT, never the depth (the engine: shards-core.yml). Started by hand (inputs) or by a push of a branch qa-shards-<n>
+# whose tools/qa-shards/request.json holds the same fields (a manual run of a new workflow needs it on the default branch).
+# Chains that must keep state on one machine (C1: install -> backup -> restart -> restore) stay in qa.yml, serial.
+# No secrets: the engine reads only; the last job alone writes, with this run's GITHUB_TOKEN, to the qa-evidence branch.
+name: QA shards
+on:
+  push:
+    branches: ['qa-shards-*']
+  workflow_dispatch:
+    inputs:
+      os: { description: 'runner', type: choice, options: [ubuntu-latest, windows-latest], default: ubuntu-latest }
+      select: { description: 'space-separated parts of test names (empty: every test)', type: string, default: '' }
+      shards: { description: 'shards (split by class)', type: number, default: 4 }
+      repeat: { description: 'repetitions of every shard, each on its own runner', type: number, default: 1 }
+      max_parallel: { description: 'jobs at once (leave room for qa.yml runs)', type: number, default: 6 }
+      control: { description: 'also run the previous method (one job, its own build) and compare', type: boolean, default: false }
+permissions: { contents: read }
+jobs:
+  request:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      os: ${{ steps.req.outputs.os }}
+      select: ${{ steps.req.outputs.select }}
+      shards: ${{ steps.req.outputs.shards }}
+      repeat: ${{ steps.req.outputs.repeat }}
+      max_parallel: ${{ steps.req.outputs.max_parallel }}
+      control: ${{ steps.req.outputs.control }}
+      title: ${{ steps.req.outputs.title }}
+      serial: ${{ steps.req.outputs.serial }}
+      load: ${{ steps.req.outputs.load }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: The request (the inputs of a manual run, or tools/qa-shards/request.json of a qa-shards-* branch)
+        id: req
+        env: { INPUTS: '${{ toJSON(inputs) }}', EVENT: '${{ github.event_name }}' }
+        run: python3 tools/qa-shards/request.py | tee -a "$GITHUB_OUTPUT"
+
+  run:
+    needs: request
+    uses: ./.github/workflows/shards-core.yml
+    with:
+      os: ${{ needs.request.outputs.os }}
+      select: ${{ needs.request.outputs.select }}
+      shards: ${{ fromJSON(needs.request.outputs.shards) }}
+      repeat: ${{ fromJSON(needs.request.outputs.repeat) }}
+      max_parallel: ${{ fromJSON(needs.request.outputs.max_parallel) }}
+      control: ${{ needs.request.outputs.control == 'true' }}
+      mode: strict
+      title: ${{ needs.request.outputs.title }}
+      serial: ${{ fromJSON(needs.request.outputs.serial) }}
+      load: ${{ needs.request.outputs.load == 'true' }}
+
+  keep:
+    needs: [request, run]
+    if: ${{ always() && needs.request.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions: { contents: write }   # only to keep the verdict in the qa-evidence branch
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: verdict, path: verdict }
+      - name: Keep the verdict in qa-evidence (runs/shards-<run id>)
+        run: sh tools/qa-shards/keep.sh verdict "shards-${{ github.run_id }}" "${{ github.sha }}"

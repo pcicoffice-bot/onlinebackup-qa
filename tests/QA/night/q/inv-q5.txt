@@ -1,0 +1,52 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/zz-inv-q5.spec.ts:26:5 › INVERTED q5 — Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service
+e2e/zz-inv-q5.spec.ts:26:5 › INVERTED q5 — Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service
+Q5 FACT schedule: slot 2026-10-07T03:15:00, the service's run ended 2026-10-07T03:15:17 BS_STOP_SUCCESS
+
+  1) e2e/zz-inv-q5.spec.ts:26:5 › INVERTED q5 — Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service 
+
+    Error: the run at 2026-10-07T03:15:17 is not before the slot 2026-10-07T03:15:00
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: false
+    Received: true
+        at Error: the run at 2026-10-07T03:15:17 is not before the slot 2026-10-07T03:15:0
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/zz-inv-q5.spec.ts:52:104
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/attachments/server-log-aa9e7813f17cf097e03e4186491571107782a812.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: agent-SVC-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/attachments/agent-SVC-PC1-log-a7713ca07a46fdf2cd6884312351935f452029e2.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/attachments/system-xml-083000299c59459e7be85678a2764bab7fc5565d.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/error-context.md
+
+    attachment #7: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-zz-inv-q5-INVERTED-q5--70a85-y-the-running-agent-service/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  1 failed
+    e2e/zz-inv-q5.spec.ts:26:5 › INVERTED q5 — Q5 AG-03/AG-02 schedule, upload limit, back up now and stop set on the site are obeyed by the running agent service 
+EXIT 1

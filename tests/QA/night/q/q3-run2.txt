@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q3-settings-backup.spec.ts:20:5 › Q3 ST-10 the settings backup taken on the site brings a lost server back: sign-in, customer, set, registration, key, backup and restore
+  1 passed (54.5s)
+EXIT 0

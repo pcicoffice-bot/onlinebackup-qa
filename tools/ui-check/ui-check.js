@@ -7,7 +7,7 @@
 const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
 const OUT = process.env.OUT || 'ui-report';
-const LANGS = (process.env.LANGS || 'en he ar de es pt fr it nl pl tr ja zh qps qps-rtl').split(/\s+/).filter(Boolean);
+let LANGS = (process.env.LANGS || 'en he ar de es pt fr it nl pl tr ja zh qps qps-rtl').split(/\s+/).filter(Boolean);
 // UI-030: real devices — a phone is a touch screen with the browser's phone layout (the page's viewport tag counts), not just a narrow window
 const DEVICE_LIST = {
   desktop: { viewport: { width: 1280, height: 800 } },
@@ -22,13 +22,34 @@ const RTL = ['he', 'ar', 'qps-rtl'];
 
 // pseudo languages: every English text longer, with accents, placeholders kept — layout problems show without knowing a language
 const pseudo = (s) => '[' + s.replace(/\{\d\}|<[^>]+>|./g, (c) => c.length > 1 ? c : ({ a: 'á', e: 'é', i: 'í', o: 'ó', u: 'ú', A: 'Å', E: 'É', O: 'Ö', c: 'ç', n: 'ñ' })[c] || c) + ' ~~~~' + '~'.repeat(Math.ceil(s.length * 0.2)) + ']';
+// Q27: a dictionary the server does not offer is a 404 with no body — say so, never "Unexpected end of JSON input"
+async function getDict(lang) {
+  const r = await fetch(U.admin + '/i18n/' + lang + '.json');
+  if (!r.ok) throw new Error('the server does not offer the language "' + lang + '" (/i18n/' + lang + '.json: HTTP ' + r.status + ')');
+  return r.json();
+}
+const realLang = (lang) => lang === 'qps' ? 'de' : lang === 'qps-rtl' ? 'he' : lang;
 async function dictionary(lang) {
   if (lang === 'en') return {};
   if (lang.startsWith('qps')) {
-    const he = await (await fetch(U.admin + '/i18n/he.json')).json();
+    const he = await getDict('he');
     const d = {}; for (const k of Object.keys(he.strings)) d[k] = pseudo(k); return d;
   }
-  return (await (await fetch(U.admin + '/i18n/' + lang + '.json')).json()).strings;
+  return (await getDict(lang)).strings;
+}
+// I18N-050: the product offers only some languages (src/Core/L.cs Languages). Without LANGS the robot walks the ones the
+// server offers and names the ones it skips; a language asked for by LANGS that the server does not offer is an error.
+async function offeredLangs() {
+  const ok = [], skipped = [];
+  for (const lang of LANGS) {
+    const real = realLang(lang);
+    const served = real === 'en' || (await fetch(U.admin + '/i18n/' + real + '.json')).ok;
+    (served ? ok : skipped).push(lang);
+  }
+  if (skipped.length && process.env.LANGS) throw new Error('LANGS has languages the server does not offer: ' + skipped.join(' '));
+  if (skipped.length) console.log('not offered by the product (skipped): ' + skipped.join(' '));
+  if (!ok.length) throw new Error('the server offers none of the languages ' + LANGS.join(' '));
+  return ok;
 }
 
 // ---- the checks, inside the page ----
@@ -206,11 +227,12 @@ const SCREENS = [
   const REC = {}; let SEEDED = false;
   const b = await chromium.launch({ executablePath: process.env.CHROMIUM || (fs.existsSync('/opt/pw-browsers/chromium') ? '/opt/pw-browsers/chromium' : undefined) });
   const found = []; let shots = 0, screens = 0;
+  LANGS = await offeredLangs();
   for (const lang of LANGS) {
     const dict = await dictionary(lang);
     const t = (s) => dict[s] ?? s;
     const translatedKeys = lang === 'en' || lang.startsWith('qps') ? null : Object.entries(dict).filter(([k, v]) => v && v !== k && k.length > 3).map(([k]) => k);
-    const real = lang === 'qps' ? 'de' : lang === 'qps-rtl' ? 'he' : lang;
+    const real = realLang(lang);
     for (const [vp, dev] of VIEWPORTS) {
       const ctx = await b.newContext(dev);
       // only the product's own pages: an outside font or script that cannot load must not hold the screenshots

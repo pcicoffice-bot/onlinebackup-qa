@@ -381,7 +381,7 @@ namespace OnlineBackup.Tests
                 var app = env.Agent("sec2026", "Customer-Pass-1");
                 var session = app.Interactive("Customer-Pass-1", null);
                 var setup = session.Call("POST", "/api/totp/enable");
-                session.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(setup["secret"], DateTime.UtcNow)));
+                session.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(setup["secret"], DateTime.UtcNow.AddSeconds(-30)))); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
                 var noCode = Assert.Throws<AgentException>(() => app.Interactive("Customer-Pass-1", null));
                 Assert.Equal("OTP_REQUIRED", noCode.Code);
                 Assert.NotNull(app.Interactive("Customer-Pass-1", TestAuth.Fresh("e2e|sec2026", setup["secret"]))   /* H-02: each sign-in takes the next code, as a person does */.Session);
@@ -635,7 +635,7 @@ namespace OnlineBackup.Tests
         {
             var mono = new[] { "/usr/bin/mono", "/usr/local/bin/mono" }.FirstOrDefault(File.Exists);
             var exe = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "Agent", "bin", "Debug", "net40", "OnlineBackup.Agent.exe"));
-            if (mono == null || !File.Exists(exe)) return;   // the .NET 4.0 build is checked where mono exists
+            if (mono == null || !File.Exists(exe)) throw NotTested.Because("needs mono and the .NET 4.0 agent build");   // the .NET 4.0 build is checked where mono exists
             using (var env = new Env())
             {
                 env.CreateUser("mono2026", "Customer-Pass-1");

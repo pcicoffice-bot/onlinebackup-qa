@@ -1,0 +1,9 @@
+
+Running 1 test using 1 worker
+
+[1/1] e2e/q6-quota.spec.ts:16:5 › Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete
+e2e/q6-quota.spec.ts:16:5 › Q6 ST-05 a full quota stops the next backup clearly, keeps every existing backup restorable, and a raised quota lets the next one complete
+Q6 FACT over the room: BS_STOP_QUOTA_EXCEEDED new=0 upd=0 perm=0 del=0 bytes=0 | full: BS_STOP_QUOTA_EXCEEDED new=0 upd=0 perm=0 del=0 bytes=0 / err:  The quota is full: new backups are stopped, existing backups are kept.
+
+  1 passed (21.1s)
+EXIT 0

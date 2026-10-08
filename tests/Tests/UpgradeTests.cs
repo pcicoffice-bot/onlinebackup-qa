@@ -70,7 +70,7 @@ namespace OnlineBackup.Tests
         public void MakeFixture_WhenAsked()
         {
             var label = Environment.GetEnvironmentVariable("OB_MAKE_UPGRADE_FIXTURE");
-            if (string.IsNullOrEmpty(label)) return;
+            if (string.IsNullOrEmpty(label)) throw NotTested.Because("a tool that makes the upgrade fixture on demand (OB_MAKE_UPGRADE_FIXTURE), not a test");
             string zip = Path.Combine(FixtureDir(), label + ".zip");
             Assert.False(File.Exists(zip), "a fixture is never replaced: " + zip);
             using (var env = new Env())

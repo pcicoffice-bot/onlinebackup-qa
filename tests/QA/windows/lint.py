@@ -83,6 +83,10 @@ def unwrapped(s):
     return [(n, l) for n, l in enumerate(s.splitlines(), 1) if LISTFN.search(l) and not l.lstrip().startswith(('#', 'function'))]
 if __name__ == '__main__':
     args = [a for a in sys.argv[1:] if a != '--fix']; bad = 0
+    # no file named = every robot file next to this one (run with no arguments it used to check NOTHING and say clean)
+    if not args:
+        import glob, os
+        args = sorted(glob.glob(os.path.join(os.path.dirname(os.path.abspath(__file__)), '**', '*.ps1'), recursive=True))
     for p in args:
         s = open(p, encoding='utf-8').read(); t = fix(s)
         for n, l in unwrapped(s):

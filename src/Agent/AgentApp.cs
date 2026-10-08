@@ -65,7 +65,47 @@ namespace OnlineBackup.Agent
             return c;
         }
 
-        public Profile Profile() { return Core.Profile.Parse(DeviceClient().Call("GET", "/api/profile")["profile"]); }
+        public Profile Profile() { return Remember(Core.Profile.Parse(DeviceClient().Call("GET", "/api/profile")["profile"])); }
+
+        // ---------------------------------------------------------------- PILOT-010: the pilot "Windows File Backup"
+
+        string scope;
+        string ScopeFile { get { return Path.Combine(Home.Dir, "server-scope.txt"); } }
+
+        /// <summary>The server's scope, told in every profile it sends (ROOT/@SERVER_SCOPE) and kept on this computer, so an
+        /// agent that starts without reaching the server still knows it.</summary>
+        public string ServerScope
+        {
+            get
+            {
+                if (scope == null) { try { scope = File.Exists(ScopeFile) ? OnlineBackup.Core.Atomic.ReadAllText(ScopeFile).Trim() : ""; } catch (IOException) { scope = ""; } }
+                return scope;
+            }
+        }
+
+        public bool Pilot { get { return Scope.IsPilot(ServerScope); } }
+
+        /// <summary>Notes the scope of a profile from the server (written down only when it changes).</summary>
+        public Profile Remember(Profile p)
+        {
+            var now = (string)p.Root.Attribute("SERVER_SCOPE") ?? "";
+            if (now != ServerScope)
+            {
+                try { if (now.Length == 0) File.Delete(ScopeFile); else { Directory.CreateDirectory(Home.Dir); File.WriteAllText(ScopeFile, now); } } catch (IOException) { } catch (UnauthorizedAccessException) { }
+                scope = now;
+            }
+            return p;
+        }
+
+        /// <summary>PILOT-010: a set outside the pilot is never run here — backup, restore, restore test — even when one reaches
+        /// this computer; nor does anything run on Windows XP / 2003 with the pilot (AG-08).</summary>
+        public void CheckScope(BackupSetInfo s)
+        {
+            if (!Pilot) return;
+            var why = Scope.Refusal(s);
+            if (why != null) throw new AgentException(403, Scope.Code, why);
+            if (NeedsBuiltinTls) throw new AgentException(403, Scope.Code, Scope.OldWindowsMessage);
+        }
 
         public List<BackupSetInfo> Sets() { return Profile().Sets; }
 
@@ -133,6 +173,7 @@ namespace OnlineBackup.Agent
         {
             var s = Sets().FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);   // PILOT-010: before anything runs (commands, a local copy, restic, the server's begin)
             // one run per set at a time (the schedule and "back up now" share the service process)
             object gate;
             lock (running) { if (!running.TryGetValue(s.Id, out gate)) running[s.Id] = gate = new object(); }
@@ -154,7 +195,7 @@ namespace OnlineBackup.Agent
             var path = BackupRun.MarkerPath(Home, setId);
             if (!File.Exists(path)) return false;
             string[] f;
-            try { f = File.ReadAllText(path).Trim().Split('\t'); } catch (IOException) { return false; }
+            try { f = OnlineBackup.Core.Atomic.ReadAllText(path).Trim().Split('\t'); } catch (IOException) { return false; }
             if (f.Length >= 4)
             {
                 int pid; long startMs;
@@ -197,10 +238,13 @@ namespace OnlineBackup.Agent
                     // cut off by the internet: noted, so it starts again as soon as the server answers (MISS-020)
                     NoteOffline(SystemClock.UtcNow);
                     File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == "LOG" ? "last-log.txt" : "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\tNETWORK");
+                    if (mode != "LOG") RunNotes.Record(Home.SetDir(s.Id), "NETWORK", new List<string> { AhsayLog.Line(SystemClock.UtcNow, "err", message: e.Message) }, 1, SystemClock.UtcNow);
                     throw;
                 }
             }
             File.WriteAllText(Path.Combine(Home.SetDir(s.Id), mode == "LOG" ? "last-log.txt" : "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\t" + run.Result);
+            // B2, the customer's window only: the notes of this run (last complete, files not backed up, the log); never changes the run
+            if (mode != "LOG") RunNotes.Record(Home.SetDir(s.Id), run.Result, run.LogLines, run.Errors, SystemClock.UtcNow);
             return run;
         }
 
@@ -221,7 +265,7 @@ namespace OnlineBackup.Agent
             try
             {
                 if (!File.Exists(OfflineFile)) return;
-                File.WriteAllText(BackFile, File.ReadAllText(OfflineFile).Trim() + "\t" + RunId.UnixMs(nowUtc).ToString(System.Globalization.CultureInfo.InvariantCulture));
+                File.WriteAllText(BackFile, OnlineBackup.Core.Atomic.ReadAllText(OfflineFile).Trim() + "\t" + RunId.UnixMs(nowUtc).ToString(System.Globalization.CultureInfo.InvariantCulture));
                 File.Delete(OfflineFile);
             }
             catch (IOException) { }
@@ -233,7 +277,7 @@ namespace OnlineBackup.Agent
             try
             {
                 if (!File.Exists(BackFile)) return null;
-                var f = File.ReadAllText(BackFile).Trim().Split('\t');
+                var f = OnlineBackup.Core.Atomic.ReadAllText(BackFile).Trim().Split('\t');
                 long a, b;
                 if (f.Length != 2 || !long.TryParse(f[0], out a) || !long.TryParse(f[1], out b)) return null;
                 return Tuple.Create(RunId.FromUnixMs(a).ToLocalTime(), RunId.FromUnixMs(b).ToLocalTime());
@@ -245,6 +289,9 @@ namespace OnlineBackup.Agent
         /// SET-030: "stop" from the admin site — true when the set got a stop request after this run started. The profile is
         /// read at most every 20 seconds; a server that cannot be reached never stops the backup.
         /// </summary>
+        /// <summary>Bug 126: how long the "must this run stop?" question may wait for the server.</summary>
+        public static int StopProbeTimeoutMs = 10000;
+
         public Func<bool> StopCheck(BackupSetInfo s, DateTime startedUtc)
         {
             long since = RunId.UnixMs(startedUtc); DateTime next = DateTime.MinValue; bool stop = s.StopRequest > since;
@@ -253,7 +300,16 @@ namespace OnlineBackup.Agent
                 if (stop) return true;
                 if (SystemClock.UtcNow < next) return false;
                 next = SystemClock.UtcNow.AddSeconds(20);
-                try { var cur = Sets().FirstOrDefault(x => x.Id == s.Id); stop = cur != null && cur.StopRequest > since; } catch (Exception) { }
+                // bug 126: this is asked also while a file is sent (bug 119) - one quick try, never the full retry policy of a real
+                // call (4 tries, pauses, 300 s each): with the server gone or hung that held the upload up to 20 minutes per question.
+                // Unanswered = go on; the run's own calls find the outage and report it.
+                try
+                {
+                    var c = DeviceClient(); c.Retries = 0; c.TimeoutMs = StopProbeTimeoutMs;
+                    var cur = Remember(Core.Profile.Parse(c.Call("GET", "/api/profile")["profile"])).Sets.FirstOrDefault(x => x.Id == s.Id);
+                    stop = cur != null && cur.StopRequest > since;
+                }
+                catch (Exception) { }
                 return stop;
             };
         }
@@ -263,7 +319,7 @@ namespace OnlineBackup.Agent
         {
             if (s.RunRequest <= 0) return false;
             var f = Path.Combine(Home.SetDir(s.Id), "run-request.txt");
-            long done; long.TryParse(File.Exists(f) ? File.ReadAllText(f).Trim() : "0", out done);
+            long done; long.TryParse(File.Exists(f) ? OnlineBackup.Core.Atomic.ReadAllText(f).Trim() : "0", out done);
             if (s.RunRequest <= done) return false;
             // bug 45 (Agent C, F4): the press was marked done before its backup began — a backup that could not start
             // (the server busy for a moment, the line down) lost the press. The previous mark is kept; Backup puts it
@@ -278,7 +334,7 @@ namespace OnlineBackup.Agent
             try
             {
                 var f = Path.Combine(Home.SetDir(setId), "run-request.txt");
-                if (File.Exists(f + ".prev")) { File.WriteAllText(f, File.ReadAllText(f + ".prev")); File.Delete(f + ".prev"); }
+                if (File.Exists(f + ".prev")) { File.WriteAllText(f, OnlineBackup.Core.Atomic.ReadAllText(f + ".prev")); File.Delete(f + ".prev"); }
             }
             catch (Exception) { }
         }
@@ -290,21 +346,21 @@ namespace OnlineBackup.Agent
             if (s.Type != "MSSQL" || s.LogIntervalMinutes <= 0) return false;
             var p = Path.Combine(Home.SetDir(s.Id), "last-log.txt");
             DateTime last;
-            return !File.Exists(p) || !RunId.TryParse(File.ReadAllText(p).Split('\t')[0], out last) || (utc - last).TotalMinutes >= s.LogIntervalMinutes;
+            return !File.Exists(p) || !RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(p).Split('\t')[0], out last) || (utc - last).TotalMinutes >= s.LogIntervalMinutes;
         }
 
         /// <summary>The restic engine for a set (ENGINE="RESTIC").</summary>
         /// <summary>Tests: adjusts every restic runner this app makes (a stand-in program, short limits).</summary>
         public Action<ResticRunner> ResticSetup;
 
-        public ResticRunner Restic(BackupSetInfo s, string secret = null) { var r = new ResticRunner(this, s, Key(s, secret)); var f = ResticSetup; if (f != null) f(r); return r; }
+        public ResticRunner Restic(BackupSetInfo s, string secret = null) { CheckScope(s); var r = new ResticRunner(this, s, Key(s, secret)); var f = ResticSetup; if (f != null) f(r); return r; }
 
         public bool RestoreTestDue(BackupSetInfo s, DateTime utc)
         {
             // I-4: only after a backup that ended well, for both engines — a native run stopped by the technician commits what
             // it sent, and its partial point got a green "Restore test passed" next to "no completed backup"
             var la = Path.Combine(Home.SetDir(s.Id), "last-attempt.txt");
-            if (!File.Exists(la) || !File.ReadAllText(la).Contains("BS_STOP_SUCCESS")) return false;
+            if (!File.Exists(la) || !OnlineBackup.Core.Atomic.ReadAllText(la).Contains("BS_STOP_SUCCESS")) return false;
             if (s.Engine != "RESTIC")
             {
                 var st = new LocalState(Home.SetDir(s.Id));
@@ -312,21 +368,39 @@ namespace OnlineBackup.Agent
             }
             var p = Path.Combine(Home.SetDir(s.Id), "last-restore-test.txt");
             DateTime last;
-            if (File.Exists(p) && RunId.TryParse(File.ReadAllText(p).Trim(), out last) && (utc - last).TotalDays < 30) return false;
-            File.WriteAllText(p, RunId.From(utc));
+            if (File.Exists(p) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(p).Trim(), out last) && (utc - last).TotalDays < 30) return false;
+            // Bug 102 (pilot restore tests, RS-06): "done" was written HERE, before the test ran - a test whose result never reached
+            // the server (line cut, server busy) was not due again for 30 days. Now it is written only when the server took the
+            // result (RestoreTestDone); an attempt that did not get there is tried again after an hour, not on every scheduler pass.
+            var tried = Path.Combine(Home.SetDir(s.Id), "last-restore-test-try.txt");
+            if (File.Exists(tried) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(tried).Trim(), out last) && (utc - last).TotalHours < 1 && utc >= last) return false;
+            OnlineBackup.Core.Atomic.WriteText(tried, RunId.From(utc));
+            lock (restoreTestDueAt) restoreTestDueAt[s.Id] = utc;
             return true;
+        }
+
+        readonly Dictionary<string, DateTime> restoreTestDueAt = new Dictionary<string, DateTime>();
+
+        /// <summary>The restore test of the set is done: its result reached the server. The 30 days count from the time it was due.</summary>
+        void RestoreTestDone(string setId)
+        {
+            DateTime at;
+            lock (restoreTestDueAt) { if (!restoreTestDueAt.TryGetValue(setId, out at)) at = SystemClock.UtcNow; restoreTestDueAt.Remove(setId); }
+            OnlineBackup.Core.Atomic.WriteText(Path.Combine(Home.SetDir(setId), "last-restore-test.txt"), RunId.From(at));
         }
 
         public Restore RestoreFor(Client session, string setId, string secret = null, byte[] recoveredKey = null)
         {
-            var s = Core.Profile.Parse(session.Call("GET", "/api/profile")["profile"]).Sets.FirstOrDefault(x => x.Id == setId);
+            var s = Remember(Core.Profile.Parse(session.Call("GET", "/api/profile")["profile"])).Sets.FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);
             return new Restore(session, s, Key(s, secret, recoveredKey), Path.Combine(Home.Dir, "temp"));
         }
 
         /// <summary>Restore from the local copy (no internet): the key from this computer or from the password.</summary>
         public Restore RestoreLocal(BackupSetInfo s, string secret = null, byte[] recoveredKey = null)
         {
+            CheckScope(s);
             return new Restore(new LocalSource(new LocalRepo(s.LocalCopyPath, Home.Login, s.Id)), Key(s, secret, recoveredKey), Path.Combine(Home.Dir, "temp"));
         }
 
@@ -339,12 +413,14 @@ namespace OnlineBackup.Agent
         {
             var s = Sets().FirstOrDefault(x => x.Id == setId);
             if (s == null) throw new AgentException(404, "NO_SET", "The backup set does not exist.");
+            CheckScope(s);
             if (s.Engine == "RESTIC")
             {
                 // restic check reading 5% of the data: every byte read is authenticated with the set's key
                 var t = Restic(s).Check();
                 t.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, t.Int("ok") == 1 ? "info" : "err", message: "restore test (restic check --read-data-subset 5%): " + t["message"])));
                 DeviceClient().Call("POST", "/api/sets/" + s.Id + "/restoretest", t);
+                RestoreTestDone(s.Id);   // bug 102: only once the server took the result
                 return t;
             }
             var key = Key(s);
@@ -377,9 +453,10 @@ namespace OnlineBackup.Agent
                     catch (Exception e) { failed++; log.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "err", kv.Key, message: "restore test failed: " + e.Message))); }
                 }
             }
-            finally { try { Directory.Delete(dir, true); } catch (Exception) { } }
+            finally { var why = OnlineBackup.Core.TempDirs.Remove(dir); if (why != null) log.Add("log", new Msg().Set("l", AhsayLog.Line(SystemClock.UtcNow, "warn", message: "The restore test's folder stays: " + why))); }   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
             log.Set("checked", ok + failed).Set("ok", ok).Set("failed", failed).Set("candidates", candidates.Count);
             client.Call("POST", "/api/sets/" + s.Id + "/restoretest", log);
+            RestoreTestDone(s.Id);   // bug 102: only once the server took the result
             return log;
         }
 
@@ -451,7 +528,7 @@ namespace OnlineBackup.Agent
                     var st = new LocalState(dir);
                     var la = Path.Combine(dir, "last-attempt.txt");
                     DateTime end;
-                    if (st.LastSuccessLocalMs <= 0 || !File.Exists(la) || !RunId.TryParse(File.ReadAllText(la).Split('\t')[0], out end)) continue;
+                    if (st.LastSuccessLocalMs <= 0 || !File.Exists(la) || !RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(la).Split('\t')[0], out end)) continue;
                     var start = RunId.FromUnixMs(st.LastSuccessLocalMs);
                     if (start <= slotUtc && end >= slotUtc) return true;
                 }
@@ -477,7 +554,7 @@ namespace OnlineBackup.Agent
             DateTime attempt = DateTime.MinValue; string attemptResult = "";
             if (File.Exists(attemptFile))
             {
-                var af = File.ReadAllText(attemptFile).Split('\t');
+                var af = OnlineBackup.Core.Atomic.ReadAllText(attemptFile).Split('\t');
                 if (RunId.TryParse(af[0], out attempt)) attempt = attempt.ToLocalTime(); else attempt = DateTime.MinValue;
                 attemptResult = af.Length > 1 ? af[1].Trim() : "";
             }
@@ -501,7 +578,7 @@ namespace OnlineBackup.Agent
                 {
                     var seenFile = Path.Combine(Home.SetDir(s.Id), "missed-seen.txt");
                     var key = slot.Value.Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                    var seen = File.Exists(seenFile) ? File.ReadAllText(seenFile).Split('\t') : new string[0];
+                    var seen = File.Exists(seenFile) ? OnlineBackup.Core.Atomic.ReadAllText(seenFile).Split('\t') : new string[0];
                     long first;
                     if (seen.Length != 2 || seen[0] != key || !long.TryParse(seen[1], out first)) { File.WriteAllText(seenFile, key + "\t" + nowLocal.Ticks.ToString(System.Globalization.CultureInfo.InvariantCulture)); return false; }
                     if ((nowLocal - new DateTime(first)).TotalMinutes < s.MissedDelayMinutes) return false;
@@ -522,8 +599,8 @@ namespace OnlineBackup.Agent
         public bool SendFolders(Profile prof, DateTime nowUtc, bool force = false)
         {
             var stateFile = Path.Combine(Home.Dir, "folders-sent.txt"); var openFile = Path.Combine(Home.Dir, "folders-open.txt");
-            long last = 0; if (File.Exists(stateFile)) long.TryParse(File.ReadAllText(stateFile).Trim(), out last);
-            var open = File.Exists(openFile) ? File.ReadAllLines(openFile).Where(x => x.Length > 0).ToList() : new List<string>();
+            long last = 0; if (File.Exists(stateFile)) long.TryParse(OnlineBackup.Core.Atomic.ReadAllText(stateFile).Trim(), out last);
+            var open = File.Exists(openFile) ? OnlineBackup.Core.Atomic.ReadAllLines(openFile).Where(x => x.Length > 0).ToList() : new List<string>();
             bool asked = false;
             foreach (var b in prof.Root.Elements("BROWSE").Where(x => string.Equals((string)x.Attribute("COMPUTER"), Home.Computer, StringComparison.OrdinalIgnoreCase)))
             {
@@ -560,7 +637,7 @@ namespace OnlineBackup.Agent
                 File.WriteAllText(Path.Combine(Home.SetDir(s.Id), "last-attempt.txt"), RunId.From(SystemClock.UtcNow) + "\tBS_STOP_BY_SYSTEM_ERROR");
                 var mark = Path.Combine(Home.SetDir(s.Id), "cannot-run-reported.txt");
                 DateTime last;
-                if (File.Exists(mark) && RunId.TryParse(File.ReadAllText(mark).Trim(), out last) && SystemClock.UtcNow - last < TimeSpan.FromHours(20)) return;
+                if (File.Exists(mark) && RunId.TryParse(OnlineBackup.Core.Atomic.ReadAllText(mark).Trim(), out last) && SystemClock.UtcNow - last < TimeSpan.FromHours(20)) return;
                 File.WriteAllText(mark, RunId.From(SystemClock.UtcNow));
                 var c = DeviceClient(); var key = Guid.NewGuid().ToString("N");
                 var job = c.Call("POST", "/api/sets/" + s.Id + "/begin?key=" + key)["job"];
@@ -600,6 +677,7 @@ namespace OnlineBackup.Agent
                         }
                         catch (AgentException e) when (e.Code == "NETWORK") { throw; }
                         catch (AgentException e) when (e.Code == "BUSY") { say(s.Name + ": " + e.Message); }
+                        catch (AgentException e) when (e.Code == Scope.Code) { say(s.Name + ": not run: " + e.Message); }   // PILOT-010: kept, not run (no failed run reported)
                         catch (Exception e)
                         {
                             say(s.Name + ": cannot run: " + e.Message);

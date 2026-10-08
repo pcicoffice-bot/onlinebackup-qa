@@ -233,6 +233,20 @@ export function manifest(root: string): Manifest {
   return m;
 }
 
+/** How many files are under root, while something may still be writing there (a restore in progress): an entry that is
+ *  renamed or removed between listing and looking is skipped, not an error. Only for waiting; the checks use manifest(). */
+export function fileCount(root: string): number {
+  let n = 0;
+  const gone = (e: unknown) => (e as NodeJS.ErrnoException).code === 'ENOENT';
+  const walk = (d: string) => {
+    let es: fs.Dirent[];
+    try { es = fs.readdirSync(d, { withFileTypes: true }); } catch (e) { if (gone(e)) return; throw e; }
+    for (const e of es) { if (e.isDirectory()) walk(path.join(d, e.name)); else if (e.isFile()) n++; }
+  };
+  walk(root);
+  return n;
+}
+
 /** Every difference between what was expected and what is there (empty = identical). */
 export function compare(expected: Manifest, actual: Manifest): string[] {
   const d: string[] = [];

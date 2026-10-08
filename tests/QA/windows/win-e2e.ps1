@@ -32,6 +32,7 @@ Write-Host ($facts | ConvertTo-Json)
 function Journey([string]$__id, [string]$__title, [scriptblock]$__body) {
   if ($Only -and $__id -notmatch $Only) { return }
   New-Journey $__id $__title $Out | Out-Null
+  Progress ("start " + $__id + " " + $__title)
   $__nt = ''
   try { $__r = @(& $__body); $__last = $(if ($__r.Count) { $__r[-1] } else { $null }); if ($__last -is [string] -and $__last -like 'NOT TESTED:*') { $__nt = $__last.Substring(11).Trim() } }
   catch { [void]$script:Journey.steps.Add([ordered]@{ step = 'the journey stopped'; expected = 'no error'; actual = $_.Exception.Message + ' @ line ' + $_.InvocationInfo.ScriptLineNumber; result = 'FAIL'; seconds = 0; screenshot = (Shot 'stopped'); at = (Get-Date).ToString('HH:mm:ss') }); Write-Host "[FAIL] stopped: $($_.Exception.Message) @ $($_.InvocationInfo.ScriptLineNumber)" }
@@ -44,6 +45,7 @@ function Journey([string]$__id, [string]$__title, [scriptblock]$__body) {
     ux = $(if ($ux.Count -eq 0) { 'NOT TESTED' } elseif (@($ux | Where-Object { $_.result -eq 'FAIL' }).Count -gt 0) { 'FAIL' } else { 'PASS' })
     visualFindings = @($vis | Where-Object { $_.kind -eq 'VISUAL' }).Count; uxFindings = @($vis | Where-Object { $_.kind -eq 'UX' }).Count }
   [void]$Results.Add($row)
+  Progress ("end " + $j.id + " " + $j.result + " " + $j.reason)
   WriteSummary
 }
 function WriteSummary {
@@ -88,7 +90,9 @@ function BackupChecked([string]$label, [string]$want = 'ok') {
   $w = Open-Client $S.installDir
   $before = RunMark $Login 'Backup'
   $msgs = BackupNow-ViaUi $w $label
-  $run = WaitNewRun $Login 'Backup' $before 20 $S.setId
+  # Q22 (W1 runs 12-14): when the window never said the backup started, waiting 20 minutes for a run only burnt the job's
+  # time (W06-W09 took 26-44 min each with no step over 2 min; run 14 ran into the job limit). Then 2 minutes are enough.
+  $run = WaitNewRun $Login 'Backup' $before $(if (($msgs -join ' ') -like '*started*') { 20 } else { 2 }) $S.setId
   $okUi = WaitIdle-Client $w 5
   Start-Sleep -Seconds 5
   $t = Texts $w
@@ -112,7 +116,7 @@ function RestoreChecked([string]$label, $want, [switch]$KeepSource) {
   $target = "$Q\restore-$($S.restoreNo)"
   $before = RunMark $Login 'Restore'
   $msgs = Restore-ViaUi $w $target $CustPass $label
-  $run = WaitNewRun $Login 'Restore' $before 20 $S.setId
+  $run = WaitNewRun $Login 'Restore' $before $(if (($msgs -join ' ') -like '*started*') { 20 } else { 2 }) $S.setId   # Q22
   WaitIdle-Client $w 5 | Out-Null
   Look $w "$label - restore result in the window" 'en' $ClientProc | Out-Null
   $got = Manifest (Join-Path $target ($Data.Replace(':', '')))
@@ -124,7 +128,7 @@ function RestoreChecked([string]$label, $want, [switch]$KeepSource) {
   if (-not $KeepSource) { if (Test-Path -LiteralPath $Data) { Remove-Tree $Data }; Move-Item -LiteralPath $aside -Destination $Data }   # the source as it was
   return $ok
 }
-function BigFile([int]$mb) { $f = Join-Path $Data 'Big\video.bin'; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random 11; $svc = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $svc.Write($b, 0, $b.Length) }; $svc.Close() }
+function BigFile([int]$mb, [string]$name = 'video.bin', [int]$seed = 11) { $f = Join-Path $Data "Big\$name"; New-Item -ItemType Directory -Force -Path (Split-Path $f) | Out-Null; $b = New-Object byte[] (1MB); $r = New-Object Random $seed; $svc = [IO.File]::Create($f); for ($i = 0; $i -lt $mb; $i++) { $r.NextBytes($b); $svc.Write($b, 0, $b.Length) }; $svc.Close() }
 # the job id of the set's live run right now ('' when nothing is live): the run a kill / stop really interrupted
 function LiveJob { $l = @(LiveRuns $S.setId) | Select-Object -First 1; if ($l) { return [string]$l['job'] }; return '' }
 # the history's record of one run (by its job id), waiting for it; $null when it never comes
@@ -268,7 +272,8 @@ Journey 'W07' 'Agent crash mid-backup: the process is killed; Windows brings it 
 }
 
 Journey 'W08' 'Service stopped mid-backup: the run ends cleanly; start; backup and restore identical' {
-  Add-Content (Join-Path $Data 'Big\video.bin') ('y' * 1MB) -NoNewline; $want = Manifest $Data
+  # Q28: a NEW 600 MB file (W07's is already on the server: appending to it made a 2-second run that ended before the stop)
+  BigFile 600 'video-w08.bin' 808; $want = Manifest $Data
   $w = Open-Client $S.installDir
   BackupNow-ViaUi $w 'Backup to be stopped' | Out-Null
   Step 'The backup is running' 'a live run' { $l = WaitLive 120; @($l, "live=$l") } -NoShot | Out-Null
@@ -282,7 +287,7 @@ Journey 'W08' 'Service stopped mid-backup: the run ends cleanly; start; backup a
 }
 
 Journey 'W09' 'Server crash mid-backup: the server process is killed; Windows restarts it; the next backup restores identical' {
-  Add-Content (Join-Path $Data 'Big\video.bin') ('z' * 1MB) -NoNewline; $want = Manifest $Data
+  BigFile 600 'video-w09.bin' 909; $want = Manifest $Data   # Q28: a new file, so the backup is still running when the server is killed
   $w = Open-Client $S.installDir
   BackupNow-ViaUi $w 'Backup when the server dies' | Out-Null
   Step 'The backup is running' 'a live run' { $l = WaitLive 120; @($l, "live=$l") } -NoShot | Out-Null
@@ -320,7 +325,10 @@ Journey 'W11' 'VSS failure: the shadow copy service is disabled; the locked file
   $holder = Hold $locked
   Step 'Disable the Volume Shadow Copy service' 'VSS disabled and stopped' { Stop-Service VSS -Force -ErrorAction SilentlyContinue; Set-Service VSS -StartupType Disabled; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Disabled'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   $run = BackupChecked 'Backup without VSS' 'not-ok'
-  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = Get-ChildItem (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -Raw -ErrorAction SilentlyContinue; @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
+  # Q29: the run's warning is in the server's BackupErrors log (run 15: 'Shadow Copy of C: could not be created'); the newest client file alone missed it
+  $w11files = Get-ChildItem -Path (Join-Path $S.dataDir 'logs') -Recurse -File -ErrorAction SilentlyContinue; $w11files += Get-ChildItem -Path "$Q\sys\logs\BackupErrors" -Recurse -File -ErrorAction SilentlyContinue
+  $w11log = ($w11files | Sort-Object LastWriteTime | Select-Object -Last 4 | ForEach-Object { Get-Content -Raw -LiteralPath $_.FullName -ErrorAction SilentlyContinue }) -join "`n"
+  Step 'The result names the problem (not a plain success)' 'warning or error; the log names the locked file or the shadow copy' { $log = [string]$w11log;  $run = $(if ($run) { $run } else { @{} }); @((($run['result'] -ne 'BS_STOP_SUCCESS') -and ($log -match 'locked\.pst|Shadow')), "result $($run['result']); log mentions: $(@([regex]::Matches([string]$log, '[^\r\n]*(locked\.pst|Shadow)[^\r\n]*') | Select-Object -First 3 | ForEach-Object { $_.Value }) -join ' / ')") } -NoShot | Out-Null
   Step 'Recovery: enable VSS again' 'Manual' { Set-Service VSS -StartupType Manual; $svc = Get-CimInstance Win32_Service -Filter "Name='VSS'"; @(($svc.StartMode -eq 'Manual'), "$($svc.State) $($svc.StartMode)") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
   $want = Manifest $Data
@@ -344,6 +352,7 @@ Journey 'W13' 'Service that does not start: its program file is missing (as afte
   Stop-Service OnlineBackupAgent; [void](WaitService OnlineBackupAgent 'Stopped' 120)
   Close-Client
   Move-Item (Join-Path $S.installDir 'OnlineBackup.Agent.exe') "$Q\OnlineBackup.Agent.exe.moved" -Force
+  try {
   Step 'The service cannot start (Windows says so)' 'Start-Service fails or the service stops again' { $e = ''; try { Start-Service OnlineBackupAgent -ErrorAction Stop } catch { $e = $_.Exception.Message }; Start-Sleep 8; $st = (Get-Service OnlineBackupAgent).Status; @((($e -ne '') -or ($st -ne 'Running')), "error: $e; state $st") } -NoShot | Out-Null
   $w = Open-Client $S.installDir
   Look $w 'The program window while the service cannot start' 'en' $ClientProc | Out-Null
@@ -354,6 +363,14 @@ Journey 'W13' 'Service that does not start: its program file is missing (as afte
   Step 'After Repair: the file is back and the service runs' 'OnlineBackup.Agent.exe present, Running' { $st = WaitService OnlineBackupAgent 'Running' 90; @(((Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe')) -and ($st -eq 'Running')), $st) } -NoShot | Out-Null
   BackupChecked 'Backup after Repair' | Out-Null
   RestoreChecked 'Restore after Repair' $want | Out-Null
+  } finally {
+    # Q34: whatever W13 found, the next journeys get a working installation (run 15: Setup did not offer Repair, the program
+    # file stayed missing and W14 / W15 - update, UNINSTALL - failed on that broken machine instead of testing their own thing)
+    Get-Process Setup -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+    $exe = Join-Path $S.installDir 'OnlineBackup.Agent.exe'
+    if (-not (Test-Path $exe) -and (Test-Path "$Q\OnlineBackup.Agent.exe.moved")) { Move-Item "$Q\OnlineBackup.Agent.exe.moved" $exe -Force; Note 'W13 cleanup' 'the robot put the program file back (Repair had not): the next journeys start from a working installation' }
+    if ((Get-Service OnlineBackupAgent -ErrorAction SilentlyContinue).Status -ne 'Running') { Start-Service OnlineBackupAgent -ErrorAction SilentlyContinue; [void](WaitService OnlineBackupAgent 'Running' 90) }
+  }
 }
 
 Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update in the window; backup and restore after' {
@@ -366,8 +383,13 @@ Journey 'W14' 'Update of the agent: interrupted update rolls back; then Update i
   $hold = Join-Path $S.installDir 'restic.exe'
   $holder = Hold $hold 600
   $w = Open-Client $S.installDir
-  $link = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | Where-Object { $_.Current.Name -like '*Check for updates*' } | Select-Object -First 1
-  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } }; Start-Sleep 4; $m = Answer-Dialogs $w $CustPass 'Interrupted update' 30; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
+  # Q36 (run 18): the window already showed its 'Update' button; invoking the 'Check for updates' link did nothing, so the
+  # interrupted update never started. Click the button, as the later Update step does (that one worked); the link only if there is none.
+  # Q38 (run 21): the button was not there yet when the window had just opened (it appears once the window has asked the
+  # server) - wait for it up to 60 s, and below click a second time if no question came
+  $until = (Get-Date).AddSeconds(60); do { $link = @(Find $w $CT::Button) | Where-Object { $_.Current.Name -like '*Update*' -and $_.Current.Name -notlike '*Update to*' } | Select-Object -First 1; if (-not $link) { Start-Sleep 3 } } while (-not $link -and (Get-Date) -lt $until)
+  if (-not $link) { $link = @($w.FindAll($TS::Descendants, [System.Windows.Automation.Condition]::TrueCondition)) | Where-Object { $_.Current.Name -like '*Check for updates*' } | Select-Object -First 1 }
+  Step 'Interrupted update: start it in the window' 'the window offers the update' { if ($link) { try { Click $link } catch { try { ($link.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)).Invoke() } catch { } } }; Start-Sleep 4; $m = @(Answer-Dialogs $w $CustPass 'Interrupted update' 30); if ($m.Count -eq 0 -and $link) { try { Click $link } catch { }; Start-Sleep 4; $m = @(Answer-Dialogs $w $CustPass 'Interrupted update (2nd click)' 30) }; @(($m.Count -gt 0), ($m -join ' || ')) } | Out-Null
   Start-Sleep 60
   Step 'Interrupted update: the old version still runs (rolled back), the service is Running' "version $v1, Running" { $st = WaitService OnlineBackupAgent 'Running' 180; $v = (Get-Content (Join-Path $S.installDir 'version.txt') | Select-Object -First 1); @((($st -eq 'Running') -and ($v -eq $v1) -and (Test-Path (Join-Path $S.installDir 'OnlineBackup.Agent.exe'))), "$st; version $v") } -NoShot | Out-Null
   Stop-Process -Id $holder.Id -Force -ErrorAction SilentlyContinue
@@ -395,7 +417,7 @@ Journey 'W15' 'Uninstall through the installer window, reinstall, sign in again,
   $w = ClientWindow 60; if (-not $w) { $w = Open-Client $S.installDir }
   $t = Texts $w
   if ($t -like '*User name*') { Connect-ViaUi $w $Login $CustPass | Out-Null } else { Note 'After reinstall' 'the program was still connected (settings kept), no sign-in asked' }
-  $w = Open-Client $S.installDir; Nav $w 'Backup status'
+  $w = Open-Client $S.installDir; Nav $w 'Backups'
   StepLook 'After reinstall the backup set is there' "'QA files'" $w { $t = Texts $w; @(($t -like '*QA files*'), $t) } 'en' $ClientProc | Out-Null
   $want = Manifest $Data
   BackupChecked 'Backup after reinstall' | Out-Null
@@ -406,19 +428,29 @@ Journey 'W16' 'Visual tour: every screen in English and Hebrew at 1920x1080, 136
 
 Journey 'W17' 'System State backup (Windows Server Backup)' {
   if (-not (Get-Command Install-WindowsFeature -ErrorAction SilentlyContinue)) { return 'NOT TESTED: this Windows is not a server edition (no Windows Server Backup feature)' }
+  # run 20: C: had 10.7 GB free and the System State filled it (1.0 GB after) - the earlier journeys' restore copies are
+  # removed first (they were checked already), so this journey tests the System State, not the runner's disk size
+  Get-ChildItem $Q -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'restore-*' -or $_.Name -like 'source-aside-*' } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
   Step 'Windows Server Backup feature' 'installed' { $r = Install-WindowsFeature Windows-Server-Backup; @($r.Success, "$($r.ExitCode) restart=$($r.RestartNeeded)") } -NoShot | Out-Null
   $w = Open-Client $S.installDir
-  Nav $w 'New backup'
+  Nav $w 'Backups'; Click (PageButton $w 'New backup'); Start-Sleep -Seconds 2
   $combo = @(Find $w $CT::ComboBox) | Where-Object { $_.Current.BoundingRectangle.X -gt ($w.Current.BoundingRectangle.X + 240) } | Select-Object -First 1
   Key $combo 0x28; Key $combo 0x28; Start-Sleep 1   # the down arrow twice: Files and folders -> SQL Server -> System State
   Step 'The type list shows Windows System State' 'System State chosen' { $n = $combo.Current.Name; @((($n -like '*System State*') -or ((Texts $w) -like '*System State*')), "list: $n") } -NoShot | Out-Null
   Look $w 'System State backup configured' 'en' $ClientProc | Out-Null
   Click (PageButton $w 'New backup'); $m = Answer-Dialogs $w $CustPass 'System State added' 30
   Step 'The System State set is added' 'was added' { @((($m -join ' ') -like '*was added*'), ($m -join ' || ')) } -NoShot | Out-Null
-  $w = Open-Client $S.installDir; Nav $w 'Backup status'
+  $w = Open-Client $S.installDir; Nav $w 'Backups'
   $btns = @(Find $w $CT::Button 'Back up now'); $b = $btns | Sort-Object { $_.Current.BoundingRectangle.Y } | Select-Object -Last 1
   $before = RunMark $Login 'Backup'; Click $b; Answer-Dialogs $w $null 'System State started' 15 | Out-Null
+  Note 'C: free before the System State backup' ("{0:N1} GB" -f ((Get-PSDrive C).Free / 1GB))
   $run = WaitNewRun $Login 'Backup' $before 45
+  # run 19: wbadmin's error log was empty and its file list stopped in the middle - the reason is in Windows' backup event log
+  Note 'C: free after the System State backup' ("{0:N1} GB" -f ((Get-PSDrive C).Free / 1GB))
+  Note 'Windows backup event log' ((Get-WinEvent -LogName 'Microsoft-Windows-Backup' -MaxEvents 15 -ErrorAction SilentlyContinue | ForEach-Object { "$($_.TimeCreated.ToString('HH:mm:ss')) $($_.Id) $($_.LevelDisplayName): $($_.Message)" }) -join ' || ')
+  # run 18: wbadmin ran (bug 95 fixed) but ended 'The backup of the system state failed' - its own logs say why; keep them
+  Copy-Item 'C:\Windows\Logs\WindowsServerBackup\*.log' $script:Journey.dir -ErrorAction SilentlyContinue
+  Note 'wbadmin error log' ((Get-ChildItem 'C:\Windows\Logs\WindowsServerBackup\Backup_Error-*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime | Select-Object -Last 1 | Get-Content -ErrorAction SilentlyContinue | Select-Object -First 40) -join ' | ')
   Step 'The System State backup finishes successfully (server record)' 'ok' { @((($run -ne $null) -and ($run['status'] -eq 'ok')), $(if ($run) { "$($run['result']) bytes $($run['bytes'])" } else { 'no run in 45 min' })) } | Out-Null
   Note 'System State restore' 'NOT TESTED: restoring the system state of the test machine would replace its own registry and boot files; only the backup is tested here'
 }

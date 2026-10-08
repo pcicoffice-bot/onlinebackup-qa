@@ -95,8 +95,8 @@ namespace OnlineBackup.Agent
         {
             var p = Path.Combine(Dir, "jobs.log");
             if (!File.Exists(p)) return new List<string>();
-            var expired = new HashSet<string>(File.ReadAllLines(p).Where(l => l.StartsWith("X\t")).Select(l => l.Split('\t')[1]));
-            return File.ReadAllLines(p).Where(l => l.StartsWith("C\t")).Select(l => l.Split('\t')[1]).Where(j => !expired.Contains(j)).Distinct().OrderBy(j => j, StringComparer.Ordinal).ToList();
+            var expired = new HashSet<string>(OnlineBackup.Core.Atomic.ReadAllLines(p).Where(l => l.StartsWith("X\t")).Select(l => l.Split('\t')[1]));
+            return OnlineBackup.Core.Atomic.ReadAllLines(p).Where(l => l.StartsWith("C\t")).Select(l => l.Split('\t')[1]).Where(j => !expired.Contains(j)).Distinct().OrderBy(j => j, StringComparer.Ordinal).ToList();
         }
 
         /// <summary>Retention of the local copy: points older than "days" expire; run folders no kept point needs are deleted.</summary>
@@ -110,7 +110,7 @@ namespace OnlineBackup.Agent
             {
                 var removed = Path.GetFileName(folder);
                 var chks = Directory.GetFiles(folder, "*.chk", SearchOption.AllDirectories);
-                string minCreated = chks.Length == 0 ? removed : chks.Select(c => ChkRecord.Parse(File.ReadAllText(c)).Job).OrderBy(j => j, StringComparer.Ordinal).First();
+                string minCreated = chks.Length == 0 ? removed : chks.Select(c => ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(c)).Job).OrderBy(j => j, StringComparer.Ordinal).First();
                 if (keep.Any(p => string.CompareOrdinal(p, minCreated) >= 0 && string.CompareOrdinal(p, removed) < 0)) continue;
                 Directory.Delete(folder, true);
                 deleted++;
@@ -132,7 +132,7 @@ namespace OnlineBackup.Agent
                 if (name != "Current" && string.CompareOrdinal(name, point) <= 0) continue;   // removed at or before the point
                 foreach (var c in Directory.GetFiles(area, "*.chk", SearchOption.AllDirectories))
                 {
-                    var rec = ChkRecord.Parse(File.ReadAllText(c));
+                    var rec = ChkRecord.Parse(OnlineBackup.Core.Atomic.ReadAllText(c));
                     if (string.CompareOrdinal(rec.Job, point) > 0) continue;
                     rows.Add(new KeyValuePair<string, ChkRecord>(name + "/" + c.Substring(area.Length + 1, c.Length - area.Length - 5).Replace(Path.DirectorySeparatorChar, '/'), rec));
                 }

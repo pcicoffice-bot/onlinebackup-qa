@@ -1,0 +1,11 @@
+HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/data/%2e%2e%2f%2e%2e%2f%2e%2e%2fOUTSIDE-SECRET.txt
+HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/keys/..%2f..%2fOUTSIDE-SECRET.txt
+HTTP/1.1 404 Not Found  <=  /restic/s2b/1791343023547/%2e%2e%2f%2e%2e%2fOUTSIDE-SECRET.txt
+HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/data/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaazz
+HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/data/%00
+HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/data/..%5c..%5cOUTSIDE-SECRET.txt
+HTTP/1.1 404 Not Found  <=  /restic/s2b/1791343023547/%c0%ae%c0%ae%2fOUTSIDE-SECRET.txt
+HTTP/1.1 200 OK  <=  /restic/s2b/1791343023547/config/..%2f..%2fOUTSIDE-SECRET.txt
+HTTP/1.1 404 Not Found  <=  /restic/s2b/1791343023547/db/restic/1791343023547.token
+POST HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/data/%2e%2e%2f%2e%2e%2f%2e%2e%2fPLANTED.txt
+POST HTTP/1.1 400 Bad Request  <=  /restic/s2b/1791343023547/keys/..%2f..%2fPLANTED.txt

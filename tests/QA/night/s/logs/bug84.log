@@ -1,0 +1,187 @@
+MUTATION bug84
+FILTER FullyQualifiedName~NightM_RaceTests.RestoreOfTheLatestPoint
+diff --git a/src/Server/SetStore.cs b/src/Server/SetStore.cs
+index d4c7ebb..c5b03f2 100644
+--- a/src/Server/SetStore.cs
++++ b/src/Server/SetStore.cs
+@@ -641,7 +641,7 @@ namespace OnlineBackup.Server
+                 {
+                     var here = Query(c, "SELECT job FROM objects WHERE loc=$0", loc);
+                     if (here.Count > 0 && (job == null || (string)here[0][0] == job)) return Abs(loc);
+-                    if (job != null) { var moved = Locate(loc, job); if (moved != null) return Abs(moved); }
++                    if (false) { var moved = Locate(loc, job); if (moved != null) return Abs(moved); }
+                 }
+             throw new ApiException(404, "NO_OBJECT", "The object was not found.");
+         }
+
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Api.cs(1454,17): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/SetStore.cs(644,34): warning CS0162: Unreachable code detected [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(233,108): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(275,43): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Installer.cs(258,38): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(82,65): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Program.cs(76,54): warning CA1416: This call site is reachable on all platforms. 'ServerService.Name' is only supported on: 'windows'. (https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416) [/tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/src/Server/Server.csproj]
+Test run for /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/bin/Debug/net8.0/Tests.dll (.NETCoreApp,Version=v8.0)
+Microsoft (R) Test Execution Command Line Tool Version 17.8.0 (x64)
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.8.2+699d445a1a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.12]   Discovering: Tests
+[xUnit.net 00:00:00.23]   Discovered:  Tests
+[xUnit.net 00:00:00.23]   Starting:    Tests
+[xUnit.net 00:00:00.58]       list → commit → fetch: 30/30 files of point 2026-10-07-03-01-17 cannot be restored with that point's bytes; e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException: The object was not found. | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException: The object was not found.
+[xUnit.net 00:00:00.58]       Stack Trace:
+[xUnit.net 00:00:00.58]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_RaceTests.cs(177,0): at OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_WhileABackupCommits_GetsThatPointsBytes()
+[xUnit.net 00:00:00.58]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:00.58]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:00.58]       Output:
+[xUnit.net 00:00:00.58]         deterministic list→commit→fetch: 30/30 files fail; first: Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException: The object was not found.
+  Failed OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_WhileABackupCommits_GetsThatPointsBytes [277 ms]
+  Error Message:
+   list → commit → fetch: 30/30 files of point 2026-10-07-03-01-17 cannot be restored with that point's bytes; e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException: The object was not found. | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException: The object was not found.
+  Stack Trace:
+     at OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_WhileABackupCommits_GetsThatPointsBytes() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_RaceTests.cs:line 177
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ deterministic list→commit→fetch: 30/30 files fail; first: Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException: The object was not found.
+
+
+[xUnit.net 00:00:06.64]       46/50 iterations failed:
+[xUnit.net 00:00:06.64]       iteration 1 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 2 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 3 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 4 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 5 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 6 (31 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 7 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 8 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 9 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       iteration 10 (34 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]       Stack Trace:
+[xUnit.net 00:00:06.64]         /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_RaceTests.cs(210,0): at OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_ConcurrentWithACommit_50Iterations()
+[xUnit.net 00:00:06.64]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+[xUnit.net 00:00:06.64]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:06.64]       Output:
+[xUnit.net 00:00:06.64]         iteration 1 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 2 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 3 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 4 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 5 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 6 (31 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 7 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 8 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 9 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 10 (34 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 11 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 12 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 13 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 14 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 15 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 16 (35 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 17 (35 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 18 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 19 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 20 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 21 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 22 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 23 (41 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 24 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 25 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 26 (43 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 28 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 29 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 30 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 31 (48 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 32 (23 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 33 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 34 (32 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 35 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 36 (25 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 37 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 38 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 39 (18 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 41 (172 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 42 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 43 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 46 (20 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 47 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 48 (24 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 49 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.64]         iteration 50 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+[xUnit.net 00:00:06.65]   Finished:    Tests
+  Failed OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_ConcurrentWithACommit_50Iterations [6 s]
+  Error Message:
+   46/50 iterations failed:
+iteration 1 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 2 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 3 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 4 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 5 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 6 (31 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 7 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 8 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 9 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+iteration 10 (34 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+  Stack Trace:
+     at OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_ConcurrentWithACommit_50Iterations() in /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-s/tests/Tests/NightM_RaceTests.cs:line 210
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ iteration 1 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 2 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 3 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 4 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 5 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 6 (31 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 7 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 8 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 9 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 10 (34 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 11 (39 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 12 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 13 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 14 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 15 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 16 (35 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 17 (35 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 18 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 19 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 20 (37 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 21 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 22 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 23 (41 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 24 (36 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 25 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 26 (43 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 28 (29 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 29 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 30 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 31 (48 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 32 (23 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 33 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 34 (32 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 35 (26 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 36 (25 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 37 (30 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 38 (27 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 39 (18 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 41 (172 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 42 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 43 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 46 (20 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 47 (22 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 48 (24 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 49 (33 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+ iteration 50 (28 ms): 30 problem(s), e.g. Current/24MAJ2XFT4NMB5MCAPKSB4X3IT.000 ApiException | Current/3N372ANPSVZCDJEYTNSLG5YKQO.000 ApiException
+
+
+
+Total tests: 2
+     Failed: 2
+ Total time: 7.2532 Seconds
+[xUnit.net 00:00:00.57]     OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_WhileABackupCommits_GetsThatPointsBytes [FAIL]
+[xUnit.net 00:00:06.64]     OnlineBackup.Tests.NightM_RaceTests.RestoreOfTheLatestPoint_ConcurrentWithACommit_50Iterations [FAIL]
+Test Run Failed.

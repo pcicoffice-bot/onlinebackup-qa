@@ -105,10 +105,10 @@ namespace OnlineBackup.Server
                         var e = new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, root + name) { Mode = mode, ModificationTime = DateTimeOffset.UtcNow, DataStream = new MemoryStream(data) };
                         tar.WriteEntry(e);
                     };
-                    add("OnlineBackup.Agent", File.ReadAllBytes(Path.Combine(dir, "OnlineBackup.Agent")), exec);
-                    add("restic", File.ReadAllBytes(Path.Combine(dir, "restic")), exec);
+                    add("OnlineBackup.Agent", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, "OnlineBackup.Agent")), exec);
+                    add("restic", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, "restic")), exec);
                     var notices = Path.Combine(p.Dir, "THIRD-PARTY-NOTICES.txt");
-                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", File.ReadAllBytes(notices), plain);
+                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", OnlineBackup.Core.Atomic.ReadAllBytes(notices), plain);
                     add("branding.xml", new UTF8Encoding(false).GetBytes(branding.ToString()), plain);
                     add("connection.xml", new UTF8Encoding(false).GetBytes(connection.ToString()), plain);
                     add("setup.sh", Encoding.ASCII.GetBytes(
@@ -154,11 +154,11 @@ namespace OnlineBackup.Server
                         tar.WriteEntry(new System.Formats.Tar.PaxTarEntry(System.Formats.Tar.TarEntryType.RegularFile, root + name) { Mode = mode, ModificationTime = DateTimeOffset.UtcNow, DataStream = new MemoryStream(data) });
                     foreach (var arch in new[] { "arm64", "x64" })
                     {
-                        add(arch + "/OnlineBackup.Agent", File.ReadAllBytes(Path.Combine(dir, arch, "OnlineBackup.Agent")), exec);
-                        add(arch + "/restic", File.ReadAllBytes(Path.Combine(dir, arch, "restic")), exec);
+                        add(arch + "/OnlineBackup.Agent", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, arch, "OnlineBackup.Agent")), exec);
+                        add(arch + "/restic", OnlineBackup.Core.Atomic.ReadAllBytes(Path.Combine(dir, arch, "restic")), exec);
                     }
                     var notices = Path.Combine(p.Dir, "THIRD-PARTY-NOTICES.txt");
-                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", File.ReadAllBytes(notices), plain);
+                    if (File.Exists(notices)) add("THIRD-PARTY-NOTICES.txt", OnlineBackup.Core.Atomic.ReadAllBytes(notices), plain);
                     add("branding.xml", new UTF8Encoding(false).GetBytes(branding.ToString()), plain);
                     add("connection.xml", new UTF8Encoding(false).GetBytes(connection.ToString()), plain);
                     add("setup.command", Encoding.ASCII.GetBytes(SetupCommand()), exec);
@@ -240,21 +240,27 @@ namespace OnlineBackup.Server
             {
                 var n = Path.GetFileName(f);
                 if (n.EndsWith(".pdb", StringComparison.OrdinalIgnoreCase) || n == "branding.xml" || n == "connection.xml" || n == "contract.xml" || n.Equals("Setup.exe", StringComparison.OrdinalIgnoreCase) || n.Equals("Setup.exe.config", StringComparison.OrdinalIgnoreCase)) continue;
-                files.Add(new KeyValuePair<string, byte[]>(n, File.ReadAllBytes(f)));
+                files.Add(new KeyValuePair<string, byte[]>(n, OnlineBackup.Core.Atomic.ReadAllBytes(f)));
             }
             files.Add(new KeyValuePair<string, byte[]>("branding.xml", new UTF8Encoding(true).GetBytes(p.Branding.ToString())));
             files.Add(new KeyValuePair<string, byte[]>("connection.xml", new UTF8Encoding(true).GetBytes(p.Connection.ToString())));
             if (p.Contract != null) files.Add(new KeyValuePair<string, byte[]>("contract.xml", new UTF8Encoding(true).GetBytes(p.Contract.ToString())));
             using (var ms = new MemoryStream())
             {
-                var head = File.ReadAllBytes(stub); ms.Write(head, 0, head.Length);
+                var head = OnlineBackup.Core.Atomic.ReadAllBytes(stub); ms.Write(head, 0, head.Length);
                 long start = ms.Position;
-                using (var gz = new System.IO.Compression.GZipStream(ms, CompressionLevel.Optimal, true))
-                using (var w = new BinaryWriter(gz, Encoding.UTF8, true))
+                // bug 109: the entries, then the SHA-256 of exactly those bytes - GZipStream does not check its CRC, so without it a
+                // changed byte near the end could give a shorter connection.xml and no error
+                byte[] raw;
+                using (var r = new MemoryStream())
+                using (var w = new BinaryWriter(r, Encoding.UTF8, true))
                 {
                     w.Write(files.Count);
                     foreach (var kv in files) { var nb = Encoding.UTF8.GetBytes(kv.Key); w.Write(nb.Length); w.Write(nb); w.Write((long)kv.Value.Length); w.Write(kv.Value); }
+                    w.Flush(); raw = r.ToArray();
                 }
+                byte[] sum; using (var h = System.Security.Cryptography.SHA256.Create()) sum = h.ComputeHash(raw);
+                using (var gz = new System.IO.Compression.GZipStream(ms, CompressionLevel.Optimal, true)) { gz.Write(raw, 0, raw.Length); gz.Write(sum, 0, sum.Length); }
                 long len = ms.Position - start;
                 var tail = new BinaryWriter(ms, Encoding.ASCII, true); tail.Write(len); tail.Write(Encoding.ASCII.GetBytes(PayloadMark)); tail.Flush();
                 return ms.ToArray();
@@ -273,10 +279,28 @@ namespace OnlineBackup.Server
             using (var gz = new System.IO.Compression.GZipStream(new MemoryStream(exe, (int)(exe.Length - 16 - len), (int)len), CompressionMode.Decompress))
             using (var br = new BinaryReader(gz, Encoding.UTF8))
             {
-                var n = br.ReadInt32();
-                for (int i = 0; i < n; i++) { var name = Encoding.UTF8.GetString(br.ReadBytes(br.ReadInt32())); var size = br.ReadInt64(); r[name] = br.ReadBytes((int)size); }
+                var raw = new MemoryStream(); var rw = new BinaryWriter(raw, Encoding.UTF8);
+                var n = br.ReadInt32(); rw.Write(n);
+                for (int i = 0; i < n; i++)
+                {
+                    var nb = Exact(br, br.ReadInt32()); var size = br.ReadInt64(); var data = Exact(br, size);
+                    rw.Write(nb.Length); rw.Write(nb); rw.Write(size); rw.Write(data); r[Encoding.UTF8.GetString(nb)] = data;
+                }
+                rw.Flush();
+                byte[] sum; using (var h = System.Security.Cryptography.SHA256.Create()) sum = h.ComputeHash(raw.ToArray());
+                var stored = Exact(br, 32);
+                for (int i = 0; i < 32; i++) if (stored[i] != sum[i]) throw new InvalidDataException("damaged setup payload (its SHA-256 does not match)");
             }
             return r;
+        }
+
+        /// <summary>Bug 109: exactly n bytes - a payload cut short (ReadBytes returns fewer at the end) is damaged, never a shorter file.</summary>
+        static byte[] Exact(BinaryReader br, long n)
+        {
+            if (n < 0 || n > int.MaxValue) throw new InvalidDataException("damaged setup payload (a length of " + n + ")");
+            var b = br.ReadBytes((int)n);
+            if (b.Length != n) throw new InvalidDataException("damaged setup payload (" + b.Length + " of " + n + " bytes)");
+            return b;
         }
 
         public static string FileNameExe(Pack p) { return p.Folder.Replace(' ', '-') + "-Setup.exe"; }

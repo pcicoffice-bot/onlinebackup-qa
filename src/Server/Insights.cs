@@ -51,7 +51,7 @@ namespace OnlineBackup.Server
         {
             var p = StatsFile(userDir, setId);
             Atomic.AppendLine(p, r.ToLine());
-            var lines = File.ReadAllLines(p);
+            var lines = OnlineBackup.Core.Atomic.ReadAllLines(p);
             if (lines.Length > Keep + 50) Atomic.WriteText(p, string.Join("\n", lines.Skip(lines.Length - Keep)) + "\n");
         }
 
@@ -138,7 +138,7 @@ namespace OnlineBackup.Server
         /// <summary>Per storage folder: free space now and the days until it is full at the current pace.</summary>
         public static List<Msg> DiskForecast(string systemHome, IEnumerable<Msg> homes, DateTime nowUtc)
         {
-            var rows = File.Exists(DiskFile(systemHome)) ? File.ReadAllLines(DiskFile(systemHome)).Select(l => l.Split('\t')).Where(f => f.Length == 3).ToList() : new List<string[]>();
+            var rows = File.Exists(DiskFile(systemHome)) ? OnlineBackup.Core.Atomic.ReadAllLines(DiskFile(systemHome)).Select(l => l.Split('\t')).Where(f => f.Length == 3).ToList() : new List<string[]>();
             var r = new List<Msg>();
             foreach (var h in homes)
             {

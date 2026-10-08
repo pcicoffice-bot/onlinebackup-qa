@@ -97,7 +97,7 @@ namespace OnlineBackup.Server
             Dictionary<string, XElement> blocked;
             if (blockedBy.TryGetValue(cfg.SystemHome, out blocked)) return blocked;
             blockedBy[cfg.SystemHome] = blocked = new Dictionary<string, XElement>();
-            try { if (File.Exists(FilePath(cfg))) foreach (var e in XDocument.Load(FilePath(cfg)).Root.Elements("BLOCK")) blocked[(string)e.Attribute("IP")] = e; } catch (Exception) { }
+            try { if (File.Exists(FilePath(cfg))) foreach (var e in OnlineBackup.Core.Atomic.LoadXml(FilePath(cfg)).Root.Elements("BLOCK")) blocked[(string)e.Attribute("IP")] = e; } catch (Exception) { }
             return blocked;
         }
 
@@ -194,7 +194,10 @@ namespace OnlineBackup.Server
             {
                 List<KeyValuePair<DateTime, string>> l;
                 if (fails.TryGetValue(K(cfg, ip), out l) && l.Count(x => x.Value == (login ?? "").ToLowerInvariant()) >= 3) why.Add(l.Count(x => x.Value == login.ToLowerInvariant()) + " wrong passwords before it");
-                fails.Remove(K(cfg, ip));
+                // bug 120: a good sign-in cleared EVERY failure of the address - any account (a reseller's) could reset the count
+                // between guesses for other names and spray for ever. Only this name's own failures are cleared.
+                var mine = (login ?? "").ToLowerInvariant();
+                if (l != null) { l.RemoveAll(x => x.Value == mine); if (l.Count == 0) fails.Remove(K(cfg, ip)); }
                 var doc = SeenDoc(cfg); var key = (login ?? "").ToLowerInvariant();
                 var seen = doc.Root.Elements("SEEN").Where(e => (string)e.Attribute("LOGIN") == key).ToList();
                 if (seen.Count > 0 && !seen.Any(e => (string)e.Attribute("IP") == ip)) why.Add("from a new address");
@@ -208,7 +211,7 @@ namespace OnlineBackup.Server
         }
 
         static string SeenPath(SystemConfig cfg) { return Path.Combine(cfg.SystemHome, "conf", "guard-seen.xml"); }
-        static XDocument SeenDoc(SystemConfig cfg) { try { if (File.Exists(SeenPath(cfg))) return XDocument.Load(SeenPath(cfg)); } catch (Exception) { } return new XDocument(new XElement("SEEN_LIST")); }
+        static XDocument SeenDoc(SystemConfig cfg) { try { if (File.Exists(SeenPath(cfg))) return OnlineBackup.Core.Atomic.LoadXml(SeenPath(cfg)); } catch (Exception) { } return new XDocument(new XElement("SEEN_LIST")); }
 
         static void AlertOnce(SystemConfig cfg, string key, string subject, string html)
         {

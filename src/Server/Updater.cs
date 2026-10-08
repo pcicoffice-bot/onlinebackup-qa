@@ -34,7 +34,7 @@ namespace OnlineBackup.Server
         /// <summary>This program's version (version.txt beside it, written by the package build).</summary>
         public static string CurrentVersion
         {
-            get { try { var p = Path.Combine(AppContext.BaseDirectory, "version.txt"); return File.Exists(p) ? File.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
+            get { try { var p = Path.Combine(AppContext.BaseDirectory, "version.txt"); return File.Exists(p) ? OnlineBackup.Core.Atomic.ReadAllText(p).Trim() : "0"; } catch (Exception) { return "0"; } }
         }
 
         public static bool Newer(string a, string b)
@@ -163,9 +163,9 @@ namespace OnlineBackup.Server
                     if (!true.Equals(st["available"])) throw new InvalidOperationException("No newer version.");
                     var info = latest;
                     var version = Json.Str(info, "version"); var sha = (Json.Str(info, "sha256") ?? "").ToLowerInvariant();
-                    // the vendor's portal: only a version the vendor signed (the same key as the licences);
-                    // the owner's own private store: the owner's key reads it, the SHA-256 in latest.json checks the file
-                    if (!gh && !License.VerifyCenter(Encoding.UTF8.GetBytes("OBUPDATE|" + version + "|" + sha), Convert.FromBase64String(Json.Str(info, "signature") ?? "")))
+                    // only a version the vendor signed (the same key as the licences) — from the vendor's portal and, owner
+                    // decision 106 (A), from the owner's own private store too (its latest.json carries the vendor's signature)
+                    if (!VendorSigned(version, sha, Json.Str(info, "signature")))
                         throw new InvalidOperationException("The new version is not signed by the software vendor — not installed.");
                     if (gh && !System.Text.RegularExpressions.Regex.IsMatch(sha, "^[0-9a-f]{64}$")) throw new InvalidOperationException("latest.json has no SHA-256 — not installed.");
                     var dir = Path.Combine(cfg.SystemHome, "update"); Directory.CreateDirectory(dir);
@@ -194,12 +194,22 @@ namespace OnlineBackup.Server
             }) { IsBackground = true }.Start();
         }
 
+        /// <summary>The vendor's signature (base64) of "OBUPDATE|version|sha256" — false when missing, broken or not the vendor's.</summary>
+        static bool VendorSigned(string version, string sha, string signature)
+        {
+            byte[] sig;
+            try { sig = Convert.FromBase64String((signature ?? "").Trim()); } catch (FormatException) { return false; }
+            return sig.Length > 0 && License.VerifyCenter(Encoding.UTF8.GetBytes("OBUPDATE|" + version + "|" + sha), sig);
+        }
+
         /// <summary>
         /// UPD-030 (owner: "everything through the Update button"): an update brought by the administrator — the parts of
         /// the update package chosen in the browser, in order — checked (a server package with its version) and installed
         /// like a downloaded one. Only from the server itself (the caller checks), never pushed from outside.
         /// </summary>
-        public static string FromUpload(SystemConfig cfg, Stream body, long maxBytes, string who, string ip)
+        /// <param name="signature">Owner decision 106 (A): the vendor's signature of the package (the same as the portal's,
+        /// of its version and SHA-256) — without it, or with any other, the files are refused and nothing is installed.</param>
+        public static string FromUpload(SystemConfig cfg, Stream body, long maxBytes, string who, string ip, string signature = null)
         {
             lock (gate)
             {
@@ -223,9 +233,10 @@ namespace OnlineBackup.Server
                 var exe = Path.Combine(unpack, "server", OperatingSystem.IsWindows() ? "OnlineBackup.Server.exe" : "OnlineBackup.Server");
                 var vf = Path.Combine(unpack, "server", "version.txt");
                 if (!File.Exists(exe) || !File.Exists(vf)) throw new InvalidOperationException("This package has no server program.");
-                var version = File.ReadAllText(vf).Trim();
+                var version = OnlineBackup.Core.Atomic.ReadAllText(vf).Trim();
+                if (!VendorSigned(version, sha, signature)) throw new InvalidOperationException("The new version is not signed by the software vendor — not installed.");
                 var log = Path.Combine(dir, "update-" + Safe(version) + ".log");
-                SysLog.Write(ip, "Update", who + " update from files " + CurrentVersion + " → " + version + " (SHA-256 " + sha.Substring(0, 12) + "…)");
+                SysLog.Write(ip, "Update", who + " update from files " + CurrentVersion + " → " + version + " (signed, SHA-256 " + sha.Substring(0, 12) + "…)");
                 lock (gate) { state = "installing"; message = version; }
                 Launch(exe, log);
                 return version;

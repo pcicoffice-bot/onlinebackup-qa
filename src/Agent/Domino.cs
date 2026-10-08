@@ -37,7 +37,7 @@ namespace OnlineBackup.Agent
             var found = candidates.FirstOrDefault(File.Exists);
             if (found == null) return null;
             var r = new Install { Ini = found, ProgramDir = Path.GetDirectoryName(found) };
-            foreach (var line in File.ReadAllLines(found, Encoding.Default))
+            foreach (var line in OnlineBackup.Core.Atomic.ReadAllLines(found, Encoding.Default))
             {
                 var i = line.IndexOf('='); if (i <= 0) continue;
                 var k = line.Substring(0, i).Trim(); var v = line.Substring(i + 1).Trim();

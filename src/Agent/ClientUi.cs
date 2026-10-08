@@ -77,7 +77,7 @@ namespace OnlineBackup.Agent
         {
             var dir = AppDomain.CurrentDomain.BaseDirectory;
             var p = Path.Combine(dir, "branding.xml");
-            try { if (File.Exists(p)) return XElement.Load(p); } catch (Exception) { }
+            try { if (File.Exists(p)) return OnlineBackup.Core.Atomic.LoadXElement(p); } catch (Exception) { }
             return new XElement("BRANDING");
         }
 
@@ -89,7 +89,7 @@ namespace OnlineBackup.Agent
             if (!string.IsNullOrEmpty((string)local.Attribute("PRODUCT"))) return local;
             var cache = Path.Combine(app.Home.Dir, "server-brand.xml");
             XElement cached = null;
-            try { if (File.Exists(cache)) cached = XElement.Load(cache); } catch (Exception) { }
+            try { if (File.Exists(cache)) cached = OnlineBackup.Core.Atomic.LoadXElement(cache); } catch (Exception) { }
             if (app.Home.DeviceToken != null && (cached == null || File.GetLastWriteTimeUtc(cache) < SystemClock.UtcNow.AddHours(-6)))
             {
                 try
@@ -177,7 +177,14 @@ namespace OnlineBackup.Agent
                         lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); }
                         return new Msg().Set("ok", 1);
                     }
-                case "logout": lock (gate) { session = null; sessionPassword = null; } return new Msg().Set("ok", 1);
+                case "logout":
+                    {
+                        // bug 124 (H-04): Sign out only forgot the sign-in here; on the server it stayed valid 12 hours (and across a
+                        // restart). It is ended there too; the window signs out here even when the server cannot be reached.
+                        Client was; lock (gate) { was = session; session = null; sessionPassword = null; }
+                        if (was != null) try { was.Call("POST", "/api/logout", new Msg()); } catch (Exception) { }
+                        return new Msg().Set("ok", 1);
+                    }
                 // SEC-010: two-step verification of this customer — on / off, set up with the authenticator app
                 case "security": { var p = app.Profile(); return new Msg().Set("totp", p.Get("TOTP_ON") == "Y" ? 1 : 0).Set("required", p.Get("REQUIRE_TOTP") == "Y" ? 1 : 0).Set("login", p.Get("LOGIN_NAME")); }
                 case "totp-enable": return Session().Call("POST", "/api/totp/enable", new Msg());
@@ -192,6 +199,14 @@ namespace OnlineBackup.Agent
                         return m;
                     }
                 case "points": return Points(q["set"]);
+                case "runlog":
+                    {
+                        // the last run's log of a set of this computer (its details, and "Export the log" for the IT company)
+                        var s = SetOf(q["set"]); string at; var lines = RunNotes.Log(app.Home.SetDir(s.Id), out at);
+                        var m = new Msg().Set("at", at).Set("text", RunNotes.Readable(lines));
+                        foreach (var l in lines) m.Add("lines", new Msg().Set("l", l));
+                        return m;
+                    }
                 case "files": return Files(q["set"], q["point"]);
                 case "restore": return Restore(b);
                 case "addset": return AddSet(b);
@@ -248,7 +263,7 @@ namespace OnlineBackup.Agent
             try
             {
                 var f = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "contract-accepted.txt");
-                if (string.IsNullOrEmpty(version) || version == "0" || !File.Exists(f) || File.ReadAllText(f).Trim() != version) return false;
+                if (string.IsNullOrEmpty(version) || version == "0" || !File.Exists(f) || OnlineBackup.Core.Atomic.ReadAllText(f).Trim() != version) return false;
                 var c = Connection(); var pkgPin = ((string)c.Attribute("PIN") ?? "").ToLowerInvariant();
                 return Setup.SameServer(server, (string)c.Attribute("SERVER")) || (pkgPin.Length > 0 && pkgPin == (pin ?? "").ToLowerInvariant());
             }
@@ -258,7 +273,7 @@ namespace OnlineBackup.Agent
         static XElement Connection()
         {
             var p = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "connection.xml");
-            return File.Exists(p) ? XElement.Load(p) : new XElement("CONNECTION");
+            return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : new XElement("CONNECTION");
         }
 
         Msg State()
@@ -275,20 +290,39 @@ namespace OnlineBackup.Agent
                 var pr = app.DeviceClient().Call("GET", "/api/profile");
                 var rights = pr.List("rights").FirstOrDefault() ?? new Msg();
                 m.Set("canAdd", rights["can_add_sets"] ?? "1").Set("canSources", rights["can_edit_sources"] ?? "1").Set("canSchedule", rights["can_edit_schedule"] ?? "1");
-                foreach (var s in Core.Profile.Parse(pr["profile"]).Sets)
+                foreach (var s in app.Remember(Core.Profile.Parse(pr["profile"])).Sets)
                 {
                     var la = Path.Combine(app.Home.SetDir(s.Id), "last-attempt.txt");
                     string last = "", result = "";
-                    if (File.Exists(la)) { var f = File.ReadAllText(la).Split('\t'); last = f[0]; result = f.Length > 1 ? f[1].Trim() : ""; }
+                    if (File.Exists(la)) { var f = OnlineBackup.Core.Atomic.ReadAllText(la).Split('\t'); last = f[0]; result = f.Length > 1 ? f[1].Trim() : ""; }
                     bool mine = string.IsNullOrEmpty(s.Computer) || s.Computer.Equals(app.Home.Computer, StringComparison.OrdinalIgnoreCase);
-                    m.Add("sets", new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
+                    var sm = new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
                         .Set("computer", s.Computer).Set("mine", mine ? 1 : 0).Set("src", string.Join("\n", s.Sources.ToArray())).Set("skip", string.Join("\n", s.Deselected.ToArray()))
                         .Set("hh", s.Hour).Set("mm", s.Minute)
-                        .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result));
+                        .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result)
+                        .Set("blocked", app.Pilot ? Scope.Refusal(s) : null);   // PILOT-010: kept, not run — and why
+                    m.Add("sets", WindowNotes(sm, app.Home.SetDir(s.Id), last, result, s));
                 }
             }
             catch (AgentException e) { m.Set("offline", e.Message); }
+            // PILOT-010: the pilot "Windows File Backup" — the window offers only files and folders with the own engine
+            if (app.Pilot) m.Set("pilot", 1).Set("restic", 0);
             return m;
+        }
+
+        /// <summary>Owner decision B2, for the customer's window (additive fields; the others are unchanged): the last
+        /// complete run (clean runs only), the files the last run did not back up and why, the runs noted on this computer,
+        /// the last automatic restore test that reached the server, and the set's retention (owner Q8).</summary>
+        static Msg WindowNotes(Msg sm, string dir, string last, string result, BackupSetInfo s)
+        {
+            int count; var missed = RunNotes.Missed(dir, last, out count);
+            sm.Set("lastComplete", RunNotes.LastComplete(dir, last, result)).Set("missedCount", count);
+            foreach (var x in missed.Take(50)) sm.Add("missed", new Msg().Set("p", x.Key).Set("why", x.Value));
+            foreach (var r in RunNotes.Runs(dir).Skip(Math.Max(0, RunNotes.Runs(dir).Count - 30))) sm.Add("runs", new Msg().Set("t", r[0]).Set("r", r[1]).Set("e", r.Length > 2 ? r[2] : "0"));
+            try { var t = Path.Combine(dir, "last-restore-test.txt"); if (File.Exists(t)) sm.Set("lastTest", OnlineBackup.Core.Atomic.ReadAllText(t).Trim()); } catch (Exception) { }
+            var k = s.Retention;
+            if (k != null) sm.Set("retUnit", k.Unit).Set("retPeriod", k.Period).Set("retDaily", k.Daily).Set("retWeekly", k.Weekly).Set("retMonthly", k.Monthly).Set("retQuarterly", k.Quarterly).Set("retYearly", k.Yearly);
+            return sm;
         }
 
         Msg Start(string kind, string set, Func<string[]> work)
@@ -434,7 +468,9 @@ namespace OnlineBackup.Agent
             if (sources.Count == 0 && !all) throw new AgentException(400, "NO_SOURCE", "Choose at least one folder.");
             int hour; if (!int.TryParse(b["hour"] ?? "22", out hour) || hour < 0 || hour > 23) hour = 22;
             int minute; if (!int.TryParse(b["minute"] ?? "0", out minute) || minute < 0 || minute > 59) minute = 0;
-            var s = new BackupSetInfo { Name = string.IsNullOrEmpty(b["name"]) ? "Files" : b["name"], Sources = sources, Deselected = Lines(b["exclude"]), Hour = hour, Minute = minute, Engine = ResticSupported ? "RESTIC" : "" };
+            app.Profile();   // PILOT-010: the server's scope as it is now
+            var s = new BackupSetInfo { Name = string.IsNullOrEmpty(b["name"]) ? "Files" : b["name"], Sources = sources, Deselected = Lines(b["exclude"]), Hour = hour, Minute = minute, Engine = ResticSupported && !app.Pilot ? "RESTIC" : "" };
+            if (app.Pilot && (b["type"] ?? "FILE") != "FILE") app.CheckScope(new BackupSetInfo { Type = b["type"] });
             if (b["type"] == "M365")
             {
                 // CLI-075: Microsoft 365 — the folder is the local mirror; the application secret stays on this computer

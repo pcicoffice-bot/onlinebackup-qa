@@ -19,7 +19,7 @@ namespace OnlineBackup.ClientApp
                 {
                     if (File.Exists(ui))
                     {
-                        var u = File.ReadAllText(ui).Trim();
+                        var u = OnlineBackup.Core.Atomic.ReadAllText(ui).Trim();
                         using (var t = new System.Net.Sockets.TcpClient()) t.Connect("127.0.0.1", new Uri(u).Port);
                         url = u;
                     }
@@ -32,7 +32,7 @@ namespace OnlineBackup.ClientApp
                 MessageBox.Show("The backup service on this computer is not running. Start it in Windows Services, or run Setup again.", "Backup", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return 1;
             }
-            return OnlineBackup.Agent.ClientForm.Run(url, args.Contains("--tray"), () => File.ReadAllText(ui));
+            return OnlineBackup.Agent.ClientForm.Run(url, args.Contains("--tray"), () => OnlineBackup.Core.Atomic.ReadAllText(ui));
         }
     }
 }

@@ -29,10 +29,16 @@ namespace OnlineBackup.Tests
             var psi = new ProcessStartInfo("dotnet") { UseShellExecute = false, RedirectStandardOutput = true, RedirectStandardError = true };
             foreach (var a in args) psi.ArgumentList.Add(a);
             var p = Process.Start(psi);
-            p.OutputDataReceived += (s, e) => { }; p.ErrorDataReceived += (s, e) => { };
+            var said = new System.Collections.Concurrent.ConcurrentQueue<string>(); Said[p.Id] = said;
+            p.OutputDataReceived += (s, e) => { if (e.Data != null) said.Enqueue(DateTime.UtcNow.ToString("HH:mm:ss.f ") + e.Data); };
+            p.ErrorDataReceived += (s, e) => { if (e.Data != null) said.Enqueue(DateTime.UtcNow.ToString("HH:mm:ss.f ") + "err: " + e.Data); };
             p.BeginOutputReadLine(); p.BeginErrorReadLine();
             return p;
         }
+
+        /// <summary>What each started agent printed, with the time: shown when a test fails on it (diagnosis only).</summary>
+        static readonly System.Collections.Concurrent.ConcurrentDictionary<int, System.Collections.Concurrent.ConcurrentQueue<string>> Said = new System.Collections.Concurrent.ConcurrentDictionary<int, System.Collections.Concurrent.ConcurrentQueue<string>>();
+        static string Tail(Process p) { System.Collections.Concurrent.ConcurrentQueue<string> q; return Said.TryGetValue(p.Id, out q) ? string.Join("\n", q.Reverse().Take(40).Reverse()) : ""; }
 
         static void Rnd(string path, long size, int seed)
         {
@@ -84,7 +90,7 @@ namespace OnlineBackup.Tests
         [InlineData("RESTIC")]
         public void AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(string engine)
         {
-            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) return;
+            if (engine == "RESTIC" && !File.Exists(Environment.GetEnvironmentVariable("OB_RESTIC") ?? "")) throw NotTested.Because("OB_RESTIC (the restic program) is not set - the RESTIC case");
             using (var env = new Env())
             {
                 var src = env.Dir("src");
@@ -152,7 +158,8 @@ namespace OnlineBackup.Tests
                 var until = DateTime.UtcNow.AddSeconds(90);
                 while (DateTime.UtcNow < until && !env.Api.Live().Any(m => m["set"] == set.Id)) Thread.Sleep(100);
                 env.Api.Dispose();                                                   // the server is gone
-                Assert.True(p.WaitForExit(120000), "the agent did not end after the server went away");
+                var gone = DateTime.UtcNow.ToString("HH:mm:ss.f");
+                Assert.True(p.WaitForExit(120000), "the agent did not end after the server went away (at " + gone + "); what it printed:\n" + Tail(p));
                 Assert.NotEqual(0, p.ExitCode);                                      // not reported as a success
                 env.Api = new Api(env.Cfg); env.Api.Start(env.Url);                  // the server is back
                 Unthrottle(env, "srvdown", set.Id);
@@ -208,7 +215,10 @@ namespace OnlineBackup.Tests
                     catch (Exception e) { errors.Add(e); }
                 })).ToList();
                 threads.ForEach(t => t.Start()); Thread.Sleep(300); go.Set(); threads.ForEach(t => t.Join(60000));
-                Assert.Empty(errors);
+                // the gate's Windows job: several calls answered 500 - the server's own log says why (Windows-only so far)
+                var sys = Path.Combine(env.SystemHome, "logs", "System");
+                if (!errors.IsEmpty) Assert.Fail(errors.Count + " of 16 calls failed: " + errors.First().Message + "\nserver System log:\n" +
+                    (Directory.Exists(sys) ? string.Join("\n", Directory.GetFiles(sys).SelectMany(File.ReadAllLines).Where(l => l.Contains("error:"))) : "(none)"));
                 var rows = env.Api.Runs.Since(DateTime.UtcNow.AddHours(-1), DateTime.UtcNow.AddHours(1)).Where(m => m["set"] == set.Id && m["job"] == job).ToList();
                 Assert.Single(rows);
                 Assert.Equal("bad", rows[0]["status"]);

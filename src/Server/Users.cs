@@ -22,9 +22,10 @@ namespace OnlineBackup.Server
         readonly object gate = new object();
         readonly ConcurrentDictionary<string, Session> sessions = new ConcurrentDictionary<string, Session>();
 
-        public sealed class Session { public string Login; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; }
+        public sealed class Session { public string Login; public string Account; public bool Admin; public DateTime Expires; public string Device; public string Vendor = ""; public bool Enroll; public bool Sliding; public string Pw; }
 
         public Users(SystemConfig cfg) { this.cfg = cfg; }
+        public SystemConfig Config { get { return cfg; } }
 
         /// <summary>Every read-modify-write of a Profile.xml takes this lock (sign-in counters, statistics, settings).</summary>
         public object ProfileLock { get { return gate; } }
@@ -41,7 +42,7 @@ namespace OnlineBackup.Server
         {
             var fi = new FileInfo(UsersXml);
             if (indexDoc != null && fi.Exists && fi.LastWriteTimeUtc == indexTime && fi.Length == indexLength) return;
-            indexDoc = fi.Exists ? XDocument.Load(UsersXml) : new XDocument(new XElement("USERS"));
+            indexDoc = fi.Exists ? OnlineBackup.Core.Atomic.LoadXml(UsersXml) : new XDocument(new XElement("USERS"));
             indexTime = fi.Exists ? fi.LastWriteTimeUtc : DateTime.MinValue; indexLength = fi.Exists ? fi.Length : -1;
             var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); var l = new List<string>();
             foreach (var x in indexDoc.Root.Elements("USER")) { var n = (string)x.Attribute("LOGIN"); if (n == null || d.ContainsKey(n)) continue; d[n] = Path.Combine((string)x.Attribute("HOME"), n); l.Add(n); }
@@ -112,6 +113,7 @@ namespace OnlineBackup.Server
                 long quota = quotaBytes ?? (long)(double.Parse((string)pol.Attribute("QUOTA_GB") ?? "50", CultureInfo.InvariantCulture) * 1024 * 1024 * 1024);
                 var home = AllocateHome(quota);
                 var p = Profile.Create(login, alias, PasswordHash.Create(password), (string)pol.Attribute("LANGUAGE"), (string)pol.Attribute("TIMEZONE"));
+                p.SetAttr("ACCOUNT_ID", Bytes.Hex(Bytes.Random(16)));   // R-01: this account, not just its name (a login can be reused)
                 p.SetAttr("QUOTA", quota);
                 p.SetAttr("QUOTA_TYPE", quotaType ?? (string)pol.Attribute("QUOTA_TYPE") ?? "COMPRESSED");
                 p.SetAttr("MAX_BACKUP_SET", (string)pol.Attribute("MAX_BACKUP_SET") ?? "10");
@@ -178,6 +180,9 @@ namespace OnlineBackup.Server
                     // H-10 / H-11: an unknown name gets the same words and costs the same key derivation as a wrong password —
                     // neither the message nor the time tells which customer names exist
                     PasswordHash.Verify(password ?? "", DummyHash);
+                    // bug 127: a wrong password also writes the failure counter durably (the profile); the same durable write
+                    // here, or on a slow disk (Windows) the time alone told which names exist
+                    NoteUnknownSignIn(cfg);
                     SysLog.Write(ip, "Access", "login failed (unknown user) " + login);
                     throw new ApiException(401, "LOGIN", "Wrong user name, password or code.");
                 }
@@ -327,6 +332,7 @@ namespace OnlineBackup.Server
                 if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
                 p.SetAttr("TOTP_SECRET", pending); p.SetAttr("TOTP_BACKUP_CODES", p.Get("TOTP_PENDING_CODES"));
                 p.SetAttr("TOTP_PENDING", ""); p.SetAttr("TOTP_PENDING_CODES", "");
+                p.SetAttr("TOTP_LAST_STEP", step);   // owner decision 122 (A): the confirming code is used up, it opens no sign-in
                 SaveProfile(login, p);
                 SysLog.Write(ip, "Access", "2fa enabled " + login);
             }
@@ -358,10 +364,30 @@ namespace OnlineBackup.Server
         /// <summary>System administrator → "" ; a vendor's administrator → the vendor id (VND-040). Throws when wrong.</summary>
         // ---------------------------------------------------------------- sessions and devices
 
+        /// <summary>The account's own id (R-01); an account made before it existed gets one at its next sign-in.</summary>
+        string AccountId(string login)
+        {
+            lock (gate)
+            {
+                var p = LoadProfile(login); var id = p.Get("ACCOUNT_ID");
+                if (string.IsNullOrEmpty(id)) { id = Bytes.Hex(Bytes.Random(16)); p.SetAttr("ACCOUNT_ID", id); SaveProfile(login, p); }
+                return id;
+            }
+        }
+
+        /// <summary>Bug 121: a short fingerprint of the account's stored password hash (never the hash itself in the sessions file).</summary>
+        static string PwMark(Staff.Account acc)
+        {
+            var h = acc == null ? null : (string)acc.El.Attribute("HASHED_PWD");
+            return string.IsNullOrEmpty(h) ? "" : Bytes.Hex(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(h))).Substring(0, 16);
+        }
+
         public string NewSession(string login, bool admin, string device = null, string vendor = "")
         {
             var token = Bytes.Hex(Bytes.Random(24));
             var s = new Session { Login = login, Admin = admin, Device = device, Vendor = vendor ?? "", Expires = SystemClock.UtcNow.AddHours(admin ? 2 : 12) };
+            if (admin) s.Pw = PwMark(Staff.Find(cfg, login));
+            if (!admin) s.Account = AccountId(login);
             sessions[token] = s;
             // Agent D (D-6): a customer's sign-in (the window, a restore) outlives a server restart as an administrator's
             // does — a restore running across a restart failed on every remaining file and its record was refused
@@ -378,7 +404,7 @@ namespace OnlineBackup.Server
             var token = Bytes.Hex(Bytes.Random(24));
             // SEC-130 (owner: "after the update it went back to the sign-in again" — from outside): every administrator sign-in
             // outlives a restart; away from the server it ends after 2 hours without use (sliding), on the server after 30 days
-            var s = new Session { Login = si.Account.Login, Admin = true, Vendor = si.Account.Vendor ?? "", Enroll = si.Enroll, Expires = SystemClock.UtcNow.AddHours(local ? 24 * 30 : 2), Sliding = !local };
+            var s = new Session { Login = si.Account.Login, Admin = true, Vendor = si.Account.Vendor ?? "", Enroll = si.Enroll, Expires = SystemClock.UtcNow.AddHours(local ? 24 * 30 : 2), Sliding = !local, Pw = PwMark(si.Account) };
             sessions[token] = s;
             if (!si.Enroll) Keep(token, s);
             return token;
@@ -388,6 +414,13 @@ namespace OnlineBackup.Server
         // kept as a hash of the token (never the token) in conf/kept-sessions.xml, only the server's administrators can read it
         static readonly object keptGate = new object();
         string KeptPath { get { return Path.Combine(cfg.SystemHome, "conf", "kept-sessions.xml"); } }
+        /// <summary>Bug 127: an unknown name's sign-in (a customer's or an administrator's) writes to the disk as durably as a wrong
+        /// password's failure counter does - on a slow disk (Windows) the missing write alone told which names exist.</summary>
+        internal static void NoteUnknownSignIn(SystemConfig cfg)
+        {
+            try { Atomic.WriteText(Path.Combine(cfg.SystemHome, "conf", "unknown-signin.txt"), RunId.UnixMs(SystemClock.UtcNow).ToString(CultureInfo.InvariantCulture)); }
+            catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
         static string Hash(string token) { using (var h = System.Security.Cryptography.SHA256.Create()) return Bytes.Hex(h.ComputeHash(System.Text.Encoding.UTF8.GetBytes(token))); }
 
         void Keep(string token, Session s)
@@ -395,10 +428,10 @@ namespace OnlineBackup.Server
             lock (keptGate)
                 try
                 {
-                    var doc = File.Exists(KeptPath) ? XDocument.Load(KeptPath) : new XDocument(new XElement("KEPT"));
+                    var doc = File.Exists(KeptPath) ? OnlineBackup.Core.Atomic.LoadXml(KeptPath) : new XDocument(new XElement("KEPT"));
                     var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow) || (string)e.Attribute("HASH") == h).Remove();
-                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N")));
+                    doc.Root.Add(new XElement("S", new XAttribute("HASH", h), new XAttribute("LOGIN", s.Login), new XAttribute("VENDOR", s.Vendor ?? ""), new XAttribute("EXPIRES", RunId.UnixMs(s.Expires)), new XAttribute("SLIDING", s.Sliding ? "Y" : "N"), new XAttribute("ADMIN", s.Admin ? "Y" : "N"), new XAttribute("ACCOUNT", s.Account ?? ""), new XAttribute("PW", s.Pw ?? "")));
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
                 catch (Exception) { }
@@ -411,11 +444,11 @@ namespace OnlineBackup.Server
                 {
                     if (!File.Exists(KeptPath)) return null;
                     var h = Hash(token);
-                    var e = XDocument.Load(KeptPath).Root.Elements("S").FirstOrDefault(x => (string)x.Attribute("HASH") == h);
+                    var e = OnlineBackup.Core.Atomic.LoadXml(KeptPath).Root.Elements("S").FirstOrDefault(x => (string)x.Attribute("HASH") == h);
                     if (e == null || (long)e.Attribute("EXPIRES") < RunId.UnixMs(SystemClock.UtcNow)) return null;
                     bool admin = (string)e.Attribute("ADMIN") != "N";
                     if (admin && Staff.Find(cfg, (string)e.Attribute("LOGIN")) == null) return null;   // the administrator was removed meanwhile
-                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
+                    return new Session { Login = (string)e.Attribute("LOGIN"), Admin = admin, Vendor = (string)e.Attribute("VENDOR") ?? "", Sliding = (string)e.Attribute("SLIDING") == "Y", Account = (string)e.Attribute("ACCOUNT"), Pw = (string)e.Attribute("PW"), Expires = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds((long)e.Attribute("EXPIRES")) };
                 }
                 catch (Exception) { return null; }
         }
@@ -429,7 +462,7 @@ namespace OnlineBackup.Server
                 try
                 {
                     if (!File.Exists(KeptPath)) return;
-                    var doc = XDocument.Load(KeptPath); var h = Hash(token);
+                    var doc = OnlineBackup.Core.Atomic.LoadXml(KeptPath); var h = Hash(token);
                     doc.Root.Elements("S").Where(e => (string)e.Attribute("HASH") == h).Remove();
                     Atomic.WriteText(KeptPath, doc.ToString());
                 }
@@ -448,6 +481,16 @@ namespace OnlineBackup.Server
             {
                 var acc = Staff.Find(cfg, s.Login);
                 if (acc == null || (string)acc.El.Attribute("DISABLED") == "Y" || (acc.Vendor ?? "") != (s.Vendor ?? "")) { EndSession(token); return null; }
+                // bug 121: a sign-in opened with a password that has been changed since ends (it lived on: 2 h sliding, 30 days
+                // on the server). A session kept by an older version carries no mark and stays until it ends by itself.
+                if (!string.IsNullOrEmpty(s.Pw) && s.Pw != PwMark(acc)) { EndSession(token); return null; }
+            }
+            // QA round R (R-01, High): a customer's sign-in belonged to a NAME — after the customer was deleted and the name given
+            // to another customer (another reseller's), the old token opened the new account. It belongs to the account now.
+            if (!s.Admin)
+            {
+                string now; try { now = LoadProfile(s.Login).Get("ACCOUNT_ID") ?? ""; } catch (Exception) { now = null; }
+                if (now == null || string.IsNullOrEmpty(s.Account) || now != s.Account) { EndSession(token); return null; }
             }
             // SEC-130: in use → 2 more hours (written down at most every 10 minutes, so a restart keeps it)
             if (s.Admin && s.Sliding && s.Expires < SystemClock.UtcNow.AddMinutes(110)) { s.Expires = SystemClock.UtcNow.AddHours(2); Keep(token, s); }
@@ -466,7 +509,7 @@ namespace OnlineBackup.Server
             {
                 var p = Path.Combine(UserDir(l), "db", "devices.xml");
                 if (!File.Exists(p)) continue;
-                n += XDocument.Load(p).Root.Elements("DEVICE").Where(d => (string)d.Attribute("REVOKED") != "Y")
+                n += OnlineBackup.Core.Atomic.LoadXml(p).Root.Elements("DEVICE").Where(d => (string)d.Attribute("REVOKED") != "Y")
                     .Select(d => ((string)d.Attribute("NAME") ?? "").ToUpperInvariant()).Distinct().Count();
             }
             return n;
@@ -477,7 +520,7 @@ namespace OnlineBackup.Server
             lock (gate)
             {
                 var path = Path.Combine(UserDir(login), "db", "devices.xml");
-                var doc = File.Exists(path) ? XDocument.Load(path) : new XDocument(new XElement("DEVICES"));
+                var doc = File.Exists(path) ? OnlineBackup.Core.Atomic.LoadXml(path) : new XDocument(new XElement("DEVICES"));
                 // LIC-016: the licence counts the computers backed up (the same computer registering again is not a new one)
                 var lic = cfg.License;
                 bool again = doc.Root.Elements("DEVICE").Any(d => (string)d.Attribute("REVOKED") != "Y" && string.Equals((string)d.Attribute("NAME"), computer ?? "", StringComparison.OrdinalIgnoreCase));
@@ -504,7 +547,7 @@ namespace OnlineBackup.Server
             catch (ApiException) { throw new ApiException(401, "DEVICE", "Unknown device."); }   // H-09: an unknown name answers like a wrong token
             if (!File.Exists(path)) throw new ApiException(401, "DEVICE", "Unknown device.");
             var hash = Bytes.Hex(Bytes.Sha256(Encoding.UTF8.GetBytes(p[2])));
-            var dev = XDocument.Load(path).Root.Elements("DEVICE").FirstOrDefault(d => (string)d.Attribute("ID") == p[1] && (string)d.Attribute("TOKEN_HASH") == hash && (string)d.Attribute("REVOKED") != "Y");
+            var dev = OnlineBackup.Core.Atomic.LoadXml(path).Root.Elements("DEVICE").FirstOrDefault(d => (string)d.Attribute("ID") == p[1] && (string)d.Attribute("TOKEN_HASH") == hash && (string)d.Attribute("REVOKED") != "Y");
             if (dev == null) { SysLog.Write(ip, "Access", "device refused " + login); throw new ApiException(401, "DEVICE", "The device was revoked or is unknown."); }
             ComputerSeen(path, p[1], ip, agent, SystemClock.UtcNow);
             var prof = LoadProfile(login);
@@ -522,6 +565,7 @@ namespace OnlineBackup.Server
             {
                 var p = LoadProfile(login);
                 int max = (int)Math.Max(1, p.GetLong("MAX_BACKUP_SET"));
+                PilotScope.CheckSet(cfg, s);   // PILOT-010: only files and folders, own engine, no commands, no local copy
                 if (p.SetElements.Count() >= max) throw new ApiException(409, "SET_LIMIT", "Maximum number of backup sets reached (" + max + ").");
                 if (s.Type != "FILE" && s.Type != "MSSQL" && s.Type != "SYSTEMSTATE" && s.Type != "BAREMETAL" && s.Type != "M365" && s.Type != "MYSQL" && s.Type != "POSTGRESQL" && s.Type != "HYPERV" && s.Type != "GWS" && s.Type != "VMWARE" && s.Type != "ORACLE" && s.Type != "DOMINO")
                     throw new ApiException(400, "SET_TYPE", "Unsupported backup set type (files, MSSQL, MySQL, PostgreSQL, Oracle, Domino, System State, whole computer, Hyper-V, VMware, Microsoft 365, Google Workspace).");
@@ -533,7 +577,9 @@ namespace OnlineBackup.Server
                 if (s.DestMode == "LOCAL" && s.Engine != "RESTIC") throw new ApiException(400, "DEST", "A local-only backup needs the restic engine (Windows 10 / Server 2016 or later, Linux, Mac).");
                 if ((s.DestMode == "BOTH" || s.DestMode == "LOCAL") && string.IsNullOrWhiteSpace(s.LocalCopyPath)) throw new ApiException(400, "DEST", "Choose the local disk or network folder.");
                 if (s.DestMode == "BOTH") s.LocalCopy = true;
-                bool allByDefault = s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "HYPERV" || s.Type == "VMWARE" || s.Type == "DOMINO";   // none chosen = every database / VM
+                // none chosen = every database / VM; System State has no folders at all (wbadmin backs up the system state) -
+                // bug 94: the client window sends it with none, and it was refused, so no System State set could be made
+                bool allByDefault = s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "HYPERV" || s.Type == "VMWARE" || s.Type == "DOMINO" || s.Type == "SYSTEMSTATE";
                 if (s.Sources.Count == 0 && !allByDefault) throw new ApiException(400, "NO_SOURCE", "No folders were chosen for backup.");
                 var pol = cfg.Policy();
                 var ps = pol.Element("BACKUP_SET");
@@ -541,6 +587,7 @@ namespace OnlineBackup.Server
                 while (p.FindSet(id.ToString(CultureInfo.InvariantCulture)) != null) id++;
                 s.Id = id.ToString(CultureInfo.InvariantCulture);
                 NewDefaults.ApplyToNewSet(pol, s);   // DEF-010
+                PilotScope.CheckSet(cfg, s);
                 foreach (var gf in pol.Elements("GLOBAL_FILTER"))
                     s.Filters.Add(new FilterRule { Type = (string)gf.Attribute("TYPE"), ApplyDir = (string)gf.Attribute("APPLY_DIR") == "Y", ApplyFile = (string)gf.Attribute("APPLY_FILE") == "Y", Patterns = gf.Elements("PATTERN").Select(x => x.Value).ToList() });
                 p.Root.Add(s.ToXml());

@@ -26,9 +26,11 @@ namespace OnlineBackup.Server
         {
             try
             {
-                var vals = new[] { RunId.UnixMs(utc).ToString(CultureInfo.InvariantCulture), login, set.Id, set.Name, set.Computer, kind, job, body["result"] ?? (kind == "Backup" ? "BS_STOP_BY_SYSTEM_ERROR" : body.Int("failed") > 0 || body.Int("checked") == 0 && kind == "RestoreTest" ? "FAILED" : "OK"),
+                var vals = new[] { RunId.UnixMs(utc).ToString(CultureInfo.InvariantCulture), login, set.Id, set.Name, set.Computer, kind, job, body["result"] ?? (kind == "Backup" ? "BS_STOP_BY_SYSTEM_ERROR" : body.Int("failed") > 0 ? "FAILED" : body.Int("checked") == 0 && kind == "RestoreTest" ? "NOT_CHECKED" : "OK")   /* bug 110: nothing to compare is not a failed restore test (R1 fixed only the set) */,
                     body["new"] ?? body["ok"], body["upd"] ?? body["checked"], body["del"], body["bytes"], body["started"], logFile == null ? "" : Path.GetFileName(logFile) };
-                lock (gate) File.AppendAllText(Path.Combine(Dir, utc.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + ".log"), string.Join("\t", vals.Select(Clean)) + "\n", new UTF8Encoding(false));
+                var file = Path.Combine(Dir, utc.ToString("yyyyMMdd", CultureInfo.InvariantCulture) + ".log");
+                // bug 107: a line cut by a power failure has no line end - the next run was glued onto it and lost from the history
+                lock (gate) File.AppendAllText(file, (EndsCut(file) ? "\n" : "") + string.Join("\t", vals.Select(Clean)) + "\n", new UTF8Encoding(false));
             }
             catch (Exception e) { SysLog.Write(null, "System", "error: run log " + e.Message); }
         }
@@ -61,16 +63,44 @@ namespace OnlineBackup.Server
             if (result == "BS_STOP_SUCCESS" || result == "OK" || result == "RESTORE_STOP_SUCCESS") return "ok";
             if (result == "BS_STOP_SUCCESS_WITH_WARNING" || result == "RESTORE_STOP_WITH_WARNING") return "warn";
             if (result == "BS_STOP_BY_USER") return "stopped";
+            if (result == "NOT_CHECKED") return "warn";   // bug 110: a restore test with nothing to compare proves nothing - not ok, not a failure
             return "bad";
         }
 
+        static bool EndsCut(string file)
+        {
+            try
+            {
+                using (var f = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                {
+                    if (f.Length == 0) return false;
+                    f.Seek(-1, SeekOrigin.End); return f.ReadByte() != '\n';
+                }
+            }
+            catch (FileNotFoundException) { return false; }
+            catch (DirectoryNotFoundException) { return false; }
+        }
+
+        /// <summary>Removes runs older than 400 days (bug 108: each run is kept 400 days - a day file used to go 400 days after its
+        /// FIRST second, taking runs of that evening with it). A day file is deleted when all its runs are older; the day file on
+        /// the boundary keeps its younger lines. Returns the number of day files deleted.</summary>
         public int Purge(DateTime nowUtc)
         {
-            int n = 0;
+            int n = 0; var cut = nowUtc.AddDays(-400);
             foreach (var f in Directory.GetFiles(Dir, "*.log"))
             {
                 DateTime d;
-                if (DateTime.TryParseExact(Path.GetFileNameWithoutExtension(f), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out d) && (nowUtc - d).TotalDays > 400) { File.Delete(f); n++; }
+                if (!DateTime.TryParseExact(Path.GetFileNameWithoutExtension(f), "yyyyMMdd", CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out d)) continue;
+                if (d.AddDays(1) <= cut) { File.Delete(f); n++; continue; }          // every run of that day is older
+                if (d >= cut) continue;                                              // every run of that day is younger
+                lock (gate)
+                {
+                    var lines = OnlineBackup.Core.Atomic.ReadAllText(f, new UTF8Encoding(false)).Split('\n');
+                    var keep = lines.Where(l => { long t; var v = l.Split('\t'); return !(long.TryParse(v[0], out t) && RunId.FromUnixMs(t) < cut); }).ToArray();
+                    if (keep.Length == lines.Length) continue;
+                    if (keep.All(l => l.Length == 0)) { File.Delete(f); n++; }
+                    else OnlineBackup.Core.Atomic.WriteText(f, string.Join("\n", keep.Where(l => l.Length > 0)) + "\n");
+                }
             }
             return n;
         }

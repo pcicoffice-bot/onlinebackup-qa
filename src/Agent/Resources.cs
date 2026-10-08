@@ -22,7 +22,7 @@ namespace OnlineBackup.Agent
                 using (var pc = new PerformanceCounter("Processor", "% Processor Time", "_Total")) { pc.NextValue(); Thread.Sleep(500); return (int)pc.NextValue(); }
 #else
                 if (!File.Exists("/proc/stat")) return -1;
-                Func<long[]> read = () => File.ReadAllLines("/proc/stat")[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).Select(long.Parse).ToArray();
+                Func<long[]> read = () => OnlineBackup.Core.Atomic.ReadAllLines("/proc/stat")[0].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).Skip(1).Select(long.Parse).ToArray();
                 var a = read(); Thread.Sleep(500); var b = read();
                 long idle = (b[3] + (b.Length > 4 ? b[4] : 0)) - (a[3] + (a.Length > 4 ? a[4] : 0)), total = b.Sum() - a.Sum();
                 return total <= 0 ? 0 : (int)(100 - idle * 100 / total);

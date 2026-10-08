@@ -1,26 +1,46 @@
+# Owner decision Fast/Deep (A, 2026-10-08): a plain push runs the FAST gate (the Linux tests only, ~20 min, for quick
+# feedback; no package; its verdict is titled FAST and is NEVER a Certification PASS). The DEEP gate - everything below -
+# runs every night, on a manual run, on a pull request, and on a push whose commit message contains [deep]; Certification,
+# Release and the Pilot need a DEEP PASS.
 # QA-010: the quality gate. Every push and every pull request runs all the checks; the installation package is built
 # ONLY when every check passed (a broken version never becomes a package). Every night the same checks run again, so a
 # change outside the code (a download, a browser, a certificate) is noticed the next morning, not on a customer's machine.
 name: Online Backup — quality gate and package
 on:
   push:
+    branches-ignore: ['qa-shards-*', 'qa-pw-*']   # the QA shards branches of the public mirror run only qa-shards.yml
+    # cost (owner, 07.10): a push that changes only notes, reports or the Windows robot (which this gate does not run) does
+    # not start the whole gate again - in one night ~3,900 billable minutes went on such pushes. Product code, the tests
+    # this gate runs and this workflow itself still start it every time; the nightly run and a manual run cover the rest.
+    paths-ignore: ['docs/**', '**/*.md', 'tests/QA/windows/**', 'tests/QA/night/**', '.github/workflows/qa.yml', '.github/workflows/qa-shards.yml', 'tools/qa-shards/**']
   pull_request:
   schedule:
     - cron: '17 1 * * *'   # every night, 01:17 UTC
   workflow_dispatch:
 # a newer push of the same branch replaces a run still going (only the latest version matters; saves Actions minutes)
 concurrency:
-  group: ob-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name != 'schedule' }}
+  # fast and deep runs are separate groups: a fast push never cancels a deep run; a newer push replaces an older fast one
+  group: ob-${{ github.ref }}-${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) && 'deep' || 'fast' }}
+  cancel-in-progress: ${{ github.event_name == 'push' && !contains(github.event.head_commit.message, '[deep]') }}
 env:
   RESTIC_URL: https://github.com/restic/restic/releases/download/v0.18.1/restic_0.18.1_linux_amd64.bz2
   RESTIC_SHA: 680838f19d67151adba227e1570cdd8af12c19cf1735783ed1ba928bc41f363d
 jobs:
   tests:
     # 1. every unit and end-to-end test (backup → restore byte for byte, every engine and source type, security,
-    #    licensing, portal, translations, the layout lint)
+    #    licensing, portal, translations, the layout lint) - split over 4 isolated runners (QA shards; the engine is
+    #    shards-core.yml): ONE build whose SHA-256 every shard checks, a machine check before the tests, the tests of each
+    #    class exactly as one job ran them. The gate's criteria are kept exactly (mode gate): red on a failed test or a
+    #    result that is missing (a shard cancelled or crashed); a test that says NOT TESTED itself is listed, as before.
+    #    New: a known test that disappeared from the build is red (tools/qa-shards/known-tests.txt). One job of 58 min
+    #    against a 60 min limit became 4 of ~15 (CI-2).
+    uses: ./.github/workflows/shards-core.yml
+    with: { os: ubuntu-latest, shards: 4, max_parallel: 4, mode: gate, title: "${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) && 'Quality gate (DEEP) - Linux tests' || 'FAST gate (not Certification) - Linux tests' }}" }
+  tests-extra:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
+    # 1c. what the single tests job also did: the security scan and the load run
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120   # CI-3: the load run had not run in the gate for a long time; its real duration is measured, then the limit set from it
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
@@ -33,15 +53,14 @@ jobs:
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
       - name: Security scan — libraries with known flaws, secrets in the code (SEC-090)
         run: tools/security-scan.sh
-      - name: Tests
-        run: ./run-tests.sh
       - name: Load — 500 customers, 5,000 sets, 50 computers at once (LOAD-010)
         run: OB_LOAD=1 OB_LOAD_OUT=$PWD/load-report.txt dotnet test tests/Tests --filter "FullyQualifiedName~LoadTests"; r=$?; cat load-report.txt; exit $r
   windows:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 1b. the same tests on Windows Server — the system the server and most clients run on (paths, services,
     #     shadow copy, the Windows build of every program). Reported, not yet a gate: it starts as a look.
     runs-on: windows-latest
-    timeout-minutes: 90
+    timeout-minutes: 180   # 90 cut run 37574041012 at 1h30 while it still ran (tonight added the 46-run restore chains, ~40 min on Windows)
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -78,10 +97,11 @@ jobs:
         with:
           name: client-setup-screens
           path: shots
-          retention-days: 14
+          retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
       - name: Tests (Windows)
         run: dotnet test tests/Tests --no-build -nologo --logger "console;verbosity=normal"
   screens:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 2. UI-020: every screen of the product, every language, computer and phone — the report (with screenshots) is kept
     runs-on: ubuntu-latest
     timeout-minutes: 60
@@ -99,7 +119,7 @@ jobs:
           bunzip2 -c restic.bz2 > restic && chmod 755 restic && rm restic.bz2
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
           npm install --no-save playwright@1
-          npx playwright install --with-deps chromium
+          sh tools/qa-shards/pw-deps.sh   # Q40: apt hung 1 h in gate 37680779754 - shorter tries, retried
       - name: Screen check (all languages)
         run: OUT=ui-report NODE_PATH=$PWD/node_modules tools/ui-check/run.sh
       - name: Real phones and a tablet (touch, small screen, landscape) — Hebrew and English
@@ -115,8 +135,9 @@ jobs:
         with:
           name: screen-check-report
           path: ui-report
-          retention-days: 30
+          retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
   website:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 3. SITE-010/020: the website is built in every language (a missing translation fails) and checked like the product
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -130,7 +151,7 @@ jobs:
       - name: Check (every language, computer and phone)
         run: |
           npm install --no-save playwright@1
-          npx playwright install --with-deps chromium
+          sh tools/qa-shards/pw-deps.sh   # Q40
           SHOTS=all NODE_PATH=$PWD/node_modules node tools/site/check.mjs site/dist site-report
       - uses: actions/upload-artifact@v4
         with:
@@ -142,8 +163,9 @@ jobs:
         with:
           name: website-check-report
           path: site-report
-          retention-days: 30
+          retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
   qa:
+    if: ${{ (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]')) }}   # DEEP only (owner decision Fast/Deep)
     # 3b. the product used as a customer and a technician use it: the real server and agent programs as separate
     #     processes, the admin site in a real browser, every backup restored and checked by SHA-256, faults injected
     #     (server killed, line cut, disk full, agent killed, restore cut, schedule, retention, restic)
@@ -164,7 +186,17 @@ jobs:
           echo "OB_RESTIC=$PWD/restic" >> "$GITHUB_ENV"
       - name: QA tools (Playwright 1.63 + Chromium)
         working-directory: tests/QA
-        run: npm ci && npx playwright install --with-deps chromium
+        run: npm ci && sh ../../tools/qa-shards/pw-deps.sh   # Q40
+      - name: Fault tools (libfaketime for F13 / N10; small disks and mount namespaces go through sudo -n, the product stays the runner user)
+        run: |
+          for i in 1 2 3; do
+            command -v faketime >/dev/null && break
+            timeout 300 sudo apt-get install -y faketime || { sleep 15; timeout 300 sudo apt-get update || true; }
+          done
+          command -v faketime >/dev/null || { echo "::error::faketime could not be installed after 3 tries: F13 and N10 cannot run"; exit 1; }
+          faketime -f '+1d' date
+          sudo -n true || { echo "::error::no passwordless sudo: the small-disk / read-only / private-namespace scenarios cannot run"; exit 1; }
+          id
       - name: Every journey and failure / recovery scenario, in the browser — none may be skipped
         working-directory: tests/QA
         run: |
@@ -177,12 +209,12 @@ jobs:
           path: |
             tests/QA/reports/
             tests/QA/artifacts/
-          retention-days: 30
+          retention-days: ${{ job.status == 'success' && 3 || 7 }}   # storage policy: PASS 3 days, FAIL/NOT TESTED 7
 
   package:
     # 4. only after 1–3 passed — including the browser QA: a version that fails any of them never becomes a package
-    needs: [tests, screens, website, qa]
-    if: github.event_name != 'pull_request'
+    needs: [tests, tests-extra, screens, website, qa]
+    if: github.event_name != 'pull_request' && (github.event_name != 'push' || contains(github.event.head_commit.message, '[deep]'))   # a package only after a DEEP pass
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

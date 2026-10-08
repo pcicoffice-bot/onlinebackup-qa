@@ -103,7 +103,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void GoogleWorkspace_GmailAndDrive_ItemLevel_ChangesOnly_RestoreIntoGoogle()
         {
-            if (!Have) return;
+            if (!Have) throw NotTested.Because("OB_RESTIC (the restic program) is not set");
             using (var gg = new FakeGoogle())
             using (var env = new Env())
             {

@@ -152,13 +152,13 @@ namespace OnlineBackup.Agent
                                 try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName, string.Join(" ", args.Select(a => "\"" + a + "\"").ToArray())) { UseShellExecute = true, Verb = "runas" }); return 0; }
                                 catch (Exception) { Console.Error.WriteLine("Administrator permission is needed to remove the software."); return 1; }
                             }
-                            var conn = File.Exists(Path.Combine(dir, "connection.xml")) ? System.Xml.Linq.XElement.Load(Path.Combine(dir, "connection.xml")) : new System.Xml.Linq.XElement("CONNECTION");
+                            var conn = File.Exists(Path.Combine(dir, "connection.xml")) ? OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(dir, "connection.xml")) : new System.Xml.Linq.XElement("CONNECTION");
                             var folder = (string)conn.Attribute("FOLDER"); if (string.IsNullOrEmpty(folder)) folder = "OnlineBackup";
 #if NET40
                             if (!o.ContainsKey("quiet") && File.Exists(Path.Combine(dir, "connection.xml"))) return SetupForm.Run(dir, true);
 #endif
                             var inst = Setup.Installed(folder);
-                            var br = File.Exists(Path.Combine(dir, "branding.xml")) ? System.Xml.Linq.XElement.Load(Path.Combine(dir, "branding.xml")) : new System.Xml.Linq.XElement("BRANDING");
+                            var br = File.Exists(Path.Combine(dir, "branding.xml")) ? OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(dir, "branding.xml")) : new System.Xml.Linq.XElement("BRANDING");
                             Setup.Uninstall(inst != null ? inst.InstallDir : dir, inst != null ? inst.DataDir : app.Home.Dir, (string)br.Attribute("PRODUCT") ?? folder, folder, o.ContainsKey("remove-settings"), m => Console.WriteLine(m));
                             return 0;
                         }
@@ -166,7 +166,7 @@ namespace OnlineBackup.Agent
                     case "client-screens":
                         {
 #if NET40
-                            ClientForm.Screens(one("out") ?? "screens", one("lang") ?? "en");
+                            ClientForm.Screens(one("out") ?? "screens", one("lang") ?? "en", one("matrix") == "1");
                             return 0;
 #else
                             Console.WriteLine("Windows only"); return 1;
@@ -198,13 +198,13 @@ namespace OnlineBackup.Agent
                             // the desktop shortcut: open the screen the service serves (ui.txt), else serve it here
                             if (File.Exists(ClientUi.UiFile))
                             {
-                                var url = File.ReadAllText(ClientUi.UiFile).Trim();
+                                var url = OnlineBackup.Core.Atomic.ReadAllText(ClientUi.UiFile).Trim();
                                 try
                                 {
                                     using (var t = new System.Net.Sockets.TcpClient()) { t.Connect("127.0.0.1", new Uri(url).Port); }
 #if NET40
                                     // CLI-100 (owner): on Windows the customer's screen is a program window, not a web page
-                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => File.ReadAllText(ClientUi.UiFile));
+                                    if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => OnlineBackup.Core.Atomic.ReadAllText(ClientUi.UiFile));
 #endif
                                     Setup.OpenBrowser(url); return 0;
                                 }
@@ -280,7 +280,7 @@ namespace OnlineBackup.Agent
                             if (vmw && one("datastore") != null)
                             {
                                 VMware.Restore(xs, app.Home.LoadSecret(xs.Id + "-sql"), folder, one("datastore"), one("name") ?? (one("vm") + "-restored-" + SystemClock.Now.ToString("yyyyMMdd-HHmm", System.Globalization.CultureInfo.InvariantCulture)), Console.WriteLine);
-                                try { Directory.Delete(target, true); } catch (Exception) { }
+                                var why = OnlineBackup.Core.TempDirs.Remove(target); if (why != null) Console.WriteLine("Warning: the temporary restore folder stays: " + why);   // bug 101: read-only folders too; a folder that stays is reported, not swallowed
                             }
                             else Console.WriteLine(folder + (vmw ? "" : "   (see RESTORE-README.txt)"));
                             return 0;

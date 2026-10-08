@@ -34,6 +34,9 @@ namespace OnlineBackup.Tests
             readonly string old;
             public Zone(string id)
             {
+                // Q26: TZ moves TimeZoneInfo.Local on Linux/macOS only; on Windows the zone is the machine's (changing it needs
+                // administrator rights and changes it for every program). Not a pass and not a product failure there:
+                if (OperatingSystem.IsWindows()) throw new InvalidOperationException("NOT TESTED on Windows: the time zone is injected with TZ, which Windows ignores (" + id + ")");
                 old = Environment.GetEnvironmentVariable("TZ");
                 Environment.SetEnvironmentVariable("TZ", id);
                 TimeZoneInfo.ClearCachedData();

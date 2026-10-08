@@ -25,7 +25,7 @@ namespace OnlineBackup.Tests
                 Assert.Equal("1", c.Call("GET", "/api/admin/me")["enroll"]);
                 var secret = c.Call("POST", "/api/admin/totp/enable")["secret"];
                 Assert.Equal(400, Status(() => c.Call("POST", "/api/admin/totp/confirm", new Msg().Set("code", "000000"))));
-                c.Call("POST", "/api/admin/totp/confirm", new Msg().Set("code", Totp.Code(secret, DateTime.UtcNow)));
+                c.Call("POST", "/api/admin/totp/confirm", new Msg().Set("code", Totp.Code(secret, DateTime.UtcNow.AddSeconds(-30)))); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
                 c.Call("GET", "/api/admin/users");                                                  // now everything opens
                 var c2 = new Client(env.Url) { Retries = 0 };
                 Assert.Equal(401, Status(() => c2.Call("POST", "/api/admin/login", new Msg().Set("login", "admin").Set("password", "Admin-Pass-1"))));   // a code is needed from now on

@@ -16,7 +16,7 @@ namespace OnlineBackup.Server
     public static class Templates
     {
         static string PathOf(SystemConfig cfg) { return Path.Combine(cfg.SystemHome, "policy", "templates.xml"); }
-        static XElement Load(SystemConfig cfg) { var p = PathOf(cfg); return File.Exists(p) ? XElement.Load(p) : new XElement("TEMPLATES"); }
+        static XElement Load(SystemConfig cfg) { var p = PathOf(cfg); return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : new XElement("TEMPLATES"); }
 
         public static Msg List(SystemConfig cfg)
         {
@@ -31,6 +31,8 @@ namespace OnlineBackup.Server
             name = (name ?? "").Trim();
             if (name.Length == 0 || name.Length > 80) throw new ApiException(400, "NAME", "Give the template a name.");
             if (s.Retention == null || s.Retention.Period < 1) throw new ApiException(400, "RETENTION", "Choose how long to keep versions — unlimited is not allowed.");
+            PilotScope.CheckSet(cfg, s);   // PILOT-010: a template of a type or with an option outside the pilot
+            if (!string.IsNullOrEmpty(type)) PilotScope.CheckSet(cfg, new BackupSetInfo { Type = type });
             lock (cfg)
             {
                 var all = Load(cfg);

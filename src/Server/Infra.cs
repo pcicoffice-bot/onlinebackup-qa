@@ -55,7 +55,7 @@ namespace OnlineBackup.Server
         {
             var c = new SystemConfig { SystemHome = Path.GetFullPath(systemHome) };
             if (!File.Exists(c.PathXml)) throw new InvalidOperationException("Server is not initialised: run 'init' first.");
-            c.Doc = XDocument.Load(c.PathXml);
+            c.Doc = OnlineBackup.Core.Atomic.LoadXml(c.PathXml);
             c.EnsureServerId();
             return c;
         }
@@ -87,6 +87,9 @@ namespace OnlineBackup.Server
             }
         }
         public void ResetLicense() { licenseCache = null; }
+
+        /// <summary>PILOT-010: the pilot "Windows File Backup" (SYSTEM/@SCOPE="PILOT"): what is outside it is refused (PilotScope).</summary>
+        public bool Pilot { get { return Scope.IsPilot((string)Doc.Root.Attribute("SCOPE")); } }
 
         /// <summary>First-run setup: administrator, address and at least one user home.</summary>
         public static SystemConfig Init(string systemHome, string admin, string password, string hostName, IEnumerable<string> userHomes)
@@ -158,7 +161,7 @@ namespace OnlineBackup.Server
         public XElement Policy()
         {
             var p = Path.Combine(SystemHome, "policy", "default.xml");
-            return File.Exists(p) ? XElement.Load(p) : DefaultPolicy();
+            return File.Exists(p) ? OnlineBackup.Core.Atomic.LoadXElement(p) : DefaultPolicy();
         }
     }
 
@@ -186,7 +189,7 @@ namespace OnlineBackup.Server
         {
             var p = Path.Combine(systemHome, "conf", "vault.key");
             if (!File.Exists(p)) Atomic.WriteBytes(p, Bytes.Random(96));
-            return KeySet.FromRaw(File.ReadAllBytes(p));
+            return KeySet.FromRaw(OnlineBackup.Core.Atomic.ReadAllBytes(p));
         }
     }
 }

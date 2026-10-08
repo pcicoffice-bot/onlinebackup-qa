@@ -129,7 +129,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void LinuxClientPackage_KeepsExecutableBits_AndInstallsUnderTheProductName()
         {
-            if (!OperatingSystem.IsLinux()) return;
+            if (!OperatingSystem.IsLinux()) throw NotTested.Because("the package is built with Linux tools (tar, file modes)");
             using (var env = new Env())
             {
                 var client = env.Dir("client-files"); var linux = Path.Combine(client, "linux"); Directory.CreateDirectory(linux);
@@ -182,7 +182,7 @@ namespace OnlineBackup.Tests
         [Fact]
         public void MacClientPackage_BothProcessors_LaunchDaemonAndApp()
         {
-            if (!OperatingSystem.IsLinux()) return;
+            if (!OperatingSystem.IsLinux()) throw NotTested.Because("the package is built with Linux tools (tar, file modes)");
             using (var env = new Env())
             {
                 var client = env.Dir("client-files");

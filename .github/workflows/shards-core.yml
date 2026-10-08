@@ -1,0 +1,159 @@
+# The QA shards engine, called by qa-shards.yml (public mirror) and by the quality gate (online-backup.yml, the Linux tests).
+# It shortens the WAIT, never the depth: the same xUnit tests split over isolated GitHub runners at once.
+#   build      ONE build on the runner kind of the tests; the build output (exactly the files the tests run) packed with its
+#              SHA-256; the test list from that build; the plan (by class, balanced by measured time, x repetitions)
+#   shard      one fresh virtual machine per shard x repetition: the SAME build (its SHA-256 checked), a pre-flight check of
+#              the machine (a failed check is NOT TESTED, never a skip), then the shard's tests exactly as the serial run runs them
+#   control    optional: the previous method in one job - its own build from the source, every test one after another
+#   aggregate  one verdict. A job that left no results, a test missing from them, and a known test that disappeared from the
+#              build are never PASS. mode strict (QA runs): anything not seen PASS fails the run. mode gate (quality gate):
+#              the gate's criteria are kept exactly - red on a failed test, missing results or a disappeared test; a test that
+#              itself says NOT TESTED or is skipped is listed (as the gate's log showed it) and does not change its colour
+# Chains that keep state on one machine (C1: install -> backup -> restart -> restore) are not run here.
+name: QA shards engine
+on:
+  workflow_call:
+    inputs:
+      os: { type: string, default: ubuntu-latest }
+      select: { type: string, default: '' }
+      shards: { type: number, default: 4 }
+      repeat: { type: number, default: 1 }
+      max_parallel: { type: number, default: 6 }
+      control: { type: boolean, default: false }
+      mode: { type: string, default: strict }
+      title: { type: string, default: 'QA shards' }
+      serial: { type: number, default: 1 }     # Flaky Hunter: iterations on the same machine, each counted
+      load: { type: boolean, default: false }  # Flaky Hunter: keep the machine's other processors busy meanwhile
+    outputs:
+      verdict_rc: { value: '${{ jobs.aggregate.outputs.rc }}' }
+permissions: { contents: read }
+env:
+  RESTIC_VERSION: '0.18.1'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+jobs:
+  build:
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 30
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
+      build_sha: ${{ steps.pack.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - name: The planner and the aggregator prove themselves first (every way of not testing ends NOT TESTED)
+        shell: bash
+        run: $(command -v python3 || command -v python) tools/qa-shards/selftest.py
+      - name: Build once
+        shell: bash
+        run: dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
+      - name: Pack the build output with its SHA-256 (every shard runs exactly these files)
+        id: pack
+        shell: bash
+        run: |
+          mkdir -p build-out
+          tar -cf build-out/build.tar tests/Tests/bin $(ls -d src/*/bin)
+          (cd build-out && sha256sum build.tar > build.sha256)
+          echo "sha=$(cut -d' ' -f1 build-out/build.sha256)" >> "$GITHUB_OUTPUT"
+          cat build-out/build.sha256
+      - name: Plan (the tests of this build; balanced by measured time; known tests that disappeared are reported)
+        id: plan
+        shell: bash
+        env:
+          SELECT: ${{ inputs.select }}
+          SHARDS: ${{ inputs.shards }}
+          REPEAT: ${{ inputs.repeat }}
+          SERIAL: ${{ inputs.serial }}
+          LOAD: ${{ inputs.load && '--load' || '' }}
+        run: |
+          PY=$(command -v python3 || command -v python)
+          dotnet test tests/Tests/bin/Debug/net8.0/Tests.dll --list-tests > build-out/list.txt
+          $PY tools/qa-shards/plan.py --tests build-out/list.txt --shards "$SHARDS" --repeat "$REPEAT" --select "$SELECT" \
+            --durations "tools/qa-shards/durations-${{ inputs.os }}.json" --known tools/qa-shards/known-tests.txt --serial "$SERIAL" $LOAD \
+            --out plan | tee -a "$GITHUB_STEP_SUMMARY"
+          cp build-out/build.sha256 plan/
+          echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        with: { name: build, path: build-out, retention-days: 1 }   # storage policy: a build 1 day
+      - uses: actions/upload-artifact@v4
+        with: { name: plan, path: plan, retention-days: 3 }
+
+  shard:
+    needs: build
+    name: shard ${{ matrix.id }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false   # one shard's failure never stops another's evidence
+      max-parallel: ${{ inputs.max_parallel }}
+      matrix: ${{ fromJSON(needs.build.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/download-artifact@v4
+        with: { name: build, path: build-in }
+      - name: restic (checked against the release's SHA256SUMS)
+        shell: bash
+        run: tools/qa-shards/restic.sh
+      - name: Tests of ${{ matrix.id }} (the build's SHA-256 checked, the machine checked, then the tests)
+        shell: bash
+        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}', BUILD: build-in, BUILD_SHA: '${{ needs.build.outputs.build_sha }}', SERIAL: '${{ matrix.serial }}', LOAD: '${{ matrix.load }}' }
+        run: tools/qa-shards/run-shard.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: 'shard-${{ matrix.id }}', path: 'out/shard-${{ matrix.id }}', retention-days: 7 }   # may hold FAIL / NOT TESTED: 7 days
+
+  control:
+    needs: build
+    if: ${{ inputs.control }}
+    runs-on: ${{ inputs.os }}
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with: { dotnet-version: '8.0.x' }
+      - uses: actions/download-artifact@v4
+        with: { name: plan, path: plan }
+      - name: restic (checked against the release's SHA256SUMS)
+        shell: bash
+        run: tools/qa-shards/restic.sh
+      - name: The previous method - its own build from the source, every selected test in this one job
+        shell: bash
+        env: { ID: 'control' }
+        run: |
+          dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
+          F=$(cat plan/control-filter.txt) tools/qa-shards/run-shard.sh
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: control, path: out/control, retention-days: 7 }
+
+  aggregate:
+    needs: [build, shard, control]
+    if: ${{ always() && needs.build.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      rc: ${{ steps.agg.outputs.rc }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: results, pattern: '{plan,control,shard-*}' }
+      - name: One verdict
+        id: agg
+        run: |
+          set +e
+          python3 tools/qa-shards/aggregate.py --expected results/plan/expected.json --results results --out verdict \
+            --plan results/plan --mode "${{ inputs.mode }}" --build-sha "${{ needs.build.outputs.build_sha }}" \
+            --title "${{ inputs.title }} - run ${{ github.run_id }} (${{ github.sha }})" ${{ inputs.control && '--control' || '' }}
+          echo "rc=$?" >> "$GITHUB_OUTPUT"
+          cat verdict/summary.md >> "$GITHUB_STEP_SUMMARY"
+          cp results/plan/expected.json verdict/
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verdict
+          path: verdict
+          retention-days: ${{ steps.agg.outputs.rc == '0' && 3 || 7 }}   # storage policy: green 3 days, otherwise 7
+      - name: The verdict decides the job
+        run: exit ${{ steps.agg.outputs.rc }}

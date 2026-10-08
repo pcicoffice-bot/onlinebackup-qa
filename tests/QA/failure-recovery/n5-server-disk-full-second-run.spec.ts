@@ -7,7 +7,7 @@
 // "Existing backups are not affected".
 import { test, expect } from '../lib/fixtures';
 import { World, goldenDataset, manifest, compare, restoredPath } from '../lib/world';
-import { bigFiles, notWhole, leftovers } from '../lib/fault';
+import { bigFiles, notWhole, leftovers, unmount } from '../lib/fault';
 import { result, setRuns, points, tmpfs, fill, df, keep } from '../lib/nfault';
 import { execSync } from 'child_process';
 import * as fs from 'fs';
@@ -72,7 +72,7 @@ test('N5 server disk full during backup 2 → failed truthfully, point 1 intact 
   } finally {
     keep('n5', ev);
     await world.stop();
-    try { execSync('umount -l "' + world.usersDir + '"'); } catch { }
+    unmount(world.usersDir);
     if (info.status === info.expectedStatus) fs.rmSync(world.dir, { recursive: true, force: true });
   }
 });

@@ -1,0 +1,68 @@
+
+Running 2 tests using 1 worker
+
+[1/2] e2e/q4-replication.spec.ts:28:5 › Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back
+e2e/q4-replication.spec.ts:28:5 › Q4a ST-07 switched on in the site: every backup reaches the second server; a computer restores from it; second server down, behind, back
+Q4a BEHIND CHECK: copies waiting before 3, after the restore 3 → restored while behind
+
+[2/2] e2e/q4-replication.spec.ts:110:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer
+  1) e2e/q4-replication.spec.ts:110:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer 
+
+    Error: Error: timeout (240 s) waiting for: the new customer's set on the second server
+    waiting to copy on the first server: 8
+    its log:
+    2026-10-07 03:08:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 03:09:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 03:10:18	-	replication waiting (commit qa-old): The user does not exist.
+    2026-10-07 03:11:18	-	replication waiting (commit qa-old): The user does not exist.
+
+      137 |       const logs = path.join(A.sys, 'logs', 'System');
+      138 |       why = fs.readdirSync(logs).map((f) => fs.readFileSync(path.join(logs, f), 'utf8')).join('').split('\n').filter((l) => /replication/.test(l)).slice(-5).join('\n');
+    > 139 |       throw new Error(String(e) + '\nwaiting to copy on the first server: ' + (await pending(A)) + '\nits log:\n' + why);
+          |             ^
+      140 |     }
+      141 |     const dr = B.agent('qa-new', 'DR-PC2'); dr.register();
+      142 |     const t = path.join(B.dir, 'restore');
+        at /tmp/claude-0/-home-user-golan-crm/a604ba29-09da-5998-b6c7-5aefd7765d0d/scratchpad/agent-q/tests/QA/e2e/q4-replication.spec.ts:139:13
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: server.log (text/plain) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/server-log-ef54275715d7360506754c6e4b22e82be571d16d.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: agent-OLD-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/agent-OLD-PC1-log-9f0494459d5dc693a21ea6681bee3342f43b377f.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #5: agent-NEW-PC1.log (text/plain) ──────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/agent-NEW-PC1-log-0541a264fe18c1c3b693e7d08288bb29fd42b612.log
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #6: system.xml (application/xml) ────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/attachments/system-xml-9f62729ddf850e91802a6adeb394588fe3233ac9.xml
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/error-context.md
+
+    attachment #8: trace (application/zip) ─────────────────────────────────────────────────────────
+    artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/trace.zip
+    Usage:
+
+        npx playwright show-trace artifacts/test-results/e2e-q4-replication-Q4b-ST--f8552-opy-of-every-other-customer/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  Slow test file: e2e/q4-replication.spec.ts (7.2m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    e2e/q4-replication.spec.ts:110:5 › Q4b ST-07 a customer that existed before the copy was switched on must not stop the copy of every other customer 
+  1 passed (7.2m)
+EXIT 1
