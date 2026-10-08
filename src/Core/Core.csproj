@@ -1,15 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Shared by the agent (net40: runs on Windows Server 2003 SP2 / XP SP3 up to Windows 11) and the server (net8.0). -->
   <PropertyGroup>
-    <TargetFrameworks>net40;net8.0</TargetFrameworks>
+    <TargetFrameworks>net40;net48;net8.0</TargetFrameworks>
     <AssemblyName>OnlineBackup.Core</AssemblyName>
     <RootNamespace>OnlineBackup.Core</RootNamespace>
     <Nullable>disable</Nullable>
     <LangVersion>10</LangVersion>
     <NoWarn>SYSLIB0021;SYSLIB0023;SYSLIB0041;SYSLIB0014</NoWarn>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net40'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net40' Or '$(TargetFramework)'=='net48'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" Condition="'$(TargetFramework)'=='net40'" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" Condition="'$(TargetFramework)'=='net48'" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>

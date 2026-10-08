@@ -18,7 +18,7 @@ namespace OnlineBackup.Agent
         {
             try
             {
-#if NET40
+#if NETFRAMEWORK
                 using (var pc = new PerformanceCounter("Processor", "% Processor Time", "_Total")) { pc.NextValue(); Thread.Sleep(500); return (int)pc.NextValue(); }
 #else
                 if (!File.Exists("/proc/stat")) return -1;

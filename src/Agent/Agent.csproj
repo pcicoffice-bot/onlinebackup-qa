@@ -2,7 +2,7 @@
   <!-- The backup agent. net40 is the shipped build (Windows Server 2003 SP2 / XP SP3 → Windows 11 / Server 2025);
        net8.0 exists only so the automated tests can drive the same code in-process. -->
   <PropertyGroup>
-    <TargetFrameworks>net40;net8.0</TargetFrameworks>
+    <TargetFrameworks>net40;net48;net8.0</TargetFrameworks>
     <OutputType>Exe</OutputType>
     <AssemblyName>OnlineBackup.Agent</AssemblyName>
     <RootNamespace>OnlineBackup.Agent</RootNamespace>
@@ -16,8 +16,9 @@
     <ProjectReference Include="..\Core\Core.csproj" />
     <PackageReference Include="Portable.BouncyCastle" Version="1.9.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net40'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" />
+  <ItemGroup Condition="'$(TargetFramework)'=='net40' Or '$(TargetFramework)'=='net48'">
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net40" Version="1.0.3" PrivateAssets="all" Condition="'$(TargetFramework)'=='net40'" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" Condition="'$(TargetFramework)'=='net48'" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Xml.Linq" />

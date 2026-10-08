@@ -332,6 +332,7 @@ namespace OnlineBackup.Server
                 if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
                 p.SetAttr("TOTP_SECRET", pending); p.SetAttr("TOTP_BACKUP_CODES", p.Get("TOTP_PENDING_CODES"));
                 p.SetAttr("TOTP_PENDING", ""); p.SetAttr("TOTP_PENDING_CODES", "");
+                p.SetAttr("TOTP_LAST_STEP", step);   // owner decision 122 (A): the confirming code is used up, it opens no sign-in
                 SaveProfile(login, p);
                 SysLog.Write(ip, "Access", "2fa enabled " + login);
             }

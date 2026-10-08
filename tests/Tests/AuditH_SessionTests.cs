@@ -29,7 +29,7 @@ namespace OnlineBackup.Tests
                 // wait for the start of a fresh 30 s step, so both sign-ins below use the same code inside its own window
                 var now = DateTime.UtcNow; var into = (int)(now - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds % 30;
                 if (into > 20) System.Threading.Thread.Sleep((31 - into) * 1000);
-                var code = Totp.Code(secret, DateTime.UtcNow);
+                var code = TestAuth.Code(env.Url, "admin");   // owner decision 122 (A): the step that confirmed the set-up is used up - the next unused code
                 var first = new Client(env.Url) { Retries = 0 }.Call("POST", "/api/admin/login", new Msg().Set("login", "admin").Set("password", "Admin-Pass-1").Set("otp", code));
                 Assert.NotNull(first["session"]);
                 // an observer of the first sign-in (shoulder, proxy log, phishing page) replays the same code at once
@@ -153,7 +153,7 @@ namespace OnlineBackup.Tests
                 env.CreateUser("otpuser", "Customer-Pass-1");
                 var c = CustomerSession(env, "otpuser");
                 var r = c.Call("POST", "/api/totp/enable", new Msg());
-                c.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(r["secret"], DateTime.UtcNow)));
+                c.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(r["secret"], DateTime.UtcNow.AddSeconds(-30))));   // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier
                 var into = (int)(DateTime.UtcNow - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds % 30;
                 if (into > 20) System.Threading.Thread.Sleep((31 - into) * 1000);
                 var code = Totp.Code(r["secret"], DateTime.UtcNow);

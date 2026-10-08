@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace OnlineBackup.Agent
 {
-#if NET40
+#if NETFRAMEWORK
     /// <summary>The Windows service of the agent (Local System, automatic start, restarts on failure).</summary>
     public sealed class AgentService : System.ServiceProcess.ServiceBase
     {

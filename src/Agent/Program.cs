@@ -134,7 +134,7 @@ namespace OnlineBackup.Agent
                             // SETUP-C10: on Windows, a Mac and a Linux desktop, setup without answers opens the installation wizard (--console: the questions here)
                             if (Setup.HasDesktop && !o.ContainsKey("login") && !o.ContainsKey("company") && !o.ContainsKey("console"))
                             {
-#if NET40
+#if NETFRAMEWORK
                                 // SETUP-C40 (owner): on Windows a real installation program (a window), not a web page
                                 if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return SetupForm.Run(dir);
 #endif
@@ -154,7 +154,7 @@ namespace OnlineBackup.Agent
                             }
                             var conn = File.Exists(Path.Combine(dir, "connection.xml")) ? OnlineBackup.Core.Atomic.LoadXElement(Path.Combine(dir, "connection.xml")) : new System.Xml.Linq.XElement("CONNECTION");
                             var folder = (string)conn.Attribute("FOLDER"); if (string.IsNullOrEmpty(folder)) folder = "OnlineBackup";
-#if NET40
+#if NETFRAMEWORK
                             if (!o.ContainsKey("quiet") && File.Exists(Path.Combine(dir, "connection.xml"))) return SetupForm.Run(dir, true);
 #endif
                             var inst = Setup.Installed(folder);
@@ -165,7 +165,7 @@ namespace OnlineBackup.Agent
                     case "apply-update": return ClientUpdate.Install(one("from"), one("to"));   // UPD-020: started by the service, from a copy
                     case "client-screens":
                         {
-#if NET40
+#if NETFRAMEWORK
                             ClientForm.Screens(one("out") ?? "screens", one("lang") ?? "en");
                             return 0;
 #else
@@ -174,7 +174,7 @@ namespace OnlineBackup.Agent
                         }
                     case "setup-screens":
                         {
-#if NET40
+#if NETFRAMEWORK
                             SetupForm.Screens(one("package") ?? AppDomain.CurrentDomain.BaseDirectory, one("out") ?? "screens", one("lang"));
                             return 0;
 #else
@@ -202,7 +202,7 @@ namespace OnlineBackup.Agent
                                 try
                                 {
                                     using (var t = new System.Net.Sockets.TcpClient()) { t.Connect("127.0.0.1", new Uri(url).Port); }
-#if NET40
+#if NETFRAMEWORK
                                     // CLI-100 (owner): on Windows the customer's screen is a program window, not a web page
                                     if (Environment.OSVersion.Platform == PlatformID.Win32NT && !o.ContainsKey("web")) return ClientForm.Run(url, o.ContainsKey("tray"), () => OnlineBackup.Core.Atomic.ReadAllText(ClientUi.UiFile));
 #endif
@@ -333,13 +333,13 @@ namespace OnlineBackup.Agent
                         }
                     case "service":
                         {
-#if NET40
+#if NETFRAMEWORK
                             if (!Environment.UserInteractive) { System.ServiceProcess.ServiceBase.Run(new AgentService(app)); return 0; }
 #endif
                             var stop = new CancellationTokenSource();
                             Console.CancelKeyPress += (s, e) => { e.Cancel = true; stop.Cancel(); };
                             ClientUi ui = null;
-#if !NET40
+#if !NETFRAMEWORK
                             // PKG-060 Linux: systemd stops the service with SIGTERM; the customer screen is served as on Windows
                             using var term = System.Runtime.InteropServices.PosixSignalRegistration.Create(System.Runtime.InteropServices.PosixSignal.SIGTERM, c => { c.Cancel = true; stop.Cancel(); });
                             if (Environment.OSVersion.Platform != PlatformID.Win32NT)

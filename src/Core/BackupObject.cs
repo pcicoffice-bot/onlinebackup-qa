@@ -81,7 +81,7 @@ namespace OnlineBackup.Core
             if (level != "NONE")
             {
                 ms.WriteByte(1);
-#if NET40
+#if NETFRAMEWORK
                 using (var z = new DeflateStream(ms, CompressionMode.Compress, true)) z.Write(chunk, 0, chunk.Length);
 #else
                 using (var z = new DeflateStream(ms, level == "FAST" ? CompressionLevel.Fastest : CompressionLevel.SmallestSize, true)) z.Write(chunk, 0, chunk.Length);

@@ -125,11 +125,13 @@
     const newest = u.source === '1' && !u.message;
     const status = h('div', { class: 'note ' + (newest ? 'ok' : '') }, newest ? '✓ ' + t('The newest version is installed ({0}).', u.current) : t('Version {0} is installed', u.current));
     const local = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
-    const pick = h('input', { type: 'file', multiple: true, accept: '.bin,.zip' });
+    const pick = h('input', { type: 'file', multiple: true, accept: '.bin,.zip,.sig' });
     const install = btn(t('Install the files'), async () => {
-      const files = [...pick.files].sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
+      // owner decision 106 (A): the vendor's signature comes as one more file (.sig) and is sent beside the package, never joined to it
+      const all = [...pick.files], sig = all.find((f) => /\.sig$/i.test(f.name));
+      const files = all.filter((f) => !/\.sig$/i.test(f.name)).sort((a, b) => a.name.localeCompare(b.name, 'en', { numeric: true }));
       if (!files.length) throw new Error(t('Choose the update files.'));
-      const r = await fetch('/api/admin/update/upload', { method: 'POST', headers: { 'X-Session': S.session, 'Content-Type': 'application/octet-stream' }, body: new Blob(files) });
+      const r = await fetch('/api/admin/update/upload', { method: 'POST', headers: { 'X-Session': S.session, 'Content-Type': 'application/octet-stream', 'X-Update-Signature': sig ? (await sig.text()).trim() : '' }, body: new Blob(files) });
       if (!r.ok) { let m = t('Error {0}', r.status); try { m = tr(fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement).message) || m; } catch (e) { } throw new Error(m); }
       toast(t('Updating… the page reloads by itself when the server is back.'));
       const wait = async () => { try { const x = await fetch('/api/brand', { cache: 'no-store' }); if (x.ok && (await api('GET', 'update')).state !== 'installing') { location.reload(); return; } } catch (e) { } setTimeout(wait, 3000); };

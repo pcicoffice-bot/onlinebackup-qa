@@ -107,7 +107,7 @@ namespace OnlineBackup.Core
         /// <summary>Kills the program and every process it started.</summary>
         public static void KillTree(Process p)
         {
-#if NET40
+#if NETFRAMEWORK
             try
             {
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT)

@@ -136,7 +136,9 @@ namespace OnlineBackup.Server
                 var pending = (string)acc.El.Attribute("TOTP_PENDING");
                 var step = Totp.Step(pending, code, DateTime.UtcNow /* real time: the phone's code */);
                 if (string.IsNullOrEmpty(pending) || step < 0) throw new ApiException(400, "OTP", "The code is wrong.");
-                acc.El.SetAttributeValue("TOTP_SECRET", pending); acc.El.SetAttributeValue("TOTP_PENDING", null); cfg.Save();
+                acc.El.SetAttributeValue("TOTP_SECRET", pending); acc.El.SetAttributeValue("TOTP_PENDING", null);
+                acc.El.SetAttributeValue("TOTP_LAST_STEP", step);   // owner decision 122 (A): the confirming code is used up, it opens no sign-in
+                cfg.Save();
             }
         }
 

@@ -1,0 +1,57 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- PROTOTYPE (NET48-MIGRATION-PLAN.md): the agent-only xUnit tests compiled for .NET Framework 4.8 and run IN-PROCESS
+       against the net48 agent assembly on Windows. Tests that need the server stay in tests/Tests (net8 only: the server
+       is net8) and reach the net48 agent as a native process. The files are the SAME sources as tests/Tests (linked). -->
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>10</LangVersion>
+    <AssemblyName>Tests.Net48</AssemblyName>
+    <RootNamespace>OnlineBackup.Tests</RootNamespace>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Core\Core.csproj" SetTargetFramework="TargetFramework=net48" />
+    <ProjectReference Include="..\..\src\Agent\Agent.csproj" SetTargetFramework="TargetFramework=net48" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Tests\xunit.runner.json" Link="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+    <!-- net48 only: the few .NET 8 calls the shared test sources use (Path.GetRelativePath, CreateSymbolicLink, ...) -->
+    <Compile Include="Net48Shims.cs" />
+    <Compile Include="..\Tests\NotTested.cs" Link="NotTested.cs" />
+    <Compile Include="..\Tests\StubServer.cs" Link="StubServer.cs" />
+    <Compile Include="..\Tests\AgentTlsComponentTests.cs" Link="AgentTlsComponentTests.cs" />
+    <Compile Include="..\Tests\AtomicReplaceRefusedComponentTests.cs" Link="AtomicReplaceRefusedComponentTests.cs" />
+    <Compile Include="..\Tests\AtomicSharedReadComponentTests.cs" Link="AtomicSharedReadComponentTests.cs" />
+    <Compile Include="..\Tests\AuditB_FilterTests.cs" Link="AuditB_FilterTests.cs" />
+    <Compile Include="..\Tests\CoreFormatsTests.cs" Link="CoreFormatsTests.cs" />
+    <Compile Include="..\Tests\FolderSelectionComponentTests.cs" Link="FolderSelectionComponentTests.cs" />
+    <Compile Include="..\Tests\LocalStateComponentTests.cs" Link="LocalStateComponentTests.cs" />
+    <Compile Include="..\Tests\OpenRunComponentTests.cs" Link="OpenRunComponentTests.cs" />
+    <Compile Include="..\Tests\PilotAgentNetworkComponentTests.cs" Link="PilotAgentNetworkComponentTests.cs" />
+    <Compile Include="..\Tests\PilotAgentSettingsComponentTests.cs" Link="PilotAgentSettingsComponentTests.cs" />
+    <Compile Include="..\Tests\PilotAgentTlsComponentTests.cs" Link="PilotAgentTlsComponentTests.cs" />
+    <Compile Include="..\Tests\PilotBackupComponentTests.cs" Link="PilotBackupComponentTests.cs" />
+    <Compile Include="..\Tests\PilotMaxDurationComponentTests.cs" Link="PilotMaxDurationComponentTests.cs" />
+    <Compile Include="..\Tests\PilotRebootComponentTests.cs" Link="PilotRebootComponentTests.cs" />
+    <Compile Include="..\Tests\PilotScopeComponentTests.cs" Link="PilotScopeComponentTests.cs" />
+    <Compile Include="..\Tests\ResticPathComponentTests.cs" Link="ResticPathComponentTests.cs" />
+    <Compile Include="..\Tests\RestoreComponentTests.cs" Link="RestoreComponentTests.cs" />
+    <Compile Include="..\Tests\RestorePathMappingComponentTests.cs" Link="RestorePathMappingComponentTests.cs" />
+    <Compile Include="..\Tests\RetentionZoneComponentTests.cs" Link="RetentionZoneComponentTests.cs" />
+    <Compile Include="..\Tests\RunRequestComponentTests.cs" Link="RunRequestComponentTests.cs" />
+    <Compile Include="..\Tests\SetupPayloadTests.cs" Link="SetupPayloadTests.cs" />
+    <Compile Include="..\Tests\SystemStateTargetComponentTests.cs" Link="SystemStateTargetComponentTests.cs" />
+    <Compile Include="..\Tests\UnreadableComponentTests.cs" Link="UnreadableComponentTests.cs" />
+  </ItemGroup>
+</Project>

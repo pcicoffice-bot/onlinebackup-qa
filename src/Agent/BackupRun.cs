@@ -537,7 +537,7 @@ namespace OnlineBackup.Agent
         /// outside the pilot) keeps the earlier behaviour.</summary>
         public static bool IsLink(FileSystemInfo f)
         {
-#if NET40
+#if NETFRAMEWORK
             return false;
 #else
             try { return f.LinkTarget != null; } catch (Exception) { return false; }
@@ -548,7 +548,7 @@ namespace OnlineBackup.Agent
         {
             try
             {
-#if NET40
+#if NETFRAMEWORK
                 if (Environment.OSVersion.Platform == PlatformID.Win32NT) { var r = Final(dir); if (!string.IsNullOrEmpty(r)) return r; }
                 return Path.GetFullPath(dir).TrimEnd('\\', '/');
 #else
@@ -566,7 +566,7 @@ namespace OnlineBackup.Agent
             }
             catch (Exception) { return Path.GetFullPath(dir).TrimEnd('\\', '/'); }
         }
-#if NET40
+#if NETFRAMEWORK
         [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
         static extern Microsoft.Win32.SafeHandles.SafeFileHandle CreateFile(string name, uint access, uint share, IntPtr sec, uint disp, uint flags, IntPtr tmpl);
         [System.Runtime.InteropServices.DllImport("kernel32.dll", CharSet = System.Runtime.InteropServices.CharSet.Unicode, SetLastError = true)]
@@ -660,7 +660,7 @@ namespace OnlineBackup.Agent
             var s = ((int)f.Attributes & ~(int)FileAttributes.Archive).ToString(CultureInfo.InvariantCulture);
             if (withAcl && Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-#if NET40
+#if NETFRAMEWORK
                 try { s += "|" + f.GetAccessControl(System.Security.AccessControl.AccessControlSections.Access).GetSecurityDescriptorSddlForm(System.Security.AccessControl.AccessControlSections.Access); }
                 catch (Exception) { }
 #endif

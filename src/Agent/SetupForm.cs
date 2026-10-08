@@ -1,4 +1,4 @@
-#if NET40
+#if NETFRAMEWORK
 using System;
 using System.Collections.Generic;
 using System.Drawing;

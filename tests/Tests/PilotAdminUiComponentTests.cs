@@ -93,7 +93,7 @@ namespace OnlineBackup.Tests
             var si = Staff.Check(cfg, "admin", "Admin-Pass-1", null, Remote, SystemClock.UtcNow);
             Assert.True(si.Enroll);   // TECH-010: the first sign-in only opens the set-up
             var secret = Staff.TotpEnable(cfg, "admin")["secret"];
-            Staff.TotpConfirm(cfg, "admin", Totp.Code(secret, DateTime.UtcNow), SystemClock.UtcNow);
+            Staff.TotpConfirm(cfg, "admin", Totp.Code(secret, DateTime.UtcNow.AddSeconds(-30)), SystemClock.UtcNow); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
             return secret;
         }
 

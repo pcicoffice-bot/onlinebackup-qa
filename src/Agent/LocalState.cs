@@ -70,7 +70,7 @@ namespace OnlineBackup.Agent
 
         static byte[] Protect(byte[] data)
         {
-#if NET40
+#if NETFRAMEWORK
             if (IsWindows) return ProtectedData.Protect(data, null, DataProtectionScope.LocalMachine);
 #endif
             return data;   // non-Windows test runs only
@@ -78,7 +78,7 @@ namespace OnlineBackup.Agent
 
         static byte[] Unprotect(byte[] data)
         {
-#if NET40
+#if NETFRAMEWORK
             if (IsWindows) return ProtectedData.Unprotect(data, null, DataProtectionScope.LocalMachine);
 #endif
             return data;

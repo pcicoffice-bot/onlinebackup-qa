@@ -52,7 +52,7 @@ namespace OnlineBackup.Agent
             for (int i = 0; i < 20 && ui == null; i++) try { ui = new ClientUi(app, 18200 + i); } catch (HttpListenerException e) { last = e; }
             if (ui == null) throw last ?? new InvalidOperationException("no port");
             Atomic.WriteText(UiFile, ui.Url);
-#if !NET40
+#if !NETFRAMEWORK
             if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(UiFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);   // the key: root only
 #endif
             return ui;

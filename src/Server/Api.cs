@@ -358,7 +358,10 @@ namespace OnlineBackup.Server
             Func<bool> requireInteractive = () => { if (!interactive) throw new ApiException(401, "SESSION", "This action requires signing in with a password and verification code."); return true; };
 
             // UPD-020: the client software on the computers updates itself from this server — the files of the Windows client
-            // this server carries (its own version), compared by SHA-256; only changed files are downloaded
+            // this server carries (its own version), compared by SHA-256; only changed files are downloaded.
+            // Owner decision B1 (pilot): off in Pilot 1 until agent updates are signed and refuse older versions — with the
+            // switch neither the list nor a file is offered (the computer's automatic update and its "Update" use these two)
+            if (seg[1] == "client" && seg.Length == 3 && (seg[2] == "files" || seg[2] == "file") && method == "GET") PilotScope.Check(cfg, PilotScope.ClientUpdate);
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "files" && method == "GET") { Reply(ctx, 200, ClientFiles.List()); return; }
             if (seg[1] == "client" && seg.Length == 3 && seg[2] == "file" && method == "GET")
             {
@@ -1447,7 +1450,7 @@ namespace OnlineBackup.Server
                 if (!super) throw new ApiException(403, "RIGHTS", "Only the server's administrator can update it.");
                 System.Net.IPAddress a;
                 if (!System.Net.IPAddress.TryParse(ip ?? "", out a) || !System.Net.IPAddress.IsLoopback(a)) throw new ApiException(403, "LOCAL_ONLY", "An update from files is done on the server itself: open https://localhost:8443/admin there.");
-                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip))); }
+                try { Reply(ctx, 200, new Msg().Set("version", Updater.FromUpload(cfg, ctx.Request.InputStream, 600L << 20, admin, ip, ctx.Request.Headers["X-Update-Signature"]))); }
                 catch (InvalidOperationException e) { throw new ApiException(400, "UPDATE", e.Message); }
                 return;
             }

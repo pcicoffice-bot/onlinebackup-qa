@@ -165,7 +165,7 @@ namespace OnlineBackup.Agent
 
         public static byte[] SignSha256(RSAParameters key, byte[] data)
         {
-#if NET40
+#if NETFRAMEWORK
             using (var rsa = new RSACryptoServiceProvider(new CspParameters(24)))   // PROV_RSA_AES: SHA-256 on every Windows
             {
                 rsa.ImportParameters(key);
