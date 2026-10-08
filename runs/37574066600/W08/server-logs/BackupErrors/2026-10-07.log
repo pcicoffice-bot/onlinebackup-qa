@@ -1,6 +1,0 @@
-2026-10-07 05:05:23	-	qa-win	1791349475674	2026-10-07-05-05-23	1791349523099,end,,0,RESTORE_STOP_SUCCESS,,,0
-2026-10-07 05:06:22	-	qa-win	1791349475674	2026-10-07-05-06-22	1791349582693,end,,0,RESTORE_STOP_SUCCESS,,,0
-2026-10-07 05:08:07	-	qa-win	1791349475674	2026-10-07-05-06-52	1791349687172,err,,0,"The backup was interrupted and did not finish: the backup program stopped in the middle of the run (the computer was shut down or restarted, or the backup program was stopped). Nothing of this run was kept; the next backup sends everything again that is needed.",,,0
-2026-10-07 05:08:07	-	qa-win	1791349475674	2026-10-07-05-06-52	1791349687172,end,,0,BS_STOP_BY_SYSTEM_ERROR,,,0
-2026-10-07 05:09:10	-	qa-win	1791349475674	2026-10-07-05-09-09	1791349749965,end,,0,RESTORE_STOP_SUCCESS,,,0
-2026-10-07 05:12:33	-	qa-win	1791349475674	2026-10-07-05-12-33	1791349953744,end,,0,RESTORE_STOP_SUCCESS,,,0
