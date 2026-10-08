@@ -557,6 +557,52 @@ namespace OnlineBackup.Tests
         public static HashSet<string> Links() { return new HashSet<string>(Directory.GetDirectories(Path.GetTempPath(), "obvss_*")); }
 
         public static string Volume(string path) { return Path.GetPathRoot(Path.GetFullPath(path)).Substring(0, 2).ToUpperInvariant(); }
+
+        /// <summary>A drive letter nothing uses now ("Q:"), from the end of the alphabet.</summary>
+        public static string FreeLetter()
+        {
+            var used = new HashSet<char>(DriveInfo.GetDrives().Select(d => char.ToUpperInvariant(d.Name[0])));
+            for (var c = 'Z'; c >= 'G'; c--) if (!used.Contains(c)) return c + ":";
+            throw NotTested.Because("no free drive letter on this computer");
+        }
+
+        static string Tool(string exe, string args)
+        {
+            var r = ProcessRunner.Run(new ProcessStartInfo(exe, args), TimeSpan.FromMinutes(2));
+            Assert.False(r.TimedOut, exe + " " + args + " did not answer");
+            return r.Out + r.Err;
+        }
+
+        sealed class Undo : IDisposable { readonly Action a; public Undo(Action a) { this.a = a; } public void Dispose() { a(); } }
+
+        /// <summary>The Volume Shadow Copy service stopped and disabled until Dispose (then back to "manual", as Windows ships it).</summary>
+        public static IDisposable VssServiceDisabled()
+        {
+            Tool("sc.exe", "config VSS start= disabled");
+            Tool("sc.exe", "stop VSS");
+            var until = DateTime.UtcNow.AddSeconds(90);
+            while (!Tool("sc.exe", "query VSS").Contains("STOPPED"))
+            {
+                if (DateTime.UtcNow > until) { Tool("sc.exe", "config VSS start= demand"); throw NotTested.Because("the Volume Shadow Copy service did not stop on this machine"); }
+                System.Threading.Thread.Sleep(500);
+            }
+            Assert.Contains("DISABLED", Tool("sc.exe", "qc VSS"));
+            return new Undo(() => Tool("sc.exe", "config VSS start= demand"));
+        }
+
+        /// <summary>A drive letter that is a folder (subst): no volume of its own, so no Volume Shadow Copy for it.</summary>
+        public static IDisposable Subst(string letter, string folder)
+        {
+            Tool("subst.exe", letter + " \"" + folder + "\"");
+            if (!Directory.Exists(letter + "\\")) throw NotTested.Because("subst " + letter + " did not work on this machine");
+            return new Undo(() => Tool("subst.exe", letter + " /D"));
+        }
+
+        /// <summary>Removes the shadow copies a test left (a run it killed): the machine stays clean for the next test.</summary>
+        public static void DeleteShadows(IEnumerable<string> ids)
+        {
+            foreach (var id in ids) Tool("vssadmin", "delete shadows /shadow=" + id + " /quiet");
+        }
     }
 
     /// <summary>
@@ -655,6 +701,71 @@ namespace OnlineBackup.Tests
                 Assert.Equal(want, rig.Restored());
                 Assert.Equal(shadowsBefore, PilotVss.Shadows(vol));
             }
+        }
+
+        /// <summary>
+        /// Integrity + recovery: the file is rewritten AFTER the snapshot was taken and before anything is read (in the
+        /// server's answer to "begin", which the agent asks once the snapshot exists). The run must hold the content at
+        /// snapshot time, and the NEXT run must send the newer content (the change is not lost). A third run with nothing
+        /// changed sends nothing. Oracle: SHA-256 of each point's restore, the counters of each run.
+        /// </summary>
+        [Fact]
+        public void AFileRewrittenAfterTheSnapshot_ThePointHoldsTheSnapshotContent_AndTheNextRunSendsTheNewContent()
+        {
+            PilotVss.Need();
+            using (var rig = new AgentRig())
+            {
+                rig.Set.Vss = true;
+                rig.File("a.txt", "alpha");
+                var v1 = PilotRig.Rnd(250000, 44); var v2 = PilotRig.Rnd(260000, 45);
+                var mail = rig.File("mail.pst", v1);
+                var atSnapshot = AgentRig.Tree(rig.Src);
+                var vol = PilotVss.Volume(rig.Src);
+                var shadowsBefore = PilotVss.Shadows(vol); var linksBefore = PilotVss.Links();
+                BackupRun r; bool rewritten = false;
+                using (var held = new FileStream(mail, FileMode.Open, FileAccess.ReadWrite, FileShare.None))   // the mail program holds it
+                {
+                    rig.Server.Handler = q =>
+                    {
+                        if (q.Action == "begin" && !rewritten) { held.SetLength(0); held.Write(v2, 0, v2.Length); held.Flush(true); rewritten = true; }
+                        return null;
+                    };
+                    r = rig.Backup();
+                    rig.Server.Handler = q => null;
+                }
+                Assert.True(rewritten, "the run never asked the server to begin");
+                Assert.True(r.Result == "BS_STOP_SUCCESS", r.Result + "\n" + string.Join("\n", r.LogLines));
+                Assert.Contains(r.LogLines, l => l.Contains("Shadow Copy Set successfully created"));
+                Assert.Equal(PilotRig.Sha(v2), PilotRig.Sha(File.ReadAllBytes(mail)));         // the live file did change during the run
+                Assert.Equal(atSnapshot, rig.Restored("p1"));                                   // the point: the moment of the snapshot
+                Assert.Equal(linksBefore, PilotVss.Links());
+                Assert.Equal(shadowsBefore, PilotVss.Shadows(vol));
+
+                var r2 = rig.Backup();                                                          // the change made during run 1
+                Assert.True(r2.Result == "BS_STOP_SUCCESS", r2.Result + "\n" + string.Join("\n", r2.LogLines));
+                Assert.True(r2.Updated == 1, "the next run did not send the content written after the snapshot (updated=" + r2.Updated + ", new=" + r2.New + ", perm=" + r2.PermOnly + ")");
+                Assert.Equal(AgentRig.Tree(rig.Src), rig.Restored("p2"));
+
+                var r3 = rig.Backup();                                                          // nothing changed: nothing sent
+                Assert.Equal("BS_STOP_SUCCESS", r3.Result);
+                Assert.Equal(0, r3.New + r3.Updated + r3.PermOnly + r3.Deleted);
+                Assert.Equal(shadowsBefore, PilotVss.Shadows(vol));
+            }
+        }
+
+        /// <summary>Boundary / failure: a drive letter that does not exist gets no snapshot, a warning that names it, no tool
+        /// left running and nothing left behind (Vss.Create returns null).</summary>
+        [Fact]
+        public void ADriveLetterThatDoesNotExist_GetsNoShadowCopy_AWarningNamesIt_NothingIsLeftBehind()
+        {
+            PilotVss.Need();
+            var free = PilotVss.FreeLetter();
+            var linksBefore = PilotVss.Links();
+            var warnings = new List<string>();
+            var v = Vss.Create(new[] { free + @"\Data" }, warnings.Add);
+            Assert.Null(v);
+            Assert.Contains(warnings, w => w.Contains("Shadow Copy of " + free));
+            Assert.Equal(linksBefore, PilotVss.Links());
         }
 
         /// <summary>Runs everywhere: a source that is not on a drive letter (a share, a relative or a Unix path) gets no

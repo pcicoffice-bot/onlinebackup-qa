@@ -202,6 +202,58 @@ namespace OnlineBackup.Tests
             }
         }
 
+        /// <summary>
+        /// Integrity + recovery through the real server: a large file first (sent slowly by the set's upload limit), then a
+        /// held file in a sub-folder. While the run sends the large file - after the snapshot, before the sub-folder is
+        /// listed - the program holding the file writes new content into it. The point holds the content at snapshot time;
+        /// the NEXT run must send the new content (else the change is lost until the file changes again).
+        /// </summary>
+        [Fact]
+        public void AFileWrittenDuringTheRun_ThePointHoldsTheSnapshotContent_TheNextRunSendsTheNewContent()
+        {
+            PilotVss.Need();
+            using (var env = new Env())
+            {
+                env.CreateUser("pvssw", PilotEnv.Pass);
+                var app = env.Agent("pvssw", PilotEnv.Pass);
+                var src = env.Dir("src");
+                File.WriteAllBytes(Path.Combine(src, "big.bin"), PilotRig.Rnd(2 * 1024 * 1024, 83));
+                Directory.CreateDirectory(Path.Combine(src, "zz"));
+                var held = Path.Combine(src, "zz", "ledger.mdb"); var v2 = PilotRig.Rnd(310000, 85);
+                File.WriteAllBytes(held, PilotRig.Rnd(300000, 84));
+                var set = app.CreateSet(app.Interactive(PilotEnv.Pass, null), PilotEnv.Pass, new BackupSetInfo { Name = "Files", Sources = { src }, Vss = true, BandwidthKbps = 256, Compression = "NONE" });
+                var atSnapshot = AgentRig.Tree(src);
+                var vol = PilotVss.Volume(src);
+                var shadowsBefore = PilotVss.Shadows(vol); var linksBefore = PilotVss.Links();
+                BackupRun r = null; Exception failed = null; bool runningAtTheWrite;
+                using (var hold = new FileStream(held, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    var t = new System.Threading.Thread(() => { try { r = app.Backup(set.Id); } catch (Exception e) { failed = e; } });
+                    t.Start();
+                    var until = DateTime.UtcNow.AddMinutes(3);
+                    while (!PilotVss.Shadows(vol).Except(shadowsBefore).Any() && t.IsAlive && DateTime.UtcNow < until) System.Threading.Thread.Sleep(200);
+                    hold.SetLength(0); hold.Write(v2, 0, v2.Length); hold.Flush(true);
+                    runningAtTheWrite = t.IsAlive;
+                    t.Join();
+                }
+                Assert.Null(failed);
+                Assert.True(runningAtTheWrite, "the run ended before the file was written: the test did not write during the run");
+                Assert.True(r.Result == "BS_STOP_SUCCESS", r.Result + "\n" + string.Join("\n", r.LogLines));
+                Assert.Contains(r.LogLines, l => l.Contains("Shadow Copy Set successfully created"));
+                Assert.Equal(atSnapshot, PilotEnv.Restored(env, app, set.Id, src, null, "restore1"));
+                Assert.Equal(linksBefore, PilotVss.Links());
+                Assert.Equal(shadowsBefore, PilotVss.Shadows(vol));
+
+                PilotEnv.Change(env, "pvssw", set.Id, s => s.BandwidthKbps = 0);
+                System.Threading.Thread.Sleep(1100);                                              // a run id of its own
+                var r2 = app.Backup(set.Id);
+                Assert.True(r2.Result == "BS_STOP_SUCCESS", r2.Result + "\n" + string.Join("\n", r2.LogLines));
+                Assert.True(r2.Updated == 1, "the next run did not send the content written during the run (updated=" + r2.Updated + ", new=" + r2.New + ", perm=" + r2.PermOnly + ")");
+                Assert.Equal(AgentRig.Tree(src), PilotEnv.Restored(env, app, set.Id, src, null, "restore2"));
+                Assert.Equal(shadowsBefore, PilotVss.Shadows(vol));
+            }
+        }
+
         [Fact]
         public void ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes()
         {
