@@ -486,22 +486,24 @@ namespace OnlineBackup.Tests
         [Fact]
         public void IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused()
         {
+            using var key = new VendorKey();                                                    // owner decision 106 (A): files must carry the vendor's signature
             var cfg = UpdCfg("");
             var program = Rnd(120000, 101);
             var zip = UpdateZip(program, "99.3.0");
+            var sig = Signed(key.Pair[0], "99.3.0", Sha(zip));
             var launched = new List<string>(); var launch = Updater.Launch;
             Updater.Reset(); Updater.Launch = (exe, log) => { lock (launched) launched.Add(exe); };
             try
             {
-                var over = Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(zip), zip.Length - 1, "admin", "127.0.0.1"));
+                var over = Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(zip), zip.Length - 1, "admin", "127.0.0.1", sig));
                 Assert.Contains("too large", over.Message);
                 var cut = zip.Take(zip.Length - 2000).ToArray();                                  // the last part never arrived
-                Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(cut), zip.Length, "admin", "127.0.0.1"));
+                Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(cut), zip.Length, "admin", "127.0.0.1", sig));
                 var noProgram = UpdateZip(program, "99.3.0", false);
-                Assert.Contains("no server program", Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(noProgram), zip.Length, "admin", "127.0.0.1")).Message);
+                Assert.Contains("no server program", Assert.Throws<InvalidOperationException>(() => Updater.FromUpload(cfg, new MemoryStream(noProgram), zip.Length, "admin", "127.0.0.1", sig)).Message);
                 Assert.Empty(launched);
 
-                Assert.Equal("99.3.0", Updater.FromUpload(cfg, new MemoryStream(zip), zip.Length, "admin", "127.0.0.1"));
+                Assert.Equal("99.3.0", Updater.FromUpload(cfg, new MemoryStream(zip), zip.Length, "admin", "127.0.0.1", sig));
                 Assert.Equal(Sha(program), Sha(Assert.Single(launched)));
             }
             finally { Updater.Launch = launch; Updater.Reset(); }
