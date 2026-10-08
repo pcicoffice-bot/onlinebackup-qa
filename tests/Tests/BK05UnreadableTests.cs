@@ -18,7 +18,7 @@ namespace OnlineBackup.Tests
     /// Oracles: the run's result and its err lines, the server's history (RunLog) and its job-log file, the admin site's
     /// "last result", and SHA-256 of what a restore brings back against the files on disk.
     /// Denial of read: Windows - an explicit "deny read data" entry for the current user (icacls); Linux - mode 000 as a
-    /// non-root user. Root on Linux reads everything: NOT TESTED there. Every denial is checked to really deny before the run.
+    /// non-root user (or root without its read-anything capabilities). A process that still reads a denied file: NOT TESTED. Every denial is checked to really deny before the run.
     /// </summary>
     public class BK05UnreadableTests
     {
@@ -35,23 +35,65 @@ namespace OnlineBackup.Tests
         }
         static string Me() { return System.Security.Principal.WindowsIdentity.GetCurrent().User.Value; }
 
+        // A folder is always opened with "backup semantics": a process whose SeBackupPrivilege is ENABLED (the GitHub Windows
+        // runner's elevated process; the agent's service as LocalSystem) lists a folder whatever its ACL says - first run on
+        // Windows (37761613225): the folder denials "did not take effect". For a folder denial the test process turns that
+        // privilege off while the folder is denied - the agent then runs as an account without it (a user's own agent).
+        [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool OpenProcessToken(IntPtr process, uint access, out IntPtr token);
+        [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true, CharSet = System.Runtime.InteropServices.CharSet.Unicode)]
+        static extern bool LookupPrivilegeValue(string system, string name, out long luid);
+        [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Sequential, Pack = 4)]
+        struct TokenPrivilege { public int Count; public long Luid; public int Attributes; }
+        [System.Runtime.InteropServices.DllImport("advapi32.dll", SetLastError = true)]
+        static extern bool AdjustTokenPrivileges(IntPtr token, bool disableAll, ref TokenPrivilege state, int len, ref TokenPrivilege previous, out int retLen);
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] static extern IntPtr GetCurrentProcess();
+        [System.Runtime.InteropServices.DllImport("kernel32.dll")] static extern bool CloseHandle(IntPtr h);
+        /// <summary>Sets SeBackupPrivilege of this process on or off; returns whether it was on before.</summary>
+        static bool BackupPrivilege(bool on)
+        {
+            IntPtr tok;
+            if (!OpenProcessToken(GetCurrentProcess(), 0x0020 | 0x0008, out tok)) return false;
+            try
+            {
+                long luid; if (!LookupPrivilegeValue(null, "SeBackupPrivilege", out luid)) return false;
+                var tp = new TokenPrivilege { Count = 1, Luid = luid, Attributes = on ? 2 : 0 };
+                var prev = new TokenPrivilege(); int len;
+                if (!AdjustTokenPrivileges(tok, false, ref tp, System.Runtime.InteropServices.Marshal.SizeOf(tp), ref prev, out len)) return false;
+                return prev.Count == 1 && (prev.Attributes & 2) != 0;
+            }
+            finally { CloseHandle(tok); }
+        }
+        static readonly HashSet<string> privilegeOffFor = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        static bool Denied(string path, bool dir)
+        {
+            try { if (dir) Directory.GetFileSystemEntries(path); else File.ReadAllBytes(path); }
+            catch (UnauthorizedAccessException) { return true; }
+            catch (IOException) { return true; }
+            return false;
+        }
+
         /// <summary>Takes away the right to read a file's data (or list a folder) from this process; checks it took effect.</summary>
         static void Deny(string path)
         {
             bool dir = Directory.Exists(path);
             if (OperatingSystem.IsWindows()) Icacls("\"" + path + "\" /deny *" + Me() + ":(RD)");
-            else if (Environment.UserName == "root") throw NotTested.Because("root reads every file on Linux (no denial possible for this process); runs on Windows (ACL) and as a non-root Linux user");
-            else File.SetUnixFileMode(path, UnixFileMode.None);
-            try { if (dir) Directory.GetFileSystemEntries(path); else File.ReadAllBytes(path); }
-            catch (UnauthorizedAccessException) { return; }
-            catch (IOException) { return; }
+            else File.SetUnixFileMode(path, UnixFileMode.None);   // root (with its read-anything capabilities) still reads it: checked below
+            if (Denied(path, dir)) return;
+            if (OperatingSystem.IsWindows() && dir && BackupPrivilege(false))
+            {
+                privilegeOffFor.Add(path);
+                if (Denied(path, dir)) return;
+            }
             Allow(path);
-            throw NotTested.Because("the denial of " + path + " did not take effect for this process (it reads everything)");
+            throw NotTested.Because("the denial of " + path + " did not take effect for this process (it reads everything: root on Linux - runs on Windows (ACL), as a non-root Linux user, or as root without CAP_DAC_OVERRIDE/CAP_DAC_READ_SEARCH)");
         }
         static void Allow(string path)
         {
             if (OperatingSystem.IsWindows()) Icacls("\"" + path + "\" /remove:d *" + Me());
             else File.SetUnixFileMode(path, Directory.Exists(path) ? UnixFileMode.UserRead | UnixFileMode.UserWrite | UnixFileMode.UserExecute : UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            if (privilegeOffFor.Remove(path) && privilegeOffFor.Count == 0) BackupPrivilege(true);
         }
 
         static AgentApp NewApp(Env env, string login, IEnumerable<string> sources, out BackupSetInfo set, string engine = "", Action<BackupSetInfo> more = null)
@@ -184,7 +226,16 @@ namespace OnlineBackup.Tests
                 BackupRun r2;
                 try { r2 = app.Backup(set.Id); }
                 finally { Allow(secret); }
-                Assert.Equal("BS_STOP_SUCCESS_WITH_ERROR", r2.Result);
+                if (engine == "RESTIC" && r2.Result == "BS_STOP_SUCCESS")
+                {
+                    // restic on Windows reads with its backup privilege when the process holds it (first Windows run 37761613225:
+                    // a clean success) - then the file must really be in the new point, in its NEW version: read, not lost
+                    var read = RestoreNewest(app, env, set, src, "r2read");
+                    Assert.True(read.ContainsKey("payroll.xlsx") && read["payroll.xlsx"] == v2, "restic said BS_STOP_SUCCESS but the newest point does not hold payroll.xlsx v2: " + string.Join(" | ", r2.LogLines));
+                    Assert.Equal(want, read);
+                    return;
+                }
+                Assert.True(r2.Result == "BS_STOP_SUCCESS_WITH_ERROR", r2.Result + ": " + string.Join(" | ", r2.LogLines));
                 Assert.NotEmpty(ErrLinesNaming(r2.LogLines, "payroll.xlsx"));
                 Assert.Equal(0, r2.Deleted);
                 ServerSaysError(env, login, set.Id, r2.Job, "BS_STOP_SUCCESS_WITH_ERROR", "payroll.xlsx");
