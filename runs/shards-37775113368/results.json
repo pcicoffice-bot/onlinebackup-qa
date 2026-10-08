@@ -1,0 +1,599 @@
+{
+ "title": "windows-latest, select 'ClientWindowC', 1 shards x 1 - run 37775113368 (a7d0476da2750fc3c3dc63a2b4491dca2745b103)",
+ "mode": "strict",
+ "build_sha": "edb8d055a086fc99be0b77d4adbf0eb45dc3637428213bf9cb80d54d930cff0d",
+ "counts": {
+  "PASS": 51,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_PartialIsNeverCalledCompletedInEitherWindow": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_TheAgentNotesEveryRunForTheWindow_LastAttemptUnchanged": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B5_BothRestoreScreensSayPermissionsAndAttributesAreNotRestored": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryActionOfTheOldWindowsIsStillThere": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryTextOfTheNativeWindow_HasItsHebrew": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_NativeWindow_MenuIsBuiltFromTheIaOrder": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_WebWindow_MenuIsTheIaOrder_NewBackupInsideBackupSets_SecurityInsideSettings": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q10_MinimumWindowSizeStays860x560": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q3_Q5_Q6_NoManualUpdateInThePilot_LockedIsDisabledWithTheReason_NoBrandColours": "PASS",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q4_NoRansomwareOrAiWatchingClaim_InEitherWindow_EnglishOrHebrew": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"\", kind: Never, en: \"Not backed up yet\", he: \"\u05e2\u05d5\u05d3 \u05dc\u05d0 \u05d2\u05d5\u05d1\u05d4\", hex: \"#5B6472\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_PRE_COMMAND\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_SYSTEM_ERROR\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_USER\", kind: Stopped, en: \"Stopped\", he: \"\u05e0\u05e2\u05e6\u05e8\", hex: \"#5B6472\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_QUOTA_EXCEEDED\", kind: Failed, en: \"Failed \u2014 the quota is full\", he: \"\u05e0\u05db\u05e9\u05dc \u2014 \u05d4\u05de\u05db\u05e1\u05d4 \u05de\u05dc\u05d0\u05d4\", hex: \"#B42318\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS\", kind: Complete, en: \"Complete\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd\", hex: \"#11764A\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_ERROR\", kind: Partial, en: \"Partial\", he: \"\u05d7\u05dc\u05e7\u05d9\", hex: \"#8A4B00\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_WARNING\", kind: CompleteWithWarnings, en: \"Complete \u2014 with warnings\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd \u2014 \u05e2\u05dd \u05d0\u05d6\u05d4\u05e8\u05d5\u05ea\", hex: \"#11764A\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"NETWORK\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_CompleteWithWarnings_IsStillProtected_Green_WithItsNote": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Complete_IsProtected_Green_LastCompleteIsTheRun": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Failed_IsRed_SaysUpToWhenFilesAreProtected_QuotaSendsToTheProvider": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_NeverBackedUp_NoSets_Offline_BlockedInThePilot": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Partial_IsAmber_LastCompleteStaysOnTheCleanRun_LastAttemptIsThePartialRun": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Running_IsBlue_TheAttemptIsNow_LastCompleteUnchanged": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Stopped_IsGrey_TheNextRunAsUsual": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_LocalApi_State_ServesLastCompleteMissedRunsRetention_AndTheRunLog": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_RunNotes_PartialKeepsTheLastCompleteTime_ListsTheMissedFiles_KeepsTheRuns": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_WhatToDo_PromisesNoAlertTheProductDoesNotSend": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.B5_UX1_Restore_IsThreeSteps_SaysWhatIsNotRestored_ButtonsSayWhatTheyDo": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.C_History_Filters_AllBackupsRestoresProblems": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.C_Menu_IsHome_BackupSets_Restore_History_Settings_AndEveryOldActionHasItsPage": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.C_Restore_DayStrip_GroupsPointsByDay_NewestFirst": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.Q10_MinimumIs860x560_DesignSizeIs1280x800": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.Q1_TheRestoreTestFact_NeverSaysVerified": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.Q3_Q5_NoManualUpdateInThePilot_LockedReasonInBothLanguages": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.Q7_ComputerLevel_IsTheLastTimeAllSetsWereComplete_EachSetKeepsItsOwn": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.Q8_Retention_InPlainWords_OnlyWhenKnown": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: False)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: True)": "PASS",
+  "OnlineBackup.Tests.ClientWindowCWindowsTests.UX1_Q10_NativeWindow_EveryCriticalActionInsideTheWindow_At860x560And1280x800_At100_125_150": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_PartialIsNeverCalledCompletedInEitherWindow": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0220718,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_TheAgentNotesEveryRunForTheWindow_LastAttemptUnchanged": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0043681,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B5_BothRestoreScreensSayPermissionsAndAttributesAreNotRestored": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0078008,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryActionOfTheOldWindowsIsStillThere": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.007824,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryTextOfTheNativeWindow_HasItsHebrew": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0076952,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_NativeWindow_MenuIsBuiltFromTheIaOrder": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0197999,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_WebWindow_MenuIsTheIaOrder_NewBackupInsideBackupSets_SecurityInsideSettings": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0035109,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q10_MinimumWindowSizeStays860x560": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0044586,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q3_Q5_Q6_NoManualUpdateInThePilot_LockedIsDisabledWithTheReason_NoBrandColours": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0187161,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q4_NoRansomwareOrAiWatchingClaim_InEitherWindow_EnglishOrHebrew": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0173638,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"\", kind: Never, en: \"Not backed up yet\", he: \"\u05e2\u05d5\u05d3 \u05dc\u05d0 \u05d2\u05d5\u05d1\u05d4\", hex: \"#5B6472\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.039301,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_PRE_COMMAND\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006844,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_SYSTEM_ERROR\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006937,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_USER\", kind: Stopped, en: \"Stopped\", he: \"\u05e0\u05e2\u05e6\u05e8\", hex: \"#5B6472\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0010786,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_QUOTA_EXCEEDED\", kind: Failed, en: \"Failed \u2014 the quota is full\", he: \"\u05e0\u05db\u05e9\u05dc \u2014 \u05d4\u05de\u05db\u05e1\u05d4 \u05de\u05dc\u05d0\u05d4\", hex: \"#B42318\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006887,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS\", kind: Complete, en: \"Complete\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd\", hex: \"#11764A\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.000677,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_ERROR\", kind: Partial, en: \"Partial\", he: \"\u05d7\u05dc\u05e7\u05d9\", hex: \"#8A4B00\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006194,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_WARNING\", kind: CompleteWithWarnings, en: \"Complete \u2014 with warnings\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd \u2014 \u05e2\u05dd \u05d0\u05d6\u05d4\u05e8\u05d5\u05ea\", hex: \"#11764A\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006263,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"NETWORK\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006625,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_CompleteWithWarnings_IsStillProtected_Green_WithItsNote": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0011682,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Complete_IsProtected_Green_LastCompleteIsTheRun": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0101714,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Failed_IsRed_SaysUpToWhenFilesAreProtected_QuotaSendsToTheProvider": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0013629,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_NeverBackedUp_NoSets_Offline_BlockedInThePilot": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0013629,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Partial_IsAmber_LastCompleteStaysOnTheCleanRun_LastAttemptIsThePartialRun": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0015113,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Running_IsBlue_TheAttemptIsNow_LastCompleteUnchanged": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0012049,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Stopped_IsGrey_TheNextRunAsUsual": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0012452,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_LocalApi_State_ServesLastCompleteMissedRunsRetention_AndTheRunLog": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3464964,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_RunNotes_PartialKeepsTheLastCompleteTime_ListsTheMissedFiles_KeepsTheRuns": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.6118177,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B2_WhatToDo_PromisesNoAlertTheProductDoesNotSend": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0010883,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.B5_UX1_Restore_IsThreeSteps_SaysWhatIsNotRestored_ButtonsSayWhatTheyDo": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0019217,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.C_History_Filters_AllBackupsRestoresProblems": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0087962,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.C_Menu_IsHome_BackupSets_Restore_History_Settings_AndEveryOldActionHasItsPage": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0022927,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.C_Restore_DayStrip_GroupsPointsByDay_NewestFirst": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.010539,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.Q10_MinimumIs860x560_DesignSizeIs1280x800": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0008157,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.Q1_TheRestoreTestFact_NeverSaysVerified": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0035288,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.Q3_Q5_NoManualUpdateInThePilot_LockedReasonInBothLanguages": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0015785,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.Q7_ComputerLevel_IsTheLastTimeAllSetsWereComplete_EachSetKeepsItsOwn": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0125015,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.Q8_Retention_InPlainWords_OnlyWhenKnown": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0010802,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006317,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007725,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007178,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007515,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007349,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007032,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0011071,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0050417,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007393,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007401,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006749,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006931,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ClientWindowCWindowsTests.UX1_Q10_NativeWindow_EveryCriticalActionInsideTheWindow_At860x560And1280x800_At100_125_150": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 174.5047729,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_PartialIsNeverCalledCompletedInEitherWindow",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B2_TheAgentNotesEveryRunForTheWindow_LastAttemptUnchanged",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.B5_BothRestoreScreensSayPermissionsAndAttributesAreNotRestored",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryActionOfTheOldWindowsIsStillThere",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_EveryTextOfTheNativeWindow_HasItsHebrew",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_NativeWindow_MenuIsBuiltFromTheIaOrder",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.C_WebWindow_MenuIsTheIaOrder_NewBackupInsideBackupSets_SecurityInsideSettings",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q10_MinimumWindowSizeStays860x560",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q3_Q5_Q6_NoManualUpdateInThePilot_LockedIsDisabledWithTheReason_NoBrandColours",
+  "OnlineBackup.Tests.ClientWindowCSourceTests.Q4_NoRansomwareOrAiWatchingClaim_InEitherWindow_EnglishOrHebrew",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"\", kind: Never, en: \"Not backed up yet\", he: \"\u05e2\u05d5\u05d3 \u05dc\u05d0 \u05d2\u05d5\u05d1\u05d4\", hex: \"#5B6472\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_PRE_COMMAND\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_SYSTEM_ERROR\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_BY_USER\", kind: Stopped, en: \"Stopped\", he: \"\u05e0\u05e2\u05e6\u05e8\", hex: \"#5B6472\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_QUOTA_EXCEEDED\", kind: Failed, en: \"Failed \u2014 the quota is full\", he: \"\u05e0\u05db\u05e9\u05dc \u2014 \u05d4\u05de\u05db\u05e1\u05d4 \u05de\u05dc\u05d0\u05d4\", hex: \"#B42318\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS\", kind: Complete, en: \"Complete\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd\", hex: \"#11764A\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_ERROR\", kind: Partial, en: \"Partial\", he: \"\u05d7\u05dc\u05e7\u05d9\", hex: \"#8A4B00\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"BS_STOP_SUCCESS_WITH_WARNING\", kind: CompleteWithWarnings, en: \"Complete \u2014 with warnings\", he: \"\u05d4\u05d5\u05e9\u05dc\u05dd \u2014 \u05e2\u05dd \u05d0\u05d6\u05d4\u05e8\u05d5\u05ea\", hex: \"#11764A\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_EveryResult_HasItsKind_Word_AndColour_PartialNeverComplete(result: \"NETWORK\", kind: Failed, en: \"Failed\", he: \"\u05e0\u05db\u05e9\u05dc\", hex: \"#B42318\")",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_CompleteWithWarnings_IsStillProtected_Green_WithItsNote",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Complete_IsProtected_Green_LastCompleteIsTheRun",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Failed_IsRed_SaysUpToWhenFilesAreProtected_QuotaSendsToTheProvider",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_NeverBackedUp_NoSets_Offline_BlockedInThePilot",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Partial_IsAmber_LastCompleteStaysOnTheCleanRun_LastAttemptIsThePartialRun",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Running_IsBlue_TheAttemptIsNow_LastCompleteUnchanged",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_Home_Stopped_IsGrey_TheNextRunAsUsual",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_LocalApi_State_ServesLastCompleteMissedRunsRetention_AndTheRunLog",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_RunNotes_PartialKeepsTheLastCompleteTime_ListsTheMissedFiles_KeepsTheRuns",
+  "OnlineBackup.Tests.ClientWindowCTests.B2_WhatToDo_PromisesNoAlertTheProductDoesNotSend",
+  "OnlineBackup.Tests.ClientWindowCTests.B5_UX1_Restore_IsThreeSteps_SaysWhatIsNotRestored_ButtonsSayWhatTheyDo",
+  "OnlineBackup.Tests.ClientWindowCTests.C_History_Filters_AllBackupsRestoresProblems",
+  "OnlineBackup.Tests.ClientWindowCTests.C_Menu_IsHome_BackupSets_Restore_History_Settings_AndEveryOldActionHasItsPage",
+  "OnlineBackup.Tests.ClientWindowCTests.C_Restore_DayStrip_GroupsPointsByDay_NewestFirst",
+  "OnlineBackup.Tests.ClientWindowCTests.Q10_MinimumIs860x560_DesignSizeIs1280x800",
+  "OnlineBackup.Tests.ClientWindowCTests.Q1_TheRestoreTestFact_NeverSaysVerified",
+  "OnlineBackup.Tests.ClientWindowCTests.Q3_Q5_NoManualUpdateInThePilot_LockedReasonInBothLanguages",
+  "OnlineBackup.Tests.ClientWindowCTests.Q7_ComputerLevel_IsTheLastTimeAllSetsWereComplete_EachSetKeepsItsOwn",
+  "OnlineBackup.Tests.ClientWindowCTests.Q8_Retention_InPlainWords_OnlyWhenKnown",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1055, h: 651, scale: 1.25, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1264, h: 761, scale: 1, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1266, h: 782, scale: 1.5, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1580, h: 951, scale: 1.25, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 1896, h: 1142, scale: 1.5, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: False)",
+  "OnlineBackup.Tests.ClientWindowCTests.UX1_Q10_TheRestoreBarAndTheHomeActions_StayInsideTheWindow_AtEverySizeAndScale(w: 844, h: 521, scale: 1, rtl: True)",
+  "OnlineBackup.Tests.ClientWindowCWindowsTests.UX1_Q10_NativeWindow_EveryCriticalActionInsideTheWindow_At860x560And1280x800_At100_125_150"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001829",
+    "os": "Windows",
+    "sha": "a7d0476da2750fc3c3dc63a2b4491dca2745b103",
+    "build_sha": "edb8d055a086fc99be0b77d4adbf0eb45dc3637428213bf9cb80d54d930cff0d",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 51
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
