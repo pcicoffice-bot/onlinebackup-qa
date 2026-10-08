@@ -1,0 +1,433 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.AuditH_ComponentTests OnlineBackup.Tests.StopProbeComponentTests OnlineBackup.Tests.InterruptionTests', 1 shards x 2 - run 37721914538 (529a5e6f569c01c49b7c016646a3bd6c9da0a666)",
+ "mode": "strict",
+ "build_sha": "80546955312e190150ecfe265302088ad4297f7ca16bb25f1ee17ac246f40f60",
+ "counts": {
+  "PASS": 22,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AuditH_ComponentTests.AdminSignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword": "PASS",
+  "OnlineBackup.Tests.AuditH_ComponentTests.Keys_PasswordRandomAndCustom_WrongKeyRefused_CheckValueDiffers_EveryChangedByteDetected": "PASS",
+  "OnlineBackup.Tests.AuditH_ComponentTests.SignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword": "PASS",
+  "OnlineBackup.Tests.AuditH_ComponentTests.SignIn_UnknownName_TakesAboutAsLongAsAWrongPassword_NoTimingOracle": "PASS",
+  "OnlineBackup.Tests.AuditH_ComponentTests.SystemTls_WithAPin_RefusesAnotherCertificate_EvenOneTheSystemTrusts": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.StopProbeComponentTests.AFailedCall_DoesNotPauseAfterItsLastTry": "PASS",
+  "OnlineBackup.Tests.StopProbeComponentTests.AStopSetOnTheServer_IsStillSeen_ByTheQuickQuestion": "PASS",
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerGone_TheQuestionIsAnsweredAtOnce_GoOn": "PASS",
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerHung_TheQuestionIsAnsweredWithinItsLimit_GoOn": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AuditH_ComponentTests.AdminSignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.1509348,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.1704754,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditH_ComponentTests.Keys_PasswordRandomAndCustom_WrongKeyRefused_CheckValueDiffers_EveryChangedByteDetected": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.120435,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.1152055,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditH_ComponentTests.SignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.391739,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.3665346,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditH_ComponentTests.SignIn_UnknownName_TakesAboutAsLongAsAWrongPassword_NoTimingOracle": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1189145,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.996498,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditH_ComponentTests.SystemTls_WithAPin_RefusesAnotherCertificate_EvenOneTheSystemTrusts": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.2407621,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.2297313,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.2144976,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 7.1407832,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 25.9681897,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 26.3568399,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.040616,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.2197782,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.1519808,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 15.6496242,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0358402,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.0502675,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1193492,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.0641856,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0404824,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.0889241,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.4840758,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.5049638,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 17.7048121,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 17.305044,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.289293,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.326783,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0858129,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2626015,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 112.7550713,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 113.0502958,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1634601,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.1896662,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.StopProbeComponentTests.AFailedCall_DoesNotPauseAfterItsLastTry": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 4.0156441,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 4.0474727,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.StopProbeComponentTests.AStopSetOnTheServer_IsStillSeen_ByTheQuickQuestion": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 22.2001661,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 22.8761663,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerGone_TheQuestionIsAnsweredAtOnce_GoOn": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.0275051,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.049796,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerHung_TheQuestionIsAnsweredWithinItsLimit_GoOn": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.9550257,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 11.0784288,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.AuditH_ComponentTests.AdminSignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword",
+  "OnlineBackup.Tests.AuditH_ComponentTests.SignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword",
+  "OnlineBackup.Tests.StopProbeComponentTests.AFailedCall_DoesNotPauseAfterItsLastTry",
+  "OnlineBackup.Tests.StopProbeComponentTests.AStopSetOnTheServer_IsStillSeen_ByTheQuickQuestion",
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerGone_TheQuestionIsAnsweredAtOnce_GoOn",
+  "OnlineBackup.Tests.StopProbeComponentTests.ServerHung_TheQuestionIsAnsweredWithinItsLimit_GoOn"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001674",
+    "os": "Windows",
+    "sha": "529a5e6f569c01c49b7c016646a3bd6c9da0a666",
+    "build_sha": "80546955312e190150ecfe265302088ad4297f7ca16bb25f1ee17ac246f40f60",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 22
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001675",
+    "os": "Windows",
+    "sha": "529a5e6f569c01c49b7c016646a3bd6c9da0a666",
+    "build_sha": "80546955312e190150ecfe265302088ad4297f7ca16bb25f1ee17ac246f40f60",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 5
+   },
+   "tests": 22
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
