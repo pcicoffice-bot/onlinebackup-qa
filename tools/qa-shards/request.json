@@ -1,1 +1,1 @@
-{"os":"windows-latest","select":"OnlineBackup.Tests.Net48NativeTests","shards":1,"repeat":1,"max_parallel":2,"control":false}
+{"os":"windows-latest","suite":"net48","select":"OnlineBackup.Tests.Net48GuardTests.","shards":1,"repeat":1,"max_parallel":2,"control":false}
