@@ -781,3 +781,15 @@ OnlineBackup.Tests.PilotChallengeStoreTests.ST04_FourKindsOfDamage_EachFoundQuar
 OnlineBackup.Tests.PilotChallengeStoreTests.ST04_RebuildWithVerify_FindsTheDamage_AsksAgain_AndThePointSaysDamaged_NotSilentlyLeftOut
 OnlineBackup.Tests.PilotChallengeStoreTests.ST09_ASetDeletedWhileItsBackupRuns_StillComesBackFromTheBin_AfterTheServerClosesTheRun
 OnlineBackup.Tests.PilotChallengeStoreTests.ST09_ASetInTheBin_ThenItsCustomerDeletedAndRestored_TheSetIsStillRestorable_AndErasedOnItsOwnDay
+OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11
+OnlineBackup.Tests.MissedScheduleAwareTests.ADailySet_Unchanged_48Hours
+OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklyDayPlusASecondDailyTime_IsDaily_48HoursAsBefore
+OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklySet_IsNotReportedTwoDaysLater_OnlyAfterItsWeekPlusOneDay
+OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: "-------", h: 22, m: 0, moreDays: null, hours: 0)
+OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: "-M-----", h: 22, m: 0, moreDays: "SMTWTFS", hours: 24)
+OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: "-M-----", h: 22, m: 0, moreDays: null, hours: 168)
+OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: "-M--T--", h: 22, m: 0, moreDays: null, hours: 96)
+OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: "SMTWTFS", h: 22, m: 0, moreDays: null, hours: 24)
+OnlineBackup.Tests.MissedScheduleAwareTests.TheDataProtectionReport_MarksLateByTheSetsSchedule
+OnlineBackup.Tests.MissedScheduleAwareTests.TwoDaysAWeek_TheLongestGapCounts
+OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical

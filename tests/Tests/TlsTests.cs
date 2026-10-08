@@ -156,5 +156,48 @@ namespace OnlineBackup.Tests
                 Assert.Contains("restored=1", run("restore --home \"" + home + "\" --set " + setId + " --password Customer-Pass-1 --target \"" + target + "\""));
             }
         }
+        /// <summary>
+        /// The agent customers get on Windows is the .NET 4.0 build; almost every other test runs the .NET 8 build (research
+        /// finding (א)). Here the SHIPPED build runs natively on Windows (no mono), against a server front that speaks TLS 1.2
+        /// only with the company's self-signed certificate, pinned: register → set → backup → restore, byte-identical.
+        /// Bug 129: before, the agent also offered TLS 1.0 - a front that accepts only 1.2 still had to work.
+        /// ORACLE: the agent's exit codes and outputs, and the restored file's SHA-256 against the source.
+        /// </summary>
+        [Fact]
+        public void Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical()
+        {
+            if (!OperatingSystem.IsWindows()) throw NotTested.Because("the .NET 4.0 build runs natively only on Windows (Linux: see Net40AgentUnderMonoUsesTheBuiltinTls)");
+            var exe = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "..", "src", "Agent", "bin", "Debug", "net40", "OnlineBackup.Agent.exe"));
+            if (!File.Exists(exe)) throw NotTested.Because("the .NET 4.0 agent build is not there: " + exe);
+            using (var env = new Env())
+            using (var front = new TlsFront(new Uri(env.Url).Port))
+            {
+                env.CreateUser("net40win", "Customer-Pass-1");
+                var home = Path.Combine(env.Root, "net40home");
+                var src = env.Dir("src");
+                var bytes = new byte[300 * 1024]; new Random(40).NextBytes(bytes);
+                File.WriteAllBytes(Path.Combine(src, "ledger.bin"), bytes);
+                File.WriteAllText(Path.Combine(src, "note.txt"), "shipped build on Windows");
+                Func<string, string> run = args =>
+                {
+                    var p = Process.Start(new ProcessStartInfo(exe, args) { RedirectStandardOutput = true, RedirectStandardError = true, UseShellExecute = false });
+                    var o = p.StandardOutput.ReadToEnd() + p.StandardError.ReadToEnd();
+                    p.WaitForExit();
+                    Assert.True(p.ExitCode == 0, args.Split(' ')[0] + " failed (" + p.ExitCode + "): " + o);
+                    return o.Trim();
+                };
+                run("register --home \"" + home + "\" --server " + front.Url + " --login net40win --password Customer-Pass-1 --computer WIN-NET40 --pin " + front.Fingerprint);
+                var setId = run("addset --home \"" + home + "\" --password Customer-Pass-1 --name Docs --source \"" + src + "\"").Split('\n').Last().Trim();
+                Assert.StartsWith("BS_STOP_SUCCESS", run("backup --home \"" + home + "\" --set " + setId));
+                var target = Path.Combine(env.Root, "net40restore");
+                Assert.Contains("restored=2", run("restore --home \"" + home + "\" --set " + setId + " --password Customer-Pass-1 --target \"" + target + "\""));
+                foreach (var name in new[] { "ledger.bin", "note.txt" })
+                {
+                    var back = Directory.GetFiles(target, name, SearchOption.AllDirectories);
+                    Assert.True(back.Length == 1, name + " restored " + back.Length + " times under " + target);
+                    Assert.Equal(Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(Path.Combine(src, name)))), Bytes.Hex(Bytes.Sha256(File.ReadAllBytes(back[0]))));
+                }
+            }
+        }
     }
 }
