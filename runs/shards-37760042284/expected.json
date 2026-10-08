@@ -1,0 +1,24 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)",
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic",
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls",
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical"
+ ],
+ "s01-r02": [
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)",
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic",
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls",
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical"
+ ]
+}
