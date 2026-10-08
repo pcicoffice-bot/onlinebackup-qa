@@ -24,7 +24,6 @@ on:
       title: { type: string, default: 'QA shards' }
       serial: { type: number, default: 1 }     # Flaky Hunter: iterations on the same machine, each counted
       load: { type: boolean, default: false }  # Flaky Hunter: keep the machine's other processors busy meanwhile
-      suite: { type: string, default: net8 }   # NET48 prototype (mirror branch only): net8 = tests/Tests, net48 = tests/Tests.Net48
     outputs:
       verdict_rc: { value: '${{ jobs.aggregate.outputs.rc }}' }
 permissions: { contents: read }
@@ -47,16 +46,13 @@ jobs:
         run: $(command -v python3 || command -v python) tools/qa-shards/selftest.py
       - name: Build once
         shell: bash
-        run: |
-          dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
-          if [ "${{ inputs.suite }}" = net48 ]; then dotnet build tests/Tests.Net48 -nologo -v q; fi
+        run: dotnet build src/Agent -nologo -v q && dotnet build tests/Tests -nologo -v q
       - name: Pack the build output with its SHA-256 (every shard runs exactly these files)
         id: pack
         shell: bash
         run: |
           mkdir -p build-out
-          tar -cf build-out/build.tar tests/Tests/bin $(ls -d tests/Tests.Net48/bin 2>/dev/null) $(ls -d src/*/bin)
-          sha256sum src/Agent/bin/Debug/*/OnlineBackup.Agent.exe | tee build-out/agent-exe.sha256   # the agent bytes every shard runs
+          tar -cf build-out/build.tar tests/Tests/bin $(ls -d src/*/bin)
           (cd build-out && sha256sum build.tar > build.sha256)
           echo "sha=$(cut -d' ' -f1 build-out/build.sha256)" >> "$GITHUB_OUTPUT"
           cat build-out/build.sha256
@@ -71,8 +67,7 @@ jobs:
           LOAD: ${{ inputs.load && '--load' || '' }}
         run: |
           PY=$(command -v python3 || command -v python)
-          if [ "${{ inputs.suite }}" = net48 ]; then DLL=tests/Tests.Net48/bin/Debug/net48/Tests.Net48.dll; else DLL=tests/Tests/bin/Debug/net8.0/Tests.dll; fi
-          dotnet test "$DLL" --list-tests > build-out/list.txt
+          dotnet test tests/Tests/bin/Debug/net8.0/Tests.dll --list-tests > build-out/list.txt
           $PY tools/qa-shards/plan.py --tests build-out/list.txt --shards "$SHARDS" --repeat "$REPEAT" --select "$SELECT" \
             --durations "tools/qa-shards/durations-${{ inputs.os }}.json" --known tools/qa-shards/known-tests.txt --serial "$SERIAL" $LOAD \
             --out plan | tee -a "$GITHUB_STEP_SUMMARY"
@@ -103,7 +98,7 @@ jobs:
         run: tools/qa-shards/restic.sh
       - name: Tests of ${{ matrix.id }} (the build's SHA-256 checked, the machine checked, then the tests)
         shell: bash
-        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}', BUILD: build-in, BUILD_SHA: '${{ needs.build.outputs.build_sha }}', SUITE: '${{ inputs.suite }}', SERIAL: '${{ matrix.serial }}', LOAD: '${{ matrix.load }}' }
+        env: { F: '${{ matrix.filter }}', ID: 'shard-${{ matrix.id }}', BUILD: build-in, BUILD_SHA: '${{ needs.build.outputs.build_sha }}', SERIAL: '${{ matrix.serial }}', LOAD: '${{ matrix.load }}' }
         run: tools/qa-shards/run-shard.sh
       - uses: actions/upload-artifact@v4
         if: always()

@@ -115,7 +115,7 @@ namespace OnlineBackup.Tests
         /// updated, permission-only or deleted: a different path normalisation would show here as new + deleted), one changed
         /// file must be exactly one update, the restore must be byte-identical, and the way back (net48 → net40, the rollback)
         /// must also see no change. The source holds names that path normalisation touches: spaces, Hebrew, mixed case, a
-        /// dot inside, read-only and hidden files, a deep folder; on the hosted runners the temp folder itself is an 8.3 name.
+        /// dot inside, read-only and hidden files, a deep folder, and the characters whose URI escaping differs for 4.5+ targets (' ( ) ! and others); on the hosted runners the temp folder itself is an 8.3 name.
         /// </summary>
         [Fact]
         public void Net40LocalState_UpgradedToNet48_NothingChangesTwice_AndBackAgain()
@@ -124,8 +124,22 @@ namespace OnlineBackup.Tests
             using (var env = new Env())
             using (var front = new TlsFront(new Uri(env.Url).Port))
             {
+                try { Upgrade(env, front, exe40, exe48); }
+                finally
+                {
+                    // Env.Dispose deletes its folder and stops only at an IOException: a read-only file (source or restored) would
+                    // throw UnauthorizedAccessException there and hide this test's own outcome (run 37768479211)
+                    foreach (var f in Directory.GetFiles(env.Root, "*", SearchOption.AllDirectories))
+                        try { File.SetAttributes(f, FileAttributes.Normal); } catch (Exception) { }
+                }
+            }
+        }
+
+        void Upgrade(Env env, TlsFront front, string exe40, string exe48)
+        {
+            {
                 var src = env.Dir("src");
-                var files = new[] { "plain.txt", "With Spaces\\a b.txt", "עברית\\מסמך.txt", "MixedCase\\ReadMe.TXT", "dots\\v1.2.final.doc", "deep\\" + string.Join("\\", Enumerable.Range(0, 8).Select(i => "level" + i)) + "\\leaf.bin", "ro.txt", "hidden.txt" };
+                var files = new[] { "plain.txt", "With Spaces\\a b.txt", "עברית\\מסמך.txt", "MixedCase\\ReadMe.TXT", "dots\\v1.2.final.doc", "deep\\" + string.Join("\\", Enumerable.Range(0, 8).Select(i => "level" + i)) + "\\leaf.bin", "ro.txt", "hidden.txt", "escape\\it's (1)! [x] 50% a+b=c;d,e~f.txt" };
                 int n = 0;
                 foreach (var f in files) { var p = Path.Combine(src, f); Directory.CreateDirectory(Path.GetDirectoryName(p)); File.WriteAllText(p, "content " + (n++) + " of " + f, Encoding.UTF8); }
                 File.SetAttributes(Path.Combine(src, "ro.txt"), FileAttributes.ReadOnly);

@@ -16,9 +16,6 @@ if [ -n "${BUILD:-}" ]; then
   if [ "$got" != "${BUILD_SHA:-}" ]; then echo "the build is not the run's build: $got != ${BUILD_SHA:-}"; meta "$got" "build mismatch" 1 0; exit 1; fi
   tar -xf "$BUILD/build.tar" || { meta "$got" "build could not be unpacked" 1 0; exit 1; }
   TARGET=tests/Tests/bin/Debug/net8.0/Tests.dll; NOLOGO=
-  # NET48 prototype (mirror branch only): the .NET Framework 4.8 in-process suite
-  if [ "${SUITE:-net8}" = net48 ]; then TARGET=tests/Tests.Net48/bin/Debug/net48/Tests.Net48.dll; fi
-  sha256sum src/Agent/bin/Debug/*/OnlineBackup.Agent.exe 2>/dev/null | tee "$OUT/agent-exe.sha256"
 else
   TARGET=tests/Tests; NOBUILD=--no-build; NOLOGO=-nologo
 fi
