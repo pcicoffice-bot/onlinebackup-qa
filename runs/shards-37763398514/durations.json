@@ -1,0 +1,13 @@
+{
+ "OnlineBackup.Tests.AuditB_GrowingFileTests": 3.1,
+ "OnlineBackup.Tests.EndToEndTests": 176.6,
+ "OnlineBackup.Tests.InterruptionTests": 202.7,
+ "OnlineBackup.Tests.PilotFileBackupComponentTests": 2.9,
+ "OnlineBackup.Tests.PilotVssChallengeComponentTests": 58.2,
+ "OnlineBackup.Tests.PilotVssComponentTests": 30.3,
+ "OnlineBackup.Tests.PilotVssEndToEndTests": 38.2,
+ "OnlineBackup.Tests.PilotVssFailureIntegrationTests": 25.3,
+ "OnlineBackup.Tests.PilotVssIntegrationTests": 25.5,
+ "OnlineBackup.Tests.SourceTests": 55.7,
+ "OnlineBackup.Tests.TlsTests": 13.8
+}

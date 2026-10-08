@@ -1,0 +1,1034 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.PilotVss OnlineBackup.Tests.PilotFileBackupComponentTests OnlineBackup.Tests.PilotBackupComponentTests OnlineBackup.Tests.AuditB_GrowingFileTests OnlineBackup.Tests.InterruptionTests OnlineBackup.Tests.EndToEndTests OnlineBackup.Tests.SourceTests OnlineBackup.Tests.TlsTests.Net40Agent', 2 shards x 2 - run 37763398514 (e47a0dc3e2fcbbe259685031896842c7ac7eb860)",
+ "mode": "strict",
+ "build_sha": "e15049cf90fbdf26edca709a247423c1b04b50e9366c664456a992a964794a10",
+ "counts": {
+  "PASS": 53,
+  "FAIL": 0,
+  "NOT TESTED": 3,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.ASourceOnASubstDrive_EitherIsReadThroughASnapshot_OrTheRunSaysItHadNone_NothingIsLeftBehind": "PASS",
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TheShadowCopyServiceIsDisabled_TheRunSaysSo_IsNotAPlainSuccess_TheOtherFilesRestoreIdentical_AndOnceBackTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TwoSetsOnTheSameVolumeAtTheSameMoment_EachBacksUpItsHeldFile_RestoresIdentical_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheAgentKilledWhileItsSnapshotExists_TheNextRunLeavesNoShadowCopy_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheShippedAgent_BacksUpAFileHeldOpenByAnotherProgram_RestoresIdentical_SendsItsChange_ThenNothing_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.AFileWrittenDuringTheRun_ThePointHoldsTheSnapshotContent_TheNextRunSendsTheNewContent": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning": "PASS",
+  "OnlineBackup.Tests.SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed": "PASS",
+  "OnlineBackup.Tests.SourceTests.SubfolderNotReadable_IsAnError_NotAWarning": "NOT TESTED",
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: False)": "PASS",
+  "OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: True)": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.AnOfflineSourceIsNotTreatedAsDeleted": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.KeyRecoveryAndRestoreOnANewComputer": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores": "NOT TESTED",
+  "OnlineBackup.Tests.EndToEndTests.NewUsersGoToTheHomeWithTheLowestQuotaRatio": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.RebuildRecreatesTheIndexFromTheDisk": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.TenSetsPerUser": "PASS",
+  "OnlineBackup.Tests.EndToEndTests.TruncatedUploadIsRejectedAndNeverCommitted": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ADriveLetterThatDoesNotExist_GetsNoShadowCopy_AWarningNamesIt_NothingIsLeftBehind": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.AFileRewrittenAfterTheSnapshot_ThePointHoldsTheSnapshotContent_AndTheNextRunSendsTheNewContent": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotVssFailureIntegrationTests.TheShadowCopyServiceIsDisabled_TheServerRecordsTheRunAsNotAPlainSuccess_WithTheReason_TheReadableFilesRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": "NOT TESTED",
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 16.53578,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 6.5526682,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.AgentKilledMidBackup_NextBackupRunsAtOnce_HistoryShowsTheFailure_NotRunning(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 25.1972673,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 16.6180847,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.BeginSentTwice_GivesTheSameRun_NoFalseFailure_NoOrphan": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.8943212,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.4890692,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ComputerNeverComesBack_RunIsClosedAsInterrupted_AndAnotherProcessCanBackUp": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 8.3001293,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 11.9120031,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"abort\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.8095406,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9704521,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"commit\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.5970631,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.02048,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.EndOfRunSentTwice_IsRecordedOnce_AndTheRepeatIsNotAnError(how: \"resticreport\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.9345953,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9461665,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.InterruptedRunReportedByManyPathsAtOnce_IsRecordedExactlyOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.4418667,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2980646,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.LiveBackupThatKeepsReporting_IsNotClosedBySweeper": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 18.7544517,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 16.2359195,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1424501,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.0156569,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ProgressThatArrivesAfterTheEnd_DoesNotBringTheRunBack(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.063662,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9234466,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 113.3812782,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 111.87031300000001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0839532,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.9641462,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.ASourceOnASubstDrive_EitherIsReadThroughASnapshot_OrTheRunSaysItHadNone_NothingIsLeftBehind": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 21.6071734,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 21.4532426,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TheShadowCopyServiceIsDisabled_TheRunSaysSo_IsNotAPlainSuccess_TheOtherFilesRestoreIdentical_AndOnceBackTheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 24.2046286,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 24.3765939,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TwoSetsOnTheSameVolumeAtTheSameMoment_EachBacksUpItsHeldFile_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 12.171036,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 11.7627089,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheAgentKilledWhileItsSnapshotExists_TheNextRunLeavesNoShadowCopy_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 13.6092819,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 25.0024549,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheShippedAgent_BacksUpAFileHeldOpenByAnotherProgram_RestoresIdentical_SendsItsChange_ThenNothing_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 13.1551676,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 11.4760873,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.AFileWrittenDuringTheRun_ThePointHoldsTheSnapshotContent_TheNextRunSendsTheNewContent": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 14.9048896,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 14.4842828,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.9524001,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.6024986,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.618217,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 5.5026722,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 5.3868666,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.6238523,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.393066,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.3329818,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.SubfolderNotReadable_IsAnError_NotAWarning": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0170438,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs a non-root Linux user (root reads every folder; Windows has no such permission bits)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0104038,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs a non-root Linux user (root reads every folder; Windows has no such permission bits)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 16.3419341,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 8.9924671,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 30.5636774,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 30.2649965,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: False)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.9803913,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.5366711,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditB_GrowingFileTests.AFileThatGrowsAfterTheFolderWasListed_IsRestorable_OrTheRunSaysItIsNot(grows: True)": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.9428162,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.6054689,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.AnOfflineSourceIsNotTreatedAsDeleted": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 6.3481015,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 6.1395339,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.CrashDuringCommitIsRolledForward_AndAnUncommittedRunLeavesNothing": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.1947524,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.9779896,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.DamagedObjectIsFoundQuarantinedAndResentFromTheSource": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 6.1149759,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 4.7580069,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 15.1835856,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 15.4398854,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 25.8271479,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 20.9114271,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.FullCycle_NewUpdatedPermissionDeleted_DeltaForLargeFiles_RestoreAnyPoint": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 9.3575199,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 9.247876,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.KeyRecoveryAndRestoreOnANewComputer": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 3.8223612,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 4.3237097,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.LockoutAfterThreeFailures_TwoFactorWithBackupCodes_DeviceRunsWithoutCode": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.5924103,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 2.5037973,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.LostLocalIndexIsRebuiltFromTheServerWithoutResendingEverything": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 4.4814904,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 4.2035802,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.Net40AgentUnderMonoBacksUpAndRestores": [
+   {
+    "job": "s02-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0124176,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   },
+   {
+    "job": "s02-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0009324,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.NewUsersGoToTheHomeWithTheLowestQuotaRatio": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 46.7376458,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 59.1716023,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.2179213,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.7562988,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.QuotaStopsNewBackupsAndKeepsExistingOnes": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 4.0553453,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 4.0318265,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.RebuildRecreatesTheIndexFromTheDisk": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 17.8112407,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 5.0763684,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.RetentionDeletesOnlyWhatNoKeptPointNeeds_CurrentIsNeverTouched": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 9.2491676,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 11.9109292,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.TenSetsPerUser": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.5230885,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 4.1353745,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.EndToEndTests.TruncatedUploadIsRejectedAndNeverCommitted": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.7279293,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.7044132,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.838568,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.232519,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.1134985,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.133976,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.9053805,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 2.5118497,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ADriveLetterThatDoesNotExist_GetsNoShadowCopy_AWarningNamesIt_NothingIsLeftBehind": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 20.7546569,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 20.8883603,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.AFileRewrittenAfterTheSnapshot_ThePointHoldsTheSnapshotContent_AndTheNextRunSendsTheNewContent": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.7284058,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 2.8282171,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.8960931,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.0209017,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0004417,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 0.0003162,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.2261462,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 1.9114621,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssFailureIntegrationTests.TheShadowCopyServiceIsDisabled_TheServerRecordsTheRunAsNotAPlainSuccess_WithTheReason_TheReadableFilesRestoreIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 23.1965954,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 25.3075651,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": [
+   {
+    "job": "s02-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0006509,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   },
+   {
+    "job": "s02-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0103737,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 12.6385564,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s02-r02",
+    "status": "PASS",
+    "sec": 13.7541871,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001784",
+    "os": "Windows",
+    "sha": "e47a0dc3e2fcbbe259685031896842c7ac7eb860",
+    "build_sha": "e15049cf90fbdf26edca709a247423c1b04b50e9366c664456a992a964794a10",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 7
+   },
+   "tests": 26
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001783",
+    "os": "Windows",
+    "sha": "e47a0dc3e2fcbbe259685031896842c7ac7eb860",
+    "build_sha": "e15049cf90fbdf26edca709a247423c1b04b50e9366c664456a992a964794a10",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 6
+   },
+   "tests": 26
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001782",
+    "os": "Windows",
+    "sha": "e47a0dc3e2fcbbe259685031896842c7ac7eb860",
+    "build_sha": "e15049cf90fbdf26edca709a247423c1b04b50e9366c664456a992a964794a10",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 4
+   },
+   "tests": 30
+  },
+  {
+   "job": "s02-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r02",
+    "runner": "GitHub Actions 1000001781",
+    "os": "Windows",
+    "sha": "e47a0dc3e2fcbbe259685031896842c7ac7eb860",
+    "build_sha": "e15049cf90fbdf26edca709a247423c1b04b50e9366c664456a992a964794a10",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 4
+   },
+   "tests": 30
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
