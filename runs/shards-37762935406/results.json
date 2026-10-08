@@ -1,0 +1,787 @@
+{
+ "title": "ubuntu-latest, select 'Restic', 4 shards x 1, control (previous method) - run 37762935406 (bad7c5f74e44b13df44b3bc0498c6a26cb766d77)",
+ "mode": "strict",
+ "build_sha": "265ab40bf8ebaebf03bcb09f16f43de0ad56544a0bb567743c459995da94e597",
+ "counts": {
+  "PASS": 64,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": "PASS",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "PASS",
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": "PASS",
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_KnowsThePilot_OffersNoRestic_AndRefusesABlockedType": "PASS",
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_WhereResticIsPresent_StillMakesFileSetsWithTheOwnEngine": "PASS",
+  "OnlineBackup.Tests.PilotScopeServerTests.ResticRoutes_AndTheWebsiteRestore_AreRefused": "PASS",
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": "PASS",
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": "PASS",
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": "PASS",
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt": "PASS",
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.ABlockedResticSet_KeepsItsRepositoryAndItsTrash_ByteIdentical_ThroughTheNightlyMaintenance": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-in-workingdir\", field: \"CMD\", value: \"WORKING_DIR\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-attr\", field: \"CMD\", value: \"path\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-element\", field: \"CMD\", value: \"pre_cmd\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-local-title\", field: \"DEST_MODE\", value: \"Local\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-lower\", field: \"DEST_MODE\", value: \"both\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-space\", field: \"DEST_MODE\", value: \" BOTH\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-lower\", field: \"ENGINE\", value: \"restic\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-space\", field: \"ENGINE\", value: \" RESTIC\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-suffix\", field: \"ENGINE\", value: \"RESTIC2\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-title\", field: \"ENGINE\", value: \"Restic\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-lower\", field: \"LOCALCOPY\", value: \"y\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-yes\", field: \"LOCALCOPY\", value: \"YES\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-lower\", field: \"TYPE\", value: \"file\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-space\", field: \"TYPE\", value: \"FILE \")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-lower\", field: \"TYPE\", value: \"mssql\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-space-before\", field: \"TYPE\", value: \" MSSQL\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.PuttingBackTheResticTrash_OfABlockedResticSet_IsRefused_AndTheRepositoryIsByteIdentical": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 438.8240972,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 16.3729457,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 17.6249931,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 43.6436567,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 43.7274636,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 17.0544347,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 28.1729686,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 28.7650752,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 5.3512179,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.5468229,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 7.5231559,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 11.9132727,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 14.9017864,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.7298325,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 5.8948053,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 131.5188688,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 131.4889494,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 1.5439257,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_KnowsThePilot_OffersNoRestic_AndRefusesABlockedType": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 1.632152,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_WhereResticIsPresent_StillMakesFileSetsWithTheOwnEngine": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 2.3132944,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotScopeServerTests.ResticRoutes_AndTheWebsiteRestore_AreRefused": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.794193,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 9.4977093,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 11.2449781,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0001121,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0001405,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 6.6e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0001364,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 1.74e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 2.6e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.000117,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0001682,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 1.6e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 2e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 5.2e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 17.1037041,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 12.8113754,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 8.0431521,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 8.2619168,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 8.0187709,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 6.4795959,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.ABlockedResticSet_KeepsItsRepositoryAndItsTrash_ByteIdentical_ThroughTheNightlyMaintenance": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.8141676,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-in-workingdir\", field: \"CMD\", value: \"WORKING_DIR\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5585189,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-attr\", field: \"CMD\", value: \"path\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5542927,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-element\", field: \"CMD\", value: \"pre_cmd\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.8022931,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-local-title\", field: \"DEST_MODE\", value: \"Local\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.6979408,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-lower\", field: \"DEST_MODE\", value: \"both\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5243623,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-space\", field: \"DEST_MODE\", value: \" BOTH\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5185494,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-lower\", field: \"ENGINE\", value: \"restic\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5618622,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-space\", field: \"ENGINE\", value: \" RESTIC\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5713578,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-suffix\", field: \"ENGINE\", value: \"RESTIC2\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5559175,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-title\", field: \"ENGINE\", value: \"Restic\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5182663,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-lower\", field: \"LOCALCOPY\", value: \"y\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5551932,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-yes\", field: \"LOCALCOPY\", value: \"YES\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5567613,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-lower\", field: \"TYPE\", value: \"file\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5134368,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-space\", field: \"TYPE\", value: \"FILE \")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5145783,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-lower\", field: \"TYPE\", value: \"mssql\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5141103,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-space-before\", field: \"TYPE\", value: \" MSSQL\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 1.5112155,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeScopeTests.PuttingBackTheResticTrash_OfABlockedResticSet_IsRefused_AndTheRepositoryIsByteIdentical": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.9406916,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 58.5121135,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 17.0121215,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 17.4166082,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 16.7580567,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 31.5073049,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 30.9539216,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001775",
+    "os": "Linux",
+    "sha": "bad7c5f74e44b13df44b3bc0498c6a26cb766d77",
+    "build_sha": "265ab40bf8ebaebf03bcb09f16f43de0ad56544a0bb567743c459995da94e597",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 8
+   },
+   "tests": 1
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000001776",
+    "os": "Linux",
+    "sha": "bad7c5f74e44b13df44b3bc0498c6a26cb766d77",
+    "build_sha": "265ab40bf8ebaebf03bcb09f16f43de0ad56544a0bb567743c459995da94e597",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 5
+   },
+   "tests": 14
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000001774",
+    "os": "Linux",
+    "sha": "bad7c5f74e44b13df44b3bc0498c6a26cb766d77",
+    "build_sha": "265ab40bf8ebaebf03bcb09f16f43de0ad56544a0bb567743c459995da94e597",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 6
+   },
+   "tests": 23
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000001777",
+    "os": "Linux",
+    "sha": "bad7c5f74e44b13df44b3bc0498c6a26cb766d77",
+    "build_sha": "265ab40bf8ebaebf03bcb09f16f43de0ad56544a0bb567743c459995da94e597",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 4
+   },
+   "tests": 26
+  }
+ ],
+ "control": {
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": "PASS",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "PASS",
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": "PASS",
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_KnowsThePilot_OffersNoRestic_AndRefusesABlockedType": "PASS",
+  "OnlineBackup.Tests.PilotScopeAgentTests.TheClientWindow_WhereResticIsPresent_StillMakesFileSetsWithTheOwnEngine": "PASS",
+  "OnlineBackup.Tests.PilotScopeServerTests.ResticRoutes_AndTheWebsiteRestore_AreRefused": "PASS",
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": "PASS",
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": "PASS",
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": "PASS",
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt": "PASS",
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.ABlockedResticSet_KeepsItsRepositoryAndItsTrash_ByteIdentical_ThroughTheNightlyMaintenance": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-in-workingdir\", field: \"CMD\", value: \"WORKING_DIR\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-attr\", field: \"CMD\", value: \"path\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"cmd-lower-element\", field: \"CMD\", value: \"pre_cmd\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-local-title\", field: \"DEST_MODE\", value: \"Local\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-lower\", field: \"DEST_MODE\", value: \"both\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"dest-space\", field: \"DEST_MODE\", value: \" BOTH\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-lower\", field: \"ENGINE\", value: \"restic\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-space\", field: \"ENGINE\", value: \" RESTIC\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-suffix\", field: \"ENGINE\", value: \"RESTIC2\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"engine-title\", field: \"ENGINE\", value: \"Restic\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-lower\", field: \"LOCALCOPY\", value: \"y\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"localcopy-yes\", field: \"LOCALCOPY\", value: \"YES\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-lower\", field: \"TYPE\", value: \"file\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-file-space\", field: \"TYPE\", value: \"FILE \")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-lower\", field: \"TYPE\", value: \"mssql\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.OddSpellingsInTheSetXml_AreRefused_OrRunAsAPlainFileSet(_: \"type-space-before\", field: \"TYPE\", value: \" MSSQL\")": "PASS",
+  "OnlineBackup.Tests.PilotChallengeScopeTests.PuttingBackTheResticTrash_OfABlockedResticSet_IsRefused_AndTheRepositoryIsByteIdentical": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "PASS"
+ },
+ "control_differences": [],
+ "green": true
+}
