@@ -2032,6 +2032,25 @@ namespace OnlineBackup.Server
 
         string VendorOf(string login) { try { return users.LoadProfile(login).Get("OWNER"); } catch (Exception) { return null; } }
 
+        /// <summary>Bug 128: a set is late after 48 hours, or — when it runs less often than daily — after its longest gap plus a day.</summary>
+        public static int LateAfterHours(BackupSetInfo s) { int gap = LongestScheduleGapHours(s); return gap > 24 ? Math.Max(48, gap + 24) : 48; }
+
+        /// <summary>Bug 128: the longest time between two scheduled runs of the set over a week, in whole hours (0 = no
+        /// scheduled run). A daily set is 24; once a week is 168.</summary>
+        public static int LongestScheduleGapHours(BackupSetInfo s)
+        {
+            var slots = new[] { new ScheduleSlot { Days = s.Days ?? "", Hour = s.Hour, Minute = s.Minute } }.Concat(s.MoreSchedules ?? new List<ScheduleSlot>());
+            var at = new SortedSet<int>();   // minutes from Sunday 00:00
+            foreach (var slot in slots)
+                for (int d = 0; d < 7; d++)
+                    if (slot.Days != null && slot.Days.Length > d && slot.Days[d] != '-') at.Add(d * 1440 + slot.Hour * 60 + slot.Minute);
+            if (at.Count == 0) return 0;
+            var t = at.ToList();
+            int gap = t[0] + 7 * 1440 - t[t.Count - 1];
+            for (int i = 1; i < t.Count; i++) gap = Math.Max(gap, t[i] - t[i - 1]);
+            return (gap + 59) / 60;
+        }
+
         void MissedBackupCheck(string login, Profile p, BackupSetInfo s, DateTime nowUtc)
         {
             var e = p.FindSet(s.Id);
@@ -2039,9 +2058,12 @@ namespace OnlineBackup.Server
             long created; long.TryParse(s.Id, out created);
             var since = RunId.FromUnixMs(Math.Max(last, created));
             var ts = Calls.Read(p);   // TICKETS-020: a call after the customer's "hours without a backup"
-            if (ts.MissedHours > 0 && (nowUtc - since).TotalHours >= ts.MissedHours)
+            // Bug 128: a set that runs less often than daily is late only after its longest gap plus one day (a daily set: 48 h
+            // and the call's hours, as before) — a weekly set was reported every week, two days after each good backup
+            int late = LongestScheduleGapHours(s) > 24 ? LateAfterHours(s) : 0;
+            if (ts.MissedHours > 0 && (nowUtc - since).TotalHours >= Math.Max(ts.MissedHours, late))
                 TicketSafe(() => Calls.Auto("missed", login, s.Id, s.Name, s.Computer, "Backup did not run — " + s.Name, "no completed backup since " + since.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture) + " UTC", p));
-            if ((nowUtc - since).TotalHours < 48) return;
+            if ((nowUtc - since).TotalHours < LateAfterHours(s)) return;
             // Agent M (M-6): two maintenance runs at once (the daily timer and an administrator's button) both read the old
             // mark and both alerted. The mark is checked and set in one step, on the profile as it is now
             lock (users.ProfileLock)

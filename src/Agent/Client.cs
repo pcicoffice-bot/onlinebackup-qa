@@ -101,8 +101,9 @@ namespace OnlineBackup.Agent
         {
             baseUrl = serverUrl.TrimEnd('/');
             Pin = pin; string host = null; try { host = new Uri(baseUrl).Host; } catch (UriFormatException) { } UsePin(pin, host);
-            // TLS 1.2 where the OS offers it (2008 R2+ with updates). Windows 2003 needs the bundled TLS library (later phase).
-            try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072 | SecurityProtocolType.Tls; } catch (NotSupportedException) { }
+            // Bug 129: TLS 1.2 only - the oldest supported system is Windows Server 2012 (owner decision), which has it; TLS 1.0
+            // was kept for 2003/2008 and let a man in the middle choose the old protocol
+            try { ServicePointManager.SecurityProtocol = (SecurityProtocolType)3072; } catch (NotSupportedException) { }
             ServicePointManager.Expect100Continue = false;
         }
 

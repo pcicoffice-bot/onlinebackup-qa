@@ -10,6 +10,13 @@ import { Agent, Manifest, CUSTOMER_PASSWORD } from './world';
 
 export const AGENT_DLL = path.join(process.env.QA_PRODUCT ? path.resolve(process.env.QA_PRODUCT) : path.resolve(__dirname, '../../..'), 'src/Agent/bin/Debug/net8.0/OnlineBackup.Agent.dll');
 
+/** Q-PW5: a moved computer clock does not move the files' times. libfaketime also shifts the times that stat() returns —
+ * the CI's .NET build read every file of P01 31 days newer and sent them all again (the coreutils and Python stat, and the
+ * local .NET build, are not shifted, so it passed locally). With faketime in front, the files keep their real times. */
+export function wrapEnv(wrap: string[]): NodeJS.ProcessEnv {
+  return wrap[0] === 'faketime' ? { NO_FAKE_STAT: '1' } : {};
+}
+
 /** The agent command line as its own process; `wrap` goes in front (e.g. ['faketime', '-f', '+3h']). */
 export function agentProcess(ag: Agent, args: string[], wrap: string[] = []): ChildProcess {
   const out = fs.openSync(ag.log, 'a');
@@ -18,7 +25,7 @@ export function agentProcess(ag: Agent, args: string[], wrap: string[] = []): Ch
   // Q16 (night): a wrapper such as faketime forks the agent and does not pass a signal on — killing the wrapper left the
   // agent running (F13 left three agent services per run, hours later; its 2nd and 3rd phase ran beside the 1st).
   // The process gets its own group, and kill() signals the whole group.
-  const p = spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env }, stdio: ['ignore', out, out], detached: true });
+  const p = spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env, ...wrapEnv(wrap) }, stdio: ['ignore', out, out], detached: true });
   const own = p.kill.bind(p);
   p.kill = (sig?: NodeJS.Signals | number) => { try { process.kill(-p.pid!, sig ?? 'SIGTERM'); return true; } catch { return own(sig); } };
   return p;
@@ -27,7 +34,7 @@ export function agentProcess(ag: Agent, args: string[], wrap: string[] = []): Ch
 /** The agent command line, waited for; `wrap` goes in front. */
 export function agentRun(ag: Agent, args: string[], wrap: string[] = []) {
   const cmd = [...wrap, 'dotnet', AGENT_DLL, args[0], '--home', ag.home, ...args.slice(1)];
-  const r = spawnSync(cmd[0], cmd.slice(1), { encoding: 'utf8', env: { ...process.env, ...ag.world.env }, timeout: 15 * 60 * 1000 });
+  const r = spawnSync(cmd[0], cmd.slice(1), { encoding: 'utf8', env: { ...process.env, ...ag.world.env, ...wrapEnv(wrap) }, timeout: 15 * 60 * 1000 });
   const out = (r.stdout || '') + (r.stderr || '');
   fs.appendFileSync(ag.log, '$ ' + [...wrap, 'agent', ...args].join(' ') + '\n' + out + '\n');
   return { code: r.status ?? -1, out };

@@ -7,7 +7,7 @@ import { spawn, spawnSync, ChildProcess, execSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 import { World, Agent, CUSTOMER_PASSWORD, goldenDataset, Manifest } from './world';
-import { AGENT_DLL, smallDisk } from './fault';
+import { AGENT_DLL, smallDisk, wrapEnv } from './fault';
 
 export class Line {
   url = ''; ctlUrl = ''; log: string; private p?: ChildProcess;
@@ -31,7 +31,7 @@ export function agentAsync(ag: Agent, args: string[], opts: { wrap?: string[], e
   const wrap = opts.wrap || [];
   const cmd = [...wrap, 'dotnet', AGENT_DLL, args[0], '--home', ag.home, ...args.slice(1)];
   const t0 = Date.now(); const chunks: string[] = [];
-  const p = spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env, ...(opts.env || {}) } });
+  const p = spawn(cmd[0], cmd.slice(1), { env: { ...process.env, ...ag.world.env, ...wrapEnv(wrap), ...(opts.env || {}) } });
   p.stdout!.on('data', (d) => chunks.push(String(d))); p.stderr!.on('data', (d) => chunks.push(String(d)));
   const done = new Promise<Ran>((r) => p.on('exit', (c, sig) => {
     const out = chunks.join(''); fs.appendFileSync(ag.log, '$ ' + [...wrap, 'agent', ...args].join(' ') + ' (async)\n' + out + '\n');
