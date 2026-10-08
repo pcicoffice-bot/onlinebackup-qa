@@ -122,7 +122,7 @@ namespace OnlineBackup.Agent
                 if (set.Vss && Vss.Supported && (set.Type == "FILE" || set.Type == Domino.Type))   // the image tool takes its own snapshot
                 {
                     Info("Start creating Shadow Copy Set ...");
-                    snapshot = Vss.Create(set.Sources, Warn);
+                    snapshot = Vss.Create(set.Sources, Warn, Path.Combine(home.SetDir(set.Id), "vss-pending.txt"));
                     if (snapshot != null) Info("Shadow Copy Set successfully created");
                 }
                 else if (set.Vss && Environment.OSVersion.Platform == PlatformID.Win32NT) Warn("Shadow Copy is not available here: open files may be skipped");
@@ -184,7 +184,10 @@ namespace OnlineBackup.Agent
                     state.Files.TryGetValue(rel, out old);
                     var src = item.ReadPath;
                     long size, mtime; string attrs;
-                    try { size = file.Length; mtime = RunId.UnixMs(file.LastWriteTimeUtc); attrs = Scanner.Attributes(file, set.BackupPermissions); }
+                    // bug 130: with a snapshot the size and time kept for the next run are the snapshot's (what is read): the live
+                    // file's, listed after the snapshot, recorded a change written during the run as already sent - never sent
+                    var seen = snapshot != null && src != item.Path && File.Exists(src) ? new FileInfo(src) : file;
+                    try { size = seen.Length; mtime = RunId.UnixMs(seen.LastWriteTimeUtc); attrs = Scanner.Attributes(file, set.BackupPermissions); }
                     catch (Exception e) { Err(item.Path, "Cannot read file information: " + e.Message); if (old != null) next[rel] = old; continue; }
                     var entry = new LocalState.Entry { Rel = rel, Path = item.Path, Size = size, Mtime = mtime, Attrs = attrs };
                     bool force = resend.Contains(rel);

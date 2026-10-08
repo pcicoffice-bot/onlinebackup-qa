@@ -163,8 +163,9 @@ namespace OnlineBackup.Tests
                     t1.Start(); t2.Start(); t1.Join(); t2.Join();
                 }
                 output.WriteLine("set 1: " + r1.Result + "\n" + string.Join("\n", r1.LogLines) + "\nset 2: " + r2.Result + "\n" + string.Join("\n", r2.LogLines));
-                Assert.True(r1.Result == "BS_STOP_SUCCESS", "set 1: " + r1.Result + "\n" + string.Join("\n", r1.LogLines));
-                Assert.True(r2.Result == "BS_STOP_SUCCESS", "set 2: " + r2.Result + "\n" + string.Join("\n", r2.LogLines));
+                Func<BackupRun, string> why = r => r.Result + " " + string.Join(" | ", r.LogLines.Where(l => l.Contains(",warn,") || l.Contains(",err,")));
+                Assert.True(r1.Result == "BS_STOP_SUCCESS", "set 1: " + why(r1));
+                Assert.True(r2.Result == "BS_STOP_SUCCESS", "set 2: " + why(r2));
                 Assert.Equal(want1, one.Restored());
                 Assert.Equal(want2, two.Restored());
                 Assert.Equal(linksBefore, PilotVss.Links());

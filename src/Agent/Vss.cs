@@ -21,20 +21,28 @@ namespace OnlineBackup.Agent
 
         public static bool Supported { get { return Environment.OSVersion.Platform == PlatformID.Win32NT && Environment.OSVersion.Version.Major >= 5; } }
 
-        public static Vss Create(IEnumerable<string> sources, Action<string> warn)
+        public static TimeSpan RetryDelay = TimeSpan.FromSeconds(10);
+        string pending;   // bug 131: the snapshots (and links) not removed yet, so the next run removes them when this one was killed
+
+        public static Vss Create(IEnumerable<string> sources, Action<string> warn, string pending = null)
         {
-            var v = new Vss();
+            if (pending != null) RemoveLeftovers(pending);
+            var v = new Vss { pending = pending };
             foreach (var vol in sources.Select(s => Path.GetPathRoot(s)).Where(r => !string.IsNullOrEmpty(r) && r.Length >= 2 && r[1] == ':').Select(r => r.Substring(0, 2).ToUpperInvariant()).Distinct())
             {
                 try
                 {
                     string id, dev;
-                    if (!Snapshot(vol, out id, out dev, warn)) continue;
-                    v.ids.Add(id);
+                    // bug 132: Windows makes one snapshot at a time - another set (or program) taking its own at that moment made
+                    // this one fail, and the held files were not read; it is tried again, and only the last failure is reported
+                    int attempt = 1;
+                    while (!Snapshot(vol, out id, out dev, attempt < 3 ? (Action<string>)(m => { }) : warn) && attempt < 3) { attempt++; System.Threading.Thread.Sleep(RetryDelay); }
+                    if (id.Length == 0 || dev.Length == 0) continue;
+                    v.ids.Add(id); v.Note();
                     var link = Path.Combine(Path.GetTempPath(), "obvss_" + vol[0] + "_" + Guid.NewGuid().ToString("N").Substring(0, 6));
                     Run("cmd.exe", "/c mklink /d \"" + link + "\" \"" + dev + "\\\"");
                     if (!Directory.Exists(link)) { warn("Shadow Copy of " + vol + " created but not reachable; reading live files"); continue; }
-                    v.links[vol] = link;
+                    v.links[vol] = link; v.Note();
                 }
                 catch (Exception e) { warn("Shadow Copy of " + vol + " failed: " + e.Message); }
             }
@@ -54,6 +62,27 @@ namespace OnlineBackup.Agent
         {
             foreach (var l in links.Values) try { Directory.Delete(l); } catch (Exception) { }
             foreach (var id in ids) try { Run("vssadmin", "delete shadows /shadow=" + id + " /quiet"); } catch (Exception) { }
+            if (pending != null) try { File.Delete(pending); } catch (Exception) { }
+        }
+
+        void Note()
+        {
+            if (pending != null) try { File.WriteAllLines(pending, ids.Concat(links.Values.Select(l => "link " + l)).ToArray()); } catch (Exception) { }
+        }
+
+        /// <summary>bug 131: what a killed run (power cut, task manager) left - its shadow copies and links - is removed first.</summary>
+        static void RemoveLeftovers(string pending)
+        {
+            string[] lines;
+            try { if (!File.Exists(pending)) return; lines = File.ReadAllLines(pending); } catch (Exception) { return; }
+            foreach (var l in lines)
+                try
+                {
+                    if (l.StartsWith("link ", StringComparison.Ordinal)) Directory.Delete(l.Substring(5));   // the link itself (its shadow may be gone)
+                    else if (Regex.IsMatch(l, "^\\{[0-9A-Fa-f-]{36}\\}$")) Run("vssadmin", "delete shadows /shadow=" + l + " /quiet");
+                }
+                catch (Exception) { }
+            try { File.Delete(pending); } catch (Exception) { }
         }
 
         // wmic on the Windows that have it (2003 … 2022, 10); PowerShell's CIM on the newest, where Microsoft removed wmic
