@@ -384,6 +384,9 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
             return true;
         }
 
+        /// <summary>Tests only: called after each write reached the disk - a slow disk (Windows CI: ~0.4 s) is made with it.</summary>
+        public static Action<string> AfterDurableWrite;
+
         public static void WriteText(string path, string text) { WriteBytes(path, new UTF8Encoding(false).GetBytes(text)); }
 
         public static void WriteBytes(string path, byte[] data)
@@ -395,6 +398,7 @@ a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");
             {
                 fs.Write(data, 0, data.Length);
                 fs.Flush(true);
+                if (AfterDurableWrite != null) AfterDurableWrite(path);
             }
             // Windows refuses to replace a file another program has open at that moment (a reader, an antivirus, the indexer),
             // and two writers can both see "no file yet": the CI Windows job failed here with "being used by another process".

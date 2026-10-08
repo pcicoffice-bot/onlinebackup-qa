@@ -70,6 +70,23 @@ namespace OnlineBackup.Tests
             }
         }
 
+        /// <summary>Bug 126 on Windows (qa-shards-25: the stop question took 3.0 s with the server gone): after the LAST try a
+        /// failed call still paused (1-4 s) before saying "no connection" - a wait that leads nowhere, in every failing call.
+        /// Oracle: a call that gives up adds no more than half a second to what the operating system itself takes to refuse.</summary>
+        [Fact]
+        public void AFailedCall_DoesNotPauseAfterItsLastTry()
+        {
+            var free = new TcpListener(IPAddress.Loopback, 0); free.Start(); var port = ((IPEndPoint)free.LocalEndpoint).Port; free.Stop();
+            var os = Stopwatch.StartNew();
+            try { using (var t = new TcpClient()) t.Connect(IPAddress.Loopback, port); } catch (SocketException) { }
+            var refuse = os.Elapsed;
+            var c = new Client("http://127.0.0.1:" + port + "/") { Retries = 0, TimeoutMs = 10000 };
+            var sw = Stopwatch.StartNew();
+            var e = Assert.Throws<AgentException>(() => c.Call("GET", "/api/profile"));
+            Assert.Equal("NETWORK", e.Code);
+            Assert.True(sw.Elapsed < refuse + TimeSpan.FromMilliseconds(500), "a call with no retries gave up after " + sw.Elapsed.TotalSeconds.ToString("0.00") + " s; the system refused in " + refuse.TotalSeconds.ToString("0.00") + " s");
+        }
+
         [Fact]
         public void AStopSetOnTheServer_IsStillSeen_ByTheQuickQuestion()
         {

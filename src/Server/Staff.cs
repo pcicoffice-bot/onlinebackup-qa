@@ -105,6 +105,7 @@ namespace OnlineBackup.Server
                     }
                     cfg.Save();
                 }
+                else Users.NoteUnknownSignIn(cfg);   // bug 127: as durable a write as a known account's failure counter
                 SysLog.Write(ip, "Access", "admin login " + (ok ? "ok " : "failed ") + login + (acc != null && acc.Vendor.Length > 0 ? " (vendor " + acc.Vendor + ")" : "") + (ok && enroll ? " — two-step set-up required" : ""));
                 if (!ok) throw new ApiException(401, "LOGIN", "Wrong administrator details.");
                 return new SignIn { Account = acc, Enroll = enroll };

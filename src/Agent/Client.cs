@@ -109,6 +109,9 @@ namespace OnlineBackup.Agent
         // COMP-010: this computer's software version and operating system, shown in the admin site's computer list
         static readonly string AgentInfo = typeof(Client).Assembly.GetName().Version + "; " + Environment.OSVersion.VersionString;
 
+        /// <summary>The wait before the next try; none after the last one (bug 126: a failed call paused 1-4 s before saying so).</summary>
+        void Pause(int attempt) { if (attempt < Retries) System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
+
         HttpWebRequest Create(string method, string path)
         {
             var r = (HttpWebRequest)WebRequest.Create(baseUrl + path);
@@ -146,9 +149,9 @@ namespace OnlineBackup.Agent
                     return ReadResponse(r);
                 }
                 catch (AgentException) { throw; }
-                catch (WebException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (IOException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (SocketException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
+                catch (WebException e) { last = e; Pause(attempt); }
+                catch (IOException e) { last = e; Pause(attempt); }
+                catch (SocketException e) { last = e; Pause(attempt); }
             }
             throw new AgentException(0, "NETWORK", "No connection to the backup server: " + (last == null ? "" : last.Message));
         }
@@ -261,10 +264,10 @@ namespace OnlineBackup.Agent
                 {
                     var resp = e.Response as HttpWebResponse;
                     if (resp != null && (int)resp.StatusCode < 500) ReadResponse(Create("GET", path));
-                    last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1));
+                    last = e; Pause(attempt);
                 }
-                catch (IOException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
-                catch (SocketException e) { last = e; System.Threading.Thread.Sleep(1000 * (attempt + 1)); }
+                catch (IOException e) { last = e; Pause(attempt); }
+                catch (SocketException e) { last = e; Pause(attempt); }
             }
             throw new AgentException(0, "NETWORK", "The download failed: " + (last == null ? "" : last.Message));
         }

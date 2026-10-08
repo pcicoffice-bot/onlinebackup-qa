@@ -74,9 +74,9 @@ jobs:
           cp build-out/build.sha256 plan/
           echo "matrix=$(cat plan/matrix.json)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v4
-        with: { name: build, path: build-out, retention-days: 7 }
+        with: { name: build, path: build-out, retention-days: 1 }   # storage policy: a build 1 day
       - uses: actions/upload-artifact@v4
-        with: { name: plan, path: plan, retention-days: 30 }
+        with: { name: plan, path: plan, retention-days: 3 }
 
   shard:
     needs: build
@@ -102,7 +102,7 @@ jobs:
         run: tools/qa-shards/run-shard.sh
       - uses: actions/upload-artifact@v4
         if: always()
-        with: { name: 'shard-${{ matrix.id }}', path: 'out/shard-${{ matrix.id }}', retention-days: 30 }
+        with: { name: 'shard-${{ matrix.id }}', path: 'out/shard-${{ matrix.id }}', retention-days: 7 }   # may hold FAIL / NOT TESTED: 7 days
 
   control:
     needs: build
@@ -126,7 +126,7 @@ jobs:
           F=$(cat plan/control-filter.txt) tools/qa-shards/run-shard.sh
       - uses: actions/upload-artifact@v4
         if: always()
-        with: { name: control, path: out/control, retention-days: 30 }
+        with: { name: control, path: out/control, retention-days: 7 }
 
   aggregate:
     needs: [build, shard, control]
@@ -151,6 +151,9 @@ jobs:
           cp results/plan/expected.json verdict/
           exit 0
       - uses: actions/upload-artifact@v4
-        with: { name: verdict, path: verdict, retention-days: 30 }
+        with:
+          name: verdict
+          path: verdict
+          retention-days: ${{ steps.agg.outputs.rc == '0' && 3 || 7 }}   # storage policy: green 3 days, otherwise 7
       - name: The verdict decides the job
         run: exit ${{ steps.agg.outputs.rc }}

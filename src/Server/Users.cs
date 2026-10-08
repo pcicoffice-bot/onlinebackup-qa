@@ -180,6 +180,9 @@ namespace OnlineBackup.Server
                     // H-10 / H-11: an unknown name gets the same words and costs the same key derivation as a wrong password —
                     // neither the message nor the time tells which customer names exist
                     PasswordHash.Verify(password ?? "", DummyHash);
+                    // bug 127: a wrong password also writes the failure counter durably (the profile); the same durable write
+                    // here, or on a slow disk (Windows) the time alone told which names exist
+                    NoteUnknownSignIn(cfg);
                     SysLog.Write(ip, "Access", "login failed (unknown user) " + login);
                     throw new ApiException(401, "LOGIN", "Wrong user name, password or code.");
                 }
@@ -410,6 +413,13 @@ namespace OnlineBackup.Server
         // kept as a hash of the token (never the token) in conf/kept-sessions.xml, only the server's administrators can read it
         static readonly object keptGate = new object();
         string KeptPath { get { return Path.Combine(cfg.SystemHome, "conf", "kept-sessions.xml"); } }
+        /// <summary>Bug 127: an unknown name's sign-in (a customer's or an administrator's) writes to the disk as durably as a wrong
+        /// password's failure counter does - on a slow disk (Windows) the missing write alone told which names exist.</summary>
+        internal static void NoteUnknownSignIn(SystemConfig cfg)
+        {
+            try { Atomic.WriteText(Path.Combine(cfg.SystemHome, "conf", "unknown-signin.txt"), RunId.UnixMs(SystemClock.UtcNow).ToString(CultureInfo.InvariantCulture)); }
+            catch (IOException) { } catch (UnauthorizedAccessException) { }
+        }
         static string Hash(string token) { using (var h = System.Security.Cryptography.SHA256.Create()) return Bytes.Hex(h.ComputeHash(System.Text.Encoding.UTF8.GetBytes(token))); }
 
         void Keep(string token, Session s)

@@ -16,6 +16,7 @@ import { Page } from '@playwright/test';
 import { ChildProcess } from 'child_process';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
+import { spawnSync } from 'child_process';
 import * as path from 'path';
 
 const SET = 'Monthly test';
@@ -96,7 +97,14 @@ test('P01 RS-06 the monthly restore test runs by itself on a real backup: Passed
   // ------------------------------------------------------------------ a month later
   evidence.step('+31 days on the computer: the nightly backup takes the changed file');
   const month = ['faketime', '-f', '+31d'];
-  const b2 = agentRun(ag, ['backup', '--set', id], month); expect(b2.out, b2.out).toMatch(/^BS_STOP_SUCCESS .*upd=1 /m);
+  // diagnosis only (qa-pw-05: upd=4 in CI, upd=1 locally 5 of 5): what the agent's index held and the files' times as
+  // seen without and with the moved clock, shown if the run sends more than the changed file
+  const stateFile = path.join(ag.home, 'sets', id, 'state.txt');
+  const before = fs.existsSync(stateFile) ? fs.readFileSync(stateFile, 'utf8') : '(no state.txt)';
+  const times = (wrap: string[]) => spawnSync(wrap.length ? wrap[0] : 'stat', [...wrap.slice(1), ...(wrap.length ? ['stat'] : []), '-c', '%n %Y %s', ...[...atBackup.keys()].map((k) => path.join(src, k))], { encoding: 'utf8' }).stdout;
+  const seen = 'stat now:\n' + times([]) + 'stat under ' + month.join(' ') + ':\n' + times(month);
+  const b2 = agentRun(ag, ['backup', '--set', id], month);
+  expect(b2.out, b2.out + '\n--- index before the run:\n' + before + '\n--- ' + seen).toMatch(/^BS_STOP_SUCCESS .*upd=1 /m);
   const atBackup2 = manifest(src);
 
   evidence.step('FAULT: one stored object on the server\'s disk gets one byte flipped');

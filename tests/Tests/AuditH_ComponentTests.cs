@@ -45,6 +45,60 @@ namespace OnlineBackup.Tests
             Assert.True(unknown * 3 >= known, "an unknown name answers in " + unknown.ToString("0.00") + " ms, a known name with a wrong password in " + known.ToString("0.0") + " ms: the time tells which names exist");
         }
 
+        /// <summary>Bug 127 (Windows run qa-shards-25: an unknown name 179 ms, a known name with a wrong password 582 ms). A wrong
+        /// password also writes the failure counter to the disk (the profile, written durably); an unknown name wrote nothing.
+        /// On a disk where a durable write is slow - Windows CI, a busy server - the time told which names exist. Made here with
+        /// a disk that takes 300 ms per durable write.</summary>
+        [Fact]
+        public void SignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword()
+        {
+            var cfg = SystemConfig.Init(Path.Combine(root, "system"), "admin", "Admin-Pass-1", "localhost", new[] { Path.Combine(root, "home") + "|UNLIMITED|100" });
+            var users = new Users(cfg);
+            users.Create("anna", "Anna-Pass-1", "Anna", null, "COMPRESSED", "anna@example.com", "203.0.113.5");
+            var p = users.LoadProfile("anna"); p.SetAttr("LOCK_ATTEMPTS", 10); users.SaveProfile("anna", p);
+            Func<string, double> time = login =>
+            {
+                var sw = Stopwatch.StartNew();
+                try { users.CheckUser(login, "Wrong-Pass-9", null, "203.0.113.5"); } catch (ApiException) { }
+                return sw.Elapsed.TotalMilliseconds;
+            };
+            Atomic.AfterDurableWrite = path => { if (path.StartsWith(root, StringComparison.Ordinal)) System.Threading.Thread.Sleep(300); };   // only this test's disk
+            try
+            {
+                time("anna"); time("nobody");
+                var known = Enumerable.Range(0, 3).Select(_ => time("anna")).OrderBy(x => x).ElementAt(1);
+                var unknown = Enumerable.Range(0, 3).Select(_ => time("nobody")).OrderBy(x => x).ElementAt(1);
+                Assert.True(known >= 300, "control: the wrong password wrote to the slow disk (" + known.ToString("0") + " ms)");
+                Assert.True(unknown * 1.5 >= known, "on a slow disk an unknown name answers in " + unknown.ToString("0") + " ms, a known name with a wrong password in " + known.ToString("0") + " ms: the time tells which names exist");
+            }
+            finally { Atomic.AfterDurableWrite = null; }
+        }
+
+        /// <summary>Bug 127, the same for an administrator's sign-in (found by the search for the pattern): a wrong password
+        /// saves the account's failure counter (system.xml, durably); an unknown name saved nothing.</summary>
+        [Fact]
+        public void AdminSignIn_OnASlowDisk_UnknownName_StillTakesAboutAsLongAsAWrongPassword()
+        {
+            var cfg = SystemConfig.Init(Path.Combine(root, "system"), "admin", "Admin-Pass-1", "localhost", new[] { Path.Combine(root, "home") + "|UNLIMITED|100" });
+            cfg.Doc.Root.Element("SECURITY").SetAttributeValue("AUTO_LOCK_ATTEMPTS", 10); cfg.Save();   // no lock within these tries
+            Func<string, double> time = login =>
+            {
+                var sw = Stopwatch.StartNew();
+                try { Staff.Check(cfg, login, "Wrong-Pass-9", null, "203.0.113.5", DateTime.UtcNow); } catch (ApiException) { }
+                return sw.Elapsed.TotalMilliseconds;
+            };
+            Atomic.AfterDurableWrite = path => { if (path.StartsWith(root, StringComparison.Ordinal)) System.Threading.Thread.Sleep(300); };   // only this test's disk
+            try
+            {
+                time("admin"); time("nobody");
+                var known = Enumerable.Range(0, 3).Select(_ => time("admin")).OrderBy(x => x).ElementAt(1);
+                var unknown = Enumerable.Range(0, 3).Select(_ => time("nobody")).OrderBy(x => x).ElementAt(1);
+                Assert.True(known >= 300, "control: the wrong password wrote to the slow disk (" + known.ToString("0") + " ms)");
+                Assert.True(unknown * 1.5 >= known, "on a slow disk an unknown administrator name answers in " + unknown.ToString("0") + " ms, a known one with a wrong password in " + known.ToString("0") + " ms: the time tells which names exist");
+            }
+            finally { Atomic.AfterDurableWrite = null; }
+        }
+
         // ------------------------------------------------------------------ AU-05 keys
 
         [Fact]
