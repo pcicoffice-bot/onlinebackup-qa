@@ -101,7 +101,11 @@ namespace OnlineBackup.Tests
                 Action<string, string, Msg> refused = (m, p, b) =>
                 {
                     var a = Http(env.Url, m, p, session: acme.Session, body: b);
-                    if (a.Status != 403 && a.Status != 404) wrong.Add(m + " " + p + " -> " + a.Status + " " + a.Body["error"]);
+                    // Q-AU06: on Windows, http.sys answers 400 itself to a URL holding %00 - the product never sees the request
+                    // (run qa-shards-22: 400 with no product error). Only that exact case: a 400 the product sent, or any other
+                    // status, is still wrong; and what follows (nothing shown, nothing changed on disk) is checked as before.
+                    var beforeTheProduct = a.Status == 400 && p.Contains("%00") && string.IsNullOrEmpty(a.Body["error"]) && !a.Text.Contains("\"error\"") && !a.Text.Contains("<error");
+                    if (a.Status != 403 && a.Status != 404 && !beforeTheProduct) wrong.Add(m + " " + p + " -> " + a.Status + " " + a.Body["error"]);
                     foreach (var s in secrets) if (a.Text.Contains(s)) wrong.Add(m + " " + p + " showed " + s);
                 };
                 var set = new Msg().Set("set", "<BACKUP_SET ID=\"1\" NAME=\"x\"><DAILY_SCHEDULE HOUR=\"1\" MINUTE=\"0\"/></BACKUP_SET>");

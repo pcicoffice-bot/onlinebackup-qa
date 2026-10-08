@@ -283,7 +283,7 @@ namespace OnlineBackup.Agent
                 Info("Total Deleted Files = " + Deleted);
                 // bug 125: every file is read - the shadow copy goes now, so its line is in the log the server keeps (it was written
                 // after the commit and existed only on the computer; the finally still removes it when the run fails earlier)
-                // BISECT: bug 125 early dispose removed
+                if (snapshot != null) { snapshot.Dispose(); snapshot = null; Info("Deleting Shadow Copy snapshot"); }
                 var result = Finish(endCode, started);
                 var commit = new Msg().Set("new", New).Set("upd", Updated).Set("perm", PermOnly).Set("del", Deleted).Set("bytes", BytesSent).Set("started", RunId.UnixMs(started))
                     .Set("prevFiles", state.Files.Count).Set("result", endCode);

@@ -286,6 +286,9 @@ namespace OnlineBackup.Agent
         /// SET-030: "stop" from the admin site — true when the set got a stop request after this run started. The profile is
         /// read at most every 20 seconds; a server that cannot be reached never stops the backup.
         /// </summary>
+        /// <summary>Bug 126: how long the "must this run stop?" question may wait for the server.</summary>
+        public static int StopProbeTimeoutMs = 10000;
+
         public Func<bool> StopCheck(BackupSetInfo s, DateTime startedUtc)
         {
             long since = RunId.UnixMs(startedUtc); DateTime next = DateTime.MinValue; bool stop = s.StopRequest > since;
@@ -294,7 +297,16 @@ namespace OnlineBackup.Agent
                 if (stop) return true;
                 if (SystemClock.UtcNow < next) return false;
                 next = SystemClock.UtcNow.AddSeconds(20);
-                try { var cur = Sets().FirstOrDefault(x => x.Id == s.Id); stop = cur != null && cur.StopRequest > since; } catch (Exception) { }
+                // bug 126: this is asked also while a file is sent (bug 119) - one quick try, never the full retry policy of a real
+                // call (4 tries, pauses, 300 s each): with the server gone or hung that held the upload up to 20 minutes per question.
+                // Unanswered = go on; the run's own calls find the outage and report it.
+                try
+                {
+                    var c = DeviceClient(); c.Retries = 0; c.TimeoutMs = StopProbeTimeoutMs;
+                    var cur = Remember(Core.Profile.Parse(c.Call("GET", "/api/profile")["profile"])).Sets.FirstOrDefault(x => x.Id == s.Id);
+                    stop = cur != null && cur.StopRequest > since;
+                }
+                catch (Exception) { }
                 return stop;
             };
         }
