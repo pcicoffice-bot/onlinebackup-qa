@@ -1,0 +1,69 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce', 1 shards x 2 - run 37708168783 (4e13aa01a2dce323fb167b3d91cc66c037884d55)",
+ "mode": "strict",
+ "build_sha": "0c32d667a831808ad14339d5af5aae9e1299b6b5f607cd252134411d9f104b79",
+ "counts": {
+  "PASS": 0,
+  "FAIL": 1,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 124.3154881,
+    "note": "the agent did not end after the server went away (at 00:33:12.6); what it printed:",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 124.0845291,
+    "note": "the agent did not end after the server went away (at 00:33:11.2); what it printed:",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001629",
+    "os": "Windows",
+    "sha": "4e13aa01a2dce323fb167b3d91cc66c037884d55",
+    "build_sha": "0c32d667a831808ad14339d5af5aae9e1299b6b5f607cd252134411d9f104b79",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 3
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001628",
+    "os": "Windows",
+    "sha": "4e13aa01a2dce323fb167b3d91cc66c037884d55",
+    "build_sha": "0c32d667a831808ad14339d5af5aae9e1299b6b5f607cd252134411d9f104b79",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 3
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
