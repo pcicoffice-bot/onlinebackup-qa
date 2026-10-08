@@ -1,0 +1,8 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce"
+ ],
+ "s01-r02": [
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce"
+ ]
+}
