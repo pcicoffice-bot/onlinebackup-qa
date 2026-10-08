@@ -1,0 +1,625 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.MissedScheduleAwareTests OnlineBackup.Tests.AgentTlsComponentTests OnlineBackup.Tests.TlsTests OnlineBackup.Tests.NightM_TimeRulesTests', 1 shards x 2 - run 37755906734 (2a8c32eac871f9991e2246f8e12439102e7b9da1)",
+ "mode": "strict",
+ "build_sha": "02ec8bbabff6d03c01277919067a642261b56266539be143153a21d37b3bf3a9",
+ "counts": {
+  "PASS": 32,
+  "FAIL": 0,
+  "NOT TESTED": 1,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.ADailySet_Unchanged_48Hours": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklyDayPlusASecondDailyTime_IsDaily_48HoursAsBefore": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklySet_IsNotReportedTwoDaysLater_OnlyAfterItsWeekPlusOneDay": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-------\", h: 22, m: 0, moreDays: null, hours: 0)": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: \"SMTWTFS\", hours: 24)": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: null, hours: 168)": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M--T--\", h: 22, m: 0, moreDays: null, hours: 96)": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"SMTWTFS\", h: 22, m: 0, moreDays: null, hours: 24)": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TheDataProtectionReport_MarksLateByTheSetsSchedule": "PASS",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TwoDaysAWeek_TheLongestGapCounts": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.Lease_OpenAtExactlyFiveMinutes_ClosedOneTickLater_AcrossMidnight(h: 12, m: 0)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.Lease_OpenAtExactlyFiveMinutes_ClosedOneTickLater_AcrossMidnight(h: 23, m: 58)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 15, y: 2026, mo: 10, d: 24, h: 22, mi: 55)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 15, y: 2026, mo: 12, d: 31, h: 23, mi: 50)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 60, y: 2028, mo: 2, d: 28, h: 23, mi: 30)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.MissedBackupAlert_At48HoursExactly_ThenEvery24Hours": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.ReportCannotRun_ReachesTheServer_OncePer20Hours": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.ReportCannotRun_TheFirstFailureAfterASuccessfulRunEarlierThatDay_ReachesTheServer": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 1, d: 31)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 10, d: 1)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 12, d: 15)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2028, mo: 2, d: 1)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 1, y: 2027, m: 1, d: 1)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 30, y: 2026, m: 3, d: 1)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 30, y: 2028, m: 3, d: 1)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 7, y: 2026, m: 3, d: 30)": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_OnTheStore_TheFolderOfThePointExactlyNDaysOldStays": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionJobs_KeepsExactlyTheLastN_AndTheLatestAlways": "PASS",
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RunIds_AreUtc_AndSortInTimeOrder_AcrossMidnightMonthAndYearEnds": "PASS",
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS",
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": "NOT TESTED"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0006639,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0005632,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.ADailySet_Unchanged_48Hours": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.2582291,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2478391,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklyDayPlusASecondDailyTime_IsDaily_48HoursAsBefore": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0964331,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.1887603,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklySet_IsNotReportedTwoDaysLater_OnlyAfterItsWeekPlusOneDay": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.247535,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3245248,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-------\", h: 22, m: 0, moreDays: null, hours: 0)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.31e-05,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.29e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: \"SMTWTFS\", hours: 24)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0010144,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0007712,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: null, hours: 168)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0024895,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0020033,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M--T--\", h: 22, m: 0, moreDays: null, hours: 96)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.06e-05,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.01e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"SMTWTFS\", h: 22, m: 0, moreDays: null, hours: 24)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.64e-05,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.33e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TheDataProtectionReport_MarksLateByTheSetsSchedule": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0074296,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0058629,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TwoDaysAWeek_TheLongestGapCounts": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0204349,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.0999237,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.Lease_OpenAtExactlyFiveMinutes_ClosedOneTickLater_AcrossMidnight(h: 12, m: 0)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0830883,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.1044363,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.Lease_OpenAtExactlyFiveMinutes_ClosedOneTickLater_AcrossMidnight(h: 23, m: 58)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0713039,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0822548,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 15, y: 2026, mo: 10, d: 24, h: 22, mi: 55)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0027015,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.002693,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 15, y: 2026, mo: 12, d: 31, h: 23, mi: 50)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0025361,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0024372,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.LogDue_FalseOneTickBeforeTheInterval_TrueAtIt(interval: 60, y: 2028, mo: 2, d: 28, h: 23, mi: 30)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0033516,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0021043,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.MissedBackupAlert_At48HoursExactly_ThenEvery24Hours": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1532264,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2626091,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.ReportCannotRun_ReachesTheServer_OncePer20Hours": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0722491,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.1544657,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.ReportCannotRun_TheFirstFailureAfterASuccessfulRunEarlierThatDay_ReachesTheServer": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.1798333,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2885329,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 1, d: 31)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0224403,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0272617,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 10, d: 1)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0205681,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0244313,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2026, mo: 12, d: 15)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0208391,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0277397,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RestoreTestDue_ThirtyDaysExactly_AcrossMonthLeapYearAndDst(y: 2028, mo: 2, d: 1)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0225036,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0298252,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 1, y: 2027, m: 1, d: 1)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0002795,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0003201,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 30, y: 2026, m: 3, d: 1)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0019132,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0020366,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 30, y: 2028, m: 3, d: 1)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.65e-05,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_KeepsAPointExactlyNDaysOld_AndDropsItOneSecondLater(days: 7, y: 2026, m: 3, d: 30)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.5e-05,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.72e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionDays_OnTheStore_TheFolderOfThePointExactlyNDaysOldStays": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.2554581,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.3042266,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RetentionJobs_KeepsExactlyTheLastN_AndTheLatestAlways": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007688,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0008884,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightM_TimeRulesTests.RunIds_AreUtc_AndSortInTimeOrder_AcrossMidnightMonthAndYearEnds": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0040882,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0041773,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 43.2552478,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 43.4083398,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 40.4215834,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 41.5062787,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0117536,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0145129,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.AgentTlsComponentTests.TheAgentsClient_OffersTls12_NeverTls10Or11",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.ADailySet_Unchanged_48Hours",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklyDayPlusASecondDailyTime_IsDaily_48HoursAsBefore",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.AWeeklySet_IsNotReportedTwoDaysLater_OnlyAfterItsWeekPlusOneDay",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-------\", h: 22, m: 0, moreDays: null, hours: 0)",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: \"SMTWTFS\", hours: 24)",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M-----\", h: 22, m: 0, moreDays: null, hours: 168)",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"-M--T--\", h: 22, m: 0, moreDays: null, hours: 96)",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.LongestScheduleGap(days: \"SMTWTFS\", h: 22, m: 0, moreDays: null, hours: 24)",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TheDataProtectionReport_MarksLateByTheSetsSchedule",
+  "OnlineBackup.Tests.MissedScheduleAwareTests.TwoDaysAWeek_TheLongestGapCounts"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001731",
+    "os": "Windows",
+    "sha": "2a8c32eac871f9991e2246f8e12439102e7b9da1",
+    "build_sha": "02ec8bbabff6d03c01277919067a642261b56266539be143153a21d37b3bf3a9",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 33
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001732",
+    "os": "Windows",
+    "sha": "2a8c32eac871f9991e2246f8e12439102e7b9da1",
+    "build_sha": "02ec8bbabff6d03c01277919067a642261b56266539be143153a21d37b3bf3a9",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 33
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
