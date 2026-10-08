@@ -10,7 +10,7 @@ namespace OnlineBackup.Agent
     /// <summary>
     /// Command line of the agent (the Windows service runs "service"):
     ///   register --home DIR --server URL --login U --password P [--otp 123456] [--computer NAME] [--tls builtin|system] [--pin SHA256]
-    ///   addset   --home DIR --password P [--otp X] --name N [--type FILE|MSSQL|MYSQL|POSTGRESQL|ORACLE|DOMINO|SYSTEMSTATE|BAREMETAL|HYPERV|VMWARE|M365] [--db-host H] [--db-user U] [--datacenter DC] [--thumbprint SHA256] [--engine RESTIC] --source PATH [--source PATH] [--exclude *.tmp] [--hour 22] [--keytype PASSWORD|DEFAULT|CUSTOM] [--key K]
+    ///   addset   --home DIR --password P [--otp X] --name N [--type FILE|MSSQL|MYSQL|POSTGRESQL|ORACLE|DOMINO|SYSTEMSTATE|BAREMETAL|HYPERV|VMWARE|M365] [--db-host H] [--db-user U] [--datacenter DC] [--thumbprint SHA256] [--engine RESTIC] --source PATH [--source PATH] [--exclude *.tmp] [--hour 22] [--keytype PASSWORD|DEFAULT|CUSTOM] [--key K] [--key-recovery yes|no] (A7: default yes)
     ///   sets     --home DIR
     ///   backup   --home DIR --set ID
     ///   points   --home DIR --set ID
@@ -69,7 +69,7 @@ namespace OnlineBackup.Agent
                             if (one("minute") != null) s.Minute = int.Parse(one("minute"));
                             if (one("keep-last") != null) s.Retention = new RetentionPolicy { Unit = "JOBS", Period = int.Parse(one("keep-last")) };
                             if (o.ContainsKey("exclude")) s.Filters.Add(new FilterRule { Type = "WILDCARD", ApplyFile = true, ApplyDir = false, Patterns = o["exclude"] });
-                            var created = app.CreateSet(session, one("password"), s, one("keytype") ?? "PASSWORD", one("key"));
+                            var created = app.CreateSet(session, one("password"), s, one("keytype") ?? "PASSWORD", one("key"), one("key-recovery") != "no");   // A7: default keeps a recovery copy
                             Console.WriteLine(created.Id);
                             return 0;
                         }

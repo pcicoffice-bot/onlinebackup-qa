@@ -50,3 +50,30 @@ the commit names the decision.
   before Certification and before Release / Pilot. A Fast PASS is never a Certification PASS. Applied only at a safe point,
   after the running gate finishes; no running gate is stopped for it.
 - **57 pilot blockers** stay the target: 51 capability + 6 cross-cutting (N2, N3, N5, N6, N7, N8) — docs/PILOT-BLOCKERS.md.
+
+## Windows client UI (2026-10-08)
+
+- **Direction: alternative C (Hybrid)** for the Windows client window (the admin site keeps its structure).
+- **UI-Q4 ransomware / AI:** no wording that says or implies the product prevents ransomware ("AI watches for ransomware" is
+  forbidden). OnlineBackup is a backup product. A capability that detects suspicious activity / unusual changes and protects
+  the backup history or retention may be shown only as a helper ("detects suspicious activity and protects your backups"),
+  only if it exists and is tested, worded exactly as what it does.
+- **UI-Q10 window size:** the minimum is NOT raised to 1024×700. 1280×800 is the main design size, not a minimum; 860×560 stays
+  the minimum check, plus Windows scaling 125% and 150%. Adaptive layout: content reflows, scrolls or shrinks in a controlled
+  way, never outside the window. In every size the backup state, Back up now, Restore, confirm/cancel and error display stay
+  reachable. A screen impractical at 860×560 gets a UX proposal to the owner, never a bigger minimum.
+- **UI-Q1 restore verification:** after a restore the restored files are integrity-checked (SHA-256 against the backup). Where
+  this path does not do it yet it is a requirement, tested for real; "Verified" is never shown before it exists.
+- **UI-Q2 restore location:** both Original Location and Alternate Location. At the original location: no silent overwrite —
+  a clear confirmation when a file exists.
+- **UI-Q3 manual update in the client:** not in the pilot (the update channel stays off until signing + anti-downgrade, B1);
+  no button.
+- **UI-Q5 action locked by the provider:** shown disabled with a short reason, e.g. "This setting is managed by your service
+  provider".
+- **UI-Q6 white-label:** pilot = logo + product/provider name. Custom colours after the pilot.
+- **UI-Q7 computer's last complete backup:** the Home shows an overall protection state and, under it, each set with its own
+  Last Complete Backup. A computer-level time, if shown, means the last time ALL required sets were Complete (not simply the
+  earliest date).
+- **UI-Q8 retention shown to the customer:** yes, simply ("kept: 30 days, and 12 monthly versions"), not the GFS mechanics.
+- **UI-Q9 partial alerts:** the FIRST partial run is already shown as a warning. The same problem in a row escalates to the
+  provider: start at 2 consecutive partial runs, as a policy/configuration value (not hard-coded), tuned from the pilot.

@@ -168,7 +168,9 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
         h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
           const r = await fetch('/api/login', { method: 'POST', headers: { 'X-Key': KEY }, body: toXml({ password: pw.value, otp: otp.value }) });
           if (!r.ok) { const m = fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement); throw new Error(tr(m.message) || t('Sign-in failed')); }
-          d.close(); d.remove(); done(true); }) }, t('Sign in')),
+          d.close(); d.remove(); done(true);
+          // owner decision A7: the sign-in gives the copies of sets on this computer their key; one still without it is said
+          try { const k = fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement); if (Number(k.keysMissing || 0) > 0) toast(t('A backup on this computer still needs its encryption key — contact {0}.', (ST && ST.company) || t('support')), true); } catch (e) { } }) }, t('Sign in')),
         h('button', { class: 'sec', onclick: () => { d.close(); d.remove(); done(false); } }, t('Cancel'))));
       document.body.append(d); d.showModal(); pw.focus();
     });
@@ -310,6 +312,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
         s.blocked ? h('div', { class: 's warn' }, '⚠ ' + tr(s.blocked) + ' ' + t('The set and its backups are kept as they are; it does not run.'))   // PILOT-010
           : h('div', { class: 's' }, t('Last complete backup') + ': ' + at(s.lastComplete) + ' · ' + t('Last attempt: {0}', s.lastAttempt ? at(s.lastAttempt) + ' · ' + word(KIND(s.result), s.result) : t('Not yet')) + ' · ' + t('Every day at {0}', s.hour)),
         keep(s) ? h('div', { class: 's muted' }, keep(s)) : null,
+        s.keyRecovery !== undefined ? h('div', { class: 's muted' }, t('Recovery copy of the key kept: {0}', s.keyRecovery === '1' ? t('Yes') : t('No'))) : null,
         s.runs.length ? h('div', { class: 'strip', title: t('Last {0} runs', Math.min(14, s.runs.length)) }, s.runs.slice(-14).map((r) => h('i', { class: TONE[r.k], title: at(r.t) + ' ' + word(r.k, r.r) }))) : null,
         s.k === 'partial' || s.k === 'failed' ? problemCard(s, false) : null),
       s.blocked ? null : s.k === 'running' ? h('span', { class: 'warn' }, '⏳ ' + t('Backing up now…'))
@@ -624,12 +627,20 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const LABEL = { GWS: t('Local folder for the domain\'s copy (free space needed)'), FILE: t('Folders to back up'), M365: t('Local folder for the tenant\'s copy (free space needed)'), MYSQL: t('Databases (one per line; empty = all)'), POSTGRESQL: t('Databases (one per line; empty = all)'), HYPERV: t('Virtual machines (one per line; empty = all)'), VMWARE: t('Virtual machines (one per line; empty = all)'), ORACLE: t('Oracle instances — ORACLE_SID (one per line)'), MSSQL: t('Databases (one per line; empty = all)'), SYSTEMSTATE: t('Nothing to choose — the whole System State is backed up'), BAREMETAL: t('Where to keep the image before sending: a second disk or a network folder, e.g. E:\\ or \\\\nas\\backup'), DOMINO: t('Folders (empty = the data folder, the transaction logs and notes.ini — found automatically)') };
     const NAME = { MSSQL: 'SQL Server', SYSTEMSTATE: 'System State', BAREMETAL: 'Bare-metal', GWS: 'Google Workspace', M365: 'Microsoft 365', MYSQL: 'MySQL', POSTGRESQL: 'PostgreSQL', HYPERV: 'Hyper-V', VMWARE: 'VMware', ORACLE: 'Oracle', DOMINO: 'Domino' };
     if (ST.canAdd === '0') { put(m, h('p', { class: 'muted' }, t('Your IT provider adds new backups — contact {0}.', ST.company || t('support'))), h('p', { class: 'muted' }, LOCKED)); return; }
+    // owner decision A7: keep a recovery copy of the key with the IT company? both options, their texts in full
+    let kr = {}; try { kr = await api('keyrecovery', null, { lang: I18N.lang }); } catch (e) { kr = { allowed: '0' }; }
+    const krOn = kr.allowed !== '0';
+    const keepR = h('input', { type: 'radio', name: 'keyrec', style: 'width:auto', checked: krOn && kr.default !== '0', disabled: !krOn }), noneR = h('input', { type: 'radio', name: 'keyrec', style: 'width:auto', checked: !(krOn && kr.default !== '0'), disabled: !krOn });
+    const keyBox = h('section', { class: 'box' }, h('b', {}, kr.title || t('Recovery copy of the encryption key')),
+      h('label', {}, keepR, ' ', kr.keepLabel || ''), h('p', { class: 'muted' }, kr.keepText || ''),
+      h('label', {}, noneR, ' ', kr.noneLabel || ''), h('p', { class: 'muted' }, kr.noneText || ''),
+      krOn ? null : h('p', { class: 'warn' }, kr.offText || ''));
     const inc = [], exc = []; const picker = dirPicker(inc, exc);
     kind.onchange = () => { const k = kind.value; picker.hidden = k !== 'FILE'; src.hidden = k === 'FILE' || k === 'SYSTEMSTATE'; m365.hidden = k !== 'M365'; gws.hidden = k !== 'GWS'; db.hidden = !['MSSQL', 'MYSQL', 'POSTGRESQL', 'ORACLE', 'VMWARE'].includes(k); sqlBox.hidden = k !== 'MSSQL'; deltaBox.hidden = ST.restic === '1' || k !== 'FILE'; vmExtra.hidden = k !== 'VMWARE'; dbHost.placeholder = k === 'VMWARE' ? 'esxi.company.local' : k === 'ORACLE' ? t('Empty = on this computer (operating-system authentication)') : k === 'MSSQL' ? t('Empty = this computer (e.g. .\\SQLEXPRESS for a named instance)') : '127.0.0.1'; dbUser.placeholder = k === 'MSSQL' ? t('Empty = Windows authentication') : ''; srcLabel.textContent = LABEL[k]; if (NAME[k] && (name.value === t('Documents') || Object.values(NAME).includes(name.value))) name.value = NAME[k]; };
     src.hidden = true;
     put(m, h('label', {}, t('Backup type')), kind, h('label', {}, t('Backup name')), name, srcLabel, src, picker, m365, gws, db, sqlBox, vmExtra, deltaBox, h('label', {}, t('Daily backup time')), at,
-      h('p', { class: 'muted' }, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.')),
-      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('addset', { type: kind.value, name: name.value, sources: kind.value === 'FILE' ? inc.join('\n') : src.value, exclude: kind.value === 'FILE' ? exc.join('\n') : '', hour: hour.value, minute: minute.value, tenant: tenant.value, clientId: clientId.value, secret: secret.value, users: users.value, dbHost: dbHost.value, dbPort: dbPort.value, dbUser: dbUser.value, dbPassword: dbPass.value, gwsKey: gwsKey.value, gwsAdmin: gwsAdmin.value, vmDatacenter: vmDc.value, vmThumbprint: vmThumb.value, deltaType: deltaType.value, sqlFullDay: sqlFull.value, ...(kind.value === 'GWS' ? { users: gwsUsers.value } : {}) }); toast(t('The backup was added')); ST = await api('state'); show('sets'); }) }, t('Save and exit')),
+      h('p', { class: 'muted' }, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.')), keyBox,
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { const r = await api('addset', { keyRecovery: krOn && keepR.checked ? '1' : '0', type: kind.value, name: name.value, sources: kind.value === 'FILE' ? inc.join('\n') : src.value, exclude: kind.value === 'FILE' ? exc.join('\n') : '', hour: hour.value, minute: minute.value, tenant: tenant.value, clientId: clientId.value, secret: secret.value, users: users.value, dbHost: dbHost.value, dbPort: dbPort.value, dbUser: dbUser.value, dbPassword: dbPass.value, gwsKey: gwsKey.value, gwsAdmin: gwsAdmin.value, vmDatacenter: vmDc.value, vmThumbprint: vmThumb.value, deltaType: deltaType.value, sqlFullDay: sqlFull.value, ...(kind.value === 'GWS' ? { users: gwsUsers.value } : {}) }); toast(t('The backup was added') + ' ' + (r.keyRecovery === '1' ? t('A recovery copy of the key is kept by {0}.', company()) : t('No recovery copy of the key is kept — keep the key in a safe place.'))); ST = await api('state'); show('sets'); }) }, t('Save and exit')),
         h('button', { class: 'sec', onclick: () => show('sets') }, t('Exit without saving'))));
   }
 

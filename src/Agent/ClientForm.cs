@@ -222,11 +222,20 @@ namespace OnlineBackup.Agent
                 cancel.Click += (s, e) => d.DialogResult = DialogResult.Cancel;
                 ok.Click += (s, e) =>
                 {
-                    try { api.Call("login", new Msg().Set("password", pw.Text).Set("otp", otp.Text), null); d.DialogResult = DialogResult.OK; }
+                    try { keysReply = api.Call("login", new Msg().Set("password", pw.Text).Set("otp", otp.Text), null); d.DialogResult = DialogResult.OK; }
                     catch (Exception ex) { err.Text = T("Sign-in failed") + ": " + L.Tr(lang, ex.Message); }
                 };
-                return d.ShowDialog(this) == DialogResult.OK;
+                var ok2 = d.ShowDialog(this) == DialogResult.OK;
+                if (ok2) KeysMissing(keysReply);
+                return ok2;
             }
+        }
+
+        /// <summary>Owner decision A7: a sign-in gives the copies of sets on this computer their key; one still without it is said.</summary>
+        Msg keysReply;
+        void KeysMissing(Msg r)
+        {
+            if (r != null && r.Int("keysMissing") > 0) Message(T("A backup on this computer still needs its encryption key — contact {0}.", Support()), true);
         }
 
         // ---------------------------------------------------------------- the frame: the side menu, the page, the fixed bar
@@ -534,7 +543,8 @@ namespace OnlineBackup.Agent
             Exception e2 = null;
             ThreadPool.QueueUserWorkItem(_ =>
             {
-                try { api.Call("connect", body, null); } catch (Exception e) { e2 = e; }
+                Msg conn = null;
+                try { conn = api.Call("connect", body, null); } catch (Exception e) { e2 = e; }
                 try
                 {
                     BeginInvoke(new Action(() =>
@@ -544,6 +554,7 @@ namespace OnlineBackup.Agent
                         foreach (var k in cf.Keys.ToList()) if (k != "server") cf[k] = "";
                         AcceptButton = null; page = "new";
                         Message(T("This computer is connected. Now choose what to back up."), false);
+                        KeysMissing(conn);
                         Refresh2(true);
                     }));
                 }
@@ -866,6 +877,7 @@ namespace OnlineBackup.Agent
             if (sv.Src.Length == 0) wy = Text2(what, sv.Sources, 9.5f, false, Ink, m, wy, lw - 2 * m, true).Bottom + S(4);
             Divider(what, m, wy + S(4), lw - 2 * m); wy += S(12);
             var keep = ClientView.Keep(lang, raw); if (keep.Length > 0) wy = Text2(what, keep, 9f, false, Ink, m, wy, lw - 2 * m).Bottom + S(4);
+            if (raw["keyRecovery"] != null) wy = Text2(what, T("Recovery copy of the key kept: {0}", raw["keyRecovery"] == "1" ? T("Yes") : T("No")), 9f, false, Ink, m, wy, lw - 2 * m, false, "keyRecovery").Bottom + S(4);   // A7
             wy = Text2(what, T("Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe."), 8.5f, false, Muted, m, wy, lw - 2 * m).Bottom + S(4);
             if (sv.Kind == RunKind.Blocked) wy = Text2(what, L.Tr(lang, sv.Blocked) + " " + T("The set and its backups are kept as they are; it does not run."), 9f, false, Warn, m, wy, lw - 2 * m).Bottom;
             what.Height = wy + m;
@@ -1425,15 +1437,24 @@ namespace OnlineBackup.Agent
             st.Text(T("Daily backup time"), 10f, true).Margin = new Padding(0, 10, 0, 2);
             var time = new DateTimePicker { Format = DateTimePickerFormat.Custom, CustomFormat = "HH:mm", ShowUpDown = true, Width = 110, Value = DateTime.Today.AddHours(22) };
             st.Add(time);
-            var dbUser = new TextBox { Width = 260 };
+            // owner decision A7: keep a recovery copy of the key with the IT company? Both options with their texts in full
+            Msg kr; try { kr = api.Call("keyrecovery", null, new Dictionary<string, string> { { "lang", lang } }); } catch (Exception) { kr = new Msg().Set("allowed", 0); }
+            bool krAllowed = kr["allowed"] != "0";
+            st.Text(kr["title"] ?? T("Recovery copy of the encryption key"), 10f, true).Margin = new Padding(0, 14, 0, 2);
+            var keep = new RadioButton { Text = kr["keepLabel"] ?? "", Checked = krAllowed && kr["default"] != "0", Enabled = krAllowed, AutoSize = false, Width = st.Width, Height = S(26), Font = F(10f, true), Name = "keyKeep" };
+            st.Add(keep); st.Text(kr["keepText"] ?? "", 9f, false, Muted);
+            var none = new RadioButton { Text = kr["noneLabel"] ?? "", Checked = !keep.Checked, Enabled = krAllowed, AutoSize = false, Width = st.Width, Height = S(26), Font = F(10f, true), Name = "keyNone" };
+            st.Add(none); st.Text(kr["noneText"] ?? "", 9f, false, Muted);
+            if (!krAllowed) st.Text(kr["offText"] ?? "", 9.5f, true, Warn);
             var add = Btn(T("New backup"), true); st.Add(add);
             type.SelectedIndexChanged += (s, e) => { var k = types[type.SelectedIndex][0]; picker.Enabled(k == "FILE" || k == "BAREMETAL"); name.Text = T(types[type.SelectedIndex][1]); };
             add.Click += (s, e) =>
             {
                 var k = types[type.SelectedIndex][0];
                 var m = new Msg().Set("type", k).Set("name", name.Text).Set("sources", string.Join("\n", picker.Included.ToArray())).Set("exclude", string.Join("\n", picker.Excluded.ToArray()))
-                    .Set("hour", time.Value.Hour).Set("minute", time.Value.Minute);
-                Do(() => api.Call("addset", m, null), T("The backup was added"), r => { page = "sets"; });
+                    .Set("hour", time.Value.Hour).Set("minute", time.Value.Minute).Set("keyRecovery", krAllowed && keep.Checked ? "1" : "0");
+                // what is really kept is the reply's keyRecovery (A7), said with the confirmation
+                Do(() => api.Call("addset", m, null), null, r => { page = "sets"; Message(T("The backup was added") + "\n\n" + (r["keyRecovery"] == "1" ? T("A recovery copy of the key is kept by {0}.", ClientView.Company(lang, state)) : T("No recovery copy of the key is kept — keep the key in a safe place.")), false); });
             };
         }
 
@@ -1677,12 +1698,12 @@ namespace OnlineBackup.Agent
                             var never = Mode == "never";
                             var office = new Msg().Set("id", "1").Set("name", "Office files").Set("type", "FILE").Set("sources", @"D:\Office; D:\Scans").Set("src", "D:\\Office\nD:\\Scans").Set("mine", 1).Set("hour", "21:00").Set("hh", 21).Set("mm", 0)
                                 .Set("last", never ? "" : Ago(1, 21, 38)).Set("result", never ? "" : "BS_STOP_SUCCESS").Set("lastComplete", never ? "" : Ago(1, 21, 38)).Set("lastTest", never ? "" : Ago(17, 3, 10))
-                                .Set("retUnit", "DAYS").Set("retPeriod", 30).Set("retMonthly", 12);
+                                .Set("retUnit", "DAYS").Set("retPeriod", 30).Set("retMonthly", 12).Set("keyRecovery", 1);
                             if (!never) Runs(office, 14, 21, 38, i => "BS_STOP_SUCCESS");
                             var r2 = Mode == "failed" ? "BS_STOP_BY_SYSTEM_ERROR" : Mode == "stopped" ? "BS_STOP_BY_USER" : Mode == "partial" || Mode == "offline" ? "BS_STOP_SUCCESS_WITH_ERROR" : "BS_STOP_SUCCESS";
                             var users = new Msg().Set("id", "2").Set("name", "User folders").Set("type", "FILE").Set("sources", @"D:\Users").Set("src", @"D:\Users").Set("skip", @"D:\Users\Public\AppData").Set("mine", 1).Set("hour", "23:30").Set("hh", 23).Set("mm", 30)
                                 .Set("last", never ? "" : Ago(1, 23, 30)).Set("result", never ? "" : r2).Set("lastComplete", never ? "" : r2 == "BS_STOP_SUCCESS" ? Ago(1, 23, 30) : Ago(2, 23, 52)).Set("missedCount", r2 == "BS_STOP_SUCCESS_WITH_ERROR" ? 2 : 0)
-                                .Set("retUnit", "DAYS").Set("retPeriod", 30);
+                                .Set("retUnit", "DAYS").Set("retPeriod", 30).Set("keyRecovery", 1);
                             if (r2 == "BS_STOP_SUCCESS_WITH_ERROR")
                             {
                                 users.Add("missed", new Msg().Set("p", @"D:\Users\dana\Documents\Outlook Files\dana@example.com.pst").Set("why", "The process cannot access the file because it is being used by another process."));
@@ -1723,6 +1744,7 @@ namespace OnlineBackup.Agent
                             foreach (var l in lines) m.Add("lines", new Msg().Set("l", l));
                             return m;
                         }
+                    case "keyrecovery": return new Msg().Set("default", 1).Set("allowed", 1).Set("title", L.Tr(lang, KeyTexts.Title)).Set("keepLabel", L.Tr(lang, KeyTexts.KeepLabel)).Set("keepText", L.Tr(lang, KeyTexts.KeepText)).Set("noneLabel", L.Tr(lang, KeyTexts.NoneLabel)).Set("noneText", L.Tr(lang, KeyTexts.NoneText)).Set("offText", L.Tr(lang, KeyTexts.OffText));
                     case "security": return new Msg().Set("totp", 1);
                     case "update": return new Msg().Set("current", "0.1.80").Set("latest", "0.1.80").Set("available", 0);
                     case "help": return new Msg();

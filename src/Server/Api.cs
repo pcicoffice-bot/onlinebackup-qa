@@ -425,18 +425,20 @@ namespace OnlineBackup.Server
                 if (cfg.Pilot && (seg[3] == "points" || seg[3] == "files" || seg[3] == "object" || seg[3] == "restoretest" || seg[3] == "restorelog"
                     || (seg[3] == "jobs" && seg.Length > 5 && (seg[5] == "object" || seg[5] == "delete" || seg[5] == "commit"))))
                     PilotScope.CheckSet(cfg, BackupSetInfo.FromXml(prof.FindSet(setId)));
-                var store = new SetStore(users.UserDir(login), setId);
+                // AZF-1: the routes that never touch the set's backups do not open (create) its store - a refused call changes nothing
+                var store = seg[3] == "key" || seg[3] == "settings" || seg[3] == "sharedkey" ? null : new SetStore(users.UserDir(login), setId);
                 switch (seg[3])
                 {
                     case "key":
                         requireInteractive();
-                        if (prof.Get("SAVE_ENCRYPT_KEY") == "Y")
+                        // owner decision A7: kept only when the IT company keeps recovery copies AND the customer chose it for this set
+                        if (prof.Get("SAVE_ENCRYPT_KEY") == "Y" && BackupSetInfo.FromXml(prof.FindSet(setId)).KeyRecovery)
                         {
                             var raw = Convert.FromBase64String(Body(ctx)["key"]);
                             Atomic.WriteBytes(Path.Combine(users.UserDir(login), "db", "keys", setId + ".bin"), KeyVault.Protect(cfg.SystemHome, raw));
                             SysLog.Write(ip, "Access", "encryption key saved for recovery " + login + "/" + setId);
                         }
-                        Reply(ctx, 200, new Msg().Set("saved", prof.Get("SAVE_ENCRYPT_KEY")));
+                        Reply(ctx, 200, new Msg().Set("saved", prof.Get("SAVE_ENCRYPT_KEY") == "Y" && BackupSetInfo.FromXml(prof.FindSet(setId)).KeyRecovery ? "Y" : "N"));
                         return;
                     case "settings":
                         {
@@ -451,6 +453,9 @@ namespace OnlineBackup.Server
                             // SET-020: a copy of a set on another computer of the same customer uses the first set's key. The server
                             // hands it only when the customer chose key recovery (the key is already kept here) — else the customer
                             // enters the encryption password on that computer.
+                            // Owner decision A7 / AZF-1: "the raw key is never handed to a device token" - only to the customer's
+                            // interactive sign-in (password + code) on that computer; the program asks for it once, at sign-in.
+                            requireInteractive();
                             var parent = (string)prof.FindSet(setId).Attribute("PARENT_SET");
                             var kp = string.IsNullOrEmpty(parent) ? null : Path.Combine(users.UserDir(login), "db", "keys", parent + ".bin");
                             if (kp == null || prof.Get("SAVE_ENCRYPT_KEY") != "Y" || !File.Exists(kp)) throw new ApiException(404, "NO_KEY", "Enter the set's encryption password on this computer (key recovery is off).");

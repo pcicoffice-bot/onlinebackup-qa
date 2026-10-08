@@ -1840,6 +1840,18 @@
   "{0} — {1} files not backed up ({2})": "{0} — {1} קבצים לא גובו ({2})",
   "When and what": "מתי ומה",
   "Where and check": "לאן ובדיקה",
-  "1 selected item was restored": "פריט אחד שנבחר שוחזר"
+  "1 selected item was restored": "פריט אחד שנבחר שוחזר",
+  "Recovery copy of the encryption key": "עותק שחזור של מפתח ההצפנה",
+  "Keep a recovery copy with my IT provider (recommended)": "שמור עותק שחזור אצל ספק ה-IT שלי (מומלץ)",
+  "Your IT provider keeps a sealed copy of this backup's encryption key on its server. If this computer is lost or the key is forgotten, the provider can restore your files - which also means the provider could read them. The copy is given out only after a sign-in with the password (and code), never to a computer's automatic connection.": "ספק ה-IT שלך שומר בשרת שלו עותק חתום של מפתח ההצפנה של גיבוי זה. אם המחשב אובד או שהמפתח נשכח, הספק יכול לשחזר את הקבצים שלך - כלומר הספק גם יכול היה לקרוא אותם. העותק נמסר רק לאחר כניסה עם הסיסמה (והקוד), ולעולם לא לחיבור האוטומטי של מחשב.",
+  "Do not keep a copy - only I can open these backups": "אל תשמור עותק - רק אני יכול לפתוח את הגיבויים האלה",
+  "Without a recovery copy, nobody - not your IT provider either - can restore these backups if the key is lost. Keep the key (or the password it comes from) in a safe place. This choice cannot be changed later for this backup.": "ללא עותק שחזור, איש - גם לא ספק ה-IT שלך - לא יוכל לשחזר את הגיבויים האלה אם המפתח יאבד. שמור את המפתח (או את הסיסמה שממנה הוא נוצר) במקום בטוח. לא ניתן לשנות בחירה זו מאוחר יותר עבור גיבוי זה.",
+  "Your IT provider does not keep recovery copies of encryption keys: keep the key in a safe place yourself.": "ספק ה-IT שלך אינו שומר עותקי שחזור של מפתחות הצפנה: שמור בעצמך את המפתח במקום בטוח.",
+  "This computer does not have the key of this backup yet: sign in to the backup program on this computer once (with the password), or enter the set's encryption key.": "למחשב זה עדיין אין את המפתח של גיבוי זה: היכנס פעם אחת לתוכנת הגיבוי במחשב זה (עם הסיסמה), או הזן את מפתח ההצפנה של הגיבוי.",
+  "A backup on this computer still needs its encryption key — contact {0}.": "גיבוי במחשב הזה עדיין צריך את מפתח ההצפנה שלו — פנו אל {0}.",
+  "A recovery copy of the key is kept by {0}.": "עותק שחזור של המפתח נשמר אצל {0}.",
+  "No recovery copy of the key is kept — keep the key in a safe place.": "לא נשמר עותק שחזור של המפתח — שמרו את המפתח במקום בטוח.",
+  "Recovery copy of the key kept: {0}": "עותק שחזור של המפתח נשמר: {0}",
+  "No": "לא"
  }
 }

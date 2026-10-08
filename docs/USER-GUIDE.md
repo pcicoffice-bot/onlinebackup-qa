@@ -63,7 +63,7 @@ The numbers of the last 24 hours, a 14-day chart, active backups, what needs att
 
 ### 2.3 Sets — like Ahsay OBM
 - **Each set belongs to one computer**, with its own folders and settings. In a customer, the sets are shown by computer.
-- The same backup on another server: set → General → **Copy this set to another computer**. A set of its own is made for that computer, starting from the same settings, and you choose its folders. **Move to another computer** — when a computer was replaced.
+- The same backup on another server: set → General → **Copy this set to another computer**. A set of its own is made for that computer, starting from the same settings, and you choose its folders. That computer gets the set's key the first time the customer **signs in** to the program on it (from the recovery copy, or from the password for a password key) — until then its scheduled backup reports that the key is missing. **Move to another computer** — when a computer was replaced.
 - ▶ **Back up now** and ■ **Stop** reach the computer within a minute.
 
 ### 2.4 What to back up — the folder tree
@@ -126,6 +126,8 @@ Choose a type, a name, what to back up and a daily time:
 ![New backup](guide/client-3-new.png)
 
 Database and cloud-account passwords are stored only on this computer, encrypted.
+
+**Recovery copy of the encryption key** (asked for each new backup; default: keep one). With a recovery copy, the IT company keeps a sealed copy of the backup's key on its server: if the computer is lost or the key forgotten, it can restore the files — and so it could read them. Without one, nobody can restore the backup if the key is lost. The choice is fixed with the key. A key is given out only after a sign-in with the password (and code) — never to a computer's automatic connection.
 
 #### Incremental or differential
 - **Windows 10 / Server 2016 or later, Linux and Mac** — every backup stores only what changed (incremental), yet every point in time is a complete restore point. Nothing to choose.

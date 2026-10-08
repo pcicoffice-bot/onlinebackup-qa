@@ -1,1 +1,1 @@
-{"os":"windows-latest","select":"ClientWindowC","shards":1,"repeat":1,"max_parallel":2,"control":false}
+{"os":"windows-latest","select":"ClientWindowC KeyRecoveryA7 PilotClientUi","shards":2,"repeat":1,"max_parallel":2,"control":false}

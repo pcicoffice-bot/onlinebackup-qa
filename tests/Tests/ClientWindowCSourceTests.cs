@@ -192,5 +192,21 @@ namespace OnlineBackup.Tests
             Assert.DoesNotContain("state[\"color\"]", f); Assert.DoesNotContain("state[\"accent\"]", f);
             Assert.DoesNotContain("ST.color", Html); Assert.DoesNotContain("ST.accent", Html);
         }
+
+        /// <summary>Owner decision A7 (the engine's API, merged from fix-sched): a new backup shows the key-recovery choice from
+        /// "keyrecovery" (both options' texts in full, "keep" preselected, disabled with offText when the IT company keeps no
+        /// copies) and sends keyRecovery; what is really kept (the reply) is shown after creation and in the set's details;
+        /// a sign-in that leaves keysMissing &gt; 0 tells the customer to contact the IT company - in both windows.</summary>
+        [Fact]
+        public void A7_KeyRecoveryChoice_KeptCopyShown_MissingKeysAfterSignIn_BothWindows()
+        {
+            var f = Form; var h = Html;
+            Assert.Contains("api.Call(\"keyrecovery\"", f);
+            foreach (var k in new[] { "\"keepLabel\"", "\"keepText\"", "\"noneLabel\"", "\"noneText\"", "\"offText\"", "\"allowed\"", ".Set(\"keyRecovery\"", "[\"keyRecovery\"]", "\"keysMissing\"" }) Assert.Contains(k, f);
+            Assert.Contains("api('keyrecovery'", h);
+            foreach (var k in new[] { "kr.keepText", "kr.noneText", "kr.offText", "keyRecovery:", "r.keyRecovery", "s.keyRecovery", "keysMissing" }) Assert.Contains(k, h);
+            foreach (var k in new[] { "A recovery copy of the key is kept by {0}.", "No recovery copy of the key is kept — keep the key in a safe place.", "Recovery copy of the key kept: {0}", "A backup on this computer still needs its encryption key — contact {0}." })
+            { Assert.Contains("\"" + k + "\"", f); Assert.Contains("'" + k + "'", h); }
+        }
     }
 }

@@ -108,7 +108,10 @@ namespace OnlineBackup.Tests
                 var nowCopy = b.Sets().Single(x => x.Id == copyId);
                 Assert.Equal(new[] { srcB }, nowCopy.Sources); Assert.NotEqual(3, nowCopy.Hour); Assert.Equal(set.Id, nowCopy.Parent);
                 Assert.Equal(new[] { src }, a.Sets().Single(x => x.Id == set.Id).Sources);
-                var r = b.Backup(copyId);                                                   // B gets the key (key recovery is on) and backs up its own folder
+                // owner decision A7 / AZF-1: the key never goes to B's device token - the customer signs in on B once
+                Assert.Equal("NO_KEY", Assert.Throws<AgentException>(() => b.Backup(copyId)).Code);
+                Assert.Empty(b.KeysForCopies(b.Interactive("Customer-Pass-1", null), null));  // from the server's recovery copy (not the password)
+                var r = b.Backup(copyId);                                                   // B has the key (key recovery is on) and backs up its own folder
                 Assert.Equal("BS_STOP_SUCCESS", r.Result); Assert.Equal(1, r.New);
                 Assert.Equal("1", admin.Call("POST", path + "/run")["computers"]);          // back up now: this set's computer only
             }

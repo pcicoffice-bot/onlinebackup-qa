@@ -175,7 +175,7 @@ namespace OnlineBackup.Agent
                         // CLI-030: the customer's password (+ code) — a session of the server; the password stays in memory 15 minutes
                         var c = app.Interactive(b["password"], b["otp"]);
                         lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); }
-                        return new Msg().Set("ok", 1);
+                        return CopyKeys(new Msg().Set("ok", 1), c, b["password"]);
                     }
                 case "logout":
                     {
@@ -223,6 +223,7 @@ namespace OnlineBackup.Agent
                         }
                         catch (AgentException e) when (e.Code == "OFF") { return new Msg().Set("off", 1); }
                     }
+                case "keyrecovery": return KeyRecoveryInfo(q["lang"]);
                 case "dirs": return Dirs(q["path"]);
                 // SETUP-C50: the program's sign-in screen on a computer not connected yet — the server's address (the
                 // package's, or another one), then an existing customer or a new one; only while not connected
@@ -244,8 +245,9 @@ namespace OnlineBackup.Agent
                         var said = new List<string>();
                         var login = Setup.Connect(app, b["server"], string.IsNullOrEmpty(b["pin"]) ? null : b["pin"], app.Home.Dir, k => answers.ContainsKey(k) ? answers[k] : null, k => k == "accept-contract" && (b["accept"] == "1" || PreAccepted(b["server"], b["pin"], b["contractVersion"])), said.Add);
                         // the password stays for this session (the first backup can be added at once)
-                        try { var c = app.Interactive(b["password"], b["otp"]); lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); } } catch (Exception) { }
-                        return new Msg().Set("login", login);
+                        var reply = new Msg().Set("login", login);
+                        try { var c = app.Interactive(b["password"], b["otp"]); lock (gate) { session = c; sessionPassword = b["password"]; sessionUntil = SystemClock.UtcNow.AddMinutes(15); } CopyKeys(reply, c, b["password"]); } catch (Exception) { }
+                        return reply;
                     }
                 case "update":
                     {
@@ -290,7 +292,9 @@ namespace OnlineBackup.Agent
                 var pr = app.DeviceClient().Call("GET", "/api/profile");
                 var rights = pr.List("rights").FirstOrDefault() ?? new Msg();
                 m.Set("canAdd", rights["can_add_sets"] ?? "1").Set("canSources", rights["can_edit_sources"] ?? "1").Set("canSchedule", rights["can_edit_schedule"] ?? "1");
-                foreach (var s in app.Remember(Core.Profile.Parse(pr["profile"])).Sets)
+                var prof = app.Remember(Core.Profile.Parse(pr["profile"]));
+                bool recoveryKept = prof.Get("SAVE_ENCRYPT_KEY") == "Y";   // A7: the IT company keeps recovery copies at all
+                foreach (var s in prof.Sets)
                 {
                     var la = Path.Combine(app.Home.SetDir(s.Id), "last-attempt.txt");
                     string last = "", result = "";
@@ -298,7 +302,7 @@ namespace OnlineBackup.Agent
                     bool mine = string.IsNullOrEmpty(s.Computer) || s.Computer.Equals(app.Home.Computer, StringComparison.OrdinalIgnoreCase);
                     var sm = new Msg().Set("id", s.Id).Set("name", s.Name).Set("type", s.Type).Set("engine", s.Engine).Set("sources", string.Join("; ", s.Sources.ToArray()))
                         .Set("computer", s.Computer).Set("mine", mine ? 1 : 0).Set("src", string.Join("\n", s.Sources.ToArray())).Set("skip", string.Join("\n", s.Deselected.ToArray()))
-                        .Set("hh", s.Hour).Set("mm", s.Minute)
+                        .Set("hh", s.Hour).Set("mm", s.Minute).Set("keyRecovery", s.KeyRecovery && recoveryKept ? 1 : 0)
                         .Set("hour", s.Hour.ToString("00", CultureInfo.InvariantCulture) + ":" + s.Minute.ToString("00", CultureInfo.InvariantCulture)).Set("last", last).Set("result", result)
                         .Set("blocked", app.Pilot ? Scope.Refusal(s) : null);   // PILOT-010: kept, not run — and why
                     m.Add("sets", WindowNotes(sm, app.Home.SetDir(s.Id), last, result, s));
@@ -509,11 +513,43 @@ namespace OnlineBackup.Agent
             // BKP-040: how changes inside large files are sent (own engine), and SQL Server's weekly full + daily differential
             s.DeltaType = b["deltaType"] == "D" ? "D" : "I";
             int fullDay; if (s.Type == "MSSQL" && int.TryParse(b["sqlFullDay"], out fullDay) && fullDay >= -1 && fullDay <= 6) s.SqlFullDay = fullDay;
-            var created = app.CreateSet(client, pw, s);
+            // owner decision A7: the customer's choice, shown with its disclosure (op "keyrecovery"); default: keep a recovery copy
+            bool recovery = b["keyRecovery"] != "0";
+            var created = app.CreateSet(client, pw, s, "PASSWORD", null, recovery);
             if (s.Type == "M365") app.Home.SaveSecret(created.Id + "-m365", b["secret"]);
             if (s.Type == "GWS") app.Home.SaveSecret(created.Id + "-gws", b["gwsKey"]);
             if ((s.Type == "MSSQL" || s.Type == "MYSQL" || s.Type == "POSTGRESQL" || s.Type == "ORACLE" || s.Type == "VMWARE") && !string.IsNullOrEmpty(b["dbPassword"])) app.Home.SaveSecret(created.Id + "-sql", b["dbPassword"]);
-            return new Msg().Set("id", created.Id).Set("engine", s.Engine);
+            bool kept = recovery && RecoveryAllowed();
+            return new Msg().Set("id", created.Id).Set("engine", s.Engine).Set("keyRecovery", kept ? 1 : 0);
+        }
+
+        bool RecoveryAllowed() { try { return app.Profile().Get("SAVE_ENCRYPT_KEY") == "Y"; } catch (AgentException) { return false; } }
+
+        /// <summary>SET-020 + A7: at the customer's sign-in here, the copies of sets added to this computer receive their key.</summary>
+        Msg CopyKeys(Msg reply, Client c, string password)
+        {
+            try
+            {
+                var before = app.Sets().Count(x => !string.IsNullOrEmpty(x.Parent) && app.Mine(x) && app.Home.LoadKey(x.Id) == null);
+                var missing = app.KeysForCopies(c, password);
+                reply.Set("keysReceived", before - missing.Count).Set("keysMissing", missing.Count);
+            }
+            catch (AgentException) { }
+            return reply;
+        }
+
+        /// <summary>
+        /// Owner decision A7: what the window shows when a set is made — the choice (default: keep a recovery copy), whether the
+        /// IT company keeps recovery copies at all, and the disclosure of each option, in the window's language (en / he).
+        /// </summary>
+        Msg KeyRecoveryInfo(string lang)
+        {
+            lang = L.Norm(string.IsNullOrEmpty(lang) ? (string)Branding().Attribute("LANGUAGE") : lang);
+            return new Msg().Set("default", 1).Set("allowed", RecoveryAllowed() ? 1 : 0).Set("lang", lang)
+                .Set("title", L.Tr(lang, KeyTexts.Title))
+                .Set("keepLabel", L.Tr(lang, KeyTexts.KeepLabel)).Set("keepText", L.Tr(lang, KeyTexts.KeepText))
+                .Set("noneLabel", L.Tr(lang, KeyTexts.NoneLabel)).Set("noneText", L.Tr(lang, KeyTexts.NoneText))
+                .Set("offText", L.Tr(lang, KeyTexts.OffText));
         }
 
         /// <summary>restic runs on Windows 10 / Server 2016 (build 14393) and later, and wherever restic is present (tests).</summary>
@@ -532,5 +568,16 @@ namespace OnlineBackup.Agent
             using (var s = typeof(ClientUi).Assembly.GetManifestResourceStream("OnlineBackup.Agent.client.html"))
             using (var r = new StreamReader(s, Encoding.UTF8)) return r.ReadToEnd().Replace("data-lang=\"en\"", "data-lang=\"" + L.Norm((string)Branding().Attribute("LANGUAGE")) + "\"");
         }
+    }
+
+    /// <summary>Owner decision A7: the disclosure of the key-recovery choice (English source; i18n/he.json translates it).</summary>
+    public static class KeyTexts
+    {
+        public const string Title = "Recovery copy of the encryption key";
+        public const string KeepLabel = "Keep a recovery copy with my IT provider (recommended)";
+        public const string KeepText = "Your IT provider keeps a sealed copy of this backup's encryption key on its server. If this computer is lost or the key is forgotten, the provider can restore your files - which also means the provider could read them. The copy is given out only after a sign-in with the password (and code), never to a computer's automatic connection.";
+        public const string NoneLabel = "Do not keep a copy - only I can open these backups";
+        public const string NoneText = "Without a recovery copy, nobody - not your IT provider either - can restore these backups if the key is lost. Keep the key (or the password it comes from) in a safe place. This choice cannot be changed later for this backup.";
+        public const string OffText = "Your IT provider does not keep recovery copies of encryption keys: keep the key in a safe place yourself.";
     }
 }
