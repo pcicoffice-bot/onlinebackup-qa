@@ -1,0 +1,7 @@
+{
+ "OnlineBackup.Tests.PilotVssChallengeComponentTests": 4.7,
+ "OnlineBackup.Tests.PilotVssComponentTests": 11.1,
+ "OnlineBackup.Tests.PilotVssEndToEndTests": 25.6,
+ "OnlineBackup.Tests.PilotVssFailureIntegrationTests": 2.7,
+ "OnlineBackup.Tests.PilotVssIntegrationTests": 24.7
+}

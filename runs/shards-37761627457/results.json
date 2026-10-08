@@ -1,0 +1,307 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.PilotVss', 1 shards x 2 - run 37761627457 (3e288a047fedbe80a8a688a6e573ce3b45e740c0)",
+ "mode": "strict",
+ "build_sha": "f164df359bb49e1e39cae8385cf7630ff32e2c2ebf41a2f6254271e8e7f0437f",
+ "counts": {
+  "PASS": 11,
+  "FAIL": 4,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.ASourceOnASubstDrive_EitherIsReadThroughASnapshot_OrTheRunSaysItHadNone_NothingIsLeftBehind": "PASS",
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TheShadowCopyServiceIsDisabled_TheRunSaysSo_IsNotAPlainSuccess_TheOtherFilesRestoreIdentical_AndOnceBackTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TwoSetsOnTheSameVolumeAtTheSameMoment_EachBacksUpItsHeldFile_RestoresIdentical_NoShadowCopyLeft": "FAIL",
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ADriveLetterThatDoesNotExist_GetsNoShadowCopy_AWarningNamesIt_NothingIsLeftBehind": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.AFileRewrittenAfterTheSnapshot_ThePointHoldsTheSnapshotContent_AndTheNextRunSendsTheNewContent": "FAIL",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheAgentKilledWhileItsSnapshotExists_TheNextRunLeavesNoShadowCopy_AndRestoresIdentical": "FAIL",
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheShippedAgent_BacksUpAFileHeldOpenByAnotherProgram_RestoresIdentical_SendsItsChange_ThenNothing_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssFailureIntegrationTests.TheShadowCopyServiceIsDisabled_TheServerRecordsTheRunAsNotAPlainSuccess_WithTheReason_TheReadableFilesRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.AFileWrittenDuringTheRun_ThePointHoldsTheSnapshotContent_TheNextRunSendsTheNewContent": "FAIL",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.ASourceOnASubstDrive_EitherIsReadThroughASnapshot_OrTheRunSaysItHadNone_NothingIsLeftBehind": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.5144161,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.6368992,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TheShadowCopyServiceIsDisabled_TheRunSaysSo_IsNotAPlainSuccess_TheOtherFilesRestoreIdentical_AndOnceBackTheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.2250752,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.4752877,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssChallengeComponentTests.TwoSetsOnTheSameVolumeAtTheSameMoment_EachBacksUpItsHeldFile_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 1.416501,
+    "note": "set 2: BS_STOP_SUCCESS_WITH_ERROR\n1791454344463,start,,0,,,,0\n1791454344463,info,,0,\"Start [ Microsoft Windows NT 10.0.26100.0 (runnervmfi6oq), OnlineBackup Agent 1.0.0.0 ]\",,,0\n1791454344463,info,,0,Using Temporary Directory C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrig-1a7f3edb\\agent\\temp,,,0\n1791454344463,info,,0,Start creating Shadow Copy Set ...,,,0\n1791454344920,warn,,0,Shadow Copy of C: cou",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 1.646188,
+    "note": "set 1: BS_STOP_SUCCESS_WITH_ERROR\n1791454340766,start,,0,,,,0\n1791454340766,info,,0,\"Start [ Microsoft Windows NT 10.0.26100.0 (runnervmfi6oq), OnlineBackup Agent 1.0.0.0 ]\",,,0\n1791454340767,info,,0,Using Temporary Directory C:\\Users\\runneradmin\\AppData\\Local\\Temp\\obrig-276409d6\\agent\\temp,,,0\n1791454340767,info,,0,Start creating Shadow Copy Set ...,,,0\n1791454341412,warn,,0,Shadow Copy of C: cou",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.2992333,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.5243455,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ADriveLetterThatDoesNotExist_GetsNoShadowCopy_AWarningNamesIt_NothingIsLeftBehind": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.4055898,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.5255617,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.AFileRewrittenAfterTheSnapshot_ThePointHoldsTheSnapshotContent_AndTheNextRunSendsTheNewContent": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 2.58778,
+    "note": "the next run did not send the content written after the snapshot (updated=0, new=0, perm=0)",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 3.1119491,
+    "note": "the next run did not send the content written after the snapshot (updated=0, new=0, perm=0)",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.5238207,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.4158057,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0004989,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0006808,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.0404714,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.4792235,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheAgentKilledWhileItsSnapshotExists_TheNextRunLeavesNoShadowCopy_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 12.5705955,
+    "note": "the shadow copy of the killed run is still on the volume after the next run: {6D82649A-3AB6-4CBD-BB28-6E1C3413C115}, {2AC6F7D2-5120-4B41-B8AD-E5AEF8FA1F6E}, {6F146B24-4F0E-4BA2-97D1-29EA630E5753}",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 12.6556901,
+    "note": "the shadow copy of the killed run is still on the volume after the next run: {AE6FD4EE-176C-4846-AB42-FE9E4490E4B9}, {11350ACE-2411-4DD9-AF2C-3C5133C28E4C}, {6F146B24-4F0E-4BA2-97D1-29EA630E5753}",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssEndToEndTests.TheShippedAgent_BacksUpAFileHeldOpenByAnotherProgram_RestoresIdentical_SendsItsChange_ThenNothing_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 12.0944605,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 12.8556948,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssFailureIntegrationTests.TheShadowCopyServiceIsDisabled_TheServerRecordsTheRunAsNotAPlainSuccess_WithTheReason_TheReadableFilesRestoreIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.72505,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.3808117,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.AFileWrittenDuringTheRun_ThePointHoldsTheSnapshotContent_TheNextRunSendsTheNewContent": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 14.9193694,
+    "note": "the next run did not send the content written during the run (updated=0, new=0, perm=0)",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 14.9982624,
+    "note": "the next run did not send the content written during the run (updated=0, new=0, perm=0)",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.9935206,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.2317238,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.1945921,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 6.5268822,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001760",
+    "os": "Windows",
+    "sha": "3e288a047fedbe80a8a688a6e573ce3b45e740c0",
+    "build_sha": "f164df359bb49e1e39cae8385cf7630ff32e2c2ebf41a2f6254271e8e7f0437f",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 15
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001761",
+    "os": "Windows",
+    "sha": "3e288a047fedbe80a8a688a6e573ce3b45e740c0",
+    "build_sha": "f164df359bb49e1e39cae8385cf7630ff32e2c2ebf41a2f6254271e8e7f0437f",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 15
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
