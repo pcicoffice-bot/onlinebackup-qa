@@ -283,7 +283,7 @@ namespace OnlineBackup.Agent
                 Info("Total Deleted Files = " + Deleted);
                 // bug 125: every file is read - the shadow copy goes now, so its line is in the log the server keeps (it was written
                 // after the commit and existed only on the computer; the finally still removes it when the run fails earlier)
-                if (snapshot != null) { snapshot.Dispose(); snapshot = null; Info("Deleting Shadow Copy snapshot"); }
+                // BISECT: bug 125 early dispose removed
                 var result = Finish(endCode, started);
                 var commit = new Msg().Set("new", New).Set("upd", Updated).Set("perm", PermOnly).Set("del", Deleted).Set("bytes", BytesSent).Set("started", RunId.UnixMs(started))
                     .Set("prevFiles", state.Files.Count).Set("result", endCode);
@@ -484,12 +484,13 @@ namespace OnlineBackup.Agent
                 {
                 resp = client.Put(q, headers, s =>
                 {
-                    tee = new TeeStream(throttle.On ? new ThrottledStream(s, throttle) : s, localStream);   // BISECT: bug 119 wrap removed
+                    tee = new TeeStream(new StopCheckStream(throttle.On ? new ThrottledStream(s, throttle) : s, StopInsideObject), localStream);   // bug 119: also while one chunk is written
                     w = new BackupObject.Writer(tee, key) { Compression = set.Compression };
                     var storedHere = new HashSet<string>();
                     using (var fs = Open(src))
                         foreach (var c in Chunker.ForFileSize(entry.Size).Split(fs))
                         {
+                            StopInsideObject();
                             var id = BackupObject.ChunkId(key, c);
                             chunksOut.Add(new KeyValuePair<string, int>(id, c.Length));
                             if ((known == null || !known.Contains(id)) && storedHere.Add(id)) w.AddChunk(id, c);
