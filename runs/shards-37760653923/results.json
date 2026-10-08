@@ -1,0 +1,154 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.PilotVssComponentTests OnlineBackup.Tests.PilotVssIntegrationTests', 1 shards x 2 - run 37760653923 (6a57bcf067d2fc87ac00c4395d6429d759fd579d)",
+ "mode": "strict",
+ "build_sha": "4df8b8f9b5098f10b31a6eee7586980bc135d836b0163e6fdf8cc4cff6ab0231",
+ "counts": {
+  "PASS": 6,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.4779408,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3807912,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.8881791,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.6945431,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0007901,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0005094,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.4419932,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.122243,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.223275,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.3412513,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.6478393,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 6.6203484,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000001746",
+    "os": "Windows",
+    "sha": "6a57bcf067d2fc87ac00c4395d6429d759fd579d",
+    "build_sha": "4df8b8f9b5098f10b31a6eee7586980bc135d836b0163e6fdf8cc4cff6ab0231",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 6
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000001747",
+    "os": "Windows",
+    "sha": "6a57bcf067d2fc87ac00c4395d6429d759fd579d",
+    "build_sha": "4df8b8f9b5098f10b31a6eee7586980bc135d836b0163e6fdf8cc4cff6ab0231",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 6
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
