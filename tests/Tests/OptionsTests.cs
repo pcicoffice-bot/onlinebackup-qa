@@ -37,7 +37,7 @@ namespace OnlineBackup.Tests
             { "MaxDeltaNo", "EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy" },
             { "MaxDeltaRatio", "EndToEndTests.EveryPointOfADeltaChainRestoresExactly_AndALongChainStartsANewFullCopy" },
             { "DeltaType", "EndToEndTests.DifferentialChain_EveryPointRestoresExactly_AndEachDeltaCarriesAllChangesSinceTheFull" },
-            { "KeyType", "EndToEndTests.KeyRecoveryAndRestoreOnANewComputer" }, { "KeyCheck", "CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword" }, { "KeySalt", "CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword" },
+            { "KeyType", "EndToEndTests.KeyRecoveryAndRestoreOnANewComputer" }, { "KeyRecovery", "KeyRecoveryA7Tests.NewSet_DefaultKeepsARecoveryCopy_NoMeansNoCopy_AndTheServerHoldsToTheChoice" }, { "KeyCheck", "CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword" }, { "KeySalt", "CryptoTests.PasswordKeyIsDeterministicAndCheckValueDetectsWrongPassword" },
             { "LocalCopy", "FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer" }, { "LocalCopyPath", "DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic" },
             { "LocalCopyDays", "FeatureTests.LocalCopyIsWrittenBesideTheOnlineBackupAndRestoresWithoutTheServer" },
             { "PreCommands", "EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns" }, { "PostCommands", "EndToEndTests.PreAndPostCommandsRunAndAreLogged_SchedulerCatchesUpMissedRuns" },
@@ -88,8 +88,8 @@ namespace OnlineBackup.Tests
                 var set = app.CreateSet(app.Interactive("Customer-Pass-1", null), "Customer-Pass-1", new BackupSetInfo { Name = "Files", Sources = { env.Dir("src") } });
                 var admin = env.Admin();
                 var s = BackupSetInfo.FromXml(XElement.Parse(admin.Call("GET", "/api/admin/users/opts/sets/" + set.Id)["set"]));
-                // the server keeps these on purpose (changing them would orphan the backups) or writes them itself
-                var kept = new HashSet<string> { "Id", "Type", "Engine", "Computer", "Device", "Parent", "KeyType", "KeyCheck", "KeySalt", "RunRequest", "StopRequest", "DestMode", "LocalCopy", "LocalCopyPath" };
+                // the server keeps these on purpose (changing them would orphan the backups; A7: the key-recovery choice is fixed with the key) or writes them itself
+                var kept = new HashSet<string> { "Id", "Type", "Engine", "Computer", "Device", "Parent", "KeyType", "KeyCheck", "KeySalt", "KeyRecovery", "RunRequest", "StopRequest", "DestMode", "LocalCopy", "LocalCopyPath" };
                 var changed = new List<string>();
                 foreach (var f in typeof(BackupSetInfo).GetFields(BindingFlags.Public | BindingFlags.Instance).Where(f => !kept.Contains(f.Name)))
                 {

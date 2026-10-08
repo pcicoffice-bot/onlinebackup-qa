@@ -417,7 +417,7 @@ Journey 'W15' 'Uninstall through the installer window, reinstall, sign in again,
   $w = ClientWindow 60; if (-not $w) { $w = Open-Client $S.installDir }
   $t = Texts $w
   if ($t -like '*User name*') { Connect-ViaUi $w $Login $CustPass | Out-Null } else { Note 'After reinstall' 'the program was still connected (settings kept), no sign-in asked' }
-  $w = Open-Client $S.installDir; Nav $w 'Backup status'
+  $w = Open-Client $S.installDir; Nav $w 'Backups'
   StepLook 'After reinstall the backup set is there' "'QA files'" $w { $t = Texts $w; @(($t -like '*QA files*'), $t) } 'en' $ClientProc | Out-Null
   $want = Manifest $Data
   BackupChecked 'Backup after reinstall' | Out-Null
@@ -433,14 +433,14 @@ Journey 'W17' 'System State backup (Windows Server Backup)' {
   Get-ChildItem $Q -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like 'restore-*' -or $_.Name -like 'source-aside-*' } | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
   Step 'Windows Server Backup feature' 'installed' { $r = Install-WindowsFeature Windows-Server-Backup; @($r.Success, "$($r.ExitCode) restart=$($r.RestartNeeded)") } -NoShot | Out-Null
   $w = Open-Client $S.installDir
-  Nav $w 'New backup'
+  Nav $w 'Backups'; Click (PageButton $w 'New backup'); Start-Sleep -Seconds 2
   $combo = @(Find $w $CT::ComboBox) | Where-Object { $_.Current.BoundingRectangle.X -gt ($w.Current.BoundingRectangle.X + 240) } | Select-Object -First 1
   Key $combo 0x28; Key $combo 0x28; Start-Sleep 1   # the down arrow twice: Files and folders -> SQL Server -> System State
   Step 'The type list shows Windows System State' 'System State chosen' { $n = $combo.Current.Name; @((($n -like '*System State*') -or ((Texts $w) -like '*System State*')), "list: $n") } -NoShot | Out-Null
   Look $w 'System State backup configured' 'en' $ClientProc | Out-Null
   Click (PageButton $w 'New backup'); $m = Answer-Dialogs $w $CustPass 'System State added' 30
   Step 'The System State set is added' 'was added' { @((($m -join ' ') -like '*was added*'), ($m -join ' || ')) } -NoShot | Out-Null
-  $w = Open-Client $S.installDir; Nav $w 'Backup status'
+  $w = Open-Client $S.installDir; Nav $w 'Backups'
   $btns = @(Find $w $CT::Button 'Back up now'); $b = $btns | Sort-Object { $_.Current.BoundingRectangle.Y } | Select-Object -Last 1
   $before = RunMark $Login 'Backup'; Click $b; Answer-Dialogs $w $null 'System State started' 15 | Out-Null
   Note 'C: free before the System State backup' ("{0:N1} GB" -f ((Get-PSDrive C).Free / 1GB))

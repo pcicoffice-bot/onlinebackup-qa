@@ -10,11 +10,12 @@ namespace OnlineBackup.Agent
     /// <summary>
     /// Command line of the agent (the Windows service runs "service"):
     ///   register --home DIR --server URL --login U --password P [--otp 123456] [--computer NAME] [--tls builtin|system] [--pin SHA256]
-    ///   addset   --home DIR --password P [--otp X] --name N [--type FILE|MSSQL|MYSQL|POSTGRESQL|ORACLE|DOMINO|SYSTEMSTATE|BAREMETAL|HYPERV|VMWARE|M365] [--db-host H] [--db-user U] [--datacenter DC] [--thumbprint SHA256] [--engine RESTIC] --source PATH [--source PATH] [--exclude *.tmp] [--hour 22] [--keytype PASSWORD|DEFAULT|CUSTOM] [--key K]
+    ///   addset   --home DIR --password P [--otp X] --name N [--type FILE|MSSQL|MYSQL|POSTGRESQL|ORACLE|DOMINO|SYSTEMSTATE|BAREMETAL|HYPERV|VMWARE|M365] [--db-host H] [--db-user U] [--datacenter DC] [--thumbprint SHA256] [--engine RESTIC] --source PATH [--source PATH] [--exclude *.tmp] [--hour 22] [--keytype PASSWORD|DEFAULT|CUSTOM] [--key K] [--key-recovery yes|no] (A7: default yes)
     ///   sets     --home DIR
     ///   backup   --home DIR --set ID
     ///   points   --home DIR --set ID
-    ///   restore  --home DIR --set ID --password P [--otp X] [--point ID] [--target DIR] [--filter TEXT] [--overwrite]
+    ///   restore  --home DIR --set ID --password P [--otp X] [--point ID] [--target DIR] [--filter TEXT] [--overwrite | --skip-existing]
+    ///            (no --target = the original location: when files exist there, --overwrite or --skip-existing is required)
     ///   service  --home DIR                         (run by the Windows service; interactive = console)
     ///   install-service --home DIR / uninstall-service
     ///   sql-password --home DIR --set ID --password P (SQL Server login of a set, kept on this computer only)
@@ -69,7 +70,7 @@ namespace OnlineBackup.Agent
                             if (one("minute") != null) s.Minute = int.Parse(one("minute"));
                             if (one("keep-last") != null) s.Retention = new RetentionPolicy { Unit = "JOBS", Period = int.Parse(one("keep-last")) };
                             if (o.ContainsKey("exclude")) s.Filters.Add(new FilterRule { Type = "WILDCARD", ApplyFile = true, ApplyDir = false, Patterns = o["exclude"] });
-                            var created = app.CreateSet(session, one("password"), s, one("keytype") ?? "PASSWORD", one("key"));
+                            var created = app.CreateSet(session, one("password"), s, one("keytype") ?? "PASSWORD", one("key"), one("key-recovery") != "no");   // A7: default keeps a recovery copy
                             Console.WriteLine(created.Id);
                             return 0;
                         }
@@ -110,12 +111,29 @@ namespace OnlineBackup.Agent
                                 if (one("target") == null) throw new AgentException(0, "TARGET", "Choose a destination folder for the restore (--target).");
                                 app.Restic(rset, one("key") ?? one("password")).Restore(one("point"), one("target"), one("filter"), rl, o.ContainsKey("overwrite"));
                                 Console.WriteLine("restored (restic) to " + one("target"));
+                                foreach (var l in rl.Where(l => l.Contains("Integrity check") || l.Contains("did not report the integrity"))) Console.WriteLine("  " + l);   // UI-Q1: restic --verify
                                 return 0;
                             }
                             var r = app.RestoreFor(session, one("set"), one("key") ?? one("password"));
                             var filter = one("filter");
-                            r.Run(one("point"), one("target"), filter == null ? null : (Func<string, bool>)(p => p.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0), o.ContainsKey("overwrite"));
+                            Func<string, bool> f = filter == null ? null : (Func<string, bool>)(p => p.IndexOf(filter, StringComparison.OrdinalIgnoreCase) >= 0);
+                            // UI-Q2: to the original location (no --target) a file already there needs a decision: --overwrite or
+                            // --skip-existing; without one nothing is restored and the existing files are listed (exit 3). A folder
+                            // (--target) keeps its behaviour: existing files are kept unless --overwrite.
+                            var mode = o.ContainsKey("overwrite") ? ExistingFiles.Overwrite : o.ContainsKey("skip-existing") || one("target") != null ? ExistingFiles.Skip : ExistingFiles.Ask;
+                            try { r.Run(one("point"), one("target"), f, mode); }
+                            catch (AgentException e) when (e.Code == "EXISTS")
+                            {
+                                Console.WriteLine(e.Message);
+                                foreach (var x in r.Existing.Take(50)) Console.WriteLine("  exists: " + x);
+                                if (r.Existing.Count > 50) Console.WriteLine("  … and " + (r.Existing.Count - 50) + " more");
+                                Console.WriteLine("Run again with --overwrite (replace them) or --skip-existing (keep them).");
+                                return 3;
+                            }
                             Console.WriteLine("restored=" + r.Restored + " failed=" + r.Failed + " skipped=" + r.Skipped);
+                            // UI-Q1: the integrity check after the restore — only files really checked are counted
+                            Console.WriteLine("verified=" + r.Verified + " (whole-file SHA-256: " + r.VerifiedSha256 + ", chunks + size only: " + (r.Verified - r.VerifiedSha256) + ") mismatched=" + r.Mismatched.Count);
+                            foreach (var x in r.Mismatched.Take(20)) Console.WriteLine("  did not match the backup (not put in place): " + x);
                             // D-6: the reason of the failures, not only their number
                             foreach (var l in r.Log.Where(l => l.Contains(",err,")).Take(5)) Console.WriteLine("  " + l);
                             if (r.ReportError != null) Console.WriteLine("the server did not get the record of this restore: " + r.ReportError);
@@ -166,7 +184,7 @@ namespace OnlineBackup.Agent
                     case "client-screens":
                         {
 #if NET40
-                            ClientForm.Screens(one("out") ?? "screens", one("lang") ?? "en");
+                            ClientForm.Screens(one("out") ?? "screens", one("lang") ?? "en", one("matrix") == "1");
                             return 0;
 #else
                             Console.WriteLine("Windows only"); return 1;

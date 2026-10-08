@@ -77,6 +77,9 @@ namespace OnlineBackup.Core
         public long MinDeltaFileSize = 25L * 1024 * 1024;
         public int MaxDeltaNo = 100, MaxDeltaRatio = 50;
         public string KeyType = "PASSWORD", KeyCheck = "", KeySalt = "";
+        /// <summary>Owner decision A7: the customer's choice when the set is made — the IT company's server keeps a sealed
+        /// recovery copy of the key (Y, the default) or not (N). Fixed with the key; a set without the attribute (older) keeps one.</summary>
+        public bool KeyRecovery = true;
         public bool LocalCopy; public string LocalCopyPath = @"C:\LocalBackup"; public int LocalCopyDays = 7;
         public List<string> PreCommands = new List<string>(), PostCommands = new List<string>();
         public bool StopOnPreCommandFailure;
@@ -121,7 +124,7 @@ namespace OnlineBackup.Core
                 DeltaType = a("DEFAULT_DELTA_TYPE", "I") == "D" ? "D" : "I", SqlFullDay = (int)L(a("SQL_FULL_DAY", "-1")),
                 Parent = a("PARENT_SET", ""), RunRequest = L(a("RUN_REQUEST", "0")), StopRequest = L(a("STOP_REQUEST", "0")),
                 Compression = a("COMPRESSION", "MAX"), BandwidthKbps = (int)L(a("BANDWIDTH_KBPS", "0")), BusyCpuPercent = (int)L(a("BUSY_CPU_PERCENT", "0")), LowPriority = a("LOW_PRIORITY", "Y") == "Y",
-                DestMode = a("DEST_MODE", "SERVER"),
+                DestMode = a("DEST_MODE", "SERVER"), KeyRecovery = a("KEY_RECOVERY", "Y") != "N",
                 RunMissed = a("RUN_MISSED", "Y") == "Y", RunMissedNet = a("RUN_MISSED_NET", "Y") == "Y", MissedDelayMinutes = (int)L(a("MISSED_DELAY_MINUTES", "5")), MissedMinHours = (int)L(a("MISSED_MIN_HOURS", "0"))
             };
             s.Sources = e.Elements("SEL-SOURCE").Select(x => x.Value).Where(v => v.Length > 0).ToList();
@@ -181,7 +184,7 @@ namespace OnlineBackup.Core
             a("DEFAULT_DELTA_TYPE", DeltaType == "D" ? "D" : "I"); a("SQL_FULL_DAY", SqlFullDay); a("LOG_RETENTION_DAYS", LogRetentionDays); a("WORKING_DIR", WorkingDir);
             a("COMPRESSION", Compression == "FAST" || Compression == "NONE" ? Compression : "MAX"); a("BANDWIDTH_KBPS", Math.Max(0, BandwidthKbps)); a("BUSY_CPU_PERCENT", Math.Max(0, Math.Min(100, BusyCpuPercent))); a("LOW_PRIORITY", LowPriority ? "Y" : "N");
 a("DEST_MODE", DestMode == "LOCAL" || DestMode == "BOTH" ? DestMode : "SERVER");             a("RUN_MISSED", RunMissed ? "Y" : "N"); a("RUN_MISSED_NET", RunMissedNet ? "Y" : "N"); a("MISSED_DELAY_MINUTES", Math.Max(0, MissedDelayMinutes)); a("MISSED_MIN_HOURS", Math.Max(0, MissedMinHours));
-            a("ADMIN_USERNAME", SqlUser); a("LOG_INTERVAL_MINUTES", LogIntervalMinutes); a("ENGINE", Engine); a("GWS_ADMIN", GwsAdmin); a("VM_DATACENTER", VmDatacenter); a("VM_THUMBPRINT", VmThumbprint); a("DB_HOST", DbHost); a("DB_PORT", DbPort); a("M365_TENANT", M365Tenant); a("M365_CLIENT_ID", M365ClientId); a("M365_USERS", M365Users);
+            a("KEY_RECOVERY", KeyRecovery ? "Y" : "N"); a("ADMIN_USERNAME", SqlUser); a("LOG_INTERVAL_MINUTES", LogIntervalMinutes); a("ENGINE", Engine); a("GWS_ADMIN", GwsAdmin); a("VM_DATACENTER", VmDatacenter); a("VM_THUMBPRINT", VmThumbprint); a("DB_HOST", DbHost); a("DB_PORT", DbPort); a("M365_TENANT", M365Tenant); a("M365_CLIENT_ID", M365ClientId); a("M365_USERS", M365Users);
             foreach (var n in new[] { "SEL-SOURCE", "DE-SOURCE", "FILTER", "DAILY_SCHEDULE", "WEEKLY_SCHEDULE", "RETENTION_POLICY", "ENCRYPTING_KEY", "EXTRA_LOCAL_BACKUP", "PRE_CMD", "POST_CMD" })
                 e.Elements(n).Remove();
             foreach (var src in Sources) e.Add(new XElement("SEL-SOURCE", src));

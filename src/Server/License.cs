@@ -36,6 +36,8 @@ namespace OnlineBackup.Server
         public string Id = "", Company = "", Edition = "FREE", ServerId = "", Reason = "", Center = "";
         /// <summary>LIC-115: no OK from the licensing centre: fully working until TemporaryUntil, then the free edition.</summary>
         public bool Temporary; public DateTime TemporaryUntil;
+        /// <summary>L-1: set only when an unconfirmed licence dropped to the basic edition — the moment it dropped (TEMP_SINCE + GraceDays).</summary>
+        public DateTime? DroppedAt;
         public int MaxUsers, MaxDevices; public double MaxStorageGB;
         public List<string> Modules = new List<string>();
         public DateTime Issued, Expires;
@@ -131,7 +133,7 @@ namespace OnlineBackup.Server
             if (!string.IsNullOrEmpty(since))
             {
                 var t = DateTime.Parse(since, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal).AddDays(LicenseCheckin.GraceDays);
-                if (nowUtc > t) return Free("No confirmation from the licensing centre for more than " + LicenseCheckin.GraceDays + " days: " + ((string)state.Attribute("ONLINE_MESSAGE") ?? ""));
+                if (nowUtc > t) { var f = Free("No confirmation from the licensing centre for more than " + LicenseCheckin.GraceDays + " days: " + ((string)state.Attribute("ONLINE_MESSAGE") ?? "")); f.DroppedAt = t; return f; }
                 l.Temporary = true; l.TemporaryUntil = t; l.Reason = (string)state.Attribute("ONLINE_MESSAGE") ?? "";
             }
             return l;

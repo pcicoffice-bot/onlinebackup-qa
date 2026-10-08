@@ -89,7 +89,7 @@ namespace OnlineBackup.Server
                     throw new ApiException(409, "CHANGED", "Another administrator changed this set after you opened it. Reload it and make your change again.");
                 var cur = BackupSetInfo.FromXml(e);
                 inc.Id = cur.Id; inc.Type = cur.Type; inc.Engine = cur.Engine; inc.Computer = cur.Computer; inc.Device = cur.Device; inc.Parent = cur.Parent;
-                inc.KeyType = cur.KeyType; inc.KeyCheck = cur.KeyCheck; inc.KeySalt = cur.KeySalt;
+                inc.KeyType = cur.KeyType; inc.KeyCheck = cur.KeyCheck; inc.KeySalt = cur.KeySalt; inc.KeyRecovery = cur.KeyRecovery;   // A7: the choice made with the key
                 // PILOT-010: the set as it would be saved must be inside the pilot (an option outside it may be removed, never added)
                 PilotScope.CheckSet(users.Config, inc);
                 inc.ToXml(e);

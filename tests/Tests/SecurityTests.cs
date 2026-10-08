@@ -68,7 +68,7 @@ namespace OnlineBackup.Tests
                 var r = c.Call("POST", "/api/totp/enable", new Msg());
                 Assert.StartsWith("otpauth://totp/", r["uri"]); Assert.Contains(":twostep?secret=" + r["secret"] + "&issuer=", r["uri"]); Assert.Equal(10, r.List("codes").Count);
                 Assert.ThrowsAny<Exception>(() => c.Call("POST", "/api/totp/confirm", new Msg().Set("code", "000000")));
-                c.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(r["secret"], DateTime.UtcNow)));
+                c.Call("POST", "/api/totp/confirm", new Msg().Set("code", Totp.Code(r["secret"], DateTime.UtcNow.AddSeconds(-30)))); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
                 Assert.Equal("Y", app.Profile().Get("TOTP_ON"));
                 Assert.Null(app.Profile().Get("TOTP_SECRET"));                                     // the secret never reaches the computer
                 Assert.ThrowsAny<Exception>(() => app.Interactive("Customer-Pass-1", null));       // now the code is needed

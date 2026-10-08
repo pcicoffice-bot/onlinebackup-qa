@@ -36,8 +36,9 @@ test('P05 UI-04 the client window in the browser: a wrong password refused, sign
     await expect(page.locator('#nav button').first()).toBeVisible();
     await expect(page.locator('#main')).toContainText('No backups are set up yet');
 
-    evidence.step('New backup: name, the folder typed into the picker, ✓ Back up');
-    await page.locator('#nav button', { hasText: 'New backup' }).click();
+    evidence.step('New backup (alternative C: a button inside Backups): name, the folder typed into the picker, ✓ Back up');
+    await page.locator('#nav button', { hasText: 'Backups' }).click();
+    await page.locator('#main button.primary', { hasText: 'New backup' }).click();
     const nameBox = page.locator('#main label', { hasText: /^Backup name$/ }).locator('xpath=following-sibling::input[1]');
     await nameBox.fill(SET);
     await page.getByPlaceholder('D:\\Data', { exact: true }).fill(src);
@@ -61,12 +62,16 @@ test('P05 UI-04 the client window in the browser: a wrong password refused, sign
     const sets = ag.sets();
     expect(sets.map((s) => [s.name, s.sources]), 'the set as the agent program sees it').toEqual([[SET, [src]]]);
 
-    evidence.step('Back up now in the window; the window shows it Succeeded');
+    evidence.step('Back up now in the window (Backups); History shows the run Complete, Home says protected');
     const card = page.locator('#main .card').filter({ hasText: SET });
     await card.getByRole('button', { name: 'Back up now' }).click();
     await expect(page.locator('#toast')).toContainText('The backup has started');
-    const activity = page.locator('#main table tbody tr');
-    await expect(activity.filter({ hasText: 'Backup' }).filter({ hasText: 'Succeeded' })).toHaveCount(1, { timeout: 180000 });
+    await expect(page.locator('#main .card').filter({ hasText: SET }).locator('.chip')).toContainText('Complete', { timeout: 180000 });
+    await page.locator('#nav button', { hasText: 'History' }).click();
+    const activity = page.locator('#main table.hist tr.hrow');
+    await expect(activity.filter({ hasText: 'Backup' }).filter({ hasText: 'Complete' })).toHaveCount(1, { timeout: 60000 });
+    await page.locator('#nav button', { hasText: 'Home' }).click();
+    await expect(page.locator('#state')).toHaveText('This computer is protected');
     const runs = (await world.runs(login)).filter((r) => r.kind === 'Backup');
     expect(runs.map((r) => r.status), 'the server\'s record of the backup').toEqual(['ok']);
 
@@ -79,10 +84,13 @@ test('P05 UI-04 the client window in the browser: a wrong password refused, sign
     const fileRows = page.locator('#main .files tbody tr');
     await expect(fileRows).toHaveCount(1);
     await fileRows.locator('input[type=checkbox]').check();
+    // step 1 → 2 in the bar fixed at the bottom; step 2 says what is not restored (B5)
+    await page.locator('#rbar button.primary', { hasText: 'Next: where to restore' }).click();
+    await expect(page.locator('#restoreKeeps')).toContainText('Not restored: permissions and file attributes');
     await page.getByPlaceholder('C:\\Restore', { exact: true }).fill(target);
-    await page.locator('#main .bar button.primary', { hasText: 'Restore' }).click();
+    await page.locator('#rbar button.primary', { hasText: 'Restore 1 selected item' }).click();
     await expect(page.locator('#toast')).toContainText('The restore has started');
-    await expect(activity.filter({ hasText: 'Restore' }).filter({ hasText: 'Succeeded' })).toHaveCount(1, { timeout: 180000 });
+    await expect(page.locator('#state')).toContainText('1 selected item was restored', { timeout: 180000 });
 
     evidence.step('ORACLE (disk): exactly the chosen file is in the new folder, identical to the source (SHA-256)');
     const got = [...tree(target).keys()];

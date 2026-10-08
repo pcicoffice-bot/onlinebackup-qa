@@ -18,18 +18,53 @@ header .p { font-size: 20px; font-weight: 700; letter-spacing: .2px; }
 header .p small { display: block; font-size: 12px; font-weight: 400; opacity: .8; }
 header .c { margin-inline-start: auto; font-size: 13px; opacity: .85; text-align: end; }
 select.lang { width: auto; font-size: 13px; }
-nav { display: flex; gap: 4px; padding: 6px; margin: 18px 22px 0; flex-wrap: wrap; background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); width: fit-content; max-width: calc(100% - 44px); }
-nav button { border: none; background: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; color: var(--muted); }
-nav button:hover { color: var(--text); background: var(--bg); }
-nav button.on { color: #fff; background: var(--ink2); box-shadow: 0 4px 12px rgba(11,16,32,.18); }
-main { background: #fff; margin: 14px 22px 22px; border: 1px solid var(--line); border-radius: 20px; padding: 22px; min-height: 360px; box-shadow: var(--shadow); }
-.hero { position: relative; overflow: hidden; display: flex; gap: 18px; align-items: center; border-radius: 18px; padding: 22px 24px; margin-bottom: 18px; color: #fff; background: #047857; background: radial-gradient(400px 160px at 90% 0%, rgba(255,255,255,.22), transparent 70%), linear-gradient(120deg, #065F46, #10B981); box-shadow: 0 14px 34px rgba(5,150,105,.28); }
-.hero .ai-watch { margin-inline-start: auto; font-size: 13px; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 6px 12px; white-space: nowrap; }
-.hero.h-attn, .hero.h-bad { box-shadow: none; }
-.hero.h-attn { background: var(--warn); background: linear-gradient(120deg, #B45309, #F59E0B); }
-.hero.h-bad { background: var(--bad); background: linear-gradient(120deg, #B91C1C, #EF4444); }
-.hero .ico { flex: none; width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center; font-size: 26px; }
-.hero b { font-size: 20px; display: block; } .hero span { opacity: .9; font-size: 14px; }
+/* alternative C: a light side menu, the page, a bar fixed at the bottom of the restore steps (UX-1) */
+body { margin: 0; background: #F4F6F9; }
+.frame { display: grid; grid-template-columns: 232px minmax(0, 1fr); min-height: 100vh; }
+aside { background: #fff; border-inline-end: 1px solid var(--line); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; }
+aside header { padding: 18px 16px 8px; color: var(--text); background: none; }
+aside header .p { font-size: 16px; } aside header img { height: 32px; }
+#nav { display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; flex: 1; }
+#nav button { display: flex; gap: 12px; align-items: center; border: none; background: none; padding: 10px 12px; border-radius: 10px; cursor: pointer; font: inherit; font-weight: 600; color: var(--text); text-align: start; }
+#nav button:hover { background: #F4F6F9; } #nav button.on { background: #E8F0FB; color: #1F5FBF; }
+#nav .g { width: 20px; text-align: center; } .navfoot { margin-top: auto; display: flex; flex-direction: column; gap: 6px; }
+.navfoot .pc { background: #F4F6F9; border-radius: 10px; padding: 10px 12px; } .navfoot .pc b, .navfoot .pc small { display: block; }
+.page { min-width: 0; display: flex; flex-direction: column; }
+main { margin: 24px 28px 96px; flex: 1; }
+.rbar { position: sticky; bottom: 0; display: flex; gap: 12px; align-items: center; justify-content: space-between; background: #fff; border-top: 1px solid var(--line); padding: 14px 28px; }
+.rbar > span { flex: 1; text-align: center; }
+.hero { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; margin-bottom: 16px; color: var(--text); box-shadow: none; display: block; }
+.hero.warn { border-color: #E9B262; } .hero.bad { border-color: #E59A92; } .hero.info { border-color: #BFD3F2; }
+.hero .top { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; } .hero h2 { margin: 2px 0; font-size: 24px; } .hero p { margin: 0; }
+.hero .acts { display: flex; gap: 10px; flex-wrap: wrap; }
+.badge { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; font-weight: 700; flex: none; }
+.badge.ok { background: #E7F4EC; color: #11764A; } .badge.warn { background: #FFF3DD; color: #8A4B00; } .badge.bad { background: #FDECEA; color: #B42318; } .badge.info { background: #E8F0FB; color: #1F5FBF; } .badge.muted { background: #EEF0F3; color: #5B6472; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; border-top: 1px solid var(--line); margin-top: 18px; padding-top: 14px; }
+.facts small, .facts b { display: block; } .facts b { font-size: 19px; }
+.chip { display: inline-block; border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.chip.ok { background: #E7F4EC; color: #11764A; } .chip.warn { background: #FFF3DD; color: #8A4B00; } .chip.bad { background: #FDECEA; color: #B42318; } .chip.info { background: #E8F0FB; color: #1F5FBF; } .chip.muted { background: #EEF0F3; color: #5B6472; }
+.ok { color: #11764A; } .warn { color: #8A4B00; } .bad { color: #B42318; } .info { color: #1F5FBF; }
+.problem { border: 1px solid #E9B262; background: #FFF8EC; border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; } .problem.bad { border-color: #E59A92; background: #FDF3F2; }
+.phead { display: flex; gap: 10px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.pbody { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; margin-top: 8px; } @media (max-width: 900px) { .pbody { grid-template-columns: minmax(0, 1fr); } }
+.path { display: flex; flex-direction: column; margin: 4px 0; } .path span { font-family: Consolas, monospace; font-size: 13px; }
+.todo { background: #E8F0FB; border: 1px solid #BFD3F2; border-radius: 10px; padding: 10px 12px; align-self: start; }
+.two { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 16px; } @media (max-width: 980px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.box { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 16px; }
+.bhead { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+button.link { border: none; background: none; color: #1F5FBF; font: inherit; font-weight: 600; cursor: pointer; padding: 0; }
+.srow2 { display: flex; gap: 12px; align-items: center; border-top: 1px solid var(--line); padding: 10px 4px; cursor: pointer; } .srow2 small { display: block; } .srow2 .end { text-align: end; } .warnbg { background: #FFF8EC; }
+.arow { display: flex; gap: 10px; align-items: center; border-top: 1px solid var(--line); padding: 8px 0; } .arow small { display: block; }
+.strip { display: flex; gap: 3px; margin: 8px 0; } .strip i { width: 9px; height: 16px; border-radius: 2px; background: #5B6472; } .strip i.ok { background: #11764A; } .strip i.warn { background: #D88A10; } .strip i.bad { background: #B42318; } .strip i.info { background: #1F5FBF; }
+.card { background: #fff; } .card.st-muted { border-inline-start-color: #9AA3AF; } .card.st-info { border-inline-start-color: #1F5FBF; } .newset { border-style: dashed; }
+.rhead { display: flex; gap: 16px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+.steps { display: flex; gap: 8px; list-style: none; padding: 0; margin: 0; } .steps li { padding: 4px 10px; border-radius: 999px; color: var(--muted); } .steps li.on { background: #E8F0FB; color: #1F5FBF; font-weight: 700; } .steps li.done { color: #11764A; }
+.days { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; } .day { border: 1px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 12px; cursor: pointer; font: inherit; font-weight: 600; min-width: 76px; } .day.on { background: #1F5FBF; color: #fff; border-color: #1F5FBF; }
+.keeps { background: #FFF3DD; border: 1px solid #F1C27D; border-radius: 10px; padding: 10px 12px; margin: 12px 0; }
+.pill { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 6px 14px; font: inherit; font-weight: 600; cursor: pointer; } .pill.on { background: #1B2430; color: #fff; }
+table.hist { background: #fff; border: 1px solid var(--line); border-radius: 12px; } tr.day td { background: #F8F9FB; font-weight: 700; color: var(--muted); } tr.hrow { cursor: pointer; } tr.hrow.open, tr.detail td { background: #FBFAF6; }
+button.primary { background: #1F5FBF; color: #fff; border: none; border-radius: 9px; }
+@media (max-width: 1100px) { .frame { grid-template-columns: 64px minmax(0, 1fr); } #nav .l, aside header .p, .navfoot .pc { display: none; } #nav button { justify-content: center; } }
 .card { border: 1px solid var(--line); border-inline-start: 4px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; background: #fff; }
 .card.st-ok { border-inline-start-color: var(--ok); } .card.st-warn { border-inline-start-color: var(--warn); } .card.st-bad { border-inline-start-color: var(--bad); }
 .card .n { font-weight: 700; font-size: 16px; }
@@ -73,14 +108,14 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
 .srow.sub { padding-inline-start: 22px; color: var(--muted); } .srow .grow { flex: 1; min-width: 0; overflow-wrap: break-word; }
 .srow button, .pickadd button { padding: 4px 10px; }
 .pickadd { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; } .pickadd input { flex: 1; min-width: 160px; }
-@media (max-width: 600px) { main { margin: 10px 6px; padding: 12px; } nav { margin: 10px 6px 0; max-width: calc(100% - 12px); } .hero { flex-wrap: wrap; } .hero .ai-watch { margin-inline-start: 0; white-space: normal; } header .c { display: none; } .hero { padding: 14px; } .hero b { font-size: 17px; } }
+@media (max-width: 600px) { main { margin: 10px 6px 96px; } }
 </style>
 </head>
 <body>
-<header><img id="logo" alt="" hidden><span class="p"><span id="product">Backup</span><small id="slogan"></small></span><span class="c" id="contact"></span><span id="langbox"></span></header>
-<nav id="nav"></nav>
-<main id="main"><p class="muted">…</p></main>
-<footer id="foot"></footer>
+<div class="frame">
+<aside><header><img id="logo" alt="" hidden><span class="p"><span id="product">Backup</span><small id="slogan"></small></span></header><nav id="nav"></nav></aside>
+<div class="page"><main id="main"><p class="muted">…</p></main><footer id="foot"></footer><div id="rbar" class="rbar" hidden></div></div>
+</div>
 <div id="toast" hidden></div>
 <script src="/i18n/i18n.js"></script>
 <script src="/i18n/qrcode.js"></script>
@@ -88,7 +123,6 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
 (async function () {
   'use strict';
   await I18N.load(I18N.pick(document.documentElement.getAttribute('data-lang')));   // I18N-010
-  document.getElementById('langbox').append(I18N.selector());
   let KEY = location.hash.slice(1); try { if (KEY) sessionStorage.setItem('k', KEY); else KEY = sessionStorage.getItem('k') || ''; } catch (e) { } history.replaceState(null, '', '/');
   const $ = (s) => document.querySelector(s);
   function h(tag, attrs, ...kids) {
@@ -114,7 +148,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const r = await fetch('/api/' + op + (query ? '?' + new URLSearchParams(query) : ''), { method: body ? 'POST' : 'GET', headers: { 'X-Key': KEY, 'Content-Type': 'application/xml' }, body: body ? toXml(body) : undefined });
     const t = await r.text(); const m = t ? fromXml(new DOMParser().parseFromString(t, 'application/xml').documentElement) : {};
     if (r.status === 401) { const ok = await loginDialog(); if (ok) return api(op, body, query); throw new Error(t('Sign-in required')); }
-    if (!r.ok) throw new Error(tr(m.message) || t('Error {0}', r.status));
+    if (!r.ok) { const e = new Error(tr(m.message) || t('Error {0}', r.status)); e.code = m.code; throw e; }   // UI-Q2: the code (EXISTS) is matched, not the words
     return m;
   }
   function toast(msg, err) { const t = $('#toast'); t.textContent = msg; t.className = err ? 'err' : ''; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => { t.hidden = true; }, err ? 7000 : 3500); }
@@ -125,8 +159,6 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     let d = /^\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d$/.test(v) ? new Date(v.replace(/^(\d{4}-\d\d-\d\d)-(\d\d)-(\d\d)-(\d\d)$/, '$1T$2:$3:$4Z')) : new Date(v);
     return isNaN(d) ? v : d.toLocaleString(I18N.lang, { dateStyle: 'short', timeStyle: 'short' });
   }
-  const RESULT = { BS_STOP_SUCCESS: [t('Completed successfully'), 'ok'], BS_STOP_SUCCESS_WITH_WARNING: [t('Completed with warnings'), 'warn'], BS_STOP_SUCCESS_WITH_ERROR: [t('Completed with errors'), 'warn'], BS_STOP_QUOTA_EXCEEDED: [t('The quota is full'), 'bad'] };
-  const result = (r) => { const x = RESULT[r] || [r ? t('Failed') : '—', r ? 'bad' : 'muted']; return h('span', { class: x[1] }, x[0]); };
 
   function loginDialog() {
     return new Promise((done) => {
@@ -136,77 +168,205 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
         h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
           const r = await fetch('/api/login', { method: 'POST', headers: { 'X-Key': KEY }, body: toXml({ password: pw.value, otp: otp.value }) });
           if (!r.ok) { const m = fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement); throw new Error(tr(m.message) || t('Sign-in failed')); }
-          d.close(); d.remove(); done(true); }) }, t('Sign in')),
+          d.close(); d.remove(); done(true);
+          // owner decision A7: the sign-in gives the copies of sets on this computer their key; one still without it is said
+          try { const k = fromXml(new DOMParser().parseFromString(await r.text(), 'application/xml').documentElement); if (Number(k.keysMissing || 0) > 0) toast(t('A backup on this computer still needs its encryption key — contact {0}.', (ST && ST.company) || t('support')), true); } catch (e) { } }) }, t('Sign in')),
         h('button', { class: 'sec', onclick: () => { d.close(); d.remove(); done(false); } }, t('Cancel'))));
       document.body.append(d); d.showModal(); pw.focus();
     });
   }
 
-  let ST = null, PAGE = 'home';
-  const PAGES = [['home', t('Backup status')], ['restore', t('Restore')], ['add', t('New backup')], ['security', t('Security')], ['help', t('Help')]];
+  // ---- alternative C ("Hybrid", owner 08.10.2026) — the same rules as the native window (src/Agent/ClientView.cs)
+  let ST = null, PAGE = 'home', JOBS = [];
+  const PAGES = [['home', t('Home'), '⌂'], ['sets', t('Backups'), '☰'], ['restore', t('Restore'), '↺'], ['history', t('History'), '◷'], ['settings', t('Settings'), '⚙']];
+  const company = () => ST.company || t('your IT provider');
+  const LOCKED = t('This setting is managed by your service provider');   // owner Q5
+  const RESTORE_KEEPS = t('Restored: the content and the modified time. Not restored: permissions and file attributes.');   // B5
+  const showsUpdate = () => ST.pilot !== '1';   // owner Q3 (the web window has no update button at all)
   async function load() {
     ST = await api('state');
-    document.title = ST.product; $('#product').textContent = ST.product; $('#slogan').textContent = ST.slogan || '';
-    if (/^#[0-9a-fA-F]{3,8}$/.test(ST.color)) document.documentElement.style.setProperty('--brand', ST.color);
-    if (/^#[0-9a-fA-F]{3,8}$/.test(ST.accent)) document.documentElement.style.setProperty('--accent', ST.accent);
+    document.title = ST.product; $('#product').textContent = ST.product; $('#slogan').textContent = ST.slogan || ST.company || '';
+    // owner Q6: white-label = the logo and the names only (no brand colours)
     if (ST.logo === '1') { $('#logo').src = '/logo'; $('#logo').hidden = false; }
-    put($('#contact'), ...[ST.company, ST.phone && h('span', { class: 'ltr' }, ST.phone), ST.email && h('span', { class: 'ltr' }, ST.email)].filter(Boolean).map((x, i) => h('div', {}, x)));
-    $('#foot').textContent = [ST.company, ST.website, ST.powered && t('Powered by {0}', ST.powered)].filter(Boolean).join(' · ');
+    $('#foot').textContent = [ST.website, ST.powered && t('Powered by {0}', ST.powered)].filter(Boolean).join(' · ');
     show(PAGE);
   }
+  function nav() {
+    const cur = PAGE === 'add' || PAGE === 'edit' ? 'sets' : PAGE;
+    const problems = homeView().problems.length;
+    put($('#nav'), ...PAGES.map(([k, label, g]) => h('button', { class: k === cur ? 'on' : '', onclick: () => { if (k === 'restore') { R.step = 1; R.check = null; } show(k); } }, h('span', { class: 'g' }, g), h('span', { class: 'l' }, label), k === 'sets' && problems ? h('span', { class: 'warn' }, ' ⚠') : null)),
+      h('div', { class: 'navfoot' }, h('div', { class: 'pc' }, h('b', { class: 'ltr' }, ST.computer || ''), h('small', { class: ST.offline ? 'bad' : 'ok' }, '● ' + (ST.offline ? t('No connection') : t('Connected')))),
+        h('button', { id: 'navHelp', class: PAGE === 'help' ? 'on' : '', onclick: () => show('help') }, h('span', { class: 'g' }, '?'), h('span', { class: 'l' }, t('Help from {0}', company())))));
+  }
   function show(p) {
-    PAGE = p;
-    put($('#nav'), ...PAGES.map(([k, t]) => h('button', { class: k === p ? 'on' : '', onclick: () => show(k) }, t)));
-    const m = $('#main'); put(m, h('p', { class: 'muted' }, t('Loading…')));
-    ({ home, restore, add, security, edit, help })[p](m).catch((x) => put(m, h('p', { class: 'bad' }, x.message)));
+    PAGE = p; nav();
+    const m = $('#main'); put(m, h('p', { class: 'muted' }, t('Loading…'))); put($('#rbar'));
+    $('#rbar').hidden = p !== 'restore';
+    ({ home, sets, restore, history, settings, add, edit, help })[p](m).catch((x) => put(m, h('p', { class: 'bad' }, x.message)));
   }
 
-  // ---- status / backup now ----
+  // ---- one result (owner decision B2: a run with files not backed up is Partial, amber; never "completed")
+  const KIND = (r) => !r ? 'never' : r === 'BS_STOP_SUCCESS' ? 'complete' : r === 'BS_STOP_SUCCESS_WITH_WARNING' ? 'warnings' : r.startsWith('BS_STOP_SUCCESS') ? 'partial' : r === 'BS_STOP_BY_USER' ? 'stopped' : 'failed';
+  const TONE = { complete: 'ok', warnings: 'ok', partial: 'warn', failed: 'bad', stopped: 'muted', never: 'muted', running: 'info', blocked: 'muted' };
+  const ICON = { ok: '✓', warn: '!', bad: '✕', muted: '–', info: '↻' };
+  const RESULT = { BS_STOP_SUCCESS: [t('Complete'), 'ok'], BS_STOP_SUCCESS_WITH_WARNING: [t('Complete — with warnings'), 'ok'], BS_STOP_SUCCESS_WITH_ERROR: [t('Partial'), 'warn'], BS_STOP_BY_USER: [t('Stopped'), 'muted'], BS_STOP_QUOTA_EXCEEDED: [t('Failed — the quota is full'), 'bad'] };
+  const word = (k, r) => k === 'running' ? t('Running') : k === 'blocked' ? t('Does not run in the pilot') : k === 'never' ? t('Not backed up yet') : (RESULT[r] || [t('Failed')])[0];
+  const chip = (text, tone, k) => h('span', { class: 'chip ' + tone }, (k === 'stopped' ? '■' : ICON[tone]) + ' ' + text);
+  const parse = (v) => { if (!v) return null; if (/^\d{4}-\d\d-\d\d-\d\d-\d\d-\d\d$/.test(v)) return new Date(v.replace(/^(\d{4}-\d\d-\d\d)-(\d\d)-(\d\d)-(\d\d)$/, '$1T$2:$3:$4Z')); if (/^\d+$/.test(v)) return new Date(Number(v)); const d = new Date(v); return isNaN(d) ? null : d; };
+  const at = (v) => { const d = v instanceof Date ? v : parse(v); return d ? d.toLocaleString(I18N.lang === 'he' ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : t('Not yet'); };
+  function setView(s) {
+    const running = JOBS.some((j) => j.set === s.id && j.state === 'running' && j.kind !== 'restore');
+    const k = s.blocked ? 'blocked' : running ? 'running' : KIND(s.result);
+    const missed = list(s.missed), n = Math.max(Number(s.missedCount || 0), missed.filter((x) => x.p).length);
+    const runs = list(s.runs).map((r) => ({ t: parse(r.t), r: r.r, e: Number(r.e || 0), k: KIND(r.r) })).filter((r) => r.t);
+    if (!runs.length && s.last) runs.push({ t: parse(s.last), r: s.result, e: n, k: KIND(s.result) });
+    return Object.assign({}, s, { k, tone: TONE[k], word: word(k, s.result), chip: k === 'partial' && n ? t('Partial · {0} files not backed up', n) : word(k, s.result), n, missed, runs, lastComplete: parse(s.lastComplete), lastAttempt: parse(s.last) });
+  }
+  // owner Q7: one set - its own last complete backup; several - the last time ALL of them were complete (never the earliest date)
+  function allComplete(sets) {
+    const ok = (r) => r && (r.k === 'complete' || r.k === 'warnings');
+    const times = [...new Set(sets.flatMap((s) => s.runs.filter(ok).map((r) => +r.t)))].sort((a, b) => b - a);
+    for (const tm of times) if (sets.every((s) => ok(s.runs.filter((r) => +r.t <= tm).sort((a, b) => b.t - a.t)[0]))) return new Date(tm);
+    return null;
+  }
+  function homeView() {
+    const sets = list(ST.sets).filter((s) => s.mine !== '0').map(setView), active = sets.filter((s) => s.k !== 'blocked');
+    const v = { sets, problems: active.filter((s) => s.k === 'partial' || s.k === 'failed'), primary: t('Back up now'), act: 'backup', second: t('Restore files') };
+    const run = active.find((s) => s.k === 'running');
+    if (ST.offline) Object.assign(v, { tone: 'muted', title: t('No connection to the backup server'), sub: t('The backups wait and run when the connection is back. What was backed up already is safe.'), primary: t('Try again'), act: 'retry' });
+    else if (!active.length) Object.assign(v, { tone: 'info', title: t('This computer is not backed up yet'), second: null, ...(ST.canAdd === '0' ? { sub: t('Your IT provider adds new backups — contact {0}.', company()), primary: t('Contact {0}', company()), act: 'contact' } : { sub: t('Choose which folders to back up and when. The first backup can take a few hours.'), primary: t('Choose folders to back up'), act: 'add' }) });
+    else if (run) Object.assign(v, { tone: 'info', title: t('Backup running'), sub: t('Backing up "{0}". You can close this window — the backup continues.', run.name) });
+    else if (active.some((s) => s.k === 'failed')) { const f = active.find((s) => s.k === 'failed'); Object.assign(v, { tone: 'bad', title: t('The backup of "{0}" failed', f.name), sub: (/QUOTA/.test(f.result) ? t('The quota is full.') + ' ' : '') + (f.lastComplete ? t('The files are protected up to {0}. Changes since then are not protected yet.', at(f.lastComplete)) : t('There is no complete backup of it yet.')), ...(/QUOTA/.test(f.result) ? { primary: t('Contact {0}', company()), act: 'contact' } : { primary: t('Back up again now') }) }); }
+    else if (active.some((s) => s.k === 'partial')) { const n = active.filter((s) => s.k === 'partial').reduce((a, s) => a + s.n, 0); Object.assign(v, { tone: 'warn', title: t('Attention needed'), sub: n ? t('{0} files were not backed up · everything else was backed up', n) : t('Some files were not backed up · everything else was backed up'), primary: t('Back up again now') }); }
+    else if (active.some((s) => s.k === 'stopped')) { const s = active.find((x) => x.k === 'stopped'); Object.assign(v, { tone: 'muted', title: t('The backup was stopped'), sub: t('"{0}" was stopped before it finished. The next backup runs as usual at {1}.', s.name, s.hour) }); }
+    else if (active.some((s) => s.k === 'never')) { const s = active.find((x) => x.k === 'never'); Object.assign(v, { tone: 'info', title: t('Waiting for the first backup'), sub: t('"{0}" has not been backed up yet. It runs every day at {1}, or click "Back up now".', s.name, s.hour) }); }
+    else Object.assign(v, { tone: 'ok', title: t('This computer is protected'), sub: active.length === 1 ? t('The last backup finished completely.') : t('All {0} backups finished completely.', active.length) });
+    // the three facts
+    let f1;
+    if (active.length === 1) f1 = [t('Last complete backup'), at(active[0].lastComplete), active[0].lastComplete ? t('Every selected file was backed up') : t('"{0}" has no complete backup yet', active[0].name)];
+    else { const a = allComplete(active); f1 = [t('Last time all backups were complete'), a ? at(a) : '—', a ? t('Every backup had finished completely') : t('Not known yet — see each backup below')]; }
+    const last = active.filter((s) => s.lastAttempt).sort((a, b) => b.lastAttempt - a.lastAttempt)[0];
+    const f2 = run ? [t('Last backup attempt'), t('Now'), run.name + ' · ' + t('Running'), 'info'] : [t('Last backup attempt'), last ? at(last.lastAttempt) : t('Not yet'), last ? last.name + ' · ' + word(KIND(last.result), last.result) : '', last ? TONE[KIND(last.result)] : ''];
+    const lt = active.map((s) => parse(s.lastTest)).filter(Boolean).sort((a, b) => b - a)[0];
+    const f3 = [t('Last restore test'), lt ? at(lt) : t('Not yet'), t('Automatic test · the result goes to {0}', company())];
+    v.facts = [f1, f2, f3];
+    return v;
+  }
+  function act(a) { if (a === 'backup') return backupAll(); if (a === 'retry') return load(); if (a === 'contact') return show('help'); if (a === 'add') return show('add'); }
+  async function backupAll() {
+    const todo = list(ST.sets).filter((s) => s.mine !== '0' && !s.blocked && !JOBS.some((j) => j.set === s.id && j.state === 'running'));
+    for (const s of todo) await api('backup', { set: s.id });
+    toast(t('The backup has started')); setTimeout(refresh, 800);
+  }
+  function problemCard(s, withLink) {
+    const paths = s.missed.filter((x) => x.p), whys = [...new Set(s.missed.map((x) => tr(x.why)).filter(Boolean))];
+    return h('div', { class: 'problem ' + (s.k === 'partial' ? 'warn' : 'bad') },
+      h('div', { class: 'phead' }, h('b', {}, (s.k === 'partial' ? '⚠ ' : '✕ ') + (s.k === 'partial' ? (s.n ? t('{0} — {1} files not backed up ({2})', s.name, s.n, at(s.lastAttempt)) : t('{0} — some files were not backed up ({1})', s.name, at(s.lastAttempt))) : t('{0} — the backup failed ({1})', s.name, at(s.lastAttempt)))),
+        withLink ? h('button', { class: 'link', onclick: () => show('sets') }, t('Details and log')) : null),
+      h('div', { class: 'pbody' }, h('div', {}, paths.length ? [h('p', { class: 'muted' }, t('These files were not backed up:')), paths.slice(0, 5).map((x) => h('div', { class: 'path' }, h('span', { class: 'ltr' }, x.p), x.why ? h('small', { class: 'muted' }, tr(x.why)) : null)), s.n > 5 ? h('small', { class: 'muted' }, t('and {0} more — see the log', s.n - 5)) : null]
+        : whys.slice(0, 3).map((w) => h('p', {}, t('Why: {0}', w)))),
+        h('div', { class: 'todo' }, h('b', {}, t('What to do:')), ' ', s.k === 'partial' ? t('Close the programs that keep these files open and click "Back up again now". If it happens again, contact {0}.', company()) : t('Click "Back up again now". If it fails again, contact {0}.', company()))));
+  }
+  function historyRows(filter, setId) {
+    let rows = [];
+    for (const s of list(ST.sets).filter((x) => x.mine !== '0').map(setView)) rows.push(...s.runs.map((r) => ({ kind: 'backup', set: s.id, name: s.name, t: r.t, k: r.k, r: r.r, e: r.e, latest: s.lastAttempt && Math.abs(r.t - s.lastAttempt) < 2000, s })));
+    for (const j of JOBS) {
+      const name = (list(ST.sets).find((x) => x.id === j.set) || {}).name || '';
+      if (j.kind === 'restore') rows.push({ kind: 'restore', set: j.set, name, t: new Date(Number(j.started)), k: j.state === 'running' ? 'running' : j.state === 'ok' ? 'complete' : 'failed', detail: j.detail });
+      else if (j.state === 'running') rows.push({ kind: 'backup', set: j.set, name, t: new Date(Number(j.started)), k: 'running' });
+    }
+    if (setId) rows = rows.filter((r) => r.set === setId);
+    if (filter === 'backups') rows = rows.filter((r) => r.kind === 'backup'); else if (filter === 'restores') rows = rows.filter((r) => r.kind === 'restore'); else if (filter === 'problems') rows = rows.filter((r) => r.k === 'partial' || r.k === 'failed');
+    return rows.sort((a, b) => b.t - a.t);
+  }
+  const rowWord = (r) => r.kind === 'restore' ? (r.k === 'running' ? t('Running') : r.k === 'complete' ? t('Complete') : t('Failed')) : word(r.k, r.r);
+
+  // ---- Home: the protection bar, what was not backed up and why, the backups and the recent activity
   async function home(m) {
     if (ST.registered !== '1') { put(m, h('p', { class: 'bad' }, t('This computer is not connected to the backup server yet. Contact {0}.', (ST.company || t('support')) + (ST.phone ? ' ' + ST.phone : '')))); return; }
-    const jobs = list((await api('jobs')).jobs);
-    const cards = list(ST.sets).filter((s) => s.mine !== '0').map((s) => {
-      const run = jobs.find((j) => j.set === s.id && j.state === 'running');
-      return h('div', { class: 'card st-' + ((RESULT[s.result] || [0, s.result ? 'bad' : 'none'])[1]) },
-        h('div', { class: 'grow' }, h('div', { class: 'n' }, s.name), h('div', { class: 's ltr' }, s.sources),
-          s.blocked ? h('div', { class: 's warn' }, '⚠ ' + tr(s.blocked) + ' ' + t('The set and its backups are kept as they are; it does not run.'))   // PILOT-010
-            : h('div', { class: 's' }, t('Automatic backup every day at {0}', s.hour) + ' · ' + t('last backup: {0}', when(s.last)) + ' · ', result(s.result))),
-        s.blocked ? null : run ? h('span', { class: 'warn' }, '⏳ ' + (run.kind === 'backup' ? t('Backing up now…') : t('Restoring…')))
-            : h('button', { class: 'primary', onclick: wrap(async () => { await api('backup', { set: s.id }); toast(t('The backup has started')); setTimeout(refresh, 800); }) }, t('Back up now')),
-        (ST.canSources !== '0' && s.type === 'FILE') || ST.canSchedule !== '0' ? h('button', { class: 'sec', onclick: () => { EDIT = s; show('edit'); } }, t('Change')) : null);
-    });
-    const recent = jobs.slice(0, 6).map((j) => h('tr', {}, h('td', {}, j.kind === 'backup' ? t('Backup') : t('Restore')), h('td', {}, (list(ST.sets).find((s) => s.id === j.set) || {}).name || j.set),
-      h('td', {}, when(new Date(Number(j.started)).toISOString())), h('td', {}, j.state === 'running' ? h('span', { class: 'warn' }, t('Running…')) : j.state === 'ok' ? h('span', { class: 'ok' }, t('Succeeded')) : h('span', { class: 'bad' }, t('Failed'))), h('td', {}, tr(j.detail))));
-    // DESIGN-030: one glance — is this computer protected?
-    const sets = list(ST.sets).filter((s) => s.mine !== '0'), states = sets.map((s) => (RESULT[s.result] || [0, s.result ? 'bad' : 'muted'])[1]);
-    const lastOk = sets.map((s) => s.last).filter(Boolean).sort().pop();
-    const hero = !sets.length ? null : states.includes('bad') || ST.offline ? h('div', { class: 'hero h-bad' }, h('div', { class: 'ico' }, '!'), h('div', {}, h('b', {}, t('Attention needed')), h('span', {}, t('A backup did not finish. Click "Back up now" or contact {0}.', ST.company || t('support')))))
-      : states.includes('warn') || states.includes('muted') ? h('div', { class: 'hero h-attn' }, h('div', { class: 'ico' }, '⚠'), h('div', {}, h('b', {}, t('Partly protected')), h('span', {}, t('Some backups finished with warnings or have not run yet.'))))
-      : h('div', { class: 'hero' }, h('div', { class: 'ico' }, '✓'), h('div', {}, h('b', {}, t('This computer is protected')), h('span', {}, t('last backup: {0}', when(lastOk)))),
-          h('span', { class: 'ai-watch' }, h('span', { class: 'live' }), t('AI is watching every backup for ransomware')));
-    put(m, hero,
-      ST.offline ? h('p', { class: 'bad' }, t('No connection to the backup server right now: {0}', tr(ST.offline))) : null,
-      cards.length ? cards : h('p', { class: 'muted' }, t('No backups are set up yet. Add one in the "New backup" tab.')),
-      recent.length ? [h('h3', {}, t('Recent activity')), h('table', {}, h('thead', {}, h('tr', {}, [t('Action'), t('Backup'), t('Time'), t('Status'), t('Details')].map((t) => h('th', {}, t)))), h('tbody', {}, recent))] : null);
-    if (jobs.some((j) => j.state === 'running')) setTimeout(refresh, 3000);
+    JOBS = list((await api('jobs')).jobs); nav();
+    const v = homeView();
+    put(m, h('section', { class: 'hero ' + v.tone, id: 'hero' },
+        h('div', { class: 'top' }, h('div', { class: 'badge ' + v.tone }, ICON[v.tone]), h('div', { class: 'grow' }, h('small', { class: v.tone }, t('Protection status')), h('h2', { id: 'state' }, v.title), h('p', { class: 'muted' }, v.sub)),
+          h('div', { class: 'acts' }, h('button', { class: 'primary', id: 'heroPrimary', onclick: wrap(() => act(v.act)) }, v.primary), v.second ? h('button', { class: 'sec', onclick: () => { R.step = 1; show('restore'); } }, v.second) : null)),
+        h('div', { class: 'facts' }, v.facts.map((f, i) => h('div', {}, h('small', {}, f[0]), h('b', { class: f[3] || (i === 0 && v.tone === 'ok' ? 'ok' : ''), id: 'fact' + i }, f[1]), h('small', { class: 'muted' }, f[2]))))),
+      v.problems.slice(0, 2).map((s) => problemCard(s, true)),
+      h('div', { class: 'two' },
+        h('section', { class: 'box' }, h('div', { class: 'bhead' }, h('b', {}, t('Backups on this computer')), h('button', { class: 'link', onclick: () => show('sets') }, t('Manage backups'))),
+          v.sets.length ? v.sets.map((s) => h('div', { class: 'srow2 ' + (s.k === 'partial' ? 'warnbg' : ''), onclick: () => show('sets') }, h('div', { class: 'grow' }, h('b', {}, s.name), h('small', { class: 'muted' }, s.sources + ' · ' + t('every day at {0}', s.hour))),
+            h('div', { class: 'end' }, chip(s.chip, s.tone, s.k), h('small', { class: 'muted' }, s.k === 'blocked' ? '' : t('Last complete: {0}', at(s.lastComplete))))))
+            : h('p', { class: 'muted' }, t('No backups are set up yet.'))),
+        h('section', { class: 'box' }, h('div', { class: 'bhead' }, h('b', {}, t('Recent activity')), h('button', { class: 'link', onclick: () => show('history') }, t('History'))),
+          historyRows('all').slice(0, 5).map((r) => h('div', { class: 'arow' }, chip('', TONE[r.k], r.k), h('div', {}, h('b', {}, (r.kind === 'restore' ? t('Restore') : t('Backup')) + ' · ' + r.name), h('small', { class: 'muted' }, at(r.t) + ' · ' + rowWord(r)))))
+          .concat(historyRows('all').length ? [] : [h('p', { class: 'muted' }, t('Nothing yet.'))]))));
+    if (JOBS.some((j) => j.state === 'running')) setTimeout(refresh, 3000);
   }
-  async function refresh() { if (PAGE !== 'home') return; ST = await api('state'); show('home'); }
+  async function refresh() { if (PAGE !== 'home' && PAGE !== 'sets' && PAGE !== 'history') return; ST = await api('state'); show(PAGE); }
 
-  // ---- restore ----
+  // ---- Backups: a card per backup (details, log, change), and "New backup"
+  async function sets(m) {
+    JOBS = list((await api('jobs')).jobs); nav();
+    const all = list(ST.sets).filter((s) => s.mine !== '0').map(setView);
+    const cards = all.map((s) => h('div', { class: 'card st-' + s.tone },
+      h('div', { class: 'grow' }, h('div', { class: 'n' }, s.name, ' ', chip(s.chip, s.tone, s.k)), h('div', { class: 's ltr' }, s.sources),
+        s.blocked ? h('div', { class: 's warn' }, '⚠ ' + tr(s.blocked) + ' ' + t('The set and its backups are kept as they are; it does not run.'))   // PILOT-010
+          : h('div', { class: 's' }, t('Last complete backup') + ': ' + at(s.lastComplete) + ' · ' + t('Last attempt: {0}', s.lastAttempt ? at(s.lastAttempt) + ' · ' + word(KIND(s.result), s.result) : t('Not yet')) + ' · ' + t('Every day at {0}', s.hour)),
+        keep(s) ? h('div', { class: 's muted' }, keep(s)) : null,
+        s.keyRecovery !== undefined ? h('div', { class: 's muted' }, t('Recovery copy of the key kept: {0}', s.keyRecovery === '1' ? t('Yes') : t('No'))) : null,
+        s.runs.length ? h('div', { class: 'strip', title: t('Last {0} runs', Math.min(14, s.runs.length)) }, s.runs.slice(-14).map((r) => h('i', { class: TONE[r.k], title: at(r.t) + ' ' + word(r.k, r.r) }))) : null,
+        s.k === 'partial' || s.k === 'failed' ? problemCard(s, false) : null),
+      s.blocked ? null : s.k === 'running' ? h('span', { class: 'warn' }, '⏳ ' + t('Backing up now…'))
+        : h('button', { class: 'primary', onclick: wrap(async () => { await api('backup', { set: s.id }); toast(t('The backup has started')); setTimeout(refresh, 800); }) }, t('Back up now')),
+      h('button', { class: 'sec', onclick: () => { R.set = s.id; R.step = 1; show('restore'); } }, t('Restore')),
+      h('button', { class: 'sec', onclick: wrap(async () => { const r = await api('runlog', null, { set: s.id }); download((ST.computer || 'computer') + ' - ' + s.name + ' - log.txt', r.text || ''); }) }, t('Export the log for {0}', company())),
+      (ST.canSources !== '0' && s.type === 'FILE') || ST.canSchedule !== '0' ? h('button', { class: 'sec', onclick: () => { EDIT = s; show('edit'); } }, t('Change'))
+        : h('span', {}, h('button', { class: 'sec', disabled: true }, t('Change')), h('small', { class: 'muted' }, ' ' + LOCKED))));
+    put(m, h('h2', {}, t('Backups')), h('p', { class: 'muted' }, t('{0} backups · each runs automatically at its time', all.length)),
+      cards.length ? cards : h('p', { class: 'muted' }, t('No backups are set up yet.')),
+      h('div', { class: 'card newset' }, h('div', { class: 'grow' }, h('b', {}, '+ ' + t('New backup')), h('div', { class: 's muted' }, t('Files and folders on this computer'))),
+        h('button', { class: 'primary', disabled: ST.canAdd === '0', onclick: () => show('add') }, t('New backup')), ST.canAdd === '0' ? h('small', { class: 'muted' }, LOCKED) : null));
+    if (JOBS.some((j) => j.state === 'running')) setTimeout(refresh, 3000);
+  }
+  // owner Q8: how long the backups are kept, from the set's own retention
+  function keep(s) {
+    if (!s.retUnit || !(Number(s.retPeriod) > 0)) return '';
+    const base = s.retUnit === 'JOBS' ? t('Kept: the last {0} backups', s.retPeriod) : t('Kept: {0} days', s.retPeriod);
+    const extra = [['retDaily', t('{0} daily versions', s.retDaily)], ['retWeekly', t('{0} weekly versions', s.retWeekly)], ['retMonthly', t('{0} monthly versions', s.retMonthly)], ['retQuarterly', t('{0} quarterly versions', s.retQuarterly)], ['retYearly', t('{0} yearly versions', s.retYearly)]].filter(([k]) => Number(s[k]) > 0).map(([, w]) => w);
+    return extra.length ? base + t(', and {0}', extra.join(', ')) : base;
+  }
+  function download(name, text) { const a = h('a', { download: name }); a.href = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' })); document.body.append(a); a.click(); a.remove(); }
+
+  // ---- Restore in 3 steps (when and what · where and check · result), the buttons in a bar fixed at the bottom (UX-1, B5)
+  const R = { step: 1, set: null, point: null, paths: [], target: '', overwrite: false, job: null, location: 'alternate', check: null };
+  function bar(...buttons) { put($('#rbar'), ...buttons); $('#rbar').hidden = false; }
   async function restore(m) {
     ST = await api('state');
     const sets = list(ST.sets).slice().sort((a, b) => (b.last || '').localeCompare(a.last || ''));   // backed-up sets first
-    if (!sets.length) { put(m, h('p', { class: 'muted' }, t('There are no backups to restore.'))); return; }
-    const setSel = h('select', {}, sets.map((s) => h('option', { value: s.id }, s.name + (s.mine === '0' && s.computer ? ' — ' + s.computer : ''))));
-    const pointSel = h('select', {}), filter = h('input', { placeholder: t('Filter by file or folder name') });
-    const target = h('input', { class: 'ltr', placeholder: 'C:\\Restore' }), overwrite = h('input', { type: 'checkbox', style: 'width:auto' });
+    const steps = h('ol', { class: 'steps' }, [t('When and what'), t('Where and check'), t('Result')].map((s, i) => h('li', { class: i + 1 === R.step ? 'on' : i + 1 < R.step ? 'done' : '' }, (i + 1 < R.step ? '✓ ' : (i + 1) + ' ') + s)));
+    if (!sets.length) { put(m, h('h2', {}, t('Restore files')), h('p', { class: 'muted' }, t('There are no backups to restore.'))); bar(h('button', { class: 'sec', onclick: () => show('home') }, t('Back to Home'))); return; }
+    if (!R.set || !sets.some((s) => s.id === R.set)) R.set = sets[0].id;
+    if (R.step === 2) return restore2(m, sets, steps);
+    if (R.step === 3) return restore3(m, sets, steps);
+    const setSel = h('select', {}, sets.map((s) => h('option', { value: s.id, selected: s.id === R.set }, s.name + (s.mine === '0' && s.computer ? ' — ' + s.computer : ''))));
+    const pointSel = h('select', {}), filter = h('input', { placeholder: t('Filter by file or folder name') }), days = h('div', { class: 'days' });
     const toM365 = h('input', { type: 'checkbox', style: 'width:auto' }), m365Row = h('label', {}, h('span', {}, toM365, t(' Return directly to the cloud (Microsoft 365 / Google) — into the user\'s "Restored" folder')));
     const syncM365 = () => { const s = sets.find((x) => x.id === setSel.value); m365Row.hidden = !(s && (s.type === 'M365' || s.type === 'GWS')); };
-    const box = h('div', { class: 'files' }); let files = [];
+    const box = h('div', { class: 'files' }); let files = [], points = [];
+    const info = h('span', { class: 'muted' }), next = h('button', { class: 'primary', disabled: true, onclick: () => {
+      R.paths = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map((c) => c.getAttribute('data-p')); R.point = pointSel.value; R.set = setSel.value; R.toM365 = toM365.checked && !m365Row.hidden; R.check = null; R.step = 2; show('restore'); } }, t('Next: where to restore'));
+    const count = () => { const n = box.querySelectorAll('input[type=checkbox]:checked').length; info.textContent = (n ? t('{0} selected', n) : t('Everything in the point')) + ' · ' + t('from {0}', (sets.find((s) => s.id === setSel.value) || {}).name || ''); };
+    const drawDays = () => {
+      const by = new Map(); points.forEach((p) => { const d = parse(p.time) || parse(p.id); if (!d) return; const k = d.toDateString(); if (!by.has(k)) by.set(k, p); });
+      const cur = (parse((points.find((p) => p.id === pointSel.value) || {}).time) || new Date(0)).toDateString();
+      const today = new Date().toDateString(), yest = new Date(Date.now() - 864e5).toDateString();
+      put(days, [...by.entries()].slice(0, 10).map(([k, p]) => h('button', { class: k === cur ? 'day on' : 'day', onclick: () => { pointSel.value = p.id; drawDays(); loadFiles(); } },
+        k === today ? t('Today') : k === yest ? t('Yesterday') : new Date(k).toLocaleDateString(I18N.lang === 'he' ? 'he-IL' : 'en-GB', { weekday: 'short' }), h('br', {}), new Date(k).toLocaleDateString(I18N.lang === 'he' ? 'he-IL' : 'en-GB', { day: '2-digit', month: '2-digit' }))));
+    };
     const loadPoints = wrap(async () => {
-      const r = await api('points', null, { set: setSel.value });
-      put(pointSel, list(r.points).map((p, i) => h('option', { value: p.id }, (i === 0 ? t('Latest — {0}', when(p.time)) : when(p.time)))));
-      if (!list(r.points).length) { files = []; put(box, h('p', { class: 'muted' }, t('This backup has no restore points yet — it runs at the scheduled time, or click "Back up now".'))); return; }
+      const r = await api('points', null, { set: setSel.value }); points = list(r.points);
+      put(pointSel, points.map((p, i) => h('option', { value: p.id }, (i === 0 ? t('Latest — {0}', when(p.time)) : when(p.time)))));
+      drawDays(); next.disabled = !points.length;
+      if (!points.length) { files = []; put(box, h('p', { class: 'muted' }, t('This backup has no restore points yet — it runs at the scheduled time, or click "Back up now".'))); return; }
       await loadFiles();
     });
     const loadFiles = wrap(async () => {
@@ -218,17 +378,143 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
       const q = filter.value.trim().toLowerCase();
       const shown = files.filter((f) => !q || f.path.toLowerCase().includes(q)).slice(0, 2000);
       put(box, h('table', {}, h('thead', {}, h('tr', {}, h('th', {}, ''), h('th', {}, t('File')), h('th', {}, t('Size')), h('th', {}, t('Modified')))),
-        h('tbody', {}, shown.map((f) => h('tr', {}, h('td', {}, h('input', { type: 'checkbox', style: 'width:auto', 'data-p': f.path })), h('td', { class: 'ltr' }, f.path), h('td', {}, size(f.size)), h('td', {}, when(isNaN(Number(f.mtime)) ? f.mtime : new Date(Number(f.mtime)).toISOString())))))),
+        h('tbody', {}, shown.map((f) => h('tr', {}, h('td', {}, h('input', { type: 'checkbox', style: 'width:auto', 'data-p': f.path, checked: R.paths.includes(f.path), onchange: count })), h('td', { class: 'ltr' }, f.path), h('td', {}, size(f.size)), h('td', {}, when(isNaN(Number(f.mtime)) ? f.mtime : new Date(Number(f.mtime)).toISOString())))))),
         shown.length < files.filter((f) => !q || f.path.toLowerCase().includes(q)).length ? h('p', { class: 'muted' }, t('Showing the first 2,000 — narrow down with the filter')) : null);
+      count();
     }
-    setSel.onchange = () => { syncM365(); loadPoints(); }; syncM365(); pointSel.onchange = loadFiles; filter.oninput = draw;
-    put(m, h('label', {}, t('Backup')), setSel, h('label', {}, t('Restore point (date)')), pointSel, h('label', {}, t('Files (none selected = everything)')), filter, h('div', { style: 'height:8px' }), box,
-      h('label', {}, t('Restore to folder')), target, h('label', {}, h('span', {}, overwrite, t(' Replace existing files'))), m365Row,
-      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => {
-        const paths = Array.from(box.querySelectorAll('input[type=checkbox]:checked')).map((c) => ({ p: c.getAttribute('data-p') }));
-        await api('restore', { set: setSel.value, point: pointSel.value, target: target.value, overwrite: overwrite.checked ? '1' : '0', toM365: toM365.checked && !m365Row.hidden ? '1' : '0', paths });
-        toast(t('The restore has started — follow it in the "Backup status" tab')); show('home'); }) }, t('Restore'))));
+    setSel.onchange = () => { R.paths = []; syncM365(); loadPoints(); }; syncM365(); pointSel.onchange = () => { drawDays(); loadFiles(); }; filter.oninput = draw;
+    put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
+      h('section', { class: 'box' }, h('b', {}, t('Which backup and which day?')), h('label', {}, t('Backup')), setSel, days, h('label', {}, t('Restore point (date)')), pointSel),
+      h('section', { class: 'box' }, h('b', {}, t('Files (none selected = everything)')), h('div', { style: 'height:8px' }), filter, h('div', { style: 'height:8px' }), box, m365Row));
+    bar(h('button', { class: 'sec', onclick: () => { R.paths = []; show('home'); } }, t('Cancel')), info, next);
     await loadPoints();
+  }
+  // UI-Q2: the destination is checked first (own engine); files that exist are a question in the window — Replace / Skip / Cancel
+  const originalOk = (s) => s && s.engine !== 'RESTIC';
+  function restoreBody(s, decision) {
+    const b = { set: R.set, point: R.point, toM365: R.toM365 ? '1' : '0', paths: R.paths.map((p) => ({ p })) };
+    if (R.location === 'original' && originalOk(s)) Object.assign(b, { location: 'original' }); else Object.assign(b, { target: R.target, overwrite: R.overwrite ? '1' : '0' });
+    if (decision) Object.assign(b, { existing: decision });   // overwrite | skip | cancel
+    return b;
+  }
+  async function restoreGo(s) {
+    const original = R.location === 'original' && originalOk(s);
+    if (!original && !R.target.trim() && !R.toM365) throw new Error(t('Choose a destination folder.'));
+    if (!originalOk(s) || R.toM365) return restoreStart(s, null);   // restic: no check in the local API; "Replace existing files" decides
+    const c = await api('restorecheck', Object.assign({ set: R.set, point: R.point, paths: R.paths.map((p) => ({ p })) }, original ? { location: 'original' } : { target: R.target }));
+    if (Number(c.existing || 0) > 0) { R.check = c; show('restore'); return; }
+    return restoreStart(s, null);
+  }
+  async function restoreStart(s, decision) {
+    let r;
+    try { r = await api('restore', restoreBody(s, decision)); }
+    catch (x) { if (x.code === 'EXISTS') return restoreGo(s); throw x; }   // a file appeared since the check: ask again
+    R.check = null;
+    if (r.cancelled === '1') { show('restore'); return; }
+    R.job = r.job; R.step = 3; toast(t('The restore has started')); show('restore');
+  }
+  async function restore2(m, sets, steps) {
+    const s = sets.find((x) => x.id === R.set) || {};
+    if (R.check) {
+      const c = R.check, n = Number(c.existing || 0), files = list(c.files).map((x) => x.p);
+      put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
+        h('section', { class: 'problem warn', id: 'existing' }, h('b', { id: 'existingTitle' }, '⚠ ' + (c.location === 'original' ? t('{0} of the {1} files already exist at the original location', n, c.total) : t('{0} of the {1} files already exist in the folder', n, c.total))),
+          h('p', {}, t('Replace them with the files from the backup, skip them (they stay as they are), or cancel. Nothing was restored yet.')),
+          h('div', { class: 'files', id: 'existingList' }, files.map((p) => h('div', { class: 'ltr path' }, h('span', {}, p)))), n > files.length ? h('small', { class: 'muted' }, t('and {0} more', n - files.length)) : null));
+      bar(h('button', { class: 'sec', onclick: wrap(() => restoreStart(s, 'cancel')) }, t('Cancel')), h('button', { class: 'sec', onclick: wrap(() => restoreStart(s, 'skip')) }, t('Skip existing')), h('button', { class: 'primary', onclick: wrap(() => restoreStart(s, 'overwrite')) }, t('Replace existing')));
+      return;
+    }
+    if (!originalOk(s) && R.location === 'original') R.location = 'alternate';
+    const target = h('input', { class: 'ltr', placeholder: 'C:\\Restore', value: R.target, disabled: R.location === 'original' }), overwrite = h('input', { type: 'checkbox', style: 'width:auto', checked: R.overwrite });
+    target.oninput = () => { R.target = target.value; }; overwrite.onchange = () => { R.overwrite = overwrite.checked; };
+    const toNew = h('input', { type: 'radio', name: 'where', checked: R.location !== 'original', style: 'width:auto', onchange: () => { R.location = 'alternate'; target.disabled = false; } });
+    const toOrig = h('input', { type: 'radio', name: 'where', checked: R.location === 'original', disabled: !originalOk(s), style: 'width:auto', onchange: () => { R.location = 'original'; target.disabled = true; } });
+    const go = h('button', { class: 'primary', onclick: wrap(async () => { go.disabled = true; try { await restoreGo(s); } finally { go.disabled = false; } }) },
+      R.paths.length === 0 ? t('Restore everything') : R.paths.length === 1 ? t('Restore 1 selected item') : t('Restore {0} selected items', R.paths.length));
+    put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
+      h('div', { class: 'two' },
+        h('section', { class: 'box' }, h('b', {}, t('Where to restore?')),
+          h('label', {}, toNew, ' ', t('To a new folder (recommended)')), h('small', { class: 'muted' }, t('The files on the computer stay as they are.')),
+          h('label', {}, t('Restore to folder')), target,
+          h('label', { class: originalOk(s) ? '' : 'muted' }, toOrig, ' ', t('To the original location')),
+          h('small', { class: 'muted' }, originalOk(s) ? t('The files go back where they were. If a file is already there, you are asked first.') : t('Restoring to the original location is available for the product\'s own engine only — choose a folder.')),
+          originalOk(s) ? h('p', { class: 'muted' }, t('If a file is already in the folder, you are asked first: replace, skip or cancel.'))
+            : [h('label', {}, h('span', {}, overwrite, t(' Replace existing files'))), h('small', { class: 'muted' }, t('Unticked: a file that is already in the folder is not replaced.'))]),
+        h('section', { class: 'box' }, h('b', {}, t('What will be restored')), h('p', {}, t('Backup') + ': ' + (s.name || '')), h('p', {}, t('Restore point (date)') + ': ' + when(R.point)),
+          R.paths.length ? R.paths.slice(0, 6).map((p) => h('div', { class: 'ltr' }, '▫ ' + p)).concat(R.paths.length > 6 ? [h('small', { class: 'muted' }, t('and {0} more', R.paths.length - 6))] : []) : h('b', {}, t('Everything in the point')),
+          h('div', { class: 'keeps', id: 'restoreKeeps' }, 'ⓘ ' + RESTORE_KEEPS),
+          h('small', { class: 'muted' }, t('Your password (and the code, when two-step verification is on) is asked when you restore.')))));
+    bar(h('button', { class: 'sec', onclick: () => { R.step = 1; show('restore'); } }, t('Back')), h('span', { class: 'muted' }, ''), go);
+  }
+  // UI-Q1: "Verified" only when the job checked; whole-file SHA-256 apart from chunks + size ("Checked"); a mismatch is an error
+  function restoreView(j) {
+    if (!j || j.state === 'running') return { tone: 'info', running: true, caption: t('The restore has started'), head: t('Restoring…'), checks: [], mism: [] };
+    const mism = list(j.mismatch).map((x) => x.p), nm = Math.max(Number(j.mismatched || 0), mism.length), failed = Number(j.failed || 0);
+    const checks = [];
+    if (j.verified !== undefined) { const all = Number(j.verified), sha = Math.min(all, Number(j.verifiedSha256 || 0)); if (sha > 0) checks.push(t('Verified (SHA-256): {0} files', sha)); if (all - sha > 0) checks.push(t('Checked (chunks and size): {0} files', all - sha)); }
+    const ok = j.state === 'ok' && nm === 0 && failed === 0;
+    const head = nm ? t('{0} files did not match the backup', nm) : !ok ? t('Some files were not restored') : R.paths.length === 1 ? t('1 selected item was restored') : R.paths.length ? t('{0} selected items were restored', R.paths.length) : t('Everything in the point was restored');
+    return { tone: ok ? 'ok' : 'bad', ok, caption: ok ? t('The restore finished') : t('The restore did not finish'), head, checks, mism, nm,
+      counts: j.restored !== undefined ? t('Restored {0} · skipped {1} · failed {2}', j.restored, j.skipped || 0, failed) : '' };
+  }
+  async function restore3(m, sets, steps) {
+    JOBS = list((await api('jobs')).jobs);
+    const j = JOBS.find((x) => x.id === R.job), v = restoreView(j);
+    put(m, h('div', { class: 'rhead' }, h('h2', {}, t('Restore files')), steps),
+      h('section', { class: 'hero ' + v.tone }, h('div', { class: 'top' }, h('div', { class: 'badge ' + v.tone }, ICON[v.tone]), h('div', { class: 'grow' },
+        h('small', { class: v.tone }, v.caption), h('h2', { id: 'state' }, v.head),
+        h('p', { class: 'muted ltr' }, R.location === 'original' ? t('To the original location') : t('To folder {0}', R.target)),
+        v.counts ? h('p', {}, v.counts) : j && j.detail ? h('p', { class: v.ok ? '' : 'bad' }, tr(j.detail)) : null,
+        v.checks.map((c) => h('p', { class: 'ok', id: 'restoreVerified' }, '✓ ' + c)),
+        v.nm ? h('div', { class: 'problem bad', id: 'restoreError' }, h('b', {}, '✕ ' + t('They were not put in place: the file already at the destination was kept.')), v.mism.slice(0, 10).map((p) => h('div', { class: 'ltr' }, p))) : null))),
+      h('p', { class: 'keeps muted' }, 'ⓘ ' + t('Permissions and file attributes were not restored.')));
+    bar(h('button', { class: 'sec', onclick: () => { R.step = 1; R.paths = []; show('home'); } }, t('Back to Home')), h('button', { class: 'sec', onclick: () => { R.step = 1; R.paths = []; show('restore'); } }, t('Restore more')), h('span', {}));
+    if (v.running) setTimeout(() => { if (PAGE === 'restore' && R.step === 3) show('restore'); }, 2000);
+  }
+
+  // ---- History: rows by day; a row opens in place (what happened, what was not backed up, what to do, the log)
+  let HF = 'all', HS = '', HOPEN = null;
+  async function history(m) {
+    JOBS = list((await api('jobs')).jobs);
+    const all = historyRows('all'), rows = historyRows(HF, HS).slice(0, 100);
+    const setSel = h('select', { style: 'width:auto' }, h('option', { value: '' }, t('All backups')), list(ST.sets).filter((s) => s.mine !== '0').map((s) => h('option', { value: s.id, selected: s.id === HS }, s.name)));
+    setSel.onchange = () => { HS = setSel.value; show('history'); };
+    let day = '';
+    const body = [];
+    for (const r of rows) {
+      const d = r.t.toLocaleDateString(I18N.lang === 'he' ? 'he-IL' : 'en-GB');
+      if (d !== day) { day = d; body.push(h('tr', { class: 'day' }, h('td', { colspan: 5 }, d))); }
+      const key = r.kind + r.set + (+r.t), open = HOPEN === key, bad = r.k === 'partial' || r.k === 'failed';
+      body.push(h('tr', { class: 'hrow' + (open ? ' open' : ''), onclick: () => { HOPEN = open ? null : key; show('history'); } },
+        h('td', {}, r.t.toLocaleTimeString(I18N.lang === 'he' ? 'he-IL' : 'en-GB', { hour: '2-digit', minute: '2-digit' })), h('td', {}, r.kind === 'restore' ? t('Restore') : t('Backup')), h('td', {}, r.name), h('td', {}, chip(rowWord(r), TONE[r.k], r.k)),
+        h('td', { class: 'muted' }, r.kind === 'restore' ? tr(r.detail || '') : r.e && r.k === 'partial' ? t('{0} files not backed up', r.e) : '')));
+      if (open) body.push(h('tr', { class: 'detail' }, h('td', { colspan: 5 },
+        r.kind === 'restore' ? h('p', {}, tr(r.detail || '') || rowWord(r))
+          : bad && r.latest ? [problemCard(r.s, false), r.s.lastComplete ? h('p', {}, h('b', {}, t('The last complete backup of this set: {0}', at(r.s.lastComplete)))) : null]
+          : bad ? h('p', { class: 'muted' }, t('The list of files is kept for the last run of each backup only.')) : h('p', {}, rowWord(r)),
+        r.kind === 'backup' ? h('div', { class: 'bar' }, h('button', { class: 'sec', disabled: !r.latest, onclick: wrap(async () => { const x = await api('runlog', null, { set: r.set }); download((ST.computer || 'computer') + ' - ' + r.name + ' - log.txt', x.text || ''); }) }, t('Run log')),
+          h('button', { class: 'sec', onclick: wrap(async () => { await api('backup', { set: r.set }); toast(t('The backup has started')); }) }, t('Back up again'))) : null)));
+    }
+    put(m, h('h2', {}, t('History')), h('p', { class: 'muted' }, t('Click a row to see what happened and what to do.')),
+      h('div', { class: 'bar' }, [['all', t('All')], ['backups', t('Backups')], ['restores', t('Restores')], ['problems', t('Only problems ({0})', all.filter((r) => r.k === 'partial' || r.k === 'failed').length)]].map(([k, l]) => h('button', { class: HF === k ? 'pill on' : 'pill', onclick: () => { HF = k; show('history'); } }, l)), setSel),
+      rows.length ? h('table', { class: 'hist' }, h('tbody', {}, body)) : h('p', { class: 'muted' }, t('No runs yet.')));
+  }
+
+  // ---- Settings: this computer, sign-in and two-step verification, encryption, help, language, about
+  async function settings(m) {
+    const sec = h('section', { class: 'box' }); await security(sec);
+    const lang = h('section', { class: 'box' }, h('b', {}, t('Language')), h('div', { style: 'height:8px' }), I18N.selector(), h('p', { class: 'muted' }, t('Changes only this window on this computer.')));
+    put(m, h('h2', {}, t('Settings')), h('p', { class: 'muted' }, t('Only what belongs to you on this computer. The folders and the time of each backup are in "Backups".')),
+      h('div', { class: 'two' },
+        h('section', { class: 'box' }, h('b', {}, t('This computer and the connection')),
+          h('p', {}, t('Computer') + ': ', h('span', { class: 'ltr' }, ST.computer || '')), h('p', {}, t('User name') + ': ', h('span', { class: 'ltr' }, ST.login || '')),
+          h('p', {}, t('Connection') + ': ', ST.offline ? h('span', { class: 'bad' }, t('No connection: {0}', tr(ST.offline))) : h('span', { class: 'ok' }, t('Connected'))),
+          showsUpdate() ? null : h('p', { class: 'muted' }, t('Updates are installed by {0}.', company()))),
+        sec,
+        h('section', { class: 'box' }, h('b', {}, t('Encryption')), h('p', {}, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.'))),
+        h('section', { class: 'box' }, h('b', {}, t('Help from {0}', company())), h('p', { class: 'ltr' }, [ST.phone, ST.email].filter(Boolean).join(' · ')), h('button', { class: 'primary', onclick: () => show('help') }, t('Open a service call'))),
+        lang,
+        h('section', { class: 'box' }, h('b', {}, t('About')), h('p', {}, ST.product || ''), ST.powered ? h('p', { class: 'muted' }, t('Powered by {0}', ST.powered)) : null)));
   }
 
   // ---- new backup set ----
@@ -242,7 +528,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     if (s.totp === '1') {
       put(m, h('h3', {}, t('Two-step verification')), h('p', { class: 'ok' }, '✓ ' + t('On — signing in needs your password and a code from the authenticator app.')),
         s.required === '1' ? h('p', { class: 'muted' }, t('Your provider requires two-step verification.'))
-          : h('div', { class: 'bar' }, h('button', { class: 'sec', onclick: wrap(async () => { if (!confirm(t('Switch two-step verification off?'))) return; await api('totp-disable', {}); toast(t('Two-step verification is off')); show('security'); }) }, t('Switch off'))));
+          : h('div', { class: 'bar' }, h('button', { class: 'sec', onclick: wrap(async () => { if (!confirm(t('Switch two-step verification off?'))) return; await api('totp-disable', {}); toast(t('Two-step verification is off')); show('settings'); }) }, t('Switch off'))));
       return;
     }
     put(m, h('h3', {}, t('Two-step verification')),
@@ -255,8 +541,8 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
           h('ol', {}, h('li', {}, t('Open the authenticator app and scan this code:')), h('div', { class: 'qrbox' }, qr(r.uri), h('div', { class: 'muted ltr' }, t('Or type the key:'), ' ', h('b', {}, r.secret))),
             h('li', {}, t('Keep these one-time backup codes in a safe place (each works once if the phone is lost):'), h('div', { class: 'codes ltr' }, list(r.codes).map((c) => h('code', {}, c.code)))),
             h('li', {}, t('Type the code the app shows now:'), ' ', code)),
-          h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('totp-confirm', { code: code.value }); toast(t('Two-step verification is on')); show('security'); }) }, t('Turn on')),
-            h('button', { class: 'sec', onclick: () => show('security') }, t('Cancel'))));
+          h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('totp-confirm', { code: code.value }); toast(t('Two-step verification is on')); show('settings'); }) }, t('Turn on')),
+            h('button', { class: 'sec', onclick: () => show('settings') }, t('Cancel'))));
         code.focus();
       }) }, t('Set up two-step verification'))));
   }
@@ -341,7 +627,7 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
   // ---- SET-040: change a backup of this computer — the folders and the time, when the IT company allows it
   let EDIT = null;
   async function edit(m) {
-    const s = EDIT; if (!s) { show('home'); return; }
+    const s = EDIT; if (!s) { show('sets'); return; }
     const inc = (s.src || '').split('\n').filter(Boolean), exc = (s.skip || '').split('\n').filter(Boolean);
     const canSrc = ST.canSources !== '0' && s.type === 'FILE', canTime = ST.canSchedule !== '0';
     const picker = canSrc ? dirPicker(inc, exc) : null;
@@ -349,10 +635,10 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const minute = h('select', { 'aria-label': t('Minutes') }, Array.from({ length: 12 }, (_, i) => h('option', { value: String(i * 5), selected: i * 5 === Number(s.mm) }, String(i * 5).padStart(2, '0'))));
     if (!canTime) { hour.disabled = true; minute.disabled = true; }
     put(m, h('h3', {}, t('Change the backup'), ': ', s.name),
-      h('label', {}, t('Folders to back up')), picker || h('div', {}, h('p', { class: 'ltr' }, s.sources || '—'), h('p', { class: 'muted' }, t('Your IT provider manages the folders of this backup.'))),
-      h('label', {}, t('Daily backup time')), h('div', { class: 'time ltr' }, hour, h('b', {}, ':'), minute), canTime ? null : h('p', { class: 'muted' }, t('Your IT provider manages the time of this backup.')),
-      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('editset', Object.assign({ set: s.id, hour: hour.value, minute: minute.value }, picker ? picker.get() : {})); toast(t('The backup was changed')); ST = await api('state'); show('home'); }) }, t('Save and exit')),
-        h('button', { class: 'sec', onclick: () => show('home') }, t('Exit without saving'))));
+      h('label', {}, t('Folders to back up')), picker || h('div', {}, h('p', { class: 'ltr' }, s.sources || '—'), h('p', { class: 'muted' }, LOCKED)),
+      h('label', {}, t('Daily backup time')), h('div', { class: 'time ltr' }, hour, h('b', {}, ':'), minute), canTime ? null : h('p', { class: 'muted' }, LOCKED),
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('editset', Object.assign({ set: s.id, hour: hour.value, minute: minute.value }, picker ? picker.get() : {})); toast(t('The backup was changed')); ST = await api('state'); show('sets'); }) }, t('Save and exit')),
+        h('button', { class: 'sec', onclick: () => show('sets') }, t('Exit without saving'))));
   }
 
   async function add(m) {
@@ -384,14 +670,22 @@ footer { color: var(--muted); font-size: 12px; text-align: center; padding: 0 18
     const srcLabel = h('label', {}, t('Folders to back up'));
     const LABEL = { GWS: t('Local folder for the domain\'s copy (free space needed)'), FILE: t('Folders to back up'), M365: t('Local folder for the tenant\'s copy (free space needed)'), MYSQL: t('Databases (one per line; empty = all)'), POSTGRESQL: t('Databases (one per line; empty = all)'), HYPERV: t('Virtual machines (one per line; empty = all)'), VMWARE: t('Virtual machines (one per line; empty = all)'), ORACLE: t('Oracle instances — ORACLE_SID (one per line)'), MSSQL: t('Databases (one per line; empty = all)'), SYSTEMSTATE: t('Nothing to choose — the whole System State is backed up'), BAREMETAL: t('Where to keep the image before sending: a second disk or a network folder, e.g. E:\\ or \\\\nas\\backup'), DOMINO: t('Folders (empty = the data folder, the transaction logs and notes.ini — found automatically)') };
     const NAME = { MSSQL: 'SQL Server', SYSTEMSTATE: 'System State', BAREMETAL: 'Bare-metal', GWS: 'Google Workspace', M365: 'Microsoft 365', MYSQL: 'MySQL', POSTGRESQL: 'PostgreSQL', HYPERV: 'Hyper-V', VMWARE: 'VMware', ORACLE: 'Oracle', DOMINO: 'Domino' };
-    if (ST.canAdd === '0') { put(m, h('p', { class: 'muted' }, t('Your IT provider adds new backups — contact {0}.', ST.company || t('support')))); return; }
+    if (ST.canAdd === '0') { put(m, h('p', { class: 'muted' }, t('Your IT provider adds new backups — contact {0}.', ST.company || t('support'))), h('p', { class: 'muted' }, LOCKED)); return; }
+    // owner decision A7: keep a recovery copy of the key with the IT company? both options, their texts in full
+    let kr = {}; try { kr = await api('keyrecovery', null, { lang: I18N.lang }); } catch (e) { kr = { allowed: '0' }; }
+    const krOn = kr.allowed !== '0';
+    const keepR = h('input', { type: 'radio', name: 'keyrec', style: 'width:auto', checked: krOn && kr.default !== '0', disabled: !krOn }), noneR = h('input', { type: 'radio', name: 'keyrec', style: 'width:auto', checked: !(krOn && kr.default !== '0'), disabled: !krOn });
+    const keyBox = h('section', { class: 'box' }, h('b', {}, kr.title || t('Recovery copy of the encryption key')),
+      h('label', {}, keepR, ' ', kr.keepLabel || ''), h('p', { class: 'muted' }, kr.keepText || ''),
+      h('label', {}, noneR, ' ', kr.noneLabel || ''), h('p', { class: 'muted' }, kr.noneText || ''),
+      krOn ? null : h('p', { class: 'warn' }, kr.offText || ''));
     const inc = [], exc = []; const picker = dirPicker(inc, exc);
     kind.onchange = () => { const k = kind.value; picker.hidden = k !== 'FILE'; src.hidden = k === 'FILE' || k === 'SYSTEMSTATE'; m365.hidden = k !== 'M365'; gws.hidden = k !== 'GWS'; db.hidden = !['MSSQL', 'MYSQL', 'POSTGRESQL', 'ORACLE', 'VMWARE'].includes(k); sqlBox.hidden = k !== 'MSSQL'; deltaBox.hidden = ST.restic === '1' || k !== 'FILE'; vmExtra.hidden = k !== 'VMWARE'; dbHost.placeholder = k === 'VMWARE' ? 'esxi.company.local' : k === 'ORACLE' ? t('Empty = on this computer (operating-system authentication)') : k === 'MSSQL' ? t('Empty = this computer (e.g. .\\SQLEXPRESS for a named instance)') : '127.0.0.1'; dbUser.placeholder = k === 'MSSQL' ? t('Empty = Windows authentication') : ''; srcLabel.textContent = LABEL[k]; if (NAME[k] && (name.value === t('Documents') || Object.values(NAME).includes(name.value))) name.value = NAME[k]; };
     src.hidden = true;
     put(m, h('label', {}, t('Backup type')), kind, h('label', {}, t('Backup name')), name, srcLabel, src, picker, m365, gws, db, sqlBox, vmExtra, deltaBox, h('label', {}, t('Daily backup time')), at,
-      h('p', { class: 'muted' }, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.')),
-      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { await api('addset', { type: kind.value, name: name.value, sources: kind.value === 'FILE' ? inc.join('\n') : src.value, exclude: kind.value === 'FILE' ? exc.join('\n') : '', hour: hour.value, minute: minute.value, tenant: tenant.value, clientId: clientId.value, secret: secret.value, users: users.value, dbHost: dbHost.value, dbPort: dbPort.value, dbUser: dbUser.value, dbPassword: dbPass.value, gwsKey: gwsKey.value, gwsAdmin: gwsAdmin.value, vmDatacenter: vmDc.value, vmThumbprint: vmThumb.value, deltaType: deltaType.value, sqlFullDay: sqlFull.value, ...(kind.value === 'GWS' ? { users: gwsUsers.value } : {}) }); toast(t('The backup was added')); ST = await api('state'); show('home'); }) }, t('Save and exit')),
-        h('button', { class: 'sec', onclick: () => show('home') }, t('Exit without saving'))));
+      h('p', { class: 'muted' }, t('Files are encrypted on this computer before they leave, with your password. Without the password nothing can be restored — keep it safe.')), keyBox,
+      h('div', { class: 'bar' }, h('button', { class: 'primary', onclick: wrap(async () => { const r = await api('addset', { keyRecovery: krOn && keepR.checked ? '1' : '0', type: kind.value, name: name.value, sources: kind.value === 'FILE' ? inc.join('\n') : src.value, exclude: kind.value === 'FILE' ? exc.join('\n') : '', hour: hour.value, minute: minute.value, tenant: tenant.value, clientId: clientId.value, secret: secret.value, users: users.value, dbHost: dbHost.value, dbPort: dbPort.value, dbUser: dbUser.value, dbPassword: dbPass.value, gwsKey: gwsKey.value, gwsAdmin: gwsAdmin.value, vmDatacenter: vmDc.value, vmThumbprint: vmThumb.value, deltaType: deltaType.value, sqlFullDay: sqlFull.value, ...(kind.value === 'GWS' ? { users: gwsUsers.value } : {}) }); toast(t('The backup was added') + ' ' + (r.keyRecovery === '1' ? t('A recovery copy of the key is kept by {0}.', company()) : t('No recovery copy of the key is kept — keep the key in a safe place.'))); ST = await api('state'); show('sets'); }) }, t('Save and exit')),
+        h('button', { class: 'sec', onclick: () => show('sets') }, t('Exit without saving'))));
   }
 
   if (!KEY) { put($('#main'), h('p', { class: 'bad' }, t('Open this screen from the desktop shortcut.'))); return; }

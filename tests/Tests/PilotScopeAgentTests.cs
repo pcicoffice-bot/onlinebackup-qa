@@ -93,8 +93,9 @@ namespace OnlineBackup.Tests
                 Assert.Contains(m.List("sets"), x => x["set"] == set.Id && x["expiredPoints"] != null);
                 Assert.Empty(m.List("errors"));
 
-                // update: the client update list is served to the computer
-                Assert.NotNull(app.DeviceClient().Call("GET", "/api/client/files")["version"]);
+                // update: owner decision B1 — the computers' automatic update is off in Pilot 1 (not signed yet): with the switch
+                // the server offers no client update (403 SCOPE)
+                Refused(() => app.DeviceClient().Call("GET", "/api/client/files"), "client");
 
                 // recovery: a new computer, with the key the server kept (key recovery), restores the same files
                 var key = env.Admin().Call("GET", "/api/admin/keys/pilot/" + set.Id)["key"];

@@ -438,8 +438,14 @@ namespace OnlineBackup.Tests
             }
         }
 
+        /// <summary>
+        /// Owner decision 115 (B, 2026-10-08, docs/OWNER-DECISIONS.md): with the pilot switch on, a set of a blocked kind is kept
+        /// as it is - "verify" changes nothing at all; the administrator's explicit "rebuild index" IS allowed as a repair:
+        /// it may rewrite only the index (index.db and its SQLite side files), every backed-up object stays byte-identical,
+        /// and the repair is written to the server's admin log and the customer's Rebuild log.
+        /// </summary>
         [Fact]
-        public void ARebuildOrVerify_OfABlockedSet_FromTheAdminSite_LeavesItsDataByteIdentical()
+        public void ARebuildOrVerify_OfABlockedSet_KeepsEveryBackedUpObjectByteIdentical_TheRebuildIsALoggedRepair()
         {
             using (var env = new Env())
             {
@@ -451,19 +457,22 @@ namespace OnlineBackup.Tests
                 var admin = env.Admin();
                 PilotOn(env);
                 var before = Manifest(dataDir);
+                Assert.True(before.Keys.Any(k => !IsIndex(k)), "the blocked set has backed-up objects to compare");
                 Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
-                string outcome = null;
                 foreach (var op in new[] { "verify", "rebuild" })
                 {
-                    try { admin.Call("POST", "/api/admin/" + op, new Msg().Set("login", "pilot").Set("set", s.Id).Set("verify", "1")); outcome = (outcome == null ? "" : outcome + "; ") + op + " ran (200)"; }
-                    catch (AgentException e) { outcome = (outcome == null ? "" : outcome + "; ") + op + " " + e.Status + " " + e.Code; }
+                    admin.Call("POST", "/api/admin/" + op, new Msg().Set("login", "pilot").Set("set", s.Id).Set("verify", "1"));
                     Microsoft.Data.Sqlite.SqliteConnection.ClearAllPools();
                     var after = Manifest(dataDir);
                     var changed = before.Keys.Union(after.Keys).Where(k => !before.ContainsKey(k) || !after.ContainsKey(k) || before[k] != after[k]).ToList();
-                    Assert.True(changed.Count == 0, "BYPASS with the pilot switch on: the admin site's " + op + " changed the stored data of a blocked set (" + outcome + "): " + string.Join(", ", changed.Take(8)));
+                    if (op == "verify") Assert.True(changed.Count == 0, "verify changed the stored data of a blocked set: " + string.Join(", ", changed.Take(8)));
+                    else Assert.True(changed.All(IsIndex), "the rebuild changed more than the index of a blocked set: " + string.Join(", ", changed.Where(k => !IsIndex(k)).Take(8)));
                 }
+                var rebuildLogs = Path.Combine(env.HomeA, "pilot", "logs", "Rebuild");
+                Assert.True(Directory.Exists(rebuildLogs) && Directory.GetFiles(rebuildLogs).Length == 1, "the repair is written to the customer's Rebuild log");
             }
         }
+        static bool IsIndex(string rel) { var n = Path.GetFileName(rel); return n == "index.db" || n.StartsWith("index.db-", StringComparison.Ordinal); }
 
         [Fact]
         public void ABlockedSetPutBackFromTheRecycleBin_StaysBlocked()

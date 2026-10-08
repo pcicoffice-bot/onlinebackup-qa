@@ -80,7 +80,7 @@ namespace OnlineBackup.Tests
             var setup = users.EnableTotp("anna", "203.0.113.5");
             var secret = setup["secret"];
             Assert.Equal("OTP", Code(() => users.ConfirmTotp("anna", "000000", "203.0.113.5")));
-            users.ConfirmTotp("anna", Totp.Code(secret, DateTime.UtcNow), "203.0.113.5");
+            users.ConfirmTotp("anna", Totp.Code(secret, DateTime.UtcNow.AddSeconds(-30)), "203.0.113.5"); // owner decision 122 (A): the confirming code is used up - confirmed with the code shown a moment earlier (the step before is accepted), the sign-in below takes the current one
             Assert.Equal("OTP_REQUIRED", Code(() => users.CheckUser("anna", "Anna-Pass-1", null, "203.0.113.5")));
             Assert.Equal("LOGIN", Code(() => users.CheckUser("anna", "Anna-Pass-1", "123456", "203.0.113.5")));
             Assert.NotNull(users.CheckUser("anna", "Anna-Pass-1", Totp.Code(secret, DateTime.UtcNow), "203.0.113.5"));
