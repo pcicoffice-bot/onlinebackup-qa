@@ -1,0 +1,22 @@
+﻿
+
+TimeCreated      : 10/9/2026 2:08:28 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/9/2026 2:04:59 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : QA files: the previous backup was interrupted — reported
+
+TimeCreated      : 10/9/2026 2:04:59 AM
+ProviderName     : OnlineBackupAgent
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+
+

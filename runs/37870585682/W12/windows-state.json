@@ -1,0 +1,41 @@
+﻿{
+    "agent":  {
+                  "exists":  true,
+                  "state":  "Running",
+                  "start":  "Auto",
+                  "account":  "LocalSystem",
+                  "path":  "\"C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe\" service --home \"C:\\ProgramData\\ITSguard Server Online\"",
+                  "pid":  8288,
+                  "process":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe"
+              },
+    "server":  {
+                   "exists":  true,
+                   "state":  "Running",
+                   "start":  "Auto",
+                   "account":  "LocalSystem",
+                   "path":  "\"C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe\" run --system-home \"C:\\obqa\\sys\" --prefix https://+:8443/",
+                   "pid":  6900,
+                   "process":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe"
+               },
+    "shadows":  1,
+    "processes":  [
+                      {
+                          "name":  "OnlineBackup.Agent",
+                          "pid":  8288,
+                          "path":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Agent.exe",
+                          "started":  "\/Date(1791512898362)\/"
+                      },
+                      {
+                          "name":  "OnlineBackup.Client",
+                          "pid":  5860,
+                          "path":  "C:\\Program Files\\ITSguard Server Online\\OnlineBackup.Client.exe",
+                          "started":  "\/Date(1791510064676)\/"
+                      },
+                      {
+                          "name":  "OnlineBackup.Server",
+                          "pid":  6900,
+                          "path":  "C:\\Program Files\\OnlineBackup Server\\OnlineBackup.Server.exe",
+                          "started":  "\/Date(1791514346772)\/"
+                      }
+                  ]
+}
