@@ -1,0 +1,379 @@
+{
+ "title": "QA shards run 38034779454 (b1e73238c0619b7090a9576265023bd268436a6c; ubuntu-latest, select 'Restic', 4 shards x 1, serial control)",
+ "counts": {
+  "PASS": 31,
+  "FAIL": 0,
+  "NOT TESTED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "PASS",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "PASS",
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": "PASS",
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": "PASS",
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": "PASS",
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 25.0609466,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 26.0884199,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 68.1759571,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 68.153304,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 25.3811858,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 44.4470444,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 45.1717695,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 10.0468429,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.5798855,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 10.5975325,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 89.8724894,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 24.6422044,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 25.2502878,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 24.4266479,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 47.16754,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 47.9010041,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 10.3247499,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 14.4200681,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 5.4799672,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 14.5446146,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 10.9193909,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 4.7397137,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 8.9866607,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 5.2436445,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 8.4130505,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 6.6888761,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 131.340583,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 131.4068904,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 2.5508089,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 691.5748263,
+    "note": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 6.6749862,
+    "note": ""
+   }
+  ]
+ },
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002276",
+    "os": "Linux",
+    "sha": "b1e73238c0619b7090a9576265023bd268436a6c",
+    "exit": 0,
+    "minutes": 6
+   },
+   "tests": 8
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000002346",
+    "os": "Linux",
+    "sha": "b1e73238c0619b7090a9576265023bd268436a6c",
+    "exit": 0,
+    "minutes": 5
+   },
+   "tests": 8
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000002238",
+    "os": "Linux",
+    "sha": "b1e73238c0619b7090a9576265023bd268436a6c",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 7
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000002324",
+    "os": "Linux",
+    "sha": "b1e73238c0619b7090a9576265023bd268436a6c",
+    "exit": 0,
+    "minutes": 17
+   },
+   "tests": 8
+  }
+ ],
+ "control": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.ProcessTests.HungRestic_BackupEndsAsAFailure_AtTheIdleLimit_AndTheNextBackupRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.InterruptionTests.TwoDifferentResticRunsWithTheSameName_AreBothRecorded": "PASS",
+  "OnlineBackup.Tests.QaL_FaultInjectionProofTests.ResticRestoreKilledWhileItReallyRuns_RestoreAgain_GivesIdenticalFiles": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "PASS",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "PASS",
+  "OnlineBackup.Tests.DestinationTests.LocalOnly_And_ServerPlusLocalCopy_WithRestic": "PASS",
+  "OnlineBackup.Tests.NightS_Part2Tests.ResticObjectRoutes_RejectTraversalAndNeverTouchFilesOutsideTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.BackupKilledMidwayLeavesNothingBroken_TheNextRunCompletesAndEverythingRestores": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticBacksUpToOurServer_OnlyChangesAreSent_RestoresExactly_AndTheServerProtectsTheRepository": "PASS",
+  "OnlineBackup.Tests.ResticTests.ResticRespectsTheQuota": "PASS",
+  "OnlineBackup.Tests.ResticTests.SingleFileRestore_NamesWithBracketsAndStars": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.PartialSnapshot_ServerJobLog_ShowsErrorAndTheMissingFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WindowRestore_ReplaceExistingUnchecked_KeepsTheNewerLocalFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticServerTests.WrongKey_AgainstServerRepository_NothingChanges_RunIsAFailureOnTheServer": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"post\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.ResticCommandLongerThanTheLease_IsNotRecordedAsAnInterruptedBackup(kind: \"pre\")": "PASS",
+  "OnlineBackup.Tests.ChallengeF_ResticRunTests.RunFlagOfAnotherLiveProgram_DoesNotBlockTheBackup": "PASS",
+  "OnlineBackup.Tests.NightP_RestoreChainTests.Restic_LongChain_EverySnapshotRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS"
+ },
+ "control_differences": []
+}

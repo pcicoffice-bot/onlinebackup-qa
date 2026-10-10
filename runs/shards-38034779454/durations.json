@@ -1,0 +1,15 @@
+{
+ "OnlineBackup.Tests.AuditJ_ResticEngineTests": 302.6,
+ "OnlineBackup.Tests.AuditJ_ResticServerTests": 20.3,
+ "OnlineBackup.Tests.ChallengeF_ResticRunTests": 265.3,
+ "OnlineBackup.Tests.DbHyperVTests": 10.3,
+ "OnlineBackup.Tests.DestinationTests": 14.4,
+ "OnlineBackup.Tests.InterruptionTests": 1.6,
+ "OnlineBackup.Tests.NightP_RestoreChainTests": 691.6,
+ "OnlineBackup.Tests.NightS_Part2Tests": 5.5,
+ "OnlineBackup.Tests.ProcessTests": 10.0,
+ "OnlineBackup.Tests.QaL_FaultInjectionProofTests": 10.6,
+ "OnlineBackup.Tests.ResticComponentTests": 259.3,
+ "OnlineBackup.Tests.ResticTests": 39.1,
+ "OnlineBackup.Tests.TlsTests": 6.7
+}
