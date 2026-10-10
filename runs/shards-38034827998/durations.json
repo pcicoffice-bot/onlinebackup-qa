@@ -1,0 +1,8 @@
+{
+ "OnlineBackup.Tests.ClientWindowCSourceTests": 0.2,
+ "OnlineBackup.Tests.ClientWindowCTests": 3.8,
+ "OnlineBackup.Tests.ClientWindowCWindowsTests": 198.3,
+ "OnlineBackup.Tests.PilotClientUiComponentTests": 16.3,
+ "OnlineBackup.Tests.RestoreOriginalLocationIntegrationTests": 35.0,
+ "OnlineBackup.Tests.RestoreVerifyComponentTests": 0.1
+}
