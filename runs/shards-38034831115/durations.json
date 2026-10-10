@@ -1,0 +1,7 @@
+{
+ "OnlineBackup.Tests.ClientUpdateTests": 1.5,
+ "OnlineBackup.Tests.PilotChallengeInstallTests": 0.1,
+ "OnlineBackup.Tests.PilotInstallComponentTests": 0.8,
+ "OnlineBackup.Tests.PilotScopeAgentTests": 6.0,
+ "OnlineBackup.Tests.UpdaterTests": 3.4
+}
