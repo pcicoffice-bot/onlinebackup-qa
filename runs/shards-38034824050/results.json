@@ -1,0 +1,460 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.BK05UnreadableTests OnlineBackup.Tests.UnreadableComponentTests OnlineBackup.Tests.SourceTests OnlineBackup.Tests.PermissionTests', 1 shards x 2 - run 38034824050 (5fd067bf3e3c9cdaf2e7cc8459d0c01ce7a08bdf)",
+ "mode": "strict",
+ "build_sha": "2ad50a58c3469edfe66d013f4c9017a3abd0473afc058817124bf818c259f78d",
+ "counts": {
+  "PASS": 22,
+  "FAIL": 0,
+  "NOT TESTED": 2,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeletedBetweenScanAndRead_IsAnErrorNamingIt_TheEarlierVersionIsKept_AndItComesBackClean": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileLockedByAnotherProcess_VssOff_IsAnErrorNamingIt_AndItIsSentOnceReleased": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_ASubfolderDeniedByPermissions_IsAnErrorNamingIt_ItsFilesAreKept_AndItComesBackClean": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADeniedFileInsideAnIncludeFilter_IsAnError_DeniedDataOutsideTheSelectionIsNot": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADisconnectedNetworkSource_IsAnErrorNamingIt": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AFileNameWithATrailingDot_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AJunctionToADeniedFolder_IsAnError": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AnUnchangedFileThatBecomesUnreadable_StaysRestorableInTheNewestPoint": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ShippedAgentOnWindows_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AllReadable_IsACleanSuccess_NoErrorNoWarning_RestoresIdentical": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_E2E_ShippedAgentOnWindows_AnAclDeniedFile_IsAnErrorOnAgentAndServer_TheRestRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_TheWholeSourceRemoved_IsAFailureNamingIt_ThePointStillRestores_AndItComesBackClean": "PASS",
+  "OnlineBackup.Tests.PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical": "NOT TESTED",
+  "OnlineBackup.Tests.SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning": "PASS",
+  "OnlineBackup.Tests.SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed": "PASS",
+  "OnlineBackup.Tests.SourceTests.SubfolderNotReadable_IsAnError_NotAWarning": "NOT TESTED",
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"\")": "PASS",
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"RESTIC\")": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending": "PASS",
+  "OnlineBackup.Tests.UnreadableComponentTests.OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeletedBetweenScanAndRead_IsAnErrorNamingIt_TheEarlierVersionIsKept_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7458421,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.0097214,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7986477,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.9001074,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileDeniedByPermissions_IsAnErrorNamingIt_TheRestRestoreIdentical_AndItIsBackedUpOnceReadable(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 7.7983419,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 8.1684886,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AFileLockedByAnotherProcess_VssOff_IsAnErrorNamingIt_AndItIsSentOnceReleased": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.0504805,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.129168,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_ASubfolderDeniedByPermissions_IsAnErrorNamingIt_ItsFilesAreKept_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7666413,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.1319585,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADeniedFileInsideAnIncludeFilter_IsAnError_DeniedDataOutsideTheSelectionIsNot": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.2342644,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3001914,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ADisconnectedNetworkSource_IsAnErrorNamingIt": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.1032964,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.7742274,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AFileNameWithATrailingDot_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0596389,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.1390248,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AJunctionToADeniedFolder_IsAnError": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.0836585,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.141021,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.2337078,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.2933674,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_AnUnchangedFileThatBecomesUnreadable_StaysRestorableInTheNewestPoint": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.3230423,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3705624,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_Adv_ShippedAgentOnWindows_APathLongerThan260_IsBackedUpOrAnError_NeverSilentlyLeftOut": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.0424003,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 7.3643863,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_AllReadable_IsACleanSuccess_NoErrorNoWarning_RestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.3212511,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.3636064,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_E2E_ShippedAgentOnWindows_AnAclDeniedFile_IsAnErrorOnAgentAndServer_TheRestRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 9.7244274,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 10.0514566,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.BK05UnreadableTests.BK05_TheWholeSourceRemoved_IsAFailureNamingIt_ThePointStillRestores_AndItComesBackClean": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.7319119,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 1.801051,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PermissionTests.AFolderTheAgentMayNotRead_IsAnError_NotADeletion_AndEverythingElseRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0015314,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux file permissions (chmod)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0211809,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux file permissions (chmod)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.OneOfTwoSourcesGone_IsSuccessWithError_ShownAsProblem_NotAsWarning": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 5.4474737,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 3.7974707,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.RestoreTest_WithTheSourceOffline_IsNotChecked_NotFailed": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.4169634,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 2.4071848,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.SubfolderNotReadable_IsAnError_NotAWarning": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0128221,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs a non-root Linux user (root reads every folder; Windows has no such permission bits)",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0006534,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs a non-root Linux user (root reads every folder; Windows has no such permission bits)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 25.0997281,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 13.1703213,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.SourceTests.WholeSourceGone_IsAFailure_LastBackupNotRefreshed_FilesKept_AndComesBackCleanly(engine: \"RESTIC\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 30.7133467,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 29.9274038,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.ALockedFile_IsAnError_NotADeletion_TheOthersRestoreIdentical_AndItIsSentOnceFree": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0856858,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0864978,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.EverySourceGone_IsAFailure_NothingDeleted_TheIndexKeepsEveryFile_AndTheSourceComesBackWithoutResending": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0812718,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0761343,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.UnreadableComponentTests.OneOfTwoSourcesGone_IsSuccessWithError_NamesIt_ItsFilesAreNotDeleted": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0334341,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.0329721,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002435",
+    "os": "Windows",
+    "sha": "5fd067bf3e3c9cdaf2e7cc8459d0c01ce7a08bdf",
+    "build_sha": "2ad50a58c3469edfe66d013f4c9017a3abd0473afc058817124bf818c259f78d",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 24
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000002407",
+    "os": "Windows",
+    "sha": "5fd067bf3e3c9cdaf2e7cc8459d0c01ce7a08bdf",
+    "build_sha": "2ad50a58c3469edfe66d013f4c9017a3abd0473afc058817124bf818c259f78d",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 24
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
