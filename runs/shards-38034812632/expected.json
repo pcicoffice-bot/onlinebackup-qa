@@ -1,0 +1,6 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce",
+  "OnlineBackup.Tests.PilotChallengeSecurityTests.AU06_AResellersAdministrator_EveryAdminRoute_OnAnotherResellersOrTheSystemsCustomer_IsRefused_NothingChanges"
+ ]
+}

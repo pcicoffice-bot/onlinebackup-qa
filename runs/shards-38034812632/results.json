@@ -1,0 +1,57 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.PilotChallengeSecurityTests.AU06_AResellersAdministrator_EveryAdminRoute_OnAnotherResellersOrTheSystemsCustomer_IsRefused_NothingChanges OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce', 1 shards x 1 - run 38034812632 (51768e7f17982ebbe498ee1d71961cdd2420b5a8)",
+ "mode": "strict",
+ "build_sha": "407c3c557dbf6641b948f3376a048eaf9d584b27a20798b0e7d70b26d3c1bd0d",
+ "counts": {
+  "PASS": 0,
+  "FAIL": 2,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "FAIL",
+  "OnlineBackup.Tests.PilotChallengeSecurityTests.AU06_AResellersAdministrator_EveryAdminRoute_OnAnotherResellersOrTheSystemsCustomer_IsRefused_NothingChanges": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 123.5259555,
+    "note": "the agent did not end after the server went away (at 08:30:20.1); what it printed:",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotChallengeSecurityTests.AU06_AResellersAdministrator_EveryAdminRoute_OnAnotherResellersOrTheSystemsCustomer_IsRefused_NothingChanges": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 5.071807,
+    "note": "24 not refused:\nGET /api/admin/users/beta-c1%00/sets/1791621141378 -> 400 \nPOST /api/admin/users/beta-c1%00/sets/1791621141378 -> 400 \nGET /api/admin/users/beta-c1%00/sets/1791621141378/runs -> 400 \nPOST /api/admin/users/beta-c1%00/sets/1791621141378/run -> 400 \nPOST /api/admin/users/beta-c1%00/sets/1791621141378/stop -> 400 \nPOST /api/admin/users/beta-c1%00/sets/1791621141378/addcomputer -> 400 \n",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002266",
+    "os": "Windows",
+    "sha": "51768e7f17982ebbe498ee1d71961cdd2420b5a8",
+    "build_sha": "407c3c557dbf6641b948f3376a048eaf9d584b27a20798b0e7d70b26d3c1bd0d",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 3
+   },
+   "tests": 2
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
