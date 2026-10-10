@@ -1,0 +1,42 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact"
+ ],
+ "s02-r01": [
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"/home/anna/a.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"C:\\\\not\\\\a\\\\linux\\\\path\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"/C/Users/anna/a.txt\", expected: \"/C/Users/anna/a.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\", expected: \"/C\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"\\\\\\\\server\\\\share\\\\x.txt\", expected: \"\\\\\\\\server\\\\share\\\\x.txt\")",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")"
+ ],
+ "s03-r01": [
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword"
+ ],
+ "s04-r01": [
+  "OnlineBackup.Tests.NoSilentPassTests.NoTestCanEndEarly_AsPassed",
+  "OnlineBackup.Tests.NoSilentPassTests.TheChecker_FindsAnEarlyReturn_AndIgnoresLambdasAndLocalFunctions"
+ ],
+ "s05-r01": [
+  "OnlineBackup.Tests.DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported",
+  "OnlineBackup.Tests.DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase"
+ ],
+ "s06-r01": [
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical"
+ ]
+}

@@ -1,0 +1,392 @@
+{
+ "title": "windows-latest, select 'ResticComponentTests DbHyperVTests AuditJ_ResticEngineTests WebRestoreTests ResticPathComponentTests NoSilentPassTests', 6 shards x 1 - run 38034791509 (31a8f6db9d9fcefa70b82054a1442bed54e43be2)",
+ "mode": "strict",
+ "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+ "counts": {
+  "PASS": 23,
+  "FAIL": 1,
+  "NOT TESTED": 4,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": "NOT TESTED",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": "PASS",
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"/home/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"C:\\\\not\\\\a\\\\linux\\\\path\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"/C/Users/anna/a.txt\", expected: \"/C/Users/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\", expected: \"/C\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"\\\\\\\\server\\\\share\\\\x.txt\", expected: \"\\\\\\\\server\\\\share\\\\x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": "PASS",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": "FAIL",
+  "OnlineBackup.Tests.NoSilentPassTests.NoTestCanEndEarly_AsPassed": "PASS",
+  "OnlineBackup.Tests.NoSilentPassTests.TheChecker_FindsAnEarlyReturn_AndIgnoresLambdasAndLocalFunctions": "PASS",
+  "OnlineBackup.Tests.DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported": "NOT TESTED",
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": "NOT TESTED",
+  "OnlineBackup.Tests.DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase": "NOT TESTED",
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": "PASS",
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_PathNotInThePoint_IsNotReportedAsSuccess": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 53.3021588,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Restore_UnicodeSpacesAndLongNames_ByteIdentical_WholeAndSingleFile": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 49.6953162,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_AfterTheSourcesChange_OldSnapshotsAreStillRemoved": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 135.8648418,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.Retention_KeepLastOne_KeepsTheNewestSnapshot": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 130.3462402,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.UnreadableFile_ExitCode3_IsAnErrorNamedInTheLog": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0231679,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs restic and the right to drop capabilities (setpriv)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_ErrorSaysWrongKey_NotRepositoryCreation": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 83.3323815,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AuditJ_ResticEngineTests.WrongKey_FreshComputer_NeverCreatesANewRepository_OldSnapshotsIntact": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 88.32037220000001,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"/home/anna/a.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0038705,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnLinux_EveryPathStaysAsItIs(given: \"C:\\\\not\\\\a\\\\linux\\\\path\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0001327,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"/C/Users/anna/a.txt\", expected: \"/C/Users/anna/a.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.2e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\", expected: \"/C\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.9e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0006648,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 8.05e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 6.7e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"\\\\\\\\server\\\\share\\\\x.txt\", expected: \"\\\\\\\\server\\\\share\\\\x.txt\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.4e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.OnWindows_TheCustomersPathBecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0001352,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": [
+   {
+    "job": "s03-r01",
+    "status": "FAIL",
+    "sec": 26.8405159,
+    "note": "OnlineBackup.Agent.AgentException : The restore failed: {\"message_type\":\"exit_error\",\"code\":1,\"message\":\"Fatal: All path filters must be absolute, starting with a forward slash '/'\"}",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NoSilentPassTests.NoTestCanEndEarly_AsPassed": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0385611,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NoSilentPassTests.TheChecker_FindsAnEarlyReturn_AndIgnoresLambdasAndLocalFunctions": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0371296,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.HyperV_VmsExportedOnline_OnlyChangedDiskBlocksSent_RestoredAndImported": [
+   {
+    "job": "s05-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0021789,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux (the stand-in tools are shell scripts)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySqlAndPostgres_OnRestic_AndAFailingDatabaseIsReported": [
+   {
+    "job": "s05-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0002977,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux (the stand-in tools are shell scripts)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.DbHyperVTests.MySql_EveryDatabaseDumped_PasswordNeverInTheLog_DumpsTravelAsDeltas_LoadIntoANewDatabase": [
+   {
+    "job": "s05-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0192369,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux (the stand-in tools are shell scripts)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.ABackupStartedWhileTheRepositoryIsLockedForAMoment_WaitsForTheLock_AndCompletes": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 176.3723075,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.AnotherKey_ReadsNothing": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 44.912427,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.DamagedPack_IsFoundByCheck_AndItsRestoreFailsLoudly": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 45.5397346,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.EveryWritingResticCommand_WaitsForALockedRepository": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 47.2073412,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.KnownTree_BacksUp_ChecksClean_RestoresIdentical_SecondRunAddsNothing": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 87.3802917,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticComponentTests.StoppedInTheMiddle_RepositoryChecksClean_NextBackupCompletes_RestoresIdentical": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 90.4101932,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002344",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 10
+   },
+   "tests": 7
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000002288",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 9
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000002326",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000002381",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 2
+  },
+  {
+   "job": "s05-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s05-r01",
+    "runner": "GitHub Actions 1000002322",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 3
+  },
+  {
+   "job": "s06-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s06-r01",
+    "runner": "GitHub Actions 1000002449",
+    "os": "Windows",
+    "sha": "31a8f6db9d9fcefa70b82054a1442bed54e43be2",
+    "build_sha": "4f61ccf1e8bff364935582a9fef8bf2816eb6b34096adb8594844372fdb19057",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 9
+   },
+   "tests": 6
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
