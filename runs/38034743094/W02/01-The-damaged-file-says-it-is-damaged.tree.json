@@ -1,0 +1,53 @@
+﻿{
+    "screen":  "The damaged file says it is damaged",
+    "window":  "Setup",
+    "rect":  {
+                 "y":  333,
+                 "w":  380,
+                 "h":  149,
+                 "x":  347
+             },
+    "resolution":  "1024x768",
+    "dpi":  100,
+    "controls":  [
+                     {
+                         "type":  "Pane",
+                         "name":  "OK",
+                         "cls":  "Button",
+                         "rect":  {
+                                      "y":  447,
+                                      "w":  75,
+                                      "h":  23,
+                                      "x":  634
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  382,
+                                      "w":  32,
+                                      "h":  32,
+                                      "x":  371
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     },
+                     {
+                         "type":  "Pane",
+                         "name":  "The installation file is damaged (the file is incomplete). Download it again.",
+                         "cls":  "Static",
+                         "rect":  {
+                                      "y":  385,
+                                      "w":  284,
+                                      "h":  28,
+                                      "x":  412
+                                  },
+                         "enabled":  true,
+                         "offscreen":  false
+                     }
+                 ]
+}

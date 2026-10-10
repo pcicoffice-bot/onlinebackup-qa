@@ -1,0 +1,41 @@
+﻿{
+    "id":  "W02",
+    "title":  "Installer failure: a damaged Setup.exe installs nothing and says so",
+    "dir":  "D:\\a\\onlinebackup-qa\\onlinebackup-qa\\win-out\\W02",
+    "started":  "2026-10-10T09:17:15.7574436+00:00",
+    "result":  "PASS",
+    "reason":  "",
+    "steps":  [
+                  {
+                      "step":  "The damaged file says it is damaged",
+                      "expected":  "a message: damaged, download again",
+                      "actual":  "The installation file is damaged (the file is incomplete). Download it again. OK | The installation file is damaged (the file is incomplete). Download it again.",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "01-The-damaged-file-says-it-is-damaged.png",
+                      "at":  "09:17:18"
+                  },
+                  {
+                      "step":  "Nothing was installed (Windows service manager, installed programs)",
+                      "expected":  "no service, no entry",
+                      "actual":  "service: False; entries: 0",
+                      "result":  "PASS",
+                      "seconds":  0,
+                      "screenshot":  "",
+                      "at":  "09:17:22"
+                  }
+              ],
+    "ux":  [
+               {
+                   "step":  "UX: Installer: a damaged download tells the customer what to do",
+                   "expected":  "download it again",
+                   "actual":  "The installation file is damaged (the file is incomplete). Download it again. OK | The installation file is damaged (the file is incomplete). Download it again.",
+                   "result":  "PASS",
+                   "seconds":  0,
+                   "screenshot":  "",
+                   "at":  "09:17:22",
+                   "layer":  "UX"
+               }
+           ],
+    "ended":  "2026-10-10T09:17:22.5565704+00:00"
+}
