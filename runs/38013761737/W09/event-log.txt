@@ -1,0 +1,22 @@
+﻿
+
+TimeCreated      : 10/10/2026 2:54:16 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+TimeCreated      : 10/10/2026 2:51:06 AM
+ProviderName     : OnlineBackupServer
+Id               : 0
+LevelDisplayName : Information
+Message          : Service started successfully.
+
+TimeCreated      : 10/10/2026 2:50:53 AM
+ProviderName     : VSS
+Id               : 8224
+LevelDisplayName : Information
+Message          : The VSS service is shutting down due to idle timeout. 
+
+
+
