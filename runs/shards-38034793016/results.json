@@ -1,0 +1,245 @@
+{
+ "title": "windows-latest, select 'UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit', 1 shards x 10 - run 38034793016 (19bef2fe357ad440d3e21beabf711990cc2ffd23)",
+ "mode": "strict",
+ "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+ "counts": {
+  "PASS": 0,
+  "FAIL": 1,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit": [
+   {
+    "job": "s01-r01",
+    "status": "FAIL",
+    "sec": 50.720885,
+    "note": "RESTIC: without the limit it took 5.9 s",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "FAIL",
+    "sec": 49.8425846,
+    "note": "RESTIC: without the limit it took 6.0 s",
+    "kind": ""
+   },
+   {
+    "job": "s01-r03",
+    "status": "FAIL",
+    "sec": 66.740291,
+    "note": "RESTIC: without the limit it took 6.0 s",
+    "kind": ""
+   },
+   {
+    "job": "s01-r04",
+    "status": "FAIL",
+    "sec": 49.7423995,
+    "note": "RESTIC: without the limit it took 5.9 s",
+    "kind": ""
+   },
+   {
+    "job": "s01-r05",
+    "status": "PASS",
+    "sec": 44.8677435,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r06",
+    "status": "FAIL",
+    "sec": 49.5397008,
+    "note": "RESTIC: without the limit it took 6.1 s",
+    "kind": ""
+   },
+   {
+    "job": "s01-r07",
+    "status": "PASS",
+    "sec": 47.3685533,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r08",
+    "status": "PASS",
+    "sec": 54.1474714,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r09",
+    "status": "PASS",
+    "sec": 58.9075202,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r10",
+    "status": "FAIL",
+    "sec": 47.1936802,
+    "note": "RESTIC: without the limit it took 5.9 s",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002477",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000002505",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r03",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r03",
+    "runner": "GitHub Actions 1000002590",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r04",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r04",
+    "runner": "GitHub Actions 1000002444",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r05",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r05",
+    "runner": "GitHub Actions 1000002523",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r06",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r06",
+    "runner": "GitHub Actions 1000002592",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r07",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r07",
+    "runner": "GitHub Actions 1000002593",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r08",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r08",
+    "runner": "GitHub Actions 1000002595",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r09",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r09",
+    "runner": "GitHub Actions 1000002597",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r10",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r10",
+    "runner": "GitHub Actions 1000002604",
+    "os": "Windows",
+    "sha": "19bef2fe357ad440d3e21beabf711990cc2ffd23",
+    "build_sha": "90ee59cc07fb71f6f581fc8aad58c37dcdbfbfbef1c48a35275dc15c1419dc21",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}

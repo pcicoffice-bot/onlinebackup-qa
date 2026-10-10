@@ -1,0 +1,32 @@
+{
+ "s01-r01": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r02": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r03": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r04": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r05": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r06": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r07": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r08": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r09": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ],
+ "s01-r10": [
+  "OnlineBackup.Tests.OptionsTests.UploadLimit_SetOnTheServer_SlowsARealBackupToTheLimit"
+ ]
+}
