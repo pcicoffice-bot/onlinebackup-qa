@@ -1,0 +1,5 @@
+{
+ "OnlineBackup.Tests.AtomicSharedReadComponentTests": 1.8,
+ "OnlineBackup.Tests.CoreFormatsTests": 35.1,
+ "OnlineBackup.Tests.InterruptionTests": 3.0
+}
