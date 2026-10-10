@@ -1,0 +1,205 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.TlsTests OnlineBackup.Tests.PilotAgentTlsComponentTests', 1 shards x 2 - run 38034822289 (97c57bae10ec1f69e2ce1e2998bcea3d8fc2c667)",
+ "mode": "strict",
+ "build_sha": "8a341c16e6bb9fb123c597330e3b4e755fd7a1b05dcdffb242f3fd590e345165",
+ "counts": {
+  "PASS": 8,
+  "FAIL": 0,
+  "NOT TESTED": 1,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)": "PASS",
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)": "PASS",
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused": "PASS",
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": "PASS",
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": "NOT TESTED",
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.APinWithColonsAndCapitals_IsTheSamePin_WithoutAPinASelfSignedCertificateIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1250068,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.139414,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3055316,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.2448624,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.AnotherCertificate_IsRefused_BeforeAnyRequestReachesTheServer_NothingIsSent(builtin: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.6004216,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.2020019,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: False)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.2287484,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.2192451,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotAgentTlsComponentTests.ThePinnedCertificate_IsAccepted_AWholeBackupGoesThroughTls12_AndThePointRestoresIdentical(builtin: True)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.5395441,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 0.2771659,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.BuiltinTls12WithPinnedCertificate_BacksUpAndRestores_WrongPinIsRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 43.0617393,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 43.1546643,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.ModernWindowsWithTheCompanysSelfSignedCertificate_PinnedForTheAgentAndForRestic": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 40.1516578,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 40.6859324,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.Net40AgentUnderMonoUsesTheBuiltinTls": [
+   {
+    "job": "s01-r01",
+    "status": "NOT TESTED",
+    "sec": 0.0121263,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   },
+   {
+    "job": "s01-r02",
+    "status": "NOT TESTED",
+    "sec": 0.0135429,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs mono and the .NET 4.0 agent build",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.TlsTests.Net40Agent_NativeOnWindows_Tls12OnlyServer_BacksUpAndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 15.2060131,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 14.755908,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002335",
+    "os": "Windows",
+    "sha": "97c57bae10ec1f69e2ce1e2998bcea3d8fc2c667",
+    "build_sha": "8a341c16e6bb9fb123c597330e3b4e755fd7a1b05dcdffb242f3fd590e345165",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 9
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000002368",
+    "os": "Windows",
+    "sha": "97c57bae10ec1f69e2ce1e2998bcea3d8fc2c667",
+    "build_sha": "8a341c16e6bb9fb123c597330e3b4e755fd7a1b05dcdffb242f3fd590e345165",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 2
+   },
+   "tests": 9
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
