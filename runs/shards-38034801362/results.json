@@ -1,0 +1,1256 @@
+{
+ "title": "windows-latest, select 'Pilot WebRestoreTests Bug103DurationStopTests', 6 shards x 1 - run 38034801362 (d749bfee223b3acb6d4379015b0643d9579d26bc)",
+ "mode": "strict",
+ "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+ "counts": {
+  "PASS": 103,
+  "FAIL": 1,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.PilotProcessIntegrationTests.PreAndPostCommandsWritingMuchToBothStreams_AreReadToTheEnd_TheBackupSucceedsAndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_ARebootInTheMiddleOfABackup_TheDeadRunIsReportedOnceWhenTheServerAnswers_TheNextRunCompletes_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_TheServiceStartsWithTheComputer_AndAfterAnIdleRestart_ThePendingBackupCompletes_NothingReportedAsInterrupted": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ABackupObject_WithAChangedByteAnywhere_IsRefused_NeverRestoredWrong": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ARevokedComputer_RegistersAgain_GetsANewToken_TheOldStaysRefused": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ComputerLimitOfTheLicence_ExactlyTheLimitIsAccepted_OneMoreRefused_TheSameComputerAgainIsNotANewOne": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Customers_ADeviceTokenOrSessionOpensOnlyItsOwnAccount": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ForgedOrDamaged_IsRefusedLikeAnUnknownOne": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ValidIsAllowed_RevokedIsRefusedAtOnce_TheOtherComputerGoesOn": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_EveryChangedByte_EveryCut_AndEveryOtherKey_IsRefused_NeverAWrongPlaintext": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_KnownAnswers_Pbkdf2Rfc6070_AesNist_HmacCheckValue_NameSegments": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_Sizes_EmptyOneByteBlockEdgesAndOneMegabyte_RoundTripExactly": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_ABlockSurvivesARestart_UnblockLetsItIn_AndItsCountStartsAgain": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_Limits_AreExact_OldFailuresLeaveTheWindow_SprayingAndScanningBlockAtTheirCount": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_TenWrongSignIns_BlockThatAddress_OnlyIt_AndTheAdministratorIsAlerted": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.KeyRecovery_PasswordCustomAndRandomKeys_OnANewComputer_ReadTheSameBytes_TheWrongOneReadsNothing": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ResellerAdministrators_AreTheirResellersOnly_AndLoseTheSignInAtOnceWhenTheResellerIsDisabled": "PASS",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Resellers_EachWithinItsOwnLimits_AnotherResellersCustomersNeverCount": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN01_AnInstallationThatDidNotAnswer_IsFinishedByARerun_AndAReinstallOnTheOldDrive_KeepsEveryCustomerFile": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_APackageWithoutItsConnectionFile_IsRefused_BeforeAnythingIsWritten": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_AReinstallOfANewerPackage_ReplacesEveryProgramFile_AndKeepsTheRegistrationAndKeys": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_InstallFromThePackage_EveryProgramFileByteIdentical_TheScriptsNot_TheDataFolderReady": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_UninstallRemovesOnlyItsOwnFolders_NothingLeftWhenAsked_AForeignFolderStaysByteIdentical": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN03_AGoodUpdate_GivesExactlyTheNewBytes_AFailedOne_GivesBackExactlyTheOldBytes_UnlistedFilesUntouched": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_AChangedPackage_AForgedOrMisplacedSignature_AreRefused_NothingInstalled_ThenTheGenuineOneInstalls": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_ASignedVersion_IsDownloaded_Checked_HandedToItsInstallerByteIdentical_SettingsAndDataUntouched": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_AProductNameWindowsCannotHoldInAFileName_GivesSafeNames_HebrewKept": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_MissingClientFiles_AreRefusedClearly_ACutDownloadIsDamaged": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_OneChangedByteAnywhereInTheSetupPayload_IsRefused_NeverReadAsDifferentFiles": "PASS",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_TheWindowsSetup_CarriesEveryClientFileByteIdentical_ThisServerAndTheBranding": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_MaxStoresFarLessThanNone_BothRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_OfDataThatDoesNotCompress_StoresNoMoreThanWithout_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.UploadLimit_ARunNeverSendsFasterThanTheLimit_AndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": "PASS",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.ALinkedFolder_IsFollowedOnlyWithTheOption_AndALinkBackToItsParentIsNotWalkedAgain": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.AnIncludeOnlyFilter_KeepsOnlyItsFiles_InEveryFolder_AndTheyRestoreIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFilterComponentTests.SkippedFolderAndExcludeFilter_AreAbsentFromTheRestore_EverythingElseIdentical_ASiblingWithTheSamePrefixIsKept": "PASS",
+  "OnlineBackup.Tests.PilotResourcesIntegrationTests.UploadLimitAndCompressionFromTheServer_NeverFasterThanTheLimit_TextStoredSmaller_PhotoNotBigger_RestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotStopComponentTests.AtTheMaximumDuration_WhatWasSentRestoresIdentical_NothingIsDeleted_TheNextRunSendsOnlyTheRest": "PASS",
+  "OnlineBackup.Tests.PilotStopComponentTests.ExactlyAtTheLimit_TheRunGoesOn_OneTickPast_ItStops_WithoutALimit_ItNeverStops": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ARestoreOverAnExistingSetOrCustomer_IsRefused_AndChangesNothing": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ASetAndACustomer_GoAtOnce_ComeBackByteIdentical_AndAreErasedOnlyAfter14Days": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_SurvivesARestart_AndTwoAdministrators_TheAskerCannotApprove_AnOldRequestDeletesNothing": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_AnInterruptedRun_IsFinishedByTheNext_AndALostIndexDoesNotBringExpiredPointsBack": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_Gfs_TheLastBackupOfEachMonth_AtMidMonthNoon_IsKept_TheOthersGo": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_OnTheStore_ExpiresOnlyPointsOutsideThePolicy_NeverAVersionAKeptPointNeeds_EveryKeptPointIsTheBytesSent": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_ACrashedEarlierBackup_DoesNotCount_AndTheNextOneIsComplete": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_HoldsExactlyTheSettings_NoBackupData_AndRestoresThemByteIdentical_EvenWhenTheSystemFolderIsLost": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_KeepsTheLast30_DailyAfter23Hours_ACopyFolderThatFails_DoesNotStopTheLocalBackup": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_ADamagedObjectInAVersion1Index_IsQuarantined_TheOtherFilesOfEveryPointStayIdentical": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1StoreWithItsIndexLost_IsRebuiltFromTheOldObjects_AndNewRunsGoOnBesideTheOldPoints": "PASS",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1Store_OpensAsItIs_EveryFileOfEveryPointIsTheManifestsSha256_AndItsSettingsAndUsersOpen": "PASS",
+  "OnlineBackup.Tests.PilotProcessComponentTests.AStuckPreCommandWithAChild_IsStoppedAtTheLimitWithItsChild_TheBackupGoesOnAndRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_PasswordKeyComesBack_EveryFileRestoresIdentical_AndTheKeyIsKept": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_RecoveredKey_Restores_AndTheLocalIndexIsRebuiltFromTheServerList": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_WrongPassword_IsRefused_NoKeyIsKept_ARandomKeyNeedsRecovery": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AChangedOrMissingSource_IsNotACandidate_NothingToCompare_IsZeroChecked_NeverFailed": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AReportTheServerDidNotTake_IsTriedAgain_NotMarkedDoneFor30Days": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_ARestoreThatSucceedsButGivesOtherBytes_IsReportedDifferent_TheComparisonIsWithTheSource": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AnObjectDamagedInStorage_IsAFailedFile_NotPassed_TheOthersStillChecked_TempFolderGone": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_Due_OnlyAfterASuccessfulBackup_ThenOncePer30Days": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_TheSampleSize_IsRespected_EachPickedFileOnce": "PASS",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_UnchangedSources_RestoreInIsolation_AllEqual_ReportedToTheServer_TempFolderGone": "PASS",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.RecycleBin_ADeletedSetSurvivesARestart_AndComesBackRestorableIdentical_ACustomerIsNotRestoredOverANewOneOfTheSameName": "PASS",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.SettingsBackup_ACopyFolderThatFails_StillMakesIt_AndTheDownloadedBackupRestoresAServerWhoseSettingsWereLost": "PASS",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.Upgrade_AVersion1ServerWhoseSetIndexWasLost_OpensAndRebuildsIt_EveryOldPointRestoresIdentical_AndBackupsGoOn": "PASS",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": "FAIL",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.ADeltaTheServerFailed_LeavesTheChainAsItWas_ThePointRestoresTheOldVersion_TheNextRunSendsTheDelta": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Differential_EachDeltaCarriesEveryChangeSinceTheFull_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Incremental_EachDeltaIsSmallAndHoldsOnlyNewChunks_EveryPointRestoresIdentical_PastTheLimitANewFullCopy": "PASS",
+  "OnlineBackup.Tests.PilotDeltaChainIntegrationTests.AChangeOverTheDeltaRatio_IsSentAsANewFullCopy_ASmallOneAsADelta_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": "PASS",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH01_EveryRunIsInTheHistory_NewestFirst_WithItsColour_AfterARestart_ACutLineSkipped_400DaysKept": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_AfterASuspectRun_TheLearningIgnoresIt_TheNextOrdinaryRunIsNotSuspect_ASecondAttackIsCaught": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_MostFilesRewrittenUnderANewExtension_IsSuspect_WithItsReason_AnOrdinaryRunIsNot": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_PacksDeletedDuringAnAttack_StayByteIdenticalInTheTrash_AndComeBackByteIdentical": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AfterTheGrace_TheBasicEditionKeepsEveryExistingComputerBackingUp_OnlyANewOneIsRefusedWithTheReason": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AnUnconfirmedLicence_StaysFullExactly7Days_ThenBasicWithItsReason_AndAConfirmationBringsItBack": "PASS",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_FailedCheckIns_StartTheGraceOnce_OneMail_TheLicenceStaysFull_ThenTheCentreAnswers_AndItIsFullAgain": "PASS",
+  "OnlineBackup.Tests.PilotStateIntegrationTests.SH05_AnAttackWhileTheMailServerIsDown_StillFreezesRetention_ShownToTheAdmin_ThePointBeforeItRestoresIdentical_UntilReleased": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": "PASS",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": "PASS",
+  "OnlineBackup.Tests.Bug103DurationStopTests.Native_ADurationStop_IsStopped_TheServerCountsIt_TheNextRunSucceeds": "PASS",
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt": "PASS",
+  "OnlineBackup.Tests.Bug103DurationStopTests.ServiceCalls_ADurationStop_CountsAsAWarning_AnAdminStop_ChangesNothing": "PASS",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN01_TheInstalledServerAnswers_ItsAdminSignsIn_ACustomerBacksUp_AnUpdateWithoutAnswerIsNotDone_TheRerunKeepsEveryPoint": "PASS",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN02_AWrongPasswordRegistersNothing_TheRightOneBacksUp_AReinstallKeepsIt_UninstallKeepsTheBackups_AndAReinstallReconnects": "PASS",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN03_TheServersClientFiles_DownloadedChecked_OneBlockedFilePutsAllBack_ThenTheUpdateInstallsCompletely": "PASS",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN05_TheWindowsDownload_RefusesWithoutAddressOrClientFiles_WithTheReason_AndAHostileNameGivesASafeFileName": "PASS",
+  "OnlineBackup.Tests.PilotMaxDurationComponentTests.AtTheMaximumDuration_TheRunIsReportedAsStopped_NotAsASuccess": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_AnObjectDamagedOnTheServerDisk_IsAFailedFile_TheOthersRestoreIdentical_NoHalfFile_ServerToldError": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_ThreePoints_Point2OneFile_ExactlyThatFile_ByteIdenticalToPoint2_Point1Whole": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_OverwriteOff_KeepsAndCountsSkipped_On_Replaces_ServerGetsTheResult": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_Overwrite_WithADamagedObject_TheExistingFileIsUntouched_ResultIsError": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS05_NewComputer_RandomKey_WithoutRecoveryNoKey_RecoveredKeyRestoresAll_IndexRebuilt_NothingResent": "PASS",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS06_RestoreTest_ComparesWithTheSource_DamagedInStorageFails_ChangedSourceNotACandidate_TempGone_ServerRecords": "PASS",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.ADisconnectedComputer_IsRefusedAtItsNextCall_TheOtherComputerGoesOn_ARegistrationAgainWorks": "PASS",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.AResellersAdministrator_CannotReadOrChangeAnotherResellersCustomer_AndNothingThereChanges": "PASS",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.CustomAndRandomKeySets_RestoreIdenticalOnANewComputer_AWrongKeyReadsNothing_TheServerHoldsNoReadableContent": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.PilotProcessIntegrationTests.PreAndPostCommandsWritingMuchToBothStreams_AreReadToTheEnd_TheBackupSucceedsAndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.6481431,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_ARebootInTheMiddleOfABackup_TheDeadRunIsReportedOnceWhenTheServerAnswers_TheNextRunCompletes_AndRestoresIdentical": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 13.9259087,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_TheServiceStartsWithTheComputer_AndAfterAnIdleRestart_ThePendingBackupCompletes_NothingReportedAsInterrupted": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1224569,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ABackupObject_WithAChangedByteAnywhere_IsRefused_NeverRestoredWrong": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0374459,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ARevokedComputer_RegistersAgain_GetsANewToken_TheOldStaysRefused": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1719372,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ComputerLimitOfTheLicence_ExactlyTheLimitIsAccepted_OneMoreRefused_TheSameComputerAgainIsNotANewOne": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3602982,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Customers_ADeviceTokenOrSessionOpensOnlyItsOwnAccount": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.280523,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ForgedOrDamaged_IsRefusedLikeAnUnknownOne": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.2254026,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ValidIsAllowed_RevokedIsRefusedAtOnce_TheOtherComputerGoesOn": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.213161,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_EveryChangedByte_EveryCut_AndEveryOtherKey_IsRefused_NeverAWrongPlaintext": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0128132,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_KnownAnswers_Pbkdf2Rfc6070_AesNist_HmacCheckValue_NameSegments": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0030349,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_Sizes_EmptyOneByteBlockEdgesAndOneMegabyte_RoundTripExactly": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0181115,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_ABlockSurvivesARestart_UnblockLetsItIn_AndItsCountStartsAgain": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.1594758,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_Limits_AreExact_OldFailuresLeaveTheWindow_SprayingAndScanningBlockAtTheirCount": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0863535,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_TenWrongSignIns_BlockThatAddress_OnlyIt_AndTheAdministratorIsAlerted": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0717868,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.KeyRecovery_PasswordCustomAndRandomKeys_OnANewComputer_ReadTheSameBytes_TheWrongOneReadsNothing": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1.4558456,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ResellerAdministrators_AreTheirResellersOnly_AndLoseTheSignInAtOnceWhenTheResellerIsDisabled": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.4564042,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Resellers_EachWithinItsOwnLimits_AnotherResellersCustomersNeverCount": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.3002819,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN01_AnInstallationThatDidNotAnswer_IsFinishedByARerun_AndAReinstallOnTheOldDrive_KeepsEveryCustomerFile": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.767414,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_APackageWithoutItsConnectionFile_IsRefused_BeforeAnythingIsWritten": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.005092,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_AReinstallOfANewerPackage_ReplacesEveryProgramFile_AndKeepsTheRegistrationAndKeys": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0578154,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_InstallFromThePackage_EveryProgramFileByteIdentical_TheScriptsNot_TheDataFolderReady": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0465809,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_UninstallRemovesOnlyItsOwnFolders_NothingLeftWhenAsked_AForeignFolderStaysByteIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.11449,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN03_AGoodUpdate_GivesExactlyTheNewBytes_AFailedOne_GivesBackExactlyTheOldBytes_UnlistedFilesUntouched": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 1.0576731,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_AChangedPackage_AForgedOrMisplacedSignature_AreRefused_NothingInstalled_ThenTheGenuineOneInstalls": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.3057614,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_ASignedVersion_IsDownloaded_Checked_HandedToItsInstallerByteIdentical_SettingsAndDataUntouched": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.1489753,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.085534,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_AProductNameWindowsCannotHoldInAFileName_GivesSafeNames_HebrewKept": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0095838,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_MissingClientFiles_AreRefusedClearly_ACutDownloadIsDamaged": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0289002,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_OneChangedByteAnywhereInTheSetupPayload_IsRefused_NeverReadAsDifferentFiles": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0266761,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_TheWindowsSetup_CarriesEveryClientFileByteIdentical_ThisServerAndTheBranding": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.0234663,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_MaxStoresFarLessThanNone_BothRestoreIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.474345,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_OfDataThatDoesNotCompress_StoresNoMoreThanWithout_AndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 0.2193458,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesComponentTests.UploadLimit_ARunNeverSendsFasterThanTheLimit_AndRestoresIdentical": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 4.0455298,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 2.0741458,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 5.4798506,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.ALinkedFolder_IsFollowedOnlyWithTheOption_AndALinkBackToItsParentIsNotWalkedAgain": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.041199,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.AnIncludeOnlyFilter_KeepsOnlyItsFiles_InEveryFolder_AndTheyRestoreIdentical": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0303252,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFilterComponentTests.SkippedFolderAndExcludeFilter_AreAbsentFromTheRestore_EverythingElseIdentical_ASiblingWithTheSamePrefixIsKept": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0314137,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotResourcesIntegrationTests.UploadLimitAndCompressionFromTheServer_NeverFasterThanTheLimit_TextStoredSmaller_PhotoNotBigger_RestoresIdentical": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 6.2710162,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStopComponentTests.AtTheMaximumDuration_WhatWasSentRestoresIdentical_NothingIsDeleted_TheNextRunSendsOnlyTheRest": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.1362983,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStopComponentTests.ExactlyAtTheLimit_TheRunGoesOn_OneTickPast_ItStops_WithoutALimit_ItNeverStops": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.0923501,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ARestoreOverAnExistingSetOrCustomer_IsRefused_AndChangesNothing": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.5042045,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ASetAndACustomer_GoAtOnce_ComeBackByteIdentical_AndAreErasedOnlyAfter14Days": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.4823816,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_SurvivesARestart_AndTwoAdministrators_TheAskerCannotApprove_AnOldRequestDeletesNothing": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.6334419,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_AnInterruptedRun_IsFinishedByTheNext_AndALostIndexDoesNotBringExpiredPointsBack": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.8474802,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_Gfs_TheLastBackupOfEachMonth_AtMidMonthNoon_IsKept_TheOthersGo": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.4964984,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_OnTheStore_ExpiresOnlyPointsOutsideThePolicy_NeverAVersionAKeptPointNeeds_EveryKeptPointIsTheBytesSent": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.7405881,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_ACrashedEarlierBackup_DoesNotCount_AndTheNextOneIsComplete": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.3361067,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_HoldsExactlyTheSettings_NoBackupData_AndRestoresThemByteIdentical_EvenWhenTheSystemFolderIsLost": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.7304396,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_KeepsTheLast30_DailyAfter23Hours_ACopyFolderThatFails_DoesNotStopTheLocalBackup": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.5765183,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_ADamagedObjectInAVersion1Index_IsQuarantined_TheOtherFilesOfEveryPointStayIdentical": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.5583155,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1StoreWithItsIndexLost_IsRebuiltFromTheOldObjects_AndNewRunsGoOnBesideTheOldPoints": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 1.154241,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1Store_OpensAsItIs_EveryFileOfEveryPointIsTheManifestsSha256_AndItsSettingsAndUsersOpen": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 0.6495503,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotProcessComponentTests.AStuckPreCommandWithAChild_IsStoppedAtTheLimitWithItsChild_TheBackupGoesOnAndRestoresIdentical": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 4.0098687,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_PasswordKeyComesBack_EveryFileRestoresIdentical_AndTheKeyIsKept": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.8479632,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_RecoveredKey_Restores_AndTheLocalIndexIsRebuiltFromTheServerList": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0678327,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_WrongPassword_IsRefused_NoKeyIsKept_ARandomKeyNeedsRecovery": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.7857891,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AChangedOrMissingSource_IsNotACandidate_NothingToCompare_IsZeroChecked_NeverFailed": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0553788,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AReportTheServerDidNotTake_IsTriedAgain_NotMarkedDoneFor30Days": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0486631,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_ARestoreThatSucceedsButGivesOtherBytes_IsReportedDifferent_TheComparisonIsWithTheSource": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0360455,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AnObjectDamagedInStorage_IsAFailedFile_NotPassed_TheOthersStillChecked_TempFolderGone": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0627384,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_Due_OnlyAfterASuccessfulBackup_ThenOncePer30Days": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.1644093,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_TheSampleSize_IsRespected_EachPickedFileOnce": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0391484,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_UnchangedSources_RestoreInIsolation_AllEqual_ReportedToTheServer_TempFolderGone": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 0.0536719,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.RecycleBin_ADeletedSetSurvivesARestart_AndComesBackRestorableIdentical_ACustomerIsNotRestoredOverANewOneOfTheSameName": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 45.9746924,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.SettingsBackup_ACopyFolderThatFails_StillMakesIt_AndTheDownloadedBackupRestoresAServerWhoseSettingsWereLost": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 32.130732,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.Upgrade_AVersion1ServerWhoseSetIndexWasLost_OpensAndRebuildsIt_EveryOldPointRestoresIdentical_AndBackupsGoOn": [
+   {
+    "job": "s04-r01",
+    "status": "PASS",
+    "sec": 4.6178065,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": [
+   {
+    "job": "s04-r01",
+    "status": "FAIL",
+    "sec": 29.2329251,
+    "note": "6 left in the server's temp folder after the web restore: webrestore-1ef6332adb2e [Directory], webrestore-8cdd016a5339 [Directory], webrestore-1ef6332adb2e\\C [Directory], webrestore-8cdd016a5339\\C [Directory], webrestore-1ef6332adb2e\\C\\Users [ReadOnly, Directory], webrestore-8cdd016a5339\\C\\Users [ReadOnly, Directory]",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.ADeltaTheServerFailed_LeavesTheChainAsItWas_ThePointRestoresTheOldVersion_TheNextRunSendsTheDelta": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 1.1937392,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Differential_EachDeltaCarriesEveryChangeSinceTheFull_EveryPointRestoresIdentical": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 1.9548892,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Incremental_EachDeltaIsSmallAndHoldsOnlyNewChunks_EveryPointRestoresIdentical_PastTheLimitANewFullCopy": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 1.6103855,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotDeltaChainIntegrationTests.AChangeOverTheDeltaRatio_IsSentAsANewFullCopy_ASmallOneAsADelta_EveryPointRestoresIdentical": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 6.5415361,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.2828293,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.2113935,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH01_EveryRunIsInTheHistory_NewestFirst_WithItsColour_AfterARestart_ACutLineSkipped_400DaysKept": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.1355677,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_AfterASuspectRun_TheLearningIgnoresIt_TheNextOrdinaryRunIsNotSuspect_ASecondAttackIsCaught": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.0935816,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_MostFilesRewrittenUnderANewExtension_IsSuspect_WithItsReason_AnOrdinaryRunIsNot": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.003121,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_PacksDeletedDuringAnAttack_StayByteIdenticalInTheTrash_AndComeBackByteIdentical": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.5825366,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AfterTheGrace_TheBasicEditionKeepsEveryExistingComputerBackingUp_OnlyANewOneIsRefusedWithTheReason": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 2.7097995,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AnUnconfirmedLicence_StaysFullExactly7Days_ThenBasicWithItsReason_AndAConfirmationBringsItBack": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.0079217,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_FailedCheckIns_StartTheGraceOnce_OneMail_TheLicenceStaysFull_ThenTheCentreAnswers_AndItIsFullAgain": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 29.3515137,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotStateIntegrationTests.SH05_AnAttackWhileTheMailServerIsDown_StillFreezesRetention_ShownToTheAdmin_ThePointBeforeItRestoresIdentical_UntilReleased": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 40.2288902,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 1.2386664,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 2.8677745,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 0.000288,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes": [
+   {
+    "job": "s05-r01",
+    "status": "PASS",
+    "sec": 2.4399219,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Bug103DurationStopTests.Native_ADurationStop_IsStopped_TheServerCountsIt_TheNextRunSucceeds": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 4.3806058,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 17.0181827,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.Bug103DurationStopTests.ServiceCalls_ADurationStop_CountsAsAWarning_AnAdminStop_ChangesNothing": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 0.2464381,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN01_TheInstalledServerAnswers_ItsAdminSignsIn_ACustomerBacksUp_AnUpdateWithoutAnswerIsNotDone_TheRerunKeepsEveryPoint": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 14.0664904,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN02_AWrongPasswordRegistersNothing_TheRightOneBacksUp_AReinstallKeepsIt_UninstallKeepsTheBackups_AndAReinstallReconnects": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 9.0801591,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN03_TheServersClientFiles_DownloadedChecked_OneBlockedFilePutsAllBack_ThenTheUpdateInstallsCompletely": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 0.3700995,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN05_TheWindowsDownload_RefusesWithoutAddressOrClientFiles_WithTheReason_AndAHostileNameGivesASafeFileName": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 0.2252898,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotMaxDurationComponentTests.AtTheMaximumDuration_TheRunIsReportedAsStopped_NotAsASuccess": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 0.0293482,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_AnObjectDamagedOnTheServerDisk_IsAFailedFile_TheOthersRestoreIdentical_NoHalfFile_ServerToldError": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.0789062,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_ThreePoints_Point2OneFile_ExactlyThatFile_ByteIdenticalToPoint2_Point1Whole": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.3085806,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_OverwriteOff_KeepsAndCountsSkipped_On_Replaces_ServerGetsTheResult": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.0441622,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_Overwrite_WithADamagedObject_TheExistingFileIsUntouched_ResultIsError": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.0096453,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS05_NewComputer_RandomKey_WithoutRecoveryNoKey_RecoveredKeyRestoresAll_IndexRebuilt_NothingResent": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.1522225,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS06_RestoreTest_ComparesWithTheSource_DamagedInStorageFails_ChangedSourceNotACandidate_TempGone_ServerRecords": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 1.1951107,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.ADisconnectedComputer_IsRefusedAtItsNextCall_TheOtherComputerGoesOn_ARegistrationAgainWorks": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 0.6125404,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.AResellersAdministrator_CannotReadOrChangeAnotherResellersCustomer_AndNothingThereChanges": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 3.7946573,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.CustomAndRandomKeySets_RestoreIdenticalOnANewComputer_AWrongKeyReadsNothing_TheServerHoldsNoReadableContent": [
+   {
+    "job": "s06-r01",
+    "status": "PASS",
+    "sec": 4.6295966,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [
+  "OnlineBackup.Tests.Bug103DurationStopTests.Native_ADurationStop_IsStopped_TheServerCountsIt_TheNextRunSucceeds",
+  "OnlineBackup.Tests.Bug103DurationStopTests.Restic_ADurationStop_IsStopped_TheServerCountsIt",
+  "OnlineBackup.Tests.Bug103DurationStopTests.ServiceCalls_ADurationStop_CountsAsAWarning_AnAdminStop_ChangesNothing",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.ADeltaTheServerFailed_LeavesTheChainAsItWas_ThePointRestoresTheOldVersion_TheNextRunSendsTheDelta",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Differential_EachDeltaCarriesEveryChangeSinceTheFull_EveryPointRestoresIdentical",
+  "OnlineBackup.Tests.PilotDeltaChainComponentTests.Incremental_EachDeltaIsSmallAndHoldsOnlyNewChunks_EveryPointRestoresIdentical_PastTheLimitANewFullCopy",
+  "OnlineBackup.Tests.PilotDeltaChainIntegrationTests.AChangeOverTheDeltaRatio_IsSentAsANewFullCopy_ASmallOneAsADelta_EveryPointRestoresIdentical",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.KnownTree_Run2SendsOnlyTheNewChangedAndPermissionChangedFiles_DeletesOne_EveryPointRestoresIdentical",
+  "OnlineBackup.Tests.PilotFileBackupComponentTests.TheServerFailsMidRun_TheRunFails_NothingDeleted_TheOldPointStillRestores_TheNextRunSendsTheChangesAgain",
+  "OnlineBackup.Tests.PilotFilterComponentTests.ALinkedFolder_IsFollowedOnlyWithTheOption_AndALinkBackToItsParentIsNotWalkedAgain",
+  "OnlineBackup.Tests.PilotFilterComponentTests.AnIncludeOnlyFilter_KeepsOnlyItsFiles_InEveryFolder_AndTheyRestoreIdentical",
+  "OnlineBackup.Tests.PilotFilterComponentTests.SkippedFolderAndExcludeFilter_AreAbsentFromTheRestore_EverythingElseIdentical_ASiblingWithTheSamePrefixIsKept",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN01_AnInstallationThatDidNotAnswer_IsFinishedByARerun_AndAReinstallOnTheOldDrive_KeepsEveryCustomerFile",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_APackageWithoutItsConnectionFile_IsRefused_BeforeAnythingIsWritten",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_AReinstallOfANewerPackage_ReplacesEveryProgramFile_AndKeepsTheRegistrationAndKeys",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_InstallFromThePackage_EveryProgramFileByteIdentical_TheScriptsNot_TheDataFolderReady",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN02_UninstallRemovesOnlyItsOwnFolders_NothingLeftWhenAsked_AForeignFolderStaysByteIdentical",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN03_AGoodUpdate_GivesExactlyTheNewBytes_AFailedOne_GivesBackExactlyTheOldBytes_UnlistedFilesUntouched",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_AChangedPackage_AForgedOrMisplacedSignature_AreRefused_NothingInstalled_ThenTheGenuineOneInstalls",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_ASignedVersion_IsDownloaded_Checked_HandedToItsInstallerByteIdentical_SettingsAndDataUntouched",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN04_UpdateFromFiles_ExactlyAtTheLimitTaken_OneByteOverOrAPartMissingOrNoProgram_Refused",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_AProductNameWindowsCannotHoldInAFileName_GivesSafeNames_HebrewKept",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_MissingClientFiles_AreRefusedClearly_ACutDownloadIsDamaged",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_OneChangedByteAnywhereInTheSetupPayload_IsRefused_NeverReadAsDifferentFiles",
+  "OnlineBackup.Tests.PilotInstallComponentTests.IN05_TheWindowsSetup_CarriesEveryClientFileByteIdentical_ThisServerAndTheBranding",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN01_TheInstalledServerAnswers_ItsAdminSignsIn_ACustomerBacksUp_AnUpdateWithoutAnswerIsNotDone_TheRerunKeepsEveryPoint",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN02_AWrongPasswordRegistersNothing_TheRightOneBacksUp_AReinstallKeepsIt_UninstallKeepsTheBackups_AndAReinstallReconnects",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN03_TheServersClientFiles_DownloadedChecked_OneBlockedFilePutsAllBack_ThenTheUpdateInstallsCompletely",
+  "OnlineBackup.Tests.PilotInstallIntegrationTests.IN05_TheWindowsDownload_RefusesWithoutAddressOrClientFiles_WithTheReason_AndAHostileNameGivesASafeFileName",
+  "OnlineBackup.Tests.PilotMaxDurationComponentTests.AtTheMaximumDuration_TheRunIsReportedAsStopped_NotAsASuccess",
+  "OnlineBackup.Tests.PilotProcessComponentTests.AStuckPreCommandWithAChild_IsStoppedAtTheLimitWithItsChild_TheBackupGoesOnAndRestoresIdentical",
+  "OnlineBackup.Tests.PilotProcessIntegrationTests.PreAndPostCommandsWritingMuchToBothStreams_AreReadToTheEnd_TheBackupSucceedsAndRestoresIdentical",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_ARebootInTheMiddleOfABackup_TheDeadRunIsReportedOnceWhenTheServerAnswers_TheNextRunCompletes_AndRestoresIdentical",
+  "OnlineBackup.Tests.PilotRebootComponentTests.IN06_TheServiceStartsWithTheComputer_AndAfterAnIdleRestart_ThePendingBackupCompletes_NothingReportedAsInterrupted",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_MaxStoresFarLessThanNone_BothRestoreIdentical",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.Compression_OfDataThatDoesNotCompress_StoresNoMoreThanWithout_AndRestoresIdentical",
+  "OnlineBackup.Tests.PilotResourcesComponentTests.UploadLimit_ARunNeverSendsFasterThanTheLimit_AndRestoresIdentical",
+  "OnlineBackup.Tests.PilotResourcesIntegrationTests.UploadLimitAndCompressionFromTheServer_NeverFasterThanTheLimit_TextStoredSmaller_PhotoNotBigger_RestoresIdentical",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_PasswordKeyComesBack_EveryFileRestoresIdentical_AndTheKeyIsKept",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_RecoveredKey_Restores_AndTheLocalIndexIsRebuiltFromTheServerList",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS05_NewComputer_WrongPassword_IsRefused_NoKeyIsKept_ARandomKeyNeedsRecovery",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AChangedOrMissingSource_IsNotACandidate_NothingToCompare_IsZeroChecked_NeverFailed",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AReportTheServerDidNotTake_IsTriedAgain_NotMarkedDoneFor30Days",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_ARestoreThatSucceedsButGivesOtherBytes_IsReportedDifferent_TheComparisonIsWithTheSource",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_AnObjectDamagedInStorage_IsAFailedFile_NotPassed_TheOthersStillChecked_TempFolderGone",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_Due_OnlyAfterASuccessfulBackup_ThenOncePer30Days",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_TheSampleSize_IsRespected_EachPickedFileOnce",
+  "OnlineBackup.Tests.PilotRestoreComponentTests.RS06_UnchangedSources_RestoreInIsolation_AllEqual_ReportedToTheServer_TempFolderGone",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_AnObjectDamagedOnTheServerDisk_IsAFailedFile_TheOthersRestoreIdentical_NoHalfFile_ServerToldError",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS01_ThreePoints_Point2OneFile_ExactlyThatFile_ByteIdenticalToPoint2_Point1Whole",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_OverwriteOff_KeepsAndCountsSkipped_On_Replaces_ServerGetsTheResult",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS02_OriginalPlace_Overwrite_WithADamagedObject_TheExistingFileIsUntouched_ResultIsError",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS05_NewComputer_RandomKey_WithoutRecoveryNoKey_RecoveredKeyRestoresAll_IndexRebuilt_NothingResent",
+  "OnlineBackup.Tests.PilotRestoreIntegrationTests.RS06_RestoreTest_ComparesWithTheSource_DamagedInStorageFails_ChangedSourceNotACandidate_TempGone_ServerRecords",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ABackupObject_WithAChangedByteAnywhere_IsRefused_NeverRestoredWrong",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ARevokedComputer_RegistersAgain_GetsANewToken_TheOldStaysRefused",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ComputerLimitOfTheLicence_ExactlyTheLimitIsAccepted_OneMoreRefused_TheSameComputerAgainIsNotANewOne",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Customers_ADeviceTokenOrSessionOpensOnlyItsOwnAccount",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ForgedOrDamaged_IsRefusedLikeAnUnknownOne",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.DeviceToken_ValidIsAllowed_RevokedIsRefusedAtOnce_TheOtherComputerGoesOn",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_EveryChangedByte_EveryCut_AndEveryOtherKey_IsRefused_NeverAWrongPlaintext",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_KnownAnswers_Pbkdf2Rfc6070_AesNist_HmacCheckValue_NameSegments",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Encryption_Sizes_EmptyOneByteBlockEdgesAndOneMegabyte_RoundTripExactly",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_ABlockSurvivesARestart_UnblockLetsItIn_AndItsCountStartsAgain",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_Limits_AreExact_OldFailuresLeaveTheWindow_SprayingAndScanningBlockAtTheirCount",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Guard_TenWrongSignIns_BlockThatAddress_OnlyIt_AndTheAdministratorIsAlerted",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.KeyRecovery_PasswordCustomAndRandomKeys_OnANewComputer_ReadTheSameBytes_TheWrongOneReadsNothing",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.ResellerAdministrators_AreTheirResellersOnly_AndLoseTheSignInAtOnceWhenTheResellerIsDisabled",
+  "OnlineBackup.Tests.PilotSecurityComponentTests.Resellers_EachWithinItsOwnLimits_AnotherResellersCustomersNeverCount",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.ADisconnectedComputer_IsRefusedAtItsNextCall_TheOtherComputerGoesOn_ARegistrationAgainWorks",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.AResellersAdministrator_CannotReadOrChangeAnotherResellersCustomer_AndNothingThereChanges",
+  "OnlineBackup.Tests.PilotSecurityIntegrationTests.CustomAndRandomKeySets_RestoreIdenticalOnANewComputer_AWrongKeyReadsNothing_TheServerHoldsNoReadableContent",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH01_EveryRunIsInTheHistory_NewestFirst_WithItsColour_AfterARestart_ACutLineSkipped_400DaysKept",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_AfterASuspectRun_TheLearningIgnoresIt_TheNextOrdinaryRunIsNotSuspect_ASecondAttackIsCaught",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_MostFilesRewrittenUnderANewExtension_IsSuspect_WithItsReason_AnOrdinaryRunIsNot",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH05_PacksDeletedDuringAnAttack_StayByteIdenticalInTheTrash_AndComeBackByteIdentical",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AfterTheGrace_TheBasicEditionKeepsEveryExistingComputerBackingUp_OnlyANewOneIsRefusedWithTheReason",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_AnUnconfirmedLicence_StaysFullExactly7Days_ThenBasicWithItsReason_AndAConfirmationBringsItBack",
+  "OnlineBackup.Tests.PilotStateComponentTests.SH07_FailedCheckIns_StartTheGraceOnce_OneMail_TheLicenceStaysFull_ThenTheCentreAnswers_AndItIsFullAgain",
+  "OnlineBackup.Tests.PilotStateIntegrationTests.SH05_AnAttackWhileTheMailServerIsDown_StillFreezesRetention_ShownToTheAdmin_ThePointBeforeItRestoresIdentical_UntilReleased",
+  "OnlineBackup.Tests.PilotStopComponentTests.AtTheMaximumDuration_WhatWasSentRestoresIdentical_NothingIsDeleted_TheNextRunSendsOnlyTheRest",
+  "OnlineBackup.Tests.PilotStopComponentTests.ExactlyAtTheLimit_TheRunGoesOn_OneTickPast_ItStops_WithoutALimit_ItNeverStops",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ARestoreOverAnExistingSetOrCustomer_IsRefused_AndChangesNothing",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_ASetAndACustomer_GoAtOnce_ComeBackByteIdentical_AndAreErasedOnlyAfter14Days",
+  "OnlineBackup.Tests.PilotStorageComponentTests.RecycleBin_SurvivesARestart_AndTwoAdministrators_TheAskerCannotApprove_AnOldRequestDeletesNothing",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_AnInterruptedRun_IsFinishedByTheNext_AndALostIndexDoesNotBringExpiredPointsBack",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_Gfs_TheLastBackupOfEachMonth_AtMidMonthNoon_IsKept_TheOthersGo",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Retention_OnTheStore_ExpiresOnlyPointsOutsideThePolicy_NeverAVersionAKeptPointNeeds_EveryKeptPointIsTheBytesSent",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_ACrashedEarlierBackup_DoesNotCount_AndTheNextOneIsComplete",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_HoldsExactlyTheSettings_NoBackupData_AndRestoresThemByteIdentical_EvenWhenTheSystemFolderIsLost",
+  "OnlineBackup.Tests.PilotStorageComponentTests.SettingsBackup_KeepsTheLast30_DailyAfter23Hours_ACopyFolderThatFails_DoesNotStopTheLocalBackup",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_ADamagedObjectInAVersion1Index_IsQuarantined_TheOtherFilesOfEveryPointStayIdentical",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1StoreWithItsIndexLost_IsRebuiltFromTheOldObjects_AndNewRunsGoOnBesideTheOldPoints",
+  "OnlineBackup.Tests.PilotStorageComponentTests.Upgrade_AVersion1Store_OpensAsItIs_EveryFileOfEveryPointIsTheManifestsSha256_AndItsSettingsAndUsersOpen",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.RecycleBin_ADeletedSetSurvivesARestart_AndComesBackRestorableIdentical_ACustomerIsNotRestoredOverANewOneOfTheSameName",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.SettingsBackup_ACopyFolderThatFails_StillMakesIt_AndTheDownloadedBackupRestoresAServerWhoseSettingsWereLost",
+  "OnlineBackup.Tests.PilotStorageIntegrationTests.Upgrade_AVersion1ServerWhoseSetIndexWasLost_OpensAndRebuildsIt_EveryOldPointRestoresIdentical_AndBackupsGoOn",
+  "OnlineBackup.Tests.PilotVssComponentTests.ABackupWithShadowCopy_SendsALockedFile_IsASuccessWithoutError_RestoresIdentical_AndLeavesNoShadowCopy",
+  "OnlineBackup.Tests.PilotVssComponentTests.ALockedFile_IsReadFromTheSnapshot_WithItsContentAtSnapshotTime_AndTheSnapshotIsRemovedAfterwards",
+  "OnlineBackup.Tests.PilotVssComponentTests.SourcesWithoutADriveLetter_GetNoShadowCopy_AndNoWarning",
+  "OnlineBackup.Tests.PilotVssComponentTests.WhenTheRunFails_TheShadowCopyIsRemovedToo_AndTheNextRunCompletes",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ALockedFile_IsBackedUpThroughTheShadowCopy_RestoresIdentical_NoShadowCopyLeft",
+  "OnlineBackup.Tests.PilotVssIntegrationTests.ARunTheServerStopsForTheQuota_RemovesItsShadowCopy_AndOnceThereIsRoom_TheNextRunCompletes"
+ ],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002404",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 18
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000002362",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 18
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000002419",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 18
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000002490",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 3
+   },
+   "tests": 15
+  },
+  {
+   "job": "s05-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s05-r01",
+    "runner": "GitHub Actions 1000002455",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 18
+  },
+  {
+   "job": "s06-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s06-r01",
+    "runner": "GitHub Actions 1000002473",
+    "os": "Windows",
+    "sha": "d749bfee223b3acb6d4379015b0643d9579d26bc",
+    "build_sha": "bd4f83474ebb43dc5fa87255c3436c9f71e473b6295c00166c98ca204c97faf9",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 2
+   },
+   "tests": 17
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
