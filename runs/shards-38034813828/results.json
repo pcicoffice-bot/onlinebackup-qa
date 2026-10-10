@@ -1,0 +1,69 @@
+{
+ "title": "windows-latest, select 'OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce', 1 shards x 2 - run 38034813828 (715624ff35e713ed9c339afefe297ddb67885126)",
+ "mode": "strict",
+ "build_sha": "7e9486a6bf60ac512e3243f71890571ec12e093314dbd9174e6ee5100e4c2a1e",
+ "counts": {
+  "PASS": 1,
+  "FAIL": 0,
+  "NOT TESTED": 0,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": "PASS"
+ },
+ "runs": {
+  "OnlineBackup.Tests.InterruptionTests.ServerDownMidBackupAndBack_NextBackupRunsAtOnce": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 121.075086,
+    "note": "",
+    "kind": ""
+   },
+   {
+    "job": "s01-r02",
+    "status": "PASS",
+    "sec": 121.538659,
+    "note": "",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002270",
+    "os": "Windows",
+    "sha": "715624ff35e713ed9c339afefe297ddb67885126",
+    "build_sha": "7e9486a6bf60ac512e3243f71890571ec12e093314dbd9174e6ee5100e4c2a1e",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 3
+   },
+   "tests": 1
+  },
+  {
+   "job": "s01-r02",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r02",
+    "runner": "GitHub Actions 1000002303",
+    "os": "Windows",
+    "sha": "715624ff35e713ed9c339afefe297ddb67885126",
+    "build_sha": "7e9486a6bf60ac512e3243f71890571ec12e093314dbd9174e6ee5100e4c2a1e",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 3
+   },
+   "tests": 1
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": true
+}
