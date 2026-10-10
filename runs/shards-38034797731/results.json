@@ -1,0 +1,232 @@
+{
+ "title": "windows-latest, select 'WebRestore ResticPathComponentTests AiTests.WebRestoreSearch', 4 shards x 1 - run 38034797731 (c99b77715a2cd16e24fbaa1d6e6ee05f320d1a98)",
+ "mode": "strict",
+ "build_sha": "dcda77944c9f4b0e811bb86050a8061d336c881efb19a2b06cedde51e3dcbfed",
+ "counts": {
+  "PASS": 13,
+  "FAIL": 1,
+  "NOT TESTED": 1,
+  "DISAPPEARED": 0
+ },
+ "verdict": {
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": "PASS",
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": "PASS",
+  "OnlineBackup.Tests.AiTests.WebRestoreSearch_ByKeywords_AndInPlainWords_SendsNoFileNames": "PASS",
+  "OnlineBackup.Tests.NightS_Part2Tests.WebRestoreDownload_PointValue_CannotInjectAResponseHeader": "PASS",
+  "OnlineBackup.Tests.ProcessTests.HungWebRestore_IsStopped_WithAClearTimeout": "NOT TESTED",
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": "FAIL"
+ },
+ "runs": {
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\", expected: \"/C\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0001454,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\\", expected: \"/C/\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0008128,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"C:\\\\Users\\\\anna\\\\Documents\\\\invoice 7.pdf\", expected: \"/C/Users/anna/Documents/invoice 7.pdf\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 1e-05,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"D:/Mixed\\\\slashes/x.txt\", expected: \"/D/Mixed/slashes/x.txt\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0001302,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.AWindowsPath_BecomesResticsForm(given: \"c:\\\\Data\\\\Report [final].docx\", expected: \"/C/Data/Report [final].docx\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 9e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 3.6e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/C/Users/anna/a.txt\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.00402,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"/home/anna/a.txt\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 0.0001421,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"\\\\\\\\server\\\\share\\\\x.txt\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.8e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: \"relative/name.txt\")": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 2.6e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ResticPathComponentTests.EveryOtherPath_StaysAsItIs(given: null)": [
+   {
+    "job": "s01-r01",
+    "status": "PASS",
+    "sec": 6.4e-06,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.AiTests.WebRestoreSearch_ByKeywords_AndInPlainWords_SendsNoFileNames": [
+   {
+    "job": "s02-r01",
+    "status": "PASS",
+    "sec": 18.6182802,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.NightS_Part2Tests.WebRestoreDownload_PointValue_CannotInjectAResponseHeader": [
+   {
+    "job": "s03-r01",
+    "status": "PASS",
+    "sec": 21.4573806,
+    "note": "",
+    "kind": ""
+   }
+  ],
+  "OnlineBackup.Tests.ProcessTests.HungWebRestore_IsStopped_WithAClearTimeout": [
+   {
+    "job": "s04-r01",
+    "status": "NOT TESTED",
+    "sec": 0.000754,
+    "note": "OnlineBackup.Tests.NotTestedException : NOT TESTED: needs Linux (the stand-in programs are shell scripts)",
+    "kind": "declared"
+   }
+  ],
+  "OnlineBackup.Tests.WebRestoreTests.CustomerRestoresChosenFilesFromTheWebsite_WithTheEncryptionPassword": [
+   {
+    "job": "s04-r01",
+    "status": "FAIL",
+    "sec": 31.5511516,
+    "note": "Assert.Empty() Failure: Collection was not empty\r\nCollection: [\"C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\obte\"\u00b7\u00b7\u00b7, \"C:\\\\Users\\\\runneradmin\\\\AppData\\\\Local\\\\Temp\\\\obte\"\u00b7\u00b7\u00b7]",
+    "kind": ""
+   }
+  ]
+ },
+ "missing": [],
+ "new_tests": [],
+ "jobs": [
+  {
+   "job": "s01-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s01-r01",
+    "runner": "GitHub Actions 1000002507",
+    "os": "Windows",
+    "sha": "c99b77715a2cd16e24fbaa1d6e6ee05f320d1a98",
+    "build_sha": "dcda77944c9f4b0e811bb86050a8061d336c881efb19a2b06cedde51e3dcbfed",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 11
+  },
+  {
+   "job": "s02-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s02-r01",
+    "runner": "GitHub Actions 1000002511",
+    "os": "Windows",
+    "sha": "c99b77715a2cd16e24fbaa1d6e6ee05f320d1a98",
+    "build_sha": "dcda77944c9f4b0e811bb86050a8061d336c881efb19a2b06cedde51e3dcbfed",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s03-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s03-r01",
+    "runner": "GitHub Actions 1000002387",
+    "os": "Windows",
+    "sha": "c99b77715a2cd16e24fbaa1d6e6ee05f320d1a98",
+    "build_sha": "dcda77944c9f4b0e811bb86050a8061d336c881efb19a2b06cedde51e3dcbfed",
+    "preflight": "ok",
+    "exit": 0,
+    "minutes": 1
+   },
+   "tests": 1
+  },
+  {
+   "job": "s04-r01",
+   "state": "results",
+   "meta": {
+    "job": "shard-s04-r01",
+    "runner": "GitHub Actions 1000002466",
+    "os": "Windows",
+    "sha": "c99b77715a2cd16e24fbaa1d6e6ee05f320d1a98",
+    "build_sha": "dcda77944c9f4b0e811bb86050a8061d336c881efb19a2b06cedde51e3dcbfed",
+    "preflight": "ok",
+    "exit": 1,
+    "minutes": 1
+   },
+   "tests": 2
+  }
+ ],
+ "control": null,
+ "control_differences": [],
+ "green": false
+}
